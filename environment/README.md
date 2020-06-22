@@ -7,7 +7,7 @@ conda environment.
  1. Run:
  
     ```bash
-    conda env create -n phenoplier -f environment.yml
+    conda env create --name phenoplier --file environment.yml
     conda activate phenoplier
     bash scripts/install_other_packages.sh
     ```
@@ -33,7 +33,7 @@ These steps are only for PhenoPLIER developers.
  1. Export conda environment:
 
     ```
-    conda env export -n phenoplier -f environment.yml
+    conda env export --name phenoplier --file environment.yml
     ```
 
  1. Modify `environment.yml` and leave only manually installed packages (not their dependencies).
