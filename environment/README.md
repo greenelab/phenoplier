@@ -7,11 +7,9 @@ conda environment.
  1. Run:
  
     ```bash
-    $ conda env create -n phenoplier -f environment.yml
-    [...]
-    $ conda activate phenoplier
-    $ bash scripts/install_other_packages.sh
-    [...]
+    conda env create -n phenoplier -f environment.yml
+    conda activate phenoplier
+    bash scripts/install_other_packages.sh
     ```
 
 ## Developer usage
@@ -22,22 +20,20 @@ These steps are only for PhenoPLIER developers.
  1. Run:
  
     ```bash
-    $ bash scripts/create_env_from_scratch.sh
-    [...]
-    $ bash scripts/install_other_packages.sh
-    [...]
+    bash scripts/create_env_from_scratch.sh
+    bash scripts/install_other_packages.sh
     ```
 
  1. Install JupyterLab extensions:
  
     ```bash
-    $ jupyter labextension install @jupyterlab/toc
+    jupyter labextension install @jupyterlab/toc
     ```
 
  1. Export conda environment:
 
     ```
-    $ conda env export -n phenoplier -f environment.yml
+    conda env export -n phenoplier -f environment.yml
     ```
 
  1. Modify `environment.yml` and leave only manually installed packages (not their dependencies).
