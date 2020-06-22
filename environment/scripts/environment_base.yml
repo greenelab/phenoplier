@@ -1,0 +1,31 @@
+name: phenoplier
+channels:
+  - defaults
+dependencies:
+  - ipython
+  - jupyterlab
+  - matplotlib
+  - nodejs
+  - numpy
+  - pandas
+  - pip
+  - python=3.8
+  - r-base
+  - r-devtools
+  - r-ggplot2
+  - scikit-learn
+  - scipy
+  - seaborn
+  - tzlocal
+ # rpy2 dependencies:
+  - more-itertools
+  - packaging
+  - pluggy
+  - py
+  - pytest
+ # umap-learn dependencies:
+  - numba
+  - tbb
+  - pip:
+    - rpy2
+    - umap-learn
