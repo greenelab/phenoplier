@@ -16,45 +16,4 @@ eval "$(conda shell.bash hook)"
 #
 # create environment
 #
-conda create -y -n phenoplier \
-  ipython \
-  jupyterlab \
-  matplotlib \
-  nodejs \
-  numpy \
-  pandas \
-  pip \
-  python=3.8 \
-  r-devtools \
-  r-base \
-  r-ggplot2 \
-  scikit-learn \
-  scipy \
-  seaborn \
-  tzlocal
-
-
-# activate environment
-conda activate phenoplier
-
-#
-# Python packages
-#   Always prefer package's dependencies from conda instead of pip
-#
-
-## rpy2
-conda install -y \
-    more-itertools \
-    packaging \
-    pluggy \
-    py \
-    pytest
-
-pip install rpy2
-
-## umap-learn
-conda install -y \
-    numba \
-    tbb
-
-pip install umap-learn
+conda env create -n phenoplier -f ${SCRIPT_DIR}/environment_base.yml
