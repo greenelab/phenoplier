@@ -16,11 +16,12 @@ conda environment.
 
 These steps are only for PhenoPLIER developers.
 
- 1. Modify `scripts/create_env_from_scratch.sh` accordingly (if needed).
+ 1. Modify `scripts/environment_base.yml` accordingly (if needed).
  1. Run:
  
     ```bash
     bash scripts/create_env_from_scratch.sh
+    conda activate phenoplier
     bash scripts/install_other_packages.sh
     ```
 
