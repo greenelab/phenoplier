@@ -14,15 +14,15 @@ def load_pickle(filepath):
     Returns:
         The object stored in the pickle file.
     """
-    with open(filepath, 'rb') as f:
+    with open(filepath, "rb") as f:
         return pickle.load(f)
 
 
 def simplify_string(s):
     """Given any string, it returns a simplified version of it.
 
-    It removes any character that is not a word, a number or a separator. Then it replaces all separators by an
-    underscore.
+    It removes any character that is not a word, a number or a separator. Then
+    it replaces all separators by an underscore.
 
     Args:
         s (str): string to be simplified.
@@ -31,10 +31,10 @@ def simplify_string(s):
         str: string simplified.
     """
     # Remove all non-word characters (everything except numbers and letters)
-    s = re.sub(r"[^\w\s]", '', s)
+    s = re.sub(r"[^\w\s]", "", s)
 
     # Replace all runs of whitespace with a single dash
-    s = re.sub(r"\s+", '_', s)
+    s = re.sub(r"\s+", "_", s)
 
     return s
 
