@@ -81,9 +81,7 @@ class Trait(object, metaclass=ABCMeta):
 
         pheno_split = full_code.split('-')
 
-        if len(pheno_split) == 1:
-            code = pheno_split[0]
-        elif len(pheno_split) == 2:
+        if len(pheno_split) in (1, 2):
             code = pheno_split[0]
         else:
             code = '-'.join(pheno_split[:2])
