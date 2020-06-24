@@ -2,7 +2,7 @@ name: phenoplier
 channels:
   - defaults
 dependencies:
-  - ipython
+  - ipython=7
   - jupyterlab=2.1
   - matplotlib=3.2
   - numpy=1.18
@@ -12,8 +12,8 @@ dependencies:
   - r-base=3.6
   - r-devtools=2.0
   - r-ggplot2=3.1
-  - scikit-learn=0.22
-  - scipy=1.4
+  - scikit-learn=0.23
+  - scipy=1.5
   - seaborn=0.10
   - tzlocal
  # rpy2 dependencies:
@@ -26,5 +26,5 @@ dependencies:
   - numba
   - tbb
   - pip:
-    - rpy2==3.3.3
+    - rpy2==3.3.4
     - umap-learn==0.4.4
