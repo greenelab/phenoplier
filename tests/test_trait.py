@@ -148,8 +148,10 @@ class TraitTest(unittest.TestCase):
         pheno_from_code = UKBiobankTrait(code="G54")
         assert pheno_from_code is not None
         assert pheno_from_code.code == "G54"
-        assert pheno_from_code.full_code == \
-               'G54-Diagnoses_main_ICD10_G54_Nerve_root_and_plexus_disorders'
+        assert (
+            pheno_from_code.full_code
+            == "G54-Diagnoses_main_ICD10_G54_Nerve_root_and_plexus_disorders"
+        )
         assert (
             pheno_from_code.full_code
             == "G54-Diagnoses_main_ICD10_G54_Nerve_root_and_plexus_disorders"
