@@ -30,4 +30,4 @@ jobs:
           # autocorrect your code
           auto_fix: true
           git_name: "Greene Lab Linter"
-          git_email: "csgreene@upenn.edu"
+          git_email: "miltondp@gmail.com"
