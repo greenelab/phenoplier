@@ -17,12 +17,11 @@ class Study(Enum):
 class Trait(object, metaclass=ABCMeta):
     """Abstract class to represent a generic trait from different GWAS.
 
-    This class represents traits from different studies (for instance,
-    from the UK Biobank or from the GTEX GWAS project). Different studies
-    provide different attributes for traits. To use this class, you either
-    instanciate any of the subclasses or call the get_trait method providing
-    the short or long code of the trait, and it will return an object with
-    the appropriate Trait subclass.
+    This class represents traits from different studies (for instance, from the UK
+    Biobank or from the GTEX GWAS project). Different studies provide different
+    attributes for traits. To use this class, you either instanciate any of the
+    subclasses or call the get_trait method providing the short or long code of the
+    trait, and it will return an object with the appropriate Trait subclass.
 
         Typical usage example:
 
@@ -56,6 +55,7 @@ class Trait(object, metaclass=ABCMeta):
 
         if code is not None:
             self.code = code
+            self.full_code = None
         elif full_code is not None:
             self.full_code = full_code
             self.code = Trait.get_code_from_full_code(full_code)
@@ -70,6 +70,10 @@ class Trait(object, metaclass=ABCMeta):
         self.pheno_data = None
 
         self.init_metadata()
+
+        # now that all the data was initialized, I can fill full_code if was not given
+        if self.full_code is None:
+            self.full_code = self.get_plain_name()
 
     @staticmethod
     def get_code_from_full_code(full_code):
@@ -151,6 +155,8 @@ class UKBiobankTrait(Trait):
 
     from metadata import RAPID_GWAS_PHENO_INFO, RAPID_GWAS_DATA_DICT, UK_BIOBANK_CODINGS
 
+    MAIN_ICD10_CODE = 41202
+
     CODE_STARTSWITH_CATEGORIES_MAP = {
         ("6150_", "3627_"): "Diseases (cardiovascular)",
         ("6151_",): "Diseases (musculoskeletal/trauma)",
@@ -162,7 +168,7 @@ class UKBiobankTrait(Trait):
         ("6152_9",): "Diseases (allergies)",
     }
 
-    def get_selfreported_parent_category(self):
+    def _get_selfreported_parent_category(self):
         """Return the top parent category for a given trait and coding number.
 
         Returns:
@@ -188,12 +194,12 @@ class UKBiobankTrait(Trait):
     def category(self):
         # FIXME the next two ifs need refactoring
         if self.code.startswith("20001_"):
-            parent_cat = self.get_selfreported_parent_category()
+            parent_cat = self._get_selfreported_parent_category()
             parent_name = parent_cat["meaning"].replace(" cancer", "")
             return f"Cancer ({parent_name})"
 
         if self.code.startswith("20002_"):
-            parent_cat = self.get_selfreported_parent_category()
+            parent_cat = self._get_selfreported_parent_category()
             parent_name = parent_cat["meaning"]
             return f"Diseases ({parent_name})"
 
@@ -231,7 +237,7 @@ class UKBiobankTrait(Trait):
         elif self.code.isdigit():
             return int(self.code)
         elif self.description.startswith("Diagnoses - main ICD10:"):
-            return int(41202)
+            return int(self.MAIN_ICD10_CODE)
 
     def init_metadata(self):
         if not self.is_phenotype_from_study(self.code):

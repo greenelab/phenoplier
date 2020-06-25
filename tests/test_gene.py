@@ -19,6 +19,8 @@ class GeneTest(unittest.TestCase):
             pass
 
     def test_gene_obj_from_gene_id(self):
+        # FIXME consider switching to pytest with the parametrize option to avoid
+        #  these four unit tests
         gene = Gene(ensembl_id="ENSG00000003249")
         assert gene is not None
         assert gene.ensembl_id == "ENSG00000003249"
