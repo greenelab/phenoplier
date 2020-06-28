@@ -1,121 +1,53 @@
+import pytest
 import pandas as pd
-import unittest
 
 from entity import Trait, UKBiobankTrait, Study, GTEXGWASTrait
 
 
-class TraitTest(unittest.TestCase):
-    def test_ukb_trait_category_height(self):
-        trait = UKBiobankTrait(code="50_raw")
-        trait_cat = trait.category
-        assert trait.category is not None
-        assert trait_cat == "Body size measures"
+class TestTrait:
+    @pytest.mark.parametrize(
+        "trait_code,trait_category",
+        [
+            ("50_raw", "Body size measures"),
+            ("22617_1222", "Employment history"),
+            ("G54", "Diseases (ICD10 main)"),
+            ("M13_RHEUMATISM", "Diseases (FinnGen)"),
+            ("20002_1473", "Diseases (cardiovascular)"),
+            ("20002_1265", "Diseases (neurology/eye/psychiatry)"),
+            ("6150_1", "Diseases (cardiovascular)"),
+            ("6152_5", "Diseases (cardiovascular)"),
+            ("6152_7", "Diseases (cardiovascular)"),
+            ("3627_raw", "Diseases (cardiovascular)"),
+            ("6152_6", "Diseases (respiratory/ent)"),
+            ("6152_8", "Diseases (respiratory/ent)"),
+            ("6151_4", "Diseases (musculoskeletal/trauma)"),
+            ("6151_6", "Diseases (musculoskeletal/trauma)"),
+            ("6152_9", "Diseases (allergies)"),
+            ("20001_1068", "Cancer (other)"),
+            ("20001_1020", "Cancer (gastrointestinal)"),
+            # ("UKB_1160_Sleep_duration", "Psychiatric-neurologic"),
+            # ("", ""),
+        ],
+    )
+    def test_ukb_trait_category(self, trait_code, trait_category):
+        trait = UKBiobankTrait(code=trait_code)
+        assert trait.code == trait_code
+        assert trait.category == trait_category
 
-    def test_ukb_trait_category_disease_first_occurence(self):
-        trait = UKBiobankTrait(code="22617_1222")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Employment history"
-
-    def test_ukb_trait_category_icd10(self):
-        trait = UKBiobankTrait(code="G54")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Diseases (ICD10 main)"
-
-    def test_ukb_trait_category_finngen(self):
-        trait = UKBiobankTrait(code="M13_RHEUMATISM")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Diseases (FinnGen)"
-
-    def test_ukb_trait_category_selfreported_20002_cardiovascular(self):
-        trait = UKBiobankTrait(code="20002_1473")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Diseases (cardiovascular)", trait_cat
-
-    def test_ukb_trait_category_selfreported_20002_neurology(self):
-        trait = UKBiobankTrait(code="20002_1265")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Diseases (neurology/eye/psychiatry)", trait_cat
-
-    def test_ukb_trait_category_selfreported_6150_vascular(self):
-        trait = UKBiobankTrait(code="6150_1")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Diseases (cardiovascular)", trait_cat
-
-    def test_ukb_trait_category_selfreported_6152_cardiovascular(self):
-        trait = UKBiobankTrait(code="6152_5")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Diseases (cardiovascular)", trait_cat
-
-        trait = UKBiobankTrait(code="6152_7")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Diseases (cardiovascular)", trait_cat
-
-        trait = UKBiobankTrait(code="3627_raw")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Diseases (cardiovascular)", trait_cat
-
-    def test_ukb_trait_category_selfreported_6152_respiratory(self):
-        trait = UKBiobankTrait(code="6152_6")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Diseases (respiratory/ent)", trait_cat
-
-        trait = UKBiobankTrait(code="6152_8")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Diseases (respiratory/ent)", trait_cat
-
-    def test_ukb_trait_category_selfreported_6151_musculoskeletal_trauma(self):
-        trait = UKBiobankTrait(code="6151_4")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Diseases (musculoskeletal/trauma)", trait_cat
-
-        trait = UKBiobankTrait(code="6151_6")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Diseases (musculoskeletal/trauma)", trait_cat
-
-    def test_ukb_trait_category_selfreported_6152_allergy(self):
-        trait = UKBiobankTrait(code="6152_9")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Diseases (allergies)", trait_cat
-
-    def test_ukb_trait_category_cancer_selfreported_20001_other(self):
-        trait = UKBiobankTrait(code="20001_1068")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Cancer (other)", trait_cat
-
-    def test_ukb_trait_category_cancer_selfreported_20001_gastroint(self):
-        trait = UKBiobankTrait(code="20001_1020")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Cancer (gastrointestinal)", trait_cat
-
-    def test_gtexgwas_trait_category_psychiatric(self):
-        trait = GTEXGWASTrait(code="UKB_1160_Sleep_duration")
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Psychiatric-neurologic"
-
-    def test_gtexgwas_trait_category_digestive(self):
-        trait = GTEXGWASTrait(
-            code="UKB_20002_1154_self_reported_irritable_bowel_syndrome"
-        )
-        trait_cat = trait.category
-        assert trait_cat is not None
-        assert trait_cat == "Digestive system disease"
+    @pytest.mark.parametrize(
+        "trait_code,trait_category",
+        [
+            ("UKB_1160_Sleep_duration", "Psychiatric-neurologic"),
+            (
+                "UKB_20002_1154_self_reported_irritable_bowel_syndrome",
+                "Digestive system disease",
+            ),
+        ],
+    )
+    def test_gtexgwas_trait_category(self, trait_code, trait_category):
+        trait = GTEXGWASTrait(code=trait_code)
+        assert trait.code == trait_code
+        assert trait.category == trait_category
 
     def test_ukb_trait_no_cases_or_controls(self):
         pheno_from_code = UKBiobankTrait(code="50_raw")
