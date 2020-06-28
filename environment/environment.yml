@@ -8,6 +8,7 @@ dependencies:
   - numpy=1.18
   - pandas=1.0
   - pip
+  - pytest=5.4
   - python=3.8
   - r-base=3.6
   - r-devtools=2.0

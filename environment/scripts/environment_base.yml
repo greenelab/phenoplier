@@ -9,6 +9,7 @@ dependencies:
   - numpy
   - pandas
   - pip
+  - pytest
   - python=3.8
   - r-base
   - r-devtools
