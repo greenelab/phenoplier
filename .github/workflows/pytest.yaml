@@ -1,0 +1,46 @@
+name: tests
+on: [push, pull_request]
+jobs:
+  pytest:
+    name: Python test suite
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 4
+      fail-fast: false
+      matrix:
+        python-version: [3.7, 3.8]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v2
+      - name: Cache conda
+        uses: actions/cache@v1
+        env:
+          # Increase this value to reset cache if environment/environment.yml has not changed
+          CACHE_NUMBER: 1
+        with:
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('environment/environment.yml') }}
+      - name: Setup Miniconda
+        uses: goanpeca/setup-miniconda@v1
+        with:
+          miniconda-version: "latest"
+          auto-update-conda: true
+          activate-environment: phenoplier
+          channel-priority: strict
+          environment-file: environment/environment.yml
+          python-version: ${{ matrix.python-version }}
+          auto-activate-base: false
+          use-only-tar-bz2: true
+      - name: Setup PhenoPLIER data
+        shell: bash -l {0}
+        env:
+          PYTHONPATH: libs/
+        run: |
+          python environment/scripts/setup_data.py
+      - name: Run pytest
+        shell: bash -l {0}
+        env:
+          PYTHONPATH: libs/
+        run: |
+          pytest -rs --color=yes
