@@ -1,9 +1,10 @@
-## Conda environment
+# Conda environment and data
 
 If you want to run scripts/notebook from PhenoPLIER, you need to follow these steps to create a
-conda environment.
+conda environment and download the necessary data.
 
  1. Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
+ 1. Open a terminal and execute all following steps in it.
  1. Run:
  
     ```bash
@@ -12,7 +13,35 @@ conda environment.
     bash scripts/install_other_packages.sh
     ```
 
-## Developer usage
+1. Adjust your environment variables:
+
+    ```bash
+    # Root directory where all data will be downloaded to.
+    export PHENOPLIER_ROOT_DIR=/tmp/phenoplier
+   
+    # Uncomment this if you downloaded the manuscript sources and want to generate the figures for it (see additional
+    # instructions for manuscript figures below).
+    # export PHENOPLIER_MANUSCRIPT_DIR=/tmp/manuscript_dir
+    ```
+
+1. Adjust other settings by modifying the file `../libs/settings.py`
+
+1. Download the data:
+
+    ```bash
+    python scripts/setup_data.py
+    ```
+
+
+# Manuscript files
+
+The code in this repository also optionally generates figures and other files for the manuscript.
+You need to manually install these dependencies for your operating system:
+
+ 1. `pdf2svg`
+
+
+# Developer usage
 
 These steps are only for PhenoPLIER developers.
 
