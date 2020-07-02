@@ -6,6 +6,8 @@ from enum import Enum, auto
 
 import pandas as pd
 
+import conf
+from data.cache import read_data
 from utils import simplify_string
 
 
@@ -153,7 +155,13 @@ class Trait(object, metaclass=ABCMeta):
 class UKBiobankTrait(Trait):
     """Trait subclass representing traits from the UK Biobank"""
 
-    from metadata import RAPID_GWAS_PHENO_INFO, RAPID_GWAS_DATA_DICT, UK_BIOBANK_CODINGS
+    RAPID_GWAS_PHENO_INFO = read_data(conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"])
+    RAPID_GWAS_DATA_DICT = read_data(conf.PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"])
+
+    UK_BIOBANK_CODINGS = {
+        3: read_data(conf.UK_BIOBANK["CODING_3_FILE"]),
+        6: read_data(conf.UK_BIOBANK["CODING_6_FILE"]),
+    }
 
     MAIN_ICD10_CODE = 41202
 
@@ -257,7 +265,7 @@ class UKBiobankTrait(Trait):
 class GTEXGWASTrait(Trait):
     """Trait subclass representing traits from the GTEX GWAS"""
 
-    from metadata import GTEX_GWAS_PHENO_INFO
+    GTEX_GWAS_PHENO_INFO = read_data(conf.PHENOMEXCAN["GTEX_GWAS_PHENO_INFO_FILE"])
 
     @property
     def category(self):
@@ -293,7 +301,11 @@ class GTEXGWASTrait(Trait):
 
 
 class Gene(object):
-    from metadata import GENE_ID_TO_NAME_MAP, GENE_NAME_TO_ID_MAP, BIOMART_GENES
+    """TODO complete docstring"""
+
+    GENE_ID_TO_NAME_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"])
+    GENE_NAME_TO_ID_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"])
+    BIOMART_GENES = read_data(conf.GENERAL["BIOMART_GENES_INFO_FILE"])
 
     def __init__(self, ensembl_id=None, name=None):
         if ensembl_id is not None:
