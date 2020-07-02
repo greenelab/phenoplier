@@ -22,6 +22,7 @@ dependencies:
   - pluggy
   - py
   - pytest
+  - wget
  # umap-learn dependencies:
   - numba
   - tbb
