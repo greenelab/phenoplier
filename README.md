@@ -4,13 +4,15 @@ TODO: add short description
 
 # Setup
 
-TODO: reminders below.
+To prepare the environment to run the PhenoPLIER code, follow the steps in [environment](environment/).
+That will create a conda environment and download the necessary data.
 
-- need to modify libs/settings.py with preferences. This file support specifying environmental variables to override
-default parameters.
+# Running code
 
-# Dependencies
+Once the environment is ready, you can start your JupyterLab server by running:
 
-TODO: reminders below.
+```bash
+bash scripts/run_nbs.sh
+```
 
-- need to install pdf2svg to generate the figures for manuscript.
+Go to `http://localhost:8892` and browse the `nbs` folder. Then run notebooks in the specified order.
