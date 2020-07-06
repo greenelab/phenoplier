@@ -62,9 +62,7 @@ def test_ukb_trait_no_cases_or_controls():
     assert pheno_from_code.study == Study.UK_BIOBANK
     assert pheno_from_code.get_plain_name() == "50_raw-Standing_height"
 
-    pheno_from_full_code = UKBiobankTrait(
-        full_code=pheno_from_code.get_plain_name()
-    )
+    pheno_from_full_code = UKBiobankTrait(full_code=pheno_from_code.get_plain_name())
     assert pheno_from_code.code == pheno_from_full_code.code
     assert pheno_from_code.description == pheno_from_full_code.description
     assert pheno_from_code.type == pheno_from_full_code.type
@@ -103,9 +101,7 @@ def test_ukb_trait_with_cases_and_controls():
         == "G54-Diagnoses_main_ICD10_G54_Nerve_root_and_plexus_disorders"
     )
 
-    pheno_from_full_code = UKBiobankTrait(
-        full_code=pheno_from_code.get_plain_name()
-    )
+    pheno_from_full_code = UKBiobankTrait(full_code=pheno_from_code.get_plain_name())
     assert pheno_from_code.code == pheno_from_full_code.code
     assert pheno_from_code.description == pheno_from_full_code.description
     assert pheno_from_code.type == pheno_from_full_code.type
