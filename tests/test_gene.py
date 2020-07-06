@@ -8,11 +8,8 @@ from entity import Gene
     [("ensembl_id", "id_does_not_exist"), ("name", "name_does_not_exist")],
 )
 def test_gene_does_not_exist(gene_property, gene_value):
-    try:
+    with pytest.raises(ValueError):
         Gene(**{gene_property: gene_value})
-        pytest.fail("Should have failed")
-    except ValueError:
-        pass
 
 
 @pytest.mark.parametrize(

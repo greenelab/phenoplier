@@ -24,8 +24,6 @@ from entity import Trait, UKBiobankTrait, Study, GTEXGWASTrait
         ("6152_9", "Diseases (allergies)"),
         ("20001_1068", "Cancer (other)"),
         ("20001_1020", "Cancer (gastrointestinal)"),
-        # ("UKB_1160_Sleep_duration", "Psychiatric-neurologic"),
-        # ("", ""),
     ],
 )
 def test_ukb_trait_category(trait_code, trait_category):
