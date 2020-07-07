@@ -24,7 +24,8 @@ conda environment and download the necessary data.
     # export PHENOPLIER_MANUSCRIPT_DIR=/tmp/manuscript_dir
     ```
 
-1. Adjust other settings by modifying the file `../libs/settings.py`
+1. Adjust the root data directory, available computational resources, and other settings by modifying the
+file `../libs/settings.py`
 
 1. Download the data:
 
