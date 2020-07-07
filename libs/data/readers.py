@@ -31,10 +31,15 @@ def read_phenomexcan_gtex_gwas_pheno_info():
 # UK Biobank codings files
 #
 def read_uk_biobank_codings(coding_number):
-    def _reader():
-        return pd.read_csv(conf.UK_BIOBANK[f"CODING_{coding_number}_FILE"], sep="\t",)
+    """Returns functions to read coding files for UK Biobank fields.
 
-    return _reader
+    Differently than the other read_* functions, this one returns functions instead
+    of data.
+    """
+    return lambda: pd.read_csv(
+        conf.UK_BIOBANK[f"CODING_{coding_number}_FILE"],
+        sep="\t"
+    )
 
 
 #

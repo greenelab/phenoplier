@@ -1,18 +1,25 @@
 """
-General settings. This file is intended to be modified by the user.
+General settings. This file is intended to be modified by the user. Each entry
+also provides an alternative way to specify its value using an environment variable.
 """
+
+# Instead of changing this file, you can also use the environment variable name
+# specified for each entry (environment variables supersede these settings).
 
 #
 # Default paths
 #
 
-# Use these variables to change the paths where data will be downloaded to. You can
-# also use the environment variable name specified in each line (commented out) to
-# override settings (environment variables supersede these settings).
-
+# Specifies the main directory where all data and results generated are stored. When
+# setting up the environment for the first time, input data will be automatically
+# downloaded into a subfolder of ROOT_DIR. If not specified, it defaults to the
+# 'phenoplier' subfolder in the temporary directory of the operating system (i.e.
+# '/tmp/phenoplier' in Unix systems).
 # Environment variable: PHENOPLIER_ROOT_DIR
-ROOT_DIR = "/tmp/phenoplier"
+ROOT_DIR = "phenoplier_data"
 
+# Specifies the directory where the manuscript git repository was cloned/downloaded
+# to. If None, manuscript figures and other related files will not be generated.
 # Environment variable: PHENOPLIER_MANUSCRIPT_DIR
 MANUSCRIPT_DIR = None
 
@@ -25,6 +32,6 @@ MANUSCRIPT_DIR = None
 # Default: half of available cores.
 N_JOBS = None
 
-# Amount of cores to use for for low-computational tasks (IO, etc).
+# Amount of cores to use for low-computational tasks (IO, etc).
 # Default: all available cores.
 N_JOBS_HIGH = None

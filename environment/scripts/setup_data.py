@@ -30,7 +30,6 @@ def _create_directories(node=conf.__dict__):
         node (dict): a dictionary with key names pointing to different settings. By
         default it uses all attributes from the conf module.
     """
-    print(type(node))
     for k, v in node.items():
         if isinstance(v, str) and not k.endswith("_DIR"):
             continue

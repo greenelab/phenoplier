@@ -3,16 +3,23 @@ Gets user settings (from settings.py module) and create the final configuration 
 All the rest of the code reads configuration values from this module.
 """
 import os
+import tempfile
 from multiprocessing import cpu_count
 from pathlib import Path
 
 import settings
 
-
 #
 # PhenoPLIER, general file structure
 #
-ROOT_DIR = os.environ.get("PHENOPLIER_ROOT_DIR", settings.ROOT_DIR)
+ROOT_DIR = os.environ.get("PHENOPLIER_ROOT_DIR")
+if ROOT_DIR is None and hasattr(settings, 'ROOT_DIR'):
+    ROOT_DIR = settings.ROOT_DIR
+
+if ROOT_DIR is None:
+    ROOT_DIR = str(
+        Path(tempfile.gettempdir(), 'phenoplier').resolve()
+    )
 
 # DATA_DIR stores input data
 DATA_DIR = Path(ROOT_DIR, "data").resolve()
