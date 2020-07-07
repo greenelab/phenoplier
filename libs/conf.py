@@ -36,6 +36,11 @@ GENERAL["BIOMART_GENES_INFO_FILE"] = Path(
     DATA_DIR, "biomart_genes_hg38.csv.gz"
 ).resolve()
 
+GENERAL["LOG_CONFIG_FILE"] = Path(
+    Path(__file__).resolve().parent,
+    'log_config.yaml'
+).resolve()
+
 # CPU usage
 options = [settings.N_JOBS, int(cpu_count() / 2)]
 GENERAL["N_JOBS"] = next(opt for opt in options if opt is not None)
