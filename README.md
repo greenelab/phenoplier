@@ -1,5 +1,7 @@
 # PhenoPLIER
 
+![tests](https://github.com/miltondp/phenoplier/workflows/tests/badge.svg)
+
 TODO: add short description
 
 # Setup
