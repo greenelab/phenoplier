@@ -37,8 +37,7 @@ def read_uk_biobank_codings(coding_number):
     of data.
     """
     return lambda: pd.read_csv(
-        conf.UK_BIOBANK[f"CODING_{coding_number}_FILE"],
-        sep="\t"
+        conf.UK_BIOBANK[f"CODING_{coding_number}_FILE"], sep="\t"
     )
 
 
