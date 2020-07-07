@@ -1,6 +1,8 @@
 """
 General utility functions.
 """
+import hashlib
+import os
 import re
 import pickle
 
@@ -54,3 +56,30 @@ def is_number(s):
         return True
     except ValueError:
         return False
+
+
+def curl(url, output_file):
+    """Downloads a file from an URL.
+
+    Args:
+        url (str): URL to download.
+        output_file (str): path of file to store content.
+    """
+    print(f"Downloading {output_file}")
+    os.system(f"curl -s -L {url} -o {output_file}")
+
+
+def check_md5(expected_md5, filepath):
+    """Checks the MD5 hash for a given filename and compares with the expected value.
+
+    Args:
+        expected_md5 (str): expected MD5 hash.
+        filepath (str): file for which MD5 will be computed.
+
+    Raises:
+        AssertionError: if the expected MD5 differs from the actual MD5 value.
+    """
+    with open(filepath, "rb") as f:
+        current_md5 = hashlib.md5(f.read()).hexdigest()
+        assert expected_md5 == current_md5, f'md5 mismatch for "{filepath}"'
+    print(f"md5 file ok for {filepath}")
