@@ -1,6 +1,6 @@
 # PhenoPLIER
 
-![tests](https://github.com/miltondp/phenoplier/workflows/tests/badge.svg)
+![tests](https://github.com/greenelab/phenoplier/workflows/tests/badge.svg)
 
 TODO: add short description
 
