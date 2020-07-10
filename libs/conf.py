@@ -9,6 +9,9 @@ from pathlib import Path
 
 import settings
 
+# IMPORTANT: for variables or dictionary keys pointing to a directory, add the _DIR
+# suffix to make sure the directory is created during setup.
+
 #
 # PhenoPLIER, general file structure
 #
@@ -45,7 +48,7 @@ GENERAL["N_JOBS_HIGH"] = next(opt for opt in options if opt is not None)
 #
 RESULTS = {}
 RESULTS["BASE_DIR"] = RESULTS_DIR
-RESULTS["PROJECTIONS"] = Path(RESULTS["BASE_DIR"], "projections").resolve()
+RESULTS["PROJECTIONS_DIR"] = Path(RESULTS["BASE_DIR"], "projections").resolve()
 
 #
 # Manuscript
