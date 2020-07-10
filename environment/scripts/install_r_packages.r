@@ -10,10 +10,11 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install(version = "3.10", update=TRUE, ask=FALSE)
 
 # clusterProfiler
-BiocManager::install("clusterProfiler", update=TRUE, ask=FALSE)
+#BiocManager::install("clusterProfiler", update=TRUE, ask=FALSE)
 
 # org.Hs.eg.db
-BiocManager::install("org.Hs.eg.db", update=TRUE, ask=FALSE)
+#BiocManager::install("org.Hs.eg.db", update=TRUE, ask=FALSE)
 
 # PLIER
-#install_github("wgmao/PLIER", ref="v0.1.4")
+install_github("wgmao/PLIER", ref="v0.1.4")
+

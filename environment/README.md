@@ -39,7 +39,7 @@ file `../libs/settings.py`
 The code in this repository also optionally generates figures and other files for the manuscript.
 You need to manually install these dependencies for your operating system:
 
- 1. `pdf2svg`
+ 1. `pdf2svg` ([github](https://github.com/dawbarton/pdf2svg))
 
 
 # Developer usage
