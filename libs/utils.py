@@ -4,6 +4,7 @@ General utility functions.
 import hashlib
 from pathlib import Path
 from subprocess import run
+from typing import Dict
 
 from log import get_logger
 
@@ -67,3 +68,46 @@ def md5_matches(expected_md5: str, filepath: str) -> bool:
     with open(filepath, "rb") as f:
         current_md5 = hashlib.md5(f.read()).hexdigest()
         return expected_md5 == current_md5
+
+
+def generate_result_set_name(method_options: Dict, options_sep: str = '-',
+                             prefix: str = None, suffix: str = None) -> str:
+    """Generates a filename for a result set with the method's options given.
+
+    When a method is run with several options (like a clustering/classification
+    algorithm) and its results need to be saved to a file, this method generates a
+    descriptive filename using the given options.
+
+    Args:
+        method_options: dictionary with parameter names and their values.
+        options_sep: options separator.
+        prefix: optional prefix for the filename.
+        suffix: optional suffix (like a filename extension).
+    Returns:
+        A filename as a str object.
+    """
+
+    def simplify_option_name(s: str) -> str:
+        # s = s.lower()
+
+        # remove any non-allowed character
+        s = re.sub(r"[^\w\s\-_]", "", s)
+
+        s = re.sub(r"-", "_", s)
+
+        return s
+
+    output_file_suffix = options_sep.join(
+        [f'{simplify_option_name(k)}_{v}' for k, v in sorted(method_options.items(), reverse=False)]
+    )
+
+    filename = output_file_suffix
+
+    if prefix is not None:
+        filename = f'{prefix}{filename}'
+
+    if suffix is not None:
+        filename = f'{filename}{suffix}'
+
+    return filename
+
