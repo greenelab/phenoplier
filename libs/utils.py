@@ -9,27 +9,6 @@ from subprocess import run
 from log import get_logger
 
 
-def simplify_string(s):
-    """Given any string, it returns a simplified version of it.
-
-    It removes any character that is not a word, a number or a separator. Then
-    it replaces all separators by an underscore.
-
-    Args:
-        s (str): string to be simplified.
-
-    Returns:
-        str: string simplified.
-    """
-    # Remove all non-word characters (everything except numbers and letters)
-    s = re.sub(r"[^\w\s]", "", s)
-
-    # Replace all runs of whitespace with a single dash
-    s = re.sub(r"\s+", "_", s)
-
-    return s
-
-
 def is_number(s):
     """
     Checks whether s is a number or not.
