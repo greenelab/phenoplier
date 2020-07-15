@@ -59,54 +59,9 @@ GENE_ID_TO_NAME_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"])
 GENE_NAME_TO_ID_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"])
 
 
-# # Read MultiPLIER model metadata
-
-# In[6]:
-
-
-input_file = Path(
-    conf.MULTIPLIER['BASE_DIR'], 'multiplier_model_metadata.pkl'
-).resolve()
-display(input_file)
-
-multiplier_model_metadata = pd.read_pickle(input_file)
-
-
-# In[7]:
-
-
-multiplier_model_metadata
-
-
-# # Read MultiPLIER Z (loadings)
-
-# In[8]:
-
-
-input_file = Path(
-    conf.MULTIPLIER['BASE_DIR'],
-    'multiplier_model_z.pkl'
-).resolve()
-display(input_file)
-
-multiplier_model_z = pd.read_pickle(input_file)
-
-
-# In[9]:
-
-
-multiplier_model_z.shape
-
-
-# In[10]:
-
-
-multiplier_model_z.head()
-
-
 # # Load PhenomeXcan data (S-MultiXcan)
 
-# In[11]:
+# In[6]:
 
 
 smultixcan_results_filename = Path(
@@ -117,19 +72,19 @@ smultixcan_results_filename = Path(
 display(smultixcan_results_filename)
 
 
-# In[12]:
+# In[7]:
 
 
 smultixcan_results = pd.read_pickle(smultixcan_results_filename)
 
 
-# In[13]:
+# In[8]:
 
 
 smultixcan_results.shape
 
 
-# In[14]:
+# In[9]:
 
 
 smultixcan_results.head()
@@ -137,19 +92,19 @@ smultixcan_results.head()
 
 # ## Gene IDs to Gene names
 
-# In[15]:
+# In[10]:
 
 
 smultixcan_results = smultixcan_results.rename(index=GENE_ID_TO_NAME_MAP)
 
 
-# In[16]:
+# In[11]:
 
 
 smultixcan_results.shape
 
 
-# In[17]:
+# In[12]:
 
 
 smultixcan_results.head()
@@ -157,19 +112,19 @@ smultixcan_results.head()
 
 # ## Remove duplicated gene entries
 
-# In[18]:
+# In[13]:
 
 
 smultixcan_results.index[smultixcan_results.index.duplicated(keep='first')]
 
 
-# In[19]:
+# In[14]:
 
 
 smultixcan_results = smultixcan_results.loc[~smultixcan_results.index.duplicated(keep='first')]
 
 
-# In[20]:
+# In[15]:
 
 
 smultixcan_results.shape
@@ -179,13 +134,13 @@ smultixcan_results.shape
 
 # **TODO**: it might be better to try to impute this values
 
-# In[21]:
+# In[16]:
 
 
 smultixcan_results = smultixcan_results.dropna(how='any')
 
 
-# In[22]:
+# In[17]:
 
 
 smultixcan_results.shape
@@ -193,31 +148,31 @@ smultixcan_results.shape
 
 # # Project S-MultiXcan data into MultiPLIER latent space
 
-# In[23]:
+# In[18]:
 
 
 from multiplier import MultiplierProjection
 
 
-# In[24]:
+# In[19]:
 
 
 mproj = MultiplierProjection()
 
 
-# In[25]:
+# In[20]:
 
 
 smultixcan_into_multiplier = mproj.transform(smultixcan_results)
 
 
-# In[26]:
+# In[21]:
 
 
 smultixcan_into_multiplier.shape
 
 
-# In[27]:
+# In[22]:
 
 
 smultixcan_into_multiplier.head()
@@ -225,7 +180,7 @@ smultixcan_into_multiplier.head()
 
 # # Quick analysis
 
-# In[28]:
+# In[23]:
 
 
 (
@@ -235,7 +190,7 @@ smultixcan_into_multiplier.head()
 )
 
 
-# In[29]:
+# In[24]:
 
 
 (
@@ -247,7 +202,7 @@ smultixcan_into_multiplier.head()
 
 # # Save
 
-# In[30]:
+# In[25]:
 
 
 output_file = Path(
@@ -258,7 +213,7 @@ output_file = Path(
 display(output_file)
 
 
-# In[31]:
+# In[26]:
 
 
 smultixcan_into_multiplier.to_pickle(output_file)
