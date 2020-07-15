@@ -3,12 +3,12 @@ Classes to ease access to attributes of common entities like Trait and Gene.
 """
 from abc import ABCMeta, abstractmethod
 from enum import Enum, auto
+import re
 
 import pandas as pd
 
 import conf
 from data.cache import read_data
-from utils import simplify_string
 
 
 class Study(Enum):
@@ -137,6 +137,28 @@ class Trait(object, metaclass=ABCMeta):
         """Returns the category of the trait."""
         pass
 
+    @staticmethod
+    def _simplify_trait_name(s):
+        """Given any string representing a trait name, it returns a simplified version
+        of it.
+
+        It removes any character that is not a word, a number or a separator. Then
+        it replaces all separators by an underscore.
+
+        Args:
+            s (str): string to be simplified.
+
+        Returns:
+            str: string simplified.
+        """
+        # Remove all non-word characters (everything except numbers and letters)
+        s = re.sub(r"[^\w\s]", "", s)
+
+        # Replace all runs of whitespace with a single dash
+        s = re.sub(r"\s+", "_", s)
+
+        return s
+
     def get_plain_name(self):
         """Returns the plain name of the trait, which coincides with the full
         code."""
@@ -144,7 +166,7 @@ class Trait(object, metaclass=ABCMeta):
             return self.code
 
         if not pd.isnull(self.description):
-            return f"{self.code}-{simplify_string(self.description)}"
+            return f"{self.code}-{self._simplify_trait_name(self.description)}"
         else:
             return self.code
 
