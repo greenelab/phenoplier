@@ -18,12 +18,9 @@ from data.cache import read_data
 gene_id_to_name = read_data(conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"])
 
 # Read S-MultiXcan results
-smultixcan_results_filename = Path(
-    conf.PHENOMEXCAN['GENE_ASSOC_DIR'],
-    'smultixcan-mashr-zscores.pkl'
-).resolve()
-
+smultixcan_results_filename = conf.PHENOMEXCAN['SMULTIXCAN_MASHR_ZSCORES_FILE']
 smultixcan_results = pd.read_pickle(smultixcan_results_filename)
+
 smultixcan_results = smultixcan_results.rename(index=gene_id_to_name)
 smultixcan_results = smultixcan_results.T.sample(n=3, random_state=0).T
 smultixcan_results = smultixcan_results.loc[~smultixcan_results.index.duplicated(keep='first')]

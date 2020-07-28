@@ -94,10 +94,8 @@ MULTIPLIER["RECOUNT2_MODEL_FILE"] = Path(
 #
 PHENOMEXCAN = {}
 PHENOMEXCAN["BASE_DIR"] = Path(DATA_DIR, "phenomexcan").resolve()
-# PHENOMEXCAN.DATA_DIR = Path(PHENOMEXCAN.BASE_DIR, "data").resolve()
-PHENOMEXCAN["GENE_ASSOC_DIR"] = Path(PHENOMEXCAN["BASE_DIR"], "gene_assoc").resolve()
 
-# Genes metadata and mappings
+# genes metadata and mappings
 PHENOMEXCAN["GENES_METADATA_DIR"] = Path(
     PHENOMEXCAN["BASE_DIR"], "genes_metadata"
 ).resolve()
@@ -106,6 +104,15 @@ PHENOMEXCAN["GENE_MAP_ID_TO_NAME"] = Path(
 ).resolve()
 PHENOMEXCAN["GENE_MAP_NAME_TO_ID"] = Path(
     PHENOMEXCAN["GENES_METADATA_DIR"], "genes_mapping_name_to_id.pkl",
+).resolve()
+
+# gene association results
+PHENOMEXCAN["GENE_ASSOC_DIR"] = Path(PHENOMEXCAN["BASE_DIR"], "gene_assoc").resolve()
+PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"] = Path(
+    PHENOMEXCAN["GENE_ASSOC_DIR"], "smultixcan-mashr-zscores.pkl"
+).resolve()
+PHENOMEXCAN["SMULTIXCAN_MASHR_PVALUES_FILE"] = Path(
+    PHENOMEXCAN["GENE_ASSOC_DIR"], "smultixcan-mashr-pvalues.pkl"
 ).resolve()
 
 # GWAS info
