@@ -2,9 +2,21 @@
 It sets up the file/folder structure by downloading the necessary files.
 """
 import os
+from pathlib import Path
 
 import conf
-from utils import curl, check_md5
+from utils import curl
+from log import get_logger
+logger = get_logger('setup')
+
+
+# Methods names that download file which should not be included in testing mode (see
+# below).
+AVOID_IN_TESTING_MODE = {
+    "download_phenomexcan_smultixcan_mashr_zscores",
+    "download_phenomexcan_smultixcan_mashr_pvalues",
+    "download_multiplier_recount2_model",
+}
 
 
 def _create_directories(node=conf.__dict__):
@@ -33,8 +45,8 @@ def download_phenomexcan_rapid_gwas_pheno_info(**kwargs):
     curl(
         "https://upenn.box.com/shared/static/163mkzgd4uosk4pnzx0xsj7n0reu8yjv.gz",
         output_file,
+        "cba910ee6f93eaed9d318edcd3f1ce18",
     )
-    check_md5("cba910ee6f93eaed9d318edcd3f1ce18", output_file)
 
 
 def download_phenomexcan_rapid_gwas_data_dict_file(**kwargs):
@@ -42,8 +54,8 @@ def download_phenomexcan_rapid_gwas_data_dict_file(**kwargs):
     curl(
         "https://upenn.box.com/shared/static/u3po287ku1cj0jubbnsi7c4xawsaked5.tsv",
         output_file,
+        "c4b5938a7fdb0b1525f984cfb815bda5",
     )
-    check_md5("c4b5938a7fdb0b1525f984cfb815bda5", output_file)
 
 
 def download_phenomexcan_gtex_gwas_pheno_info(**kwargs):
@@ -51,8 +63,8 @@ def download_phenomexcan_gtex_gwas_pheno_info(**kwargs):
     curl(
         "https://upenn.box.com/shared/static/gur0ug0qg7hs88ybrsgrwx7eeymmxay1.tsv",
         output_file,
+        "982434335f07acb1abfb83e57532f2c0",
     )
-    check_md5("982434335f07acb1abfb83e57532f2c0", output_file)
 
 
 def download_gene_map_name_to_id(**kwargs):
@@ -60,8 +72,8 @@ def download_gene_map_name_to_id(**kwargs):
     curl(
         "https://upenn.box.com/shared/static/t33a6iv4jtwc2pv2c1nllpnq0nlrfxkt.pkl",
         output_file,
+        "582d93c30c18027eefd465516733170f",
     )
-    check_md5("582d93c30c18027eefd465516733170f", output_file)
 
 
 def download_gene_map_id_to_name(**kwargs):
@@ -69,8 +81,8 @@ def download_gene_map_id_to_name(**kwargs):
     curl(
         "https://upenn.box.com/shared/static/p20w0ikxhvo04xf1b2zai53cpoqb4ljz.pkl",
         output_file,
+        "63ac3ad54930d1b1490c6d02a68feb61",
     )
-    check_md5("63ac3ad54930d1b1490c6d02a68feb61", output_file)
 
 
 def download_biomart_genes_hg38(**kwargs):
@@ -78,8 +90,8 @@ def download_biomart_genes_hg38(**kwargs):
     curl(
         "https://upenn.box.com/shared/static/ks998wwlwble7rcb5cdthwjg1l0j1alb.gz",
         output_file,
+        "c4d74e156e968267278587d3ce30e5eb",
     )
-    check_md5("c4d74e156e968267278587d3ce30e5eb", output_file)
 
 
 def download_uk_biobank_coding_3(**kwargs):
@@ -87,8 +99,8 @@ def download_uk_biobank_coding_3(**kwargs):
     curl(
         "https://upenn.box.com/shared/static/1f5yjg31qxemvf5hqkoz559cau14xr68.tsv",
         output_file,
+        "c02c65888793d4190fc190182128cc02",
     )
-    check_md5("c02c65888793d4190fc190182128cc02", output_file)
 
 
 def download_uk_biobank_coding_6(**kwargs):
@@ -96,8 +108,8 @@ def download_uk_biobank_coding_6(**kwargs):
     curl(
         "https://upenn.box.com/shared/static/libgz7998c2lsytjon8we1ouhabvh1z1.tsv",
         output_file,
+        "23a2bca99ea0bf25d141fc8573f67fce",
     )
-    check_md5("23a2bca99ea0bf25d141fc8573f67fce", output_file)
 
 
 def download_phenomexcan_smultixcan_mashr_zscores(**kwargs):
@@ -105,8 +117,8 @@ def download_phenomexcan_smultixcan_mashr_zscores(**kwargs):
     curl(
         "https://upenn.box.com/shared/static/taj1ex9ircek0ymi909of9anmjnj90k4.pkl",
         output_file,
+        "83ded01d34c906092d64c1f5cc382fb0",
     )
-    check_md5("83ded01d34c906092d64c1f5cc382fb0", output_file)
 
 
 def download_phenomexcan_smultixcan_mashr_pvalues(**kwargs):
@@ -114,19 +126,87 @@ def download_phenomexcan_smultixcan_mashr_pvalues(**kwargs):
     curl(
         "https://upenn.box.com/shared/static/wvrbt0v2ddrtb25g7dgw1be09yt9l14l.pkl",
         output_file,
+        "3436a41e9a70fc2a206e9b13153ebd12",
     )
-    check_md5("3436a41e9a70fc2a206e9b13153ebd12", output_file)
+
+
+def download_multiplier_recount2_model(**kwargs):
+    # TODO: refactor this method into a generic one to download files within zip files.
+    from utils import md5_matches
+    output_file = conf.MULTIPLIER["RECOUNT2_MODEL_FILE"]
+
+    if (output_file.exists() and
+        md5_matches('fc7446ff989d0bd0f1aae1851d192dc6', output_file)):
+        logger.info(f"File already downloaded: {output_file}")
+        return
+
+    # download zip file
+    parent_dir = conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent
+    zip_file = Path(
+        parent_dir,
+        'recount2_PLIER_data.zip'
+    ).resolve()
+
+    curl(
+        "https://ndownloader.figshare.com/files/10881866",
+        zip_file,
+    )
+
+    # extract model
+    zip_internal_filename = Path('recount2_PLIER_data', 'recount_PLIER_model.RDS')
+    logger.info(f"Extracting {zip_internal_filename}")
+    import zipfile
+    with zipfile.ZipFile(zip_file, 'r') as z:
+        z.extract(str(zip_internal_filename), path=parent_dir)
+
+    # rename file
+    Path(parent_dir, zip_internal_filename).rename(output_file)
+    Path(parent_dir, zip_internal_filename.parent).rmdir()
+
+    # delete zip file
+    zip_file.unlink()
 
 
 if __name__ == "__main__":
-    _create_directories()
+    import argparse
+    from collections import defaultdict
+
+    # create a list of available options:
+    #   full: it download all the data.
+    #   testing: it download minimal data needed for running unit tests.
+    AVAILABLE_ACTIONS = defaultdict(list)
 
     # Obtain all local attributes of this module and run functions to download files
     local_items = list(locals().items())
     for key, value in local_items:
-        if (
+        # iterate only on download_* methods
+        if not (
             callable(value)
             and value.__module__ == __name__
             and key.startswith("download_")
         ):
-            value()
+            continue
+
+        if key not in AVOID_IN_TESTING_MODE:
+            AVAILABLE_ACTIONS["testing"].append((key, value))
+
+        AVAILABLE_ACTIONS["full"].append((key, value))
+
+    parser = argparse.ArgumentParser(description="PhenoPLIER data setup.")
+    parser.add_argument(
+        "--mode",
+        choices=list(AVAILABLE_ACTIONS.keys()),
+        default="full",
+        help="Specifies which kind of data should be downloaded. It "
+        "could be all the data or just different subsets.",
+    )
+    args = parser.parse_args()
+
+    # create all directories specified in the configuration
+    _create_directories()
+
+    method_args = vars(args)
+
+    for method_name, method in AVAILABLE_ACTIONS[args.mode]:
+        method(**method_args)
+
