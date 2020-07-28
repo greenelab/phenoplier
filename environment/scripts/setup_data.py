@@ -100,6 +100,24 @@ def download_uk_biobank_coding_6(**kwargs):
     check_md5("23a2bca99ea0bf25d141fc8573f67fce", output_file)
 
 
+def download_phenomexcan_smultixcan_mashr_zscores(**kwargs):
+    output_file = conf.PHENOMEXCAN['SMULTIXCAN_MASHR_ZSCORES_FILE']
+    curl(
+        "https://upenn.box.com/shared/static/taj1ex9ircek0ymi909of9anmjnj90k4.pkl",
+        output_file,
+    )
+    check_md5("83ded01d34c906092d64c1f5cc382fb0", output_file)
+
+
+def download_phenomexcan_smultixcan_mashr_pvalues(**kwargs):
+    output_file = conf.PHENOMEXCAN['SMULTIXCAN_MASHR_PVALUES_FILE']
+    curl(
+        "https://upenn.box.com/shared/static/wvrbt0v2ddrtb25g7dgw1be09yt9l14l.pkl",
+        output_file,
+    )
+    check_md5("3436a41e9a70fc2a206e9b13153ebd12", output_file)
+
+
 if __name__ == "__main__":
     _create_directories()
 
