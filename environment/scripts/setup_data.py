@@ -7,7 +7,8 @@ from pathlib import Path
 import conf
 from utils import curl
 from log import get_logger
-logger = get_logger('setup')
+
+logger = get_logger("setup")
 
 
 # Methods names that download file which should not be included in testing mode (see
@@ -113,7 +114,7 @@ def download_uk_biobank_coding_6(**kwargs):
 
 
 def download_phenomexcan_smultixcan_mashr_zscores(**kwargs):
-    output_file = conf.PHENOMEXCAN['SMULTIXCAN_MASHR_ZSCORES_FILE']
+    output_file = conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"]
     curl(
         "https://upenn.box.com/shared/static/taj1ex9ircek0ymi909of9anmjnj90k4.pkl",
         output_file,
@@ -122,7 +123,7 @@ def download_phenomexcan_smultixcan_mashr_zscores(**kwargs):
 
 
 def download_phenomexcan_smultixcan_mashr_pvalues(**kwargs):
-    output_file = conf.PHENOMEXCAN['SMULTIXCAN_MASHR_PVALUES_FILE']
+    output_file = conf.PHENOMEXCAN["SMULTIXCAN_MASHR_PVALUES_FILE"]
     curl(
         "https://upenn.box.com/shared/static/wvrbt0v2ddrtb25g7dgw1be09yt9l14l.pkl",
         output_file,
@@ -133,30 +134,29 @@ def download_phenomexcan_smultixcan_mashr_pvalues(**kwargs):
 def download_multiplier_recount2_model(**kwargs):
     # TODO: refactor this method into a generic one to download files within zip files.
     from utils import md5_matches
+
     output_file = conf.MULTIPLIER["RECOUNT2_MODEL_FILE"]
 
-    if (output_file.exists() and
-        md5_matches('fc7446ff989d0bd0f1aae1851d192dc6', output_file)):
+    if output_file.exists() and md5_matches(
+        "fc7446ff989d0bd0f1aae1851d192dc6", output_file
+    ):
         logger.info(f"File already downloaded: {output_file}")
         return
 
     # download zip file
     parent_dir = conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent
-    zip_file = Path(
-        parent_dir,
-        'recount2_PLIER_data.zip'
-    ).resolve()
+    zip_file = Path(parent_dir, "recount2_PLIER_data.zip").resolve()
 
     curl(
-        "https://ndownloader.figshare.com/files/10881866",
-        zip_file,
+        "https://ndownloader.figshare.com/files/10881866", zip_file,
     )
 
     # extract model
-    zip_internal_filename = Path('recount2_PLIER_data', 'recount_PLIER_model.RDS')
+    zip_internal_filename = Path("recount2_PLIER_data", "recount_PLIER_model.RDS")
     logger.info(f"Extracting {zip_internal_filename}")
     import zipfile
-    with zipfile.ZipFile(zip_file, 'r') as z:
+
+    with zipfile.ZipFile(zip_file, "r") as z:
         z.extract(str(zip_internal_filename), path=parent_dir)
 
     # rename file
@@ -209,4 +209,3 @@ if __name__ == "__main__":
 
     for method_name, method in AVAILABLE_ACTIONS[args.mode]:
         method(**method_args)
-

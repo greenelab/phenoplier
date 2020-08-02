@@ -48,7 +48,7 @@ def is_number(s):
         return False
 
 
-def curl(url: str, output_file: str, md5hash: str = None, logger=get_logger('setup')):
+def curl(url: str, output_file: str, md5hash: str = None, logger=get_logger("setup")):
     """Downloads a file from an URL. If the md5hash option is specified, it checks
     if the file was successfully downloaded (whether MD5 matches).
     Before starting the download, it checks if output_file exists. If so, and md5hash is
@@ -60,12 +60,14 @@ def curl(url: str, output_file: str, md5hash: str = None, logger=get_logger('set
         md5hash: expected MD5 hash of file to download.
         logger: Logger instance.
     """
-    if Path(output_file).exists() and (md5hash is None or md5_matches(md5hash, output_file)):
+    if Path(output_file).exists() and (
+        md5hash is None or md5_matches(md5hash, output_file)
+    ):
         logger.info(f"File already downloaded: {output_file}")
         return
 
     logger.info(f"Downloading {output_file}")
-    run(['curl', '-s', '-L', url, '-o', output_file])
+    run(["curl", "-s", "-L", url, "-o", output_file])
 
     if md5hash is not None and not md5_matches(md5hash, output_file):
         msg = "MD5 does not match"
