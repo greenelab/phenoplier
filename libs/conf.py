@@ -37,8 +37,7 @@ GENERAL["BIOMART_GENES_INFO_FILE"] = Path(
 ).resolve()
 
 GENERAL["LOG_CONFIG_FILE"] = Path(
-    Path(__file__).resolve().parent,
-    'log_config.yaml'
+    Path(__file__).resolve().parent, "log_config.yaml"
 ).resolve()
 
 # CPU usage

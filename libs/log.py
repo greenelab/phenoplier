@@ -9,7 +9,7 @@ import conf
 
 
 def _get_logger_config():
-    with open(conf.GENERAL["LOG_CONFIG_FILE"], 'r') as f:
+    with open(conf.GENERAL["LOG_CONFIG_FILE"], "r") as f:
         return yaml.safe_load(f.read())
 
 
