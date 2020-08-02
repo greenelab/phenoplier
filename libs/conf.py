@@ -89,6 +89,12 @@ UK_BIOBANK["CODING_6_FILE"] = Path(UK_BIOBANK["CODINGS_DIR"], "coding6.tsv").res
 #
 MULTIPLIER = {}
 MULTIPLIER["BASE_DIR"] = Path(DATA_DIR, "multiplier").resolve()
+MULTIPLIER["MODEL_Z_MATRIX_FILE"] = Path(
+    MULTIPLIER["BASE_DIR"], "multiplier_model_z.pkl"
+).resolve()
+MULTIPLIER["MODEL_METADATA_FILE"] = Path(
+    MULTIPLIER["BASE_DIR"], "multiplier_model_metadata.pkl"
+).resolve()
 MULTIPLIER["RECOUNT2_MODEL_FILE"] = Path(
     MULTIPLIER["BASE_DIR"], "recount_PLIER_model.RDS"
 ).resolve()
