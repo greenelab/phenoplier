@@ -131,6 +131,24 @@ def download_phenomexcan_smultixcan_mashr_pvalues(**kwargs):
     )
 
 
+def download_multiplier_model_z_pkl(**kwargs):
+    output_file = conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]
+    curl(
+        "https://upenn.box.com/shared/static/pz07jiy99f8yx0fx2grle8i5cstpn7fz.pkl",
+        output_file,
+        "f684701c49eef8b107577a759a065d9b",
+    )
+
+
+def download_multiplier_model_metadata_pkl(**kwargs):
+    output_file = conf.MULTIPLIER["MODEL_METADATA_FILE"]
+    curl(
+        "https://upenn.box.com/shared/static/efeulwvivjtucunvrx2nwq06pyzs3pkq.pkl",
+        output_file,
+        "26e799fcfe2ab363788693d41155fa78",
+    )
+
+
 def download_multiplier_recount2_model(**kwargs):
     # TODO: refactor this method into a generic one to download files within zip files.
     from utils import md5_matches
