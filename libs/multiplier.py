@@ -84,20 +84,11 @@ class MultiplierProjection(object):
         return z_cov_inv.dot(z.T).dot(y_std)
 
     @staticmethod
-    def _read_multiplier_file(filename):
-        """Reads a pickle file located in the MultiPLIER base dir."""
-        input_file = Path(conf.MULTIPLIER["BASE_DIR"], filename).resolve()
-
-        return pd.read_pickle(input_file)
-
-    @staticmethod
     def _read_model_z():
         """Returns the MultiPLIER Z matrix (gene loadings)."""
-        return MultiplierProjection._read_multiplier_file("multiplier_model_z.pkl")
+        return pd.read_pickle(conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"])
 
     @staticmethod
     def _read_model_metadata():
         """Returns metadata of the MultiPLIER model."""
-        return MultiplierProjection._read_multiplier_file(
-            "multiplier_model_metadata.pkl"
-        )
+        return pd.read_pickle(conf.MULTIPLIER["MODEL_METADATA_FILE"])
