@@ -52,7 +52,8 @@ def curl(url: str, output_file: str, md5hash: str = None, logger=get_logger("set
     """Downloads a file from an URL. If the md5hash option is specified, it checks
     if the file was successfully downloaded (whether MD5 matches).
     Before starting the download, it checks if output_file exists. If so, and md5hash is
-    None, it finishes. If md5hash is given, it checks if matches the file.
+    None, it quits without downloading again. If md5hash is given, it checks if matches
+    the file.
 
     Args:
         url: URL of file to download.

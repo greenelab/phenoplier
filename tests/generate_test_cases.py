@@ -10,10 +10,14 @@ import conf
 output_dir = Path("test_cases")
 output_dir.mkdir(exist_ok=True)
 
+# take a small sample of the S-MultiXcan results from PhenomeXcan
 run(["python", "scripts/generate_phenomexcan_data_sample.py", output_dir])
 
 print("\n")
 
+# generate some use cases using the GetNewDataB function from MultiPLIER. The results
+# generated here will be used as the expected results for the Python implementation of
+# the GetNewDataB function.
 run(
     [
         "Rscript",

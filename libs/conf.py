@@ -1,6 +1,7 @@
 """
 Gets user settings (from settings.py module) and create the final configuration values.
 All the rest of the code reads configuration values from this module.
+This file IS NOT intended to be modified by the user.
 """
 import os
 import tempfile
