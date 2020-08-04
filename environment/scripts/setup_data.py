@@ -11,7 +11,7 @@ from log import get_logger
 logger = get_logger("setup")
 
 
-# Methods names that download file which should not be included in testing mode (see
+# Methods names (that download files) which should not be included in testing mode (see
 # below).
 AVOID_IN_TESTING_MODE = {
     "download_phenomexcan_smultixcan_mashr_zscores",
@@ -150,11 +150,17 @@ def download_multiplier_model_metadata_pkl(**kwargs):
 
 
 def download_multiplier_recount2_model(**kwargs):
+    """
+    This method download the MultiPLIER model on recount2. Since this file is inside
+    a public zip file, it first downloads the zip file and extracts only the requested
+    file.
+    """
     # TODO: refactor this method into a generic one to download files within zip files.
     from utils import md5_matches
 
     output_file = conf.MULTIPLIER["RECOUNT2_MODEL_FILE"]
 
+    # do not download file again if it exists and MD5 matches the expected one
     if output_file.exists() and md5_matches(
         "fc7446ff989d0bd0f1aae1851d192dc6", output_file
     ):
@@ -169,7 +175,7 @@ def download_multiplier_recount2_model(**kwargs):
         "https://ndownloader.figshare.com/files/10881866", zip_file,
     )
 
-    # extract model
+    # extract model from zip file
     zip_internal_filename = Path("recount2_PLIER_data", "recount_PLIER_model.RDS")
     logger.info(f"Extracting {zip_internal_filename}")
     import zipfile
@@ -191,7 +197,8 @@ if __name__ == "__main__":
 
     # create a list of available options:
     #   full: it download all the data.
-    #   testing: it download minimal data needed for running unit tests.
+    #   testing: it download minimal data needed for running unit tests. This is useful
+    #            for Github Action workflows.
     AVAILABLE_ACTIONS = defaultdict(list)
 
     # Obtain all local attributes of this module and run functions to download files

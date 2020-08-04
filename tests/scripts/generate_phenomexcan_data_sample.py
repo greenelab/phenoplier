@@ -1,7 +1,7 @@
 """
 It takes a small sample from the PhenomeXcan results and saves it into an RDS
-(R) format. This file will be used later to project the data using MultiPLIER
-code.
+(R) format. This small file will be used later to project the data using MultiPLIER
+code in unit tests.
 """
 from pathlib import Path
 

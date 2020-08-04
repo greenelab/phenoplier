@@ -36,8 +36,8 @@ class MultiplierProjection(object):
 
         Returns:
             A pandas.DataFrame with the projection of the input data into the MultiPLIER
-            latent space. The latent variables of the MultiPLIER model are in the rows,
-            and the columns of the input data (conditions, traits, drugs, etc).
+            latent space. The latent variables of the MultiPLIER model are in rows,
+            and the columns are those of the input data (conditions, traits, drugs, etc).
         """
         z = self._read_model_z()
         metadata = self._read_model_metadata()

@@ -1,10 +1,6 @@
-# This script needs to download the MultiPLIER model in RDS format from here:
-# URL HERE
-
-# and also download some code from the MultiPLIER repo from here:
-# https://raw.githubusercontent.com/greenelab/multi-plier/v0.2.0/util/plier_util.R
-
-# maybe I should include this in the environment creation scripts, not here
+# This script specifies some test cases (test_cases variable below) and uses the GetNewDataB function from
+# MultiPLIER to project the data into the latent space. Then it saves these results into .RDS files, which will be
+# used by unit tests to check the Python implementation of the GetNewDataB function.
 
 suppressMessages(require(PLIER))
 
@@ -20,6 +16,7 @@ model <- readRDS(args[1])
 
 output_dir <- args[2]
 
+# specify some small use cases for unit tests
 test_cases <- list(
   # Two genes and two traits
   list(
@@ -59,6 +56,7 @@ test_cases[[length(test_cases) + 1]] <- list(
 )
 
 
+# go through all test cases, project them into the latent space, and save the results in an rds file.
 for (tc.idx in 1:length(test_cases)) {
   message(paste0('Test case ', tc.idx))
   tc <- test_cases[[tc.idx]]
