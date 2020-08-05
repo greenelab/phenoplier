@@ -10,8 +10,8 @@
 # In[1]:
 
 
-get_ipython().run_line_magic('load_ext', 'autoreload')
-get_ipython().run_line_magic('autoreload', '2')
+get_ipython().run_line_magic("load_ext", "autoreload")
+get_ipython().run_line_magic("autoreload", "2")
 
 
 # In[2]:
@@ -33,7 +33,7 @@ from data.cache import read_data
 
 
 # The percentile name indicates the top percentage of genes retained
-PERCENTILE_NAME = 'pALL'
+PERCENTILE_NAME = "pALL"
 
 display(PERCENTILE_NAME)
 
@@ -41,9 +41,7 @@ display(PERCENTILE_NAME)
 # In[4]:
 
 
-RESULTS_PROJ_OUTPUT_DIR = Path(
-    conf.RESULTS['PROJECTIONS_DIR']
-)
+RESULTS_PROJ_OUTPUT_DIR = Path(conf.RESULTS["PROJECTIONS_DIR"])
 
 RESULTS_PROJ_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -65,8 +63,7 @@ GENE_NAME_TO_ID_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"])
 
 
 smultixcan_results_filename = Path(
-    conf.PHENOMEXCAN['GENE_ASSOC_DIR'],
-    'smultixcan-mashr-zscores.pkl'
+    conf.PHENOMEXCAN["GENE_ASSOC_DIR"], "smultixcan-mashr-zscores.pkl"
 ).resolve()
 
 display(smultixcan_results_filename)
@@ -115,13 +112,15 @@ smultixcan_results.head()
 # In[13]:
 
 
-smultixcan_results.index[smultixcan_results.index.duplicated(keep='first')]
+smultixcan_results.index[smultixcan_results.index.duplicated(keep="first")]
 
 
 # In[14]:
 
 
-smultixcan_results = smultixcan_results.loc[~smultixcan_results.index.duplicated(keep='first')]
+smultixcan_results = smultixcan_results.loc[
+    ~smultixcan_results.index.duplicated(keep="first")
+]
 
 
 # In[15]:
@@ -137,7 +136,7 @@ smultixcan_results.shape
 # In[16]:
 
 
-smultixcan_results = smultixcan_results.dropna(how='any')
+smultixcan_results = smultixcan_results.dropna(how="any")
 
 
 # In[17]:
@@ -183,21 +182,13 @@ smultixcan_into_multiplier.head()
 # In[23]:
 
 
-(
-    smultixcan_into_multiplier.loc['LV603']
-    .sort_values(ascending=False)
-    .head(20)
-)
+(smultixcan_into_multiplier.loc["LV603"].sort_values(ascending=False).head(20))
 
 
 # In[24]:
 
 
-(
-    smultixcan_into_multiplier.loc['LV136']
-    .sort_values(ascending=False)
-    .head(20)
-)
+(smultixcan_into_multiplier.loc["LV136"].sort_values(ascending=False).head(20))
 
 
 # # Save
@@ -206,8 +197,7 @@ smultixcan_into_multiplier.head()
 
 
 output_file = Path(
-    RESULTS_PROJ_OUTPUT_DIR,
-    f'projection-smultixcan_zscores-{PERCENTILE_NAME}.pkl'
+    RESULTS_PROJ_OUTPUT_DIR, f"projection-smultixcan_zscores-{PERCENTILE_NAME}.pkl"
 ).resolve()
 
 display(output_file)
@@ -220,7 +210,3 @@ smultixcan_into_multiplier.to_pickle(output_file)
 
 
 # In[ ]:
-
-
-
-
