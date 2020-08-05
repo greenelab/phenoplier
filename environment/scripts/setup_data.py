@@ -151,7 +151,7 @@ def download_multiplier_model_metadata_pkl(**kwargs):
 
 def download_multiplier_recount2_model(**kwargs):
     """
-    This method download the MultiPLIER model on recount2. Since this file is inside
+    This method downloads the MultiPLIER model on recount2. Since this file is inside
     a public zip file, it first downloads the zip file and extracts only the requested
     file.
     """
@@ -169,10 +169,10 @@ def download_multiplier_recount2_model(**kwargs):
 
     # download zip file
     parent_dir = conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent
-    zip_file = Path(parent_dir, "recount2_PLIER_data.zip").resolve()
+    zip_file_path = Path(parent_dir, "recount2_PLIER_data.zip").resolve()
 
     curl(
-        "https://ndownloader.figshare.com/files/10881866", zip_file,
+        "https://ndownloader.figshare.com/files/10881866", zip_file_path,
     )
 
     # extract model from zip file
@@ -180,7 +180,7 @@ def download_multiplier_recount2_model(**kwargs):
     logger.info(f"Extracting {zip_internal_filename}")
     import zipfile
 
-    with zipfile.ZipFile(zip_file, "r") as z:
+    with zipfile.ZipFile(zip_file_path, "r") as z:
         z.extract(str(zip_internal_filename), path=parent_dir)
 
     # rename file
@@ -188,7 +188,7 @@ def download_multiplier_recount2_model(**kwargs):
     Path(parent_dir, zip_internal_filename.parent).rmdir()
 
     # delete zip file
-    zip_file.unlink()
+    zip_file_path.unlink()
 
 
 if __name__ == "__main__":
@@ -196,9 +196,9 @@ if __name__ == "__main__":
     from collections import defaultdict
 
     # create a list of available options:
-    #   full: it download all the data.
-    #   testing: it download minimal data needed for running unit tests. This is useful
-    #            for Github Action workflows.
+    #   --mode=full:    it downloads all the data.
+    #   --mode=testing: it downloads minimal data needed for running unit tests.
+    #                   This is useful for Github Action workflows.
     AVAILABLE_ACTIONS = defaultdict(list)
 
     # Obtain all local attributes of this module and run functions to download files
