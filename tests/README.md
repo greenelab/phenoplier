@@ -3,7 +3,7 @@
 ## Run
 
 These are the instructions to run the unit tests. It is assumed that you already 
-followed the steps to setup the environment and download the needed data, and that
+followed the steps to set up the environment and download the needed data, and that
 your `PYTHONPATH` and `PHENOPLIER_ROOT_DIR` variables are adjusted appropriately.
 
 Execute these commands to run the unit tests:

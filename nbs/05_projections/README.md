@@ -1,6 +1,6 @@
 # Projection of PhenomeXcan results into MultiPLIER space
 
-These set of notebooks project the PhenomeXcan data (MultiXcan results) into the
+These sets of notebooks project the PhenomeXcan data (MultiXcan results) into the
 MultiPLIER latent space. MultiPLIER provides a Z matrix with gene loadings (genes x
 latent variables) that, as a transfer learning framework, is used to project smaller
 gene expression datasets into the MultiPLIER latent space.
