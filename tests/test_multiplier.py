@@ -21,7 +21,8 @@ def read_rds(test_case_number: int, kind: str):
     readRDS = ro.r["readRDS"]
     rds_file = (
         Path(__file__).resolve().parent
-        / "test_cases"
+        / "data"
+        / "multiplier"
         / f"test_case{test_case_number}/{kind}.rds"
     )
 
