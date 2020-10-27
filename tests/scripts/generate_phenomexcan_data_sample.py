@@ -32,7 +32,7 @@ smultixcan_results = smultixcan_results.fillna(0)
 print("This is the head of the sample:")
 print(smultixcan_results.head())
 
-output_dir = Path("test_cases", "test_case5")
+output_dir = Path("data", "multiplier", "test_case5")
 output_dir.mkdir(exist_ok=True)
 
 saveRDS = ro.r["saveRDS"]
