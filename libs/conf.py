@@ -90,8 +90,21 @@ UK_BIOBANK["CODING_6_FILE"] = Path(UK_BIOBANK["CODINGS_DIR"], "coding6.tsv").res
 #
 MULTIPLIER = {}
 MULTIPLIER["BASE_DIR"] = Path(DATA_DIR, "multiplier").resolve()
+MULTIPLIER["RESULTS_DIR"] = Path(MULTIPLIER["BASE_DIR"], "results").resolve()
+MULTIPLIER["MODEL_SUMMARY_FILE"] = Path(
+    MULTIPLIER["BASE_DIR"], "multiplier_model_summary.pkl"
+).resolve()
 MULTIPLIER["MODEL_Z_MATRIX_FILE"] = Path(
     MULTIPLIER["BASE_DIR"], "multiplier_model_z.pkl"
+).resolve()
+MULTIPLIER["MODEL_B_MATRIX_FILE"] = Path(
+    MULTIPLIER["BASE_DIR"], "multiplier_model_b.pkl"
+).resolve()
+MULTIPLIER["MODEL_U_MATRIX_FILE"] = Path(
+    MULTIPLIER["BASE_DIR"], "multiplier_model_u.pkl"
+).resolve()
+MULTIPLIER["MODEL_U_AUC_MATRIX_FILE"] = Path(
+    MULTIPLIER["BASE_DIR"], "multiplier_model_u_auc.pkl"
 ).resolve()
 MULTIPLIER["MODEL_METADATA_FILE"] = Path(
     MULTIPLIER["BASE_DIR"], "multiplier_model_metadata.pkl"
@@ -126,6 +139,9 @@ PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"] = Path(
 ).resolve()
 PHENOMEXCAN["SMULTIXCAN_MASHR_PVALUES_FILE"] = Path(
     PHENOMEXCAN["GENE_ASSOC_DIR"], "smultixcan-mashr-pvalues.pkl"
+).resolve()
+PHENOMEXCAN["FASTENLOC_TORUS_RCP_FILE"] = Path(
+    PHENOMEXCAN["GENE_ASSOC_DIR"], "fastenloc-torus-rcp.pkl"
 ).resolve()
 
 # GWAS info
