@@ -11,13 +11,17 @@ import conf
 #
 def read_phenomexcan_rapid_gwas_pheno_info_file():
     return pd.read_csv(
-        conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"], sep="\t", index_col="phenotype",
+        conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"],
+        sep="\t",
+        index_col="phenotype",
     )
 
 
 def read_phenomexcan_rapid_gwas_data_dict():
     return pd.read_csv(
-        conf.PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"], sep="\t", index_col="FieldID",
+        conf.PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"],
+        sep="\t",
+        index_col="FieldID",
     )
 
 

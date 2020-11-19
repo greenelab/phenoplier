@@ -111,10 +111,12 @@ PHENOMEXCAN["GENES_METADATA_DIR"] = Path(
     PHENOMEXCAN["BASE_DIR"], "genes_metadata"
 ).resolve()
 PHENOMEXCAN["GENE_MAP_ID_TO_NAME"] = Path(
-    PHENOMEXCAN["GENES_METADATA_DIR"], "genes_mapping_id_to_name.pkl",
+    PHENOMEXCAN["GENES_METADATA_DIR"],
+    "genes_mapping_id_to_name.pkl",
 ).resolve()
 PHENOMEXCAN["GENE_MAP_NAME_TO_ID"] = Path(
-    PHENOMEXCAN["GENES_METADATA_DIR"], "genes_mapping_name_to_id.pkl",
+    PHENOMEXCAN["GENES_METADATA_DIR"],
+    "genes_mapping_name_to_id.pkl",
 ).resolve()
 
 # gene association results

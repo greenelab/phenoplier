@@ -53,7 +53,9 @@ class MultiplierProjection(object):
             # GetNewDataB and return a DataFrame of NaN values.
             if multiplier_compatible:
                 return pd.DataFrame(
-                    data=np.nan, index=z.columns.copy(), columns=y.columns.copy(),
+                    data=np.nan,
+                    index=z.columns.copy(),
+                    columns=y.columns.copy(),
                 )
 
         # row-standardize the data with z-score

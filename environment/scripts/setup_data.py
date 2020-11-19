@@ -172,7 +172,8 @@ def download_multiplier_recount2_model(**kwargs):
     zip_file_path = Path(parent_dir, "recount2_PLIER_data.zip").resolve()
 
     curl(
-        "https://ndownloader.figshare.com/files/10881866", zip_file_path,
+        "https://ndownloader.figshare.com/files/10881866",
+        zip_file_path,
     )
 
     # extract model from zip file
