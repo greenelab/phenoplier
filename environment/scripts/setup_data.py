@@ -149,6 +149,24 @@ def download_multiplier_model_metadata_pkl(**kwargs):
     )
 
 
+def download_ukb_to_efo_map_tsv(**kwargs):
+    output_file = conf.UK_BIOBANK["UKBCODE_TO_EFO_MAP_FILE"]
+    curl(
+        "https://upenn.box.com/shared/static/hwlpdlp3pq9buv955q5grlkxwwfxt6ul.tsv",
+        output_file,
+        "bfa56310d40e28f89c1f1b5d4ade0bf0",
+    )
+
+
+def download_efo_ontology(**kwargs):
+    output_file = conf.GENERAL["EFO_ONTOLOGY_OBO_FILE"]
+    curl(
+        "https://upenn.box.com/shared/static/nsrxx3szg4s69j84dg2oakx6mwjxoarb.obo",
+        output_file,
+        "2bf23581ff6365514a0b3b1b5ae4651a",
+    )
+
+
 def download_multiplier_recount2_model(**kwargs):
     """
     This method downloads the MultiPLIER model on recount2. Since this file is inside

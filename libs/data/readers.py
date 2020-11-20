@@ -7,21 +7,43 @@ import conf
 
 
 #
+# Generic reader
+#
+def read_pickle(file_path, **kwargs):
+    """Returns functions to read any python object stored as a pickle file."""
+    return lambda: pd.read_pickle(file_path)
+
+
+def read_tsv(file_path, **kwargs):
+    return lambda: pd.read_csv(
+        file_path,
+        sep="\t",
+        **kwargs,
+    )
+
+
+#
+# General data
+#
+def read_term_id_xrefs():
+    return pd.read_csv(
+        conf.GENERAL["TERM_ID_XREFS_FILE"], sep="\t", index_col="term_id",
+        dtype='category'
+    )
+
+
+#
 # Phenotypes metadata
 #
 def read_phenomexcan_rapid_gwas_pheno_info_file():
     return pd.read_csv(
-        conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"],
-        sep="\t",
-        index_col="phenotype",
+        conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"], sep="\t", index_col="phenotype",
     )
 
 
 def read_phenomexcan_rapid_gwas_data_dict():
     return pd.read_csv(
-        conf.PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"],
-        sep="\t",
-        index_col="FieldID",
+        conf.PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"], sep="\t", index_col="FieldID",
     )
 
 
@@ -67,6 +89,15 @@ def read_gene_map_name_to_id():
 # file given in the key.
 #
 DATA_READERS = {
+    # General
+    conf.GENERAL["BIOMART_GENES_INFO_FILE"]: read_genes_biomart_data,
+    conf.GENERAL["TERM_ID_XREFS_FILE"]: read_term_id_xrefs,
+
+    # UK Biobank
+    conf.UK_BIOBANK["CODING_3_FILE"]: read_uk_biobank_codings(3),
+    conf.UK_BIOBANK["CODING_6_FILE"]: read_uk_biobank_codings(6),
+
+    # PhenomeXcan
     conf.PHENOMEXCAN[
         "RAPID_GWAS_PHENO_INFO_FILE"
     ]: read_phenomexcan_rapid_gwas_pheno_info_file,
@@ -76,9 +107,21 @@ DATA_READERS = {
     conf.PHENOMEXCAN[
         "GTEX_GWAS_PHENO_INFO_FILE"
     ]: read_phenomexcan_gtex_gwas_pheno_info,
-    conf.UK_BIOBANK["CODING_3_FILE"]: read_uk_biobank_codings(3),
-    conf.UK_BIOBANK["CODING_6_FILE"]: read_uk_biobank_codings(6),
-    conf.GENERAL["BIOMART_GENES_INFO_FILE"]: read_genes_biomart_data,
-    conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"]: read_gene_map_id_to_name,
-    conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"]: read_gene_map_name_to_id,
+    # conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"]: read_gene_map_id_to_name,
+    # conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"]: read_gene_map_name_to_id,
+
+    # # MultiPLIER
+    # conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]: read_multiplier_model_matrix_z,
+    # conf.MULTIPLIER["MODEL_B_MATRIX_FILE"]: read_multiplier_model_matrix_b,
+}
+
+#
+# Differently than DATA_READERS, this dictionary does not specify absolute file
+# paths, but just extensions. It's useful when reading standard format such as
+# pickle.
+#
+DATA_FORMAT_READERS = {
+    '.pkl': read_pickle,
+    '.tsv': read_tsv,
+    '.tsv.gz': read_tsv,
 }
