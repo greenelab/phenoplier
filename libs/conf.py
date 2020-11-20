@@ -144,6 +144,9 @@ PHENOMEXCAN["GENE_ASSOC_DIR"] = Path(PHENOMEXCAN["BASE_DIR"], "gene_assoc").reso
 PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"] = Path(
     PHENOMEXCAN["GENE_ASSOC_DIR"], "smultixcan-mashr-zscores.pkl"
 ).resolve()
+PHENOMEXCAN["SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE"] = Path(
+    PHENOMEXCAN["GENE_ASSOC_DIR"], "smultixcan-efo_partial-mashr-zscores.pkl"
+).resolve()
 PHENOMEXCAN["SMULTIXCAN_MASHR_PVALUES_FILE"] = Path(
     PHENOMEXCAN["GENE_ASSOC_DIR"], "smultixcan-mashr-pvalues.pkl"
 ).resolve()
