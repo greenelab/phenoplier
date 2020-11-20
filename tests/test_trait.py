@@ -187,3 +187,19 @@ def test_trait_get_trait_using_full_code_is_gtex_gwas():
     assert isinstance(trait, GTEXGWASTrait)
     assert trait.code == "UKB_1160_Sleep_duration"
     assert trait.get_plain_name() == "UKB_1160_Sleep_duration"
+
+
+@pytest.mark.parametrize(
+    "trait_code,efo_code,efo_name",
+    [
+        ("20002_1111", "EFO:0000270", "asthma"),
+        ("22127", "EFO:0000270", "asthma"),
+        ("J45", "EFO:0000270", "asthma"),
+        ("BCAC_Overall_BreastCancer_EUR", "EFO:0005606", "family history of breast cancer"),
+    ],
+)
+def test_ukb_trait_efo(trait_code, efo_code, efo_name):
+    trait = Trait.get_trait(code=trait_code)
+    trait_efo_info = trait.get_efo_info()
+    assert trait_efo_info.id == efo_code
+    assert trait_efo_info.label == efo_name

@@ -4,6 +4,7 @@ Classes to ease access to attributes of common entities like Trait and Gene.
 from abc import ABCMeta, abstractmethod
 from enum import Enum, auto
 import re
+from collections import namedtuple
 
 import pandas as pd
 
@@ -51,6 +52,8 @@ class Trait(object, metaclass=ABCMeta):
         the trait.
     """
 
+    EFO_INFO = namedtuple('EfoInfo', ['id', 'label'])
+
     def __init__(self, code=None, full_code=None):
         if code is None and full_code is None:
             raise ValueError("Either code or full_code must be specified.")
@@ -76,6 +79,46 @@ class Trait(object, metaclass=ABCMeta):
         # now that all the data was initialized, I can fill full_code if was not given
         if self.full_code is None:
             self.full_code = self.get_plain_name()
+
+    def get_efo_info(self, mapping_type=None):
+        """
+        TODO: COMPLETE
+
+        Args:
+            mapping_type:
+
+        Returns:
+
+        """
+        efo_map_data = self.get_traits_to_efo_map_data()
+
+        if self.full_code not in efo_map_data.index:
+            return None
+
+        map_info = efo_map_data.loc[self.full_code]
+
+        if mapping_type is not None:
+            map_info = map_info[map_info['mapping_type'] == mapping_type]
+
+        efo_codes = map_info['term_codes']
+        if not isinstance(efo_codes, str):
+            efo_code = ', '.join(efo_codes.unique())
+        else:
+            efo_code = efo_codes
+
+        label = map_info['current_term_label']
+        if not isinstance(label, str):
+            label = label.unique()
+            assert label.shape[0] == 1
+            label = label[0]
+
+        return self.EFO_INFO(id=efo_code, label=label)
+
+    @staticmethod
+    def get_traits_to_efo_map_data():
+        return read_data(
+            conf.PHENOMEXCAN["TRAITS_FULLCODE_TO_EFO_MAP_FILE"]
+        ).set_index('ukb_fullcode')
 
     @staticmethod
     def get_code_from_full_code(full_code):
@@ -320,6 +363,11 @@ class GTEXGWASTrait(Trait):
         self.n_controls = self.n - self.n_cases
         self.source = self.pheno_data["Consortium"]
         self.study = Study.GTEX_GWAS
+
+        # WARNING: this attribute retrieves the original EFO code in the GTEx
+        # GWAS metadata. However, some EFO codes there are wrong. Use this
+        # carefully, the get_efo_info is prefered.
+        self.orig_efo_id = self.pheno_data['EFO']
 
 
 class Gene(object):
