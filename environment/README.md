@@ -23,13 +23,12 @@ conda environment and download the necessary data.
     export PHENOPLIER_N_JOBS=2
    
     # Export this variable if you downloaded the manuscript sources and want to
-    # generate the figures for it (see additional # instructions for manuscript
-    # figures below).
+    # generate the figures for it.
     export PHENOPLIER_MANUSCRIPT_DIR=/tmp/manuscript_dir
     ```
 
-1. Adjust other settings (i.e. available computational resources) by modifying the
-file `../libs/settings.py`
+1. Adjust other settings (i.e. root directory, available computational
+   resources, etc) by modifying the file `../libs/settings.py`
 
 1. Adjust your `PYTHONPATH` variable to include the `libs` directory:
 
@@ -42,16 +41,6 @@ file `../libs/settings.py`
     ```bash
     python scripts/setup_data.py
     ```
-
-
-# Manuscript files
-
-The code in this repository also optionally generates figures and other files for the manuscript.
-You need to manually install these dependencies for your operating system:
-
-DO WE REALLY NEED THIS?
-
-1. `pdf2svg` ([github](https://github.com/dawbarton/pdf2svg))
 
 
 # Developer usage
@@ -67,6 +56,7 @@ These steps are only for PhenoPLIER developers.
     bash scripts/install_other_packages.sh
     ```
 
+
 1. Install JupyterLab extensions:
  
     ```bash
@@ -80,4 +70,14 @@ These steps are only for PhenoPLIER developers.
     ```
 
 1. Modify `environment.yml` and leave only manually installed packages (not their dependencies).
+
+
+## Optional packages
+
+These optional packages might be useful for a developer, but are not necessary
+for a user.
+
+```bash
+conda install -c conda-forge jupytext
+```
 
