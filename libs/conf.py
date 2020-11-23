@@ -42,11 +42,19 @@ GENERAL["LOG_CONFIG_FILE"] = Path(
 ).resolve()
 
 # CPU usage
-options = [settings.N_JOBS, int(cpu_count() / 2)]
-GENERAL["N_JOBS"] = next(opt for opt in options if opt is not None)
+options = [
+    os.environ.get("PHENOPLIER_N_JOBS"),
+    getattr(settings, 'N_JOBS', None),
+    int(cpu_count() / 2),
+]
+GENERAL["N_JOBS"] = next(int(opt) for opt in options if opt is not None)
 
-options = [settings.N_JOBS_HIGH, cpu_count()]
-GENERAL["N_JOBS_HIGH"] = next(opt for opt in options if opt is not None)
+options = [
+    os.environ.get("PHENOPLIER_N_JOBS_HIGH"),
+    getattr(settings, 'N_JOBS_HIGH', None),
+    GENERAL["N_JOBS"],
+]
+GENERAL["N_JOBS_HIGH"] = next(int(opt) for opt in options if opt is not None)
 
 GENERAL["TERM_ID_LABEL_FILE"] = Path(DATA_DIR, "term_id_labels.tsv.gz").resolve()
 
