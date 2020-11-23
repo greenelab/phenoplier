@@ -20,3 +20,7 @@ dependencies:
   - scipy
   - seaborn
   - umap-learn
+  # obonet deps:
+  - networkx
+  - pip:
+    - obonet
