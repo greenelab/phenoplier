@@ -90,7 +90,6 @@ UK_BIOBANK["CODING_6_FILE"] = Path(UK_BIOBANK["CODINGS_DIR"], "coding6.tsv").res
 #
 MULTIPLIER = {}
 MULTIPLIER["BASE_DIR"] = Path(DATA_DIR, "multiplier").resolve()
-MULTIPLIER["RESULTS_DIR"] = Path(MULTIPLIER["BASE_DIR"], "results").resolve()
 MULTIPLIER["MODEL_SUMMARY_FILE"] = Path(
     MULTIPLIER["BASE_DIR"], "multiplier_model_summary.pkl"
 ).resolve()
