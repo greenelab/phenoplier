@@ -16,3 +16,16 @@ papermill \
   --request-save-on-cell-execute \
   $1 \
   $filename
+
+if [ "${PHENOPLIER_RUN_NBS_OVERRIDE}" != "1" ]; then
+    echo "Execution finished. Do you wish to override the notebook with the run one?"
+    select yn in "Yes" "No"; do
+        case $yn in
+            Yes ) mv $filename $1; break;;
+            No ) exit;;
+        esac
+    done
+else
+    mv $filename $1
+fi
+
