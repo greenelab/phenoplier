@@ -11,7 +11,7 @@ def reset_estimator(estimator_obj):
         delattr(estimator_obj, attr)
 
 
-def generate_ensemble(data, clusterers: dict, attributes: list):
+def generate_ensemble(data, clusterers: dict, attributes: list, affinity_matrix=None):
     """
 
     Args:
@@ -28,8 +28,17 @@ def generate_ensemble(data, clusterers: dict, attributes: list):
     ensemble = []
 
     for clus_name, clus_obj in tqdm(clusterers.items(), total=len(clusterers)):
-        # get partition and remove noisy points
-        partition = clus_obj.fit_predict(data).astype(float)
+        # get partition
+        # for agglomerative clustering both data and affinity_matrix should be given;
+        # for ward linkage, data is used, and for the other linkage methods the
+        # affinity_matrix is used
+        if (type(clus_obj).__name__ == 'AgglomerativeClustering') and\
+                (clus_obj.linkage != 'ward'):
+            partition = clus_obj.fit_predict(affinity_matrix).astype(float)
+        else:
+            partition = clus_obj.fit_predict(data).astype(float)
+
+        # remove from partition noisy points
         partition[partition < 0] = np.nan
 
         # get number of clusters
