@@ -3,6 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - ipython
+  - ipywidgets
   - jupyterlab
   - matplotlib
   - nodejs
@@ -19,6 +20,7 @@ dependencies:
   - scikit-learn
   - scipy
   - seaborn
+  - tqdm
   - umap-learn
   # obonet deps:
   - networkx
