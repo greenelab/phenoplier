@@ -4,12 +4,16 @@ from subprocess import call
 import scipy.io as sio
 
 import numpy as np
+
 # from scipy.spatial.distance import pdist, squareform
 import pandas as pd
 from sklearn.metrics import pairwise_distances
+from sklearn.metrics import adjusted_rand_score as ari
 from sklearn.metrics import adjusted_mutual_info_score as ami
 from sklearn.metrics import normalized_mutual_info_score as nmi
-from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import AgglomerativeClustering, SpectralClustering
+
+# from scipy.cluster.hierarchy import fcluster, linkage
 from tqdm import tqdm
 
 from utils import get_temp_file_name
@@ -17,7 +21,7 @@ from utils import get_temp_file_name
 
 def reset_estimator(estimator_obj):
     for attr in dir(estimator_obj):
-        if attr.startswith('_') or not attr.endswith('_'):
+        if attr.startswith("_") or not attr.endswith("_"):
             continue
 
         delattr(estimator_obj, attr)
@@ -30,11 +34,30 @@ def compare_arrays(x, y, comp_func):
 
 
 def anmi(ensemble, partition):
-    return np.array([compare_arrays(ensemble_member, partition, nmi) for ensemble_member in ensemble]).mean()
+    return np.array(
+        [
+            compare_arrays(ensemble_member, partition, nmi)
+            for ensemble_member in ensemble
+        ]
+    ).mean()
 
 
 def aami(ensemble, partition):
-    return np.array([compare_arrays(ensemble_member, partition, ami) for ensemble_member in ensemble]).mean()
+    return np.array(
+        [
+            compare_arrays(ensemble_member, partition, ami)
+            for ensemble_member in ensemble
+        ]
+    ).mean()
+
+
+def aari(ensemble, partition):
+    return np.array(
+        [
+            compare_arrays(ensemble_member, partition, ari)
+            for ensemble_member in ensemble
+        ]
+    ).mean()
 
 
 def generate_ensemble(data, clusterers: dict, attributes: list, affinity_matrix=None):
@@ -59,8 +82,9 @@ def generate_ensemble(data, clusterers: dict, attributes: list, affinity_matrix=
         # for agglomerative clustering both data and affinity_matrix should be given;
         # for ward linkage, data is used, and for the other linkage methods the
         # affinity_matrix is used
-        if (type(clus_obj).__name__ == 'AgglomerativeClustering') and\
-                (clus_obj.linkage != 'ward'):
+        if (type(clus_obj).__name__ == "AgglomerativeClustering") and (
+            clus_obj.linkage != "ward"
+        ):
             partition = clus_obj.fit_predict(affinity_matrix).astype(float)
         else:
             partition = clus_obj.fit_predict(data).astype(float)
@@ -77,14 +101,16 @@ def generate_ensemble(data, clusterers: dict, attributes: list, affinity_matrix=
             reset_estimator(clus_obj)
             continue
 
-        res = pd.Series({
-            'clusterer_id': clus_name,
-            'clusterer_params': str(clus_obj.get_params()),
-            'partition': partition,
-        })
+        res = pd.Series(
+            {
+                "clusterer_id": clus_name,
+                "clusterer_params": str(clus_obj.get_params()),
+                "partition": partition,
+            }
+        )
 
         for attr in attributes:
-            if attr == 'n_clusters' and not hasattr(clus_obj, attr):
+            if attr == "n_clusters" and not hasattr(clus_obj, attr):
                 res[attr] = n_clusters
             else:
                 res[attr] = getattr(clus_obj, attr)
@@ -93,7 +119,7 @@ def generate_ensemble(data, clusterers: dict, attributes: list, affinity_matrix=
 
         reset_estimator(clus_obj)
 
-    return pd.DataFrame(ensemble).set_index('clusterer_id')
+    return pd.DataFrame(ensemble).set_index("clusterer_id")
 
 
 def get_ensemble_distance_matrix(ensemble, n_jobs=1):
@@ -106,10 +132,12 @@ def get_ensemble_distance_matrix(ensemble, n_jobs=1):
         return (xy[:, 0] != xy[:, 1]).sum() / xy.shape[0]
 
     # return squareform(pdist(ensemble.T, _compare))
-    return pairwise_distances(ensemble.T, metric=_compare, n_jobs=n_jobs, force_all_finite='allow-nan')
+    return pairwise_distances(
+        ensemble.T, metric=_compare, n_jobs=n_jobs, force_all_finite="allow-nan"
+    )
 
 
-def eac(ensemble, k, linkage_method='average'):
+def eac(ensemble, k, linkage_method="average", ensemble_is_coassoc_matrix=False):
     """
     Using an Evidence Accumulation method, it derives a consensus partition
     with k clusters from the clustering solutions in ensemble.
@@ -163,45 +191,64 @@ def eac(ensemble, k, linkage_method='average'):
     0.79078063459886239
     """
 
-    y = get_ensemble_distance_matrix(ensemble)
+    if ensemble_is_coassoc_matrix:
+        y = ensemble
+    else:
+        y = get_ensemble_distance_matrix(ensemble)
+
     return AgglomerativeClustering(
         n_clusters=k,
-        affinity='precomputed',
+        affinity="precomputed",
         linkage=linkage_method,
     ).fit_predict(y)
+
     # z = linkage(y, method=linkage_method)
     # return fcluster(z, k, criterion='maxclust')
 
 
 def cspa(ensemble, k):
-    return consensus_function('cspa', ensemble, k)
+    return consensus_function("cspa", ensemble, k)
 
 
 def hgpa(ensemble, k):
-    return consensus_function('hgpa', ensemble, k)
+    return consensus_function("hgpa", ensemble, k)
 
 
 def mcla(ensemble, k):
-    return consensus_function('mcla', ensemble, k)
+    return consensus_function("mcla", ensemble, k)
 
 
 def consensus_function(consensus_algorithm, ensemble, k):
     # save ensemble to temp file
-    ensemble_file = get_temp_file_name('.mat')
-    sio.savemat(ensemble_file, {'ensemble': ensemble})
+    ensemble_file = get_temp_file_name(".mat")
+    sio.savemat(ensemble_file, {"ensemble": ensemble})
 
-    consensus_part_file = get_temp_file_name('.mat')
+    consensus_part_file = get_temp_file_name(".mat")
 
     graphfunc_path = _get_graphfunc_path()
 
-    call(['octave', '--no-gui-libs', '--path', graphfunc_path,
-          '--eval', _get_code(consensus_algorithm, ensemble_file, k, consensus_part_file, graphfunc_path)])
+    call(
+        [
+            "octave",
+            "--no-gui-libs",
+            "--path",
+            graphfunc_path,
+            "--eval",
+            _get_code(
+                consensus_algorithm,
+                ensemble_file,
+                k,
+                consensus_part_file,
+                graphfunc_path,
+            ),
+        ]
+    )
 
     res = sio.loadmat(consensus_part_file, matlab_compatible=True)
     os.remove(ensemble_file)
     os.remove(consensus_part_file)
 
-    return res['cons_part'][0]
+    return res["cons_part"][0]
 
 
 def _get_graphfunc_path():
@@ -209,40 +256,144 @@ def _get_graphfunc_path():
     current_module_path = dirname(dirname(dirname(__file__)))
 
     # TODO: migrate to pathlib
-    cluster_ensemble_folder = os.path.join(current_module_path, 'libs/ClusterEnsemble-V2.0')
+    cluster_ensemble_folder = os.path.join(
+        current_module_path, "libs/ClusterEnsemble-V2.0"
+    )
     if not os.path.exists(cluster_ensemble_folder):
-        raise Exception(f'Cluster ensembles path does not exist: {cluster_ensemble_folder}')
+        raise Exception(
+            f"Cluster ensembles path does not exist: {cluster_ensemble_folder}"
+        )
 
     return cluster_ensemble_folder
 
 
-def _get_code(consensus_algorithm, ensemble_file, k, consensus_part_file, graphfunc_path):
-    return "clear all;" \
-           "setenv('PMETIS_PATH', ['" + graphfunc_path + "' filesep 'pmetis']);" \
-           "setenv('SHMETIS_PATH', ['" + graphfunc_path + "' filesep 'shmetis']);" \
-           "load('" + ensemble_file + "');" \
-           "cons_part = " + consensus_algorithm + "(ensemble, " + str(k) + ");" \
-           "save('" + consensus_part_file + "', 'cons_part', '-v6');"
+def _get_code(
+    consensus_algorithm, ensemble_file, k, consensus_part_file, graphfunc_path
+):
+    return (
+        "clear all;"
+        "setenv('PMETIS_PATH', ['" + graphfunc_path + "' filesep 'pmetis']);"
+        "setenv('SHMETIS_PATH', ['" + graphfunc_path + "' filesep 'shmetis']);"
+        "load('" + ensemble_file + "');"
+        "cons_part = " + consensus_algorithm + "(ensemble, " + str(k) + ");"
+        "save('" + consensus_part_file + "', 'cons_part', '-v6');"
+    )
 
 
-def supraconsensus(ensemble, k, methods=None, selection_criterion=aami):
+def eac_single(ensemble, k):
+    return eac(ensemble, k, linkage_method="single")
+
+
+def eac_single_coassoc_matrix(coassoc_matrix, k):
+    return eac(
+        coassoc_matrix, k, ensemble_is_coassoc_matrix=True, linkage_method="single"
+    )
+
+
+def eac_complete(ensemble, k):
+    return eac(ensemble, k, linkage_method="complete")
+
+
+def eac_complete_coassoc_matrix(coassoc_matrix, k):
+    return eac(
+        coassoc_matrix, k, ensemble_is_coassoc_matrix=True, linkage_method="complete"
+    )
+
+
+def eac_average(ensemble, k):
+    return eac(ensemble, k, linkage_method="average")
+
+
+def eac_average_coassoc_matrix(coassoc_matrix, k):
+    return eac(
+        coassoc_matrix, k, ensemble_is_coassoc_matrix=True, linkage_method="average"
+    )
+
+
+def sc_consensus(distance_matrix, k, n_init=10):
+    return SpectralClustering(
+        n_clusters=k,
+        affinity="precomputed",
+        n_init=n_init,
+    ).fit_predict(1.0 - distance_matrix)
+
+
+def supraconsensus(
+    ensemble, k, methods=None, selection_criterion=aami, n_jobs=1, use_tqdm=False
+):
+    from concurrent.futures import ProcessPoolExecutor, as_completed
+
     # if methods are not provided, then use EAC methods by default (because
     # these do not depend on Octave like graph-based ones).
     if methods is None:
-        eac_single_func = lambda e, k: eac(e, k, linkage_method='single')
-        eac_complete_func = lambda e, k: eac(e, k, linkage_method='complete')
-        eac_avg_func = lambda e, k: eac(e, k, linkage_method='average')
+        methods = (eac_single, eac_complete, eac_average)
 
-        methods = (eac_single_func, eac_complete_func, eac_avg_func)
+    # max_criterion_value = -1.0
+    # max_part = None
+    # max_method = None
 
-    max_criterion_value = -1.0
-    max_part = None
+    methods_results = {}
 
-    for cmet in methods:
-        part = cmet(ensemble, k)
-        part_criterion_value = selection_criterion(ensemble, part)
-        if part_criterion_value > max_criterion_value:
-            max_criterion_value = part_criterion_value
-            max_part = part
+    with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+        tasks = {executor.submit(m, ensemble, k): m.__name__ for m in methods}
 
-    return max_part
+        for future in tqdm(
+            as_completed(tasks), total=len(tasks), disable=(not use_tqdm)
+        ):
+            method_name = tasks[future]
+            part = future.result()
+            criterion_value = selection_criterion(ensemble, part)
+
+            methods_results[method_name] = {
+                "partition": part,
+                "criterion_value": criterion_value,
+            }
+
+    best_method = max(
+        methods_results, key=lambda x: methods_results[x]["criterion_value"]
+    )
+    best_method_results = methods_results[best_method]
+
+    # for cmet in methods:
+    #     part = cmet(ensemble, k)
+    #     part_criterion_value = selection_criterion(ensemble, part)
+    #     if part_criterion_value > max_criterion_value:
+    #         max_criterion_value = part_criterion_value
+    #         max_method = cmet.__name__
+    #         max_part = part
+
+    return (
+        best_method_results["partition"],
+        best_method,
+        best_method_results["criterion_value"],
+    )
+
+
+def run_method_and_compute_agreement(method_func, data, ensemble, k):
+    part = method_func(data, k)
+
+    nmi_values = np.array(
+        [compare_arrays(ensemble_member, part, nmi) for ensemble_member in ensemble]
+    )
+
+    ami_values = np.array(
+        [compare_arrays(ensemble_member, part, ami) for ensemble_member in ensemble]
+    )
+
+    ari_values = np.array(
+        [compare_arrays(ensemble_member, part, ari) for ensemble_member in ensemble]
+    )
+
+    performance_values = {
+        "ari_mean": np.mean(ari_values),
+        "ari_median": np.median(ari_values),
+        "ari_std": np.std(ari_values),
+        "ami_mean": np.mean(ami_values),
+        "ami_median": np.median(ami_values),
+        "ami_std": np.std(ami_values),
+        "nmi_mean": np.mean(nmi_values),
+        "nmi_median": np.median(nmi_values),
+        "nmi_std": np.std(nmi_values),
+    }
+
+    return part, performance_values
