@@ -4,8 +4,9 @@ from subprocess import call
 import scipy.io as sio
 
 import numpy as np
-from scipy.spatial.distance import pdist, squareform
+# from scipy.spatial.distance import pdist, squareform
 import pandas as pd
+from sklearn.metrics import pairwise_distances
 from sklearn.metrics import adjusted_mutual_info_score as ami
 from sklearn.metrics import normalized_mutual_info_score as nmi
 from sklearn.cluster import AgglomerativeClustering
@@ -22,16 +23,23 @@ def reset_estimator(estimator_obj):
         delattr(estimator_obj, attr)
 
 
+def compare_arrays(x, y, comp_func):
+    xy = np.array([x, y]).T
+    xy = xy[~np.isnan(xy).any(axis=1)]
+    return comp_func(xy[:, 0], xy[:, 1])
+
+
 def anmi(ensemble, partition):
-    return np.array([nmi(ensemble_member, partition) for ensemble_member in ensemble]).mean()
+    return np.array([compare_arrays(ensemble_member, partition, nmi) for ensemble_member in ensemble]).mean()
 
 
 def aami(ensemble, partition):
-    return np.array([ami(ensemble_member, partition) for ensemble_member in ensemble]).mean()
+    return np.array([compare_arrays(ensemble_member, partition, ami) for ensemble_member in ensemble]).mean()
 
 
 def generate_ensemble(data, clusterers: dict, attributes: list, affinity_matrix=None):
     """
+    TODO: COMPLETE
 
     Args:
         clusterers: a dictionary with clusterers, like:
@@ -88,16 +96,17 @@ def generate_ensemble(data, clusterers: dict, attributes: list, affinity_matrix=
     return pd.DataFrame(ensemble).set_index('clusterer_id')
 
 
-def get_ensemble_distance_matrix(ensemble):
-    # TODO: what happens if I have np.nans in the partition?
+def get_ensemble_distance_matrix(ensemble, n_jobs=1):
+    # FIXME: if there are no enough objects in common between two partitions, this
+    # will return np.nans
 
     def _compare(x, y):
         xy = np.array([x, y]).T
         xy = xy[~np.isnan(xy).any(axis=1)]
         return (xy[:, 0] != xy[:, 1]).sum() / xy.shape[0]
 
-    return squareform(pdist(ensemble.T, _compare))
-    # return pairwise_distances(ensemble.T, metric=lambda u, v: (u != v).sum() / len(u))
+    # return squareform(pdist(ensemble.T, _compare))
+    return pairwise_distances(ensemble.T, metric=_compare, n_jobs=n_jobs, force_all_finite='allow-nan')
 
 
 def eac(ensemble, k, linkage_method='average'):
