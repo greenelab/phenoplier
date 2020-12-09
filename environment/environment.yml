@@ -2,32 +2,21 @@ name: phenoplier
 channels:
   - conda-forge
 dependencies:
-  - ipython=7
-  - jupyterlab=2.1
-  - matplotlib=3.2
-  - numpy=1.18
-  - pandas=1.0
+  - ipython=7.*
+  - jupyterlab=2.2.*
+  - matplotlib=3.3.*
+  - nodejs=14.*
+  - numpy=1.19.*
+  - pandas=1.1.*
   - pip
-  - pytest=5.4
-  - python=3.8
-  - pyyaml=5.3
-  - r-base=3.6
-  - r-devtools=2.0
-  - r-ggplot2=3.1
-  - scikit-learn=0.23
-  - scipy=1.5
-  - seaborn=0.10
-  - tzlocal
- # rpy2 dependencies:
-  - more-itertools
-  - packaging
-  - pluggy
-  - py
-  - pytest
-  - curl
- # umap-learn dependencies:
-  - numba
-  - tbb
-  - pip:
-    - rpy2==3.3.4
-    - umap-learn==0.4.4
+  - pytest=6.1.*
+  - python=3.8.*
+  - pyyaml=5.3.*
+  - r-base=3.6.*
+  - r-devtools=2.*
+  - r-essentials
+  - rpy2=3.3.*
+  - scikit-learn=0.23.*
+  - scipy=1.5.*
+  - seaborn=0.11.*
+  - umap-learn=0.4.*

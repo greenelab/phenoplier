@@ -10,25 +10,13 @@ dependencies:
   - pandas
   - pip
   - pytest
-  - python=3.8
+  - python=3.8.*
   - pyyaml
-  - r-base
+  - r-base=3.6.*
   - r-devtools
-  - r-ggplot2
+  - r-essentials
+  - rpy2
   - scikit-learn
   - scipy
   - seaborn
-  - tzlocal
- # rpy2 dependencies:
-  - more-itertools
-  - packaging
-  - pluggy
-  - py
-  - pytest
-  - curl
- # umap-learn dependencies:
-  - numba
-  - tbb
-  - pip:
-    - rpy2
-    - umap-learn
+  - umap-learn
