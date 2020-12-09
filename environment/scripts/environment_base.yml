@@ -9,6 +9,7 @@ dependencies:
   - nodejs
   - numpy
   - pandas
+  - papermill
   - pip
   - pytest
   - python=3.8.*

@@ -9,6 +9,7 @@ dependencies:
   - nodejs=14.*
   - numpy=1.19.*
   - pandas=1.1.*
+  - papermill=2.2.*
   - pip
   - pytest=6.1.*
   - python=3.8.*
