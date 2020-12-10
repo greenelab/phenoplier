@@ -1,10 +1,14 @@
 # Conda environment and data
 
-If you want to run scripts/notebook from PhenoPLIER, you need to follow these steps to create a
-conda environment and download the necessary data.
+If you want to run scripts/notebook from PhenoPLIER, you need to follow these
+steps to create a conda environment and download the necessary data.
+
+Keep in mind that the software only runs on Linux or macOS, **Windows is not
+supported** now.
 
 1. Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
-1. Open a terminal and execute all following steps in it.
+1. Open a terminal, run `cd environment` from the folder where you cloned this
+   repo, and execute all following steps in it.
 1. Run:
  
     ```bash
