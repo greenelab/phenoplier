@@ -23,15 +23,39 @@ modulated with different compounds.
 
 # Setup
 
-To prepare the environment to run the PhenoPLIER code, follow the steps in [environment](environment/).
-That will create a conda environment and download the necessary data.
+To prepare the environment to run the PhenoPLIER code, follow the steps in
+[environment](environment/). That will create a conda environment and download
+the necessary data.
 
 # Running code
 
-Once the environment is ready, you can start your JupyterLab server by running:
+## From command-line
+
+The code to preprocess data and generate results is in the `nbs/` folder. All
+notebooks are organized by directories, such as `01_preprocessing`, with file
+names that indicate the order in which they should be run. For example, to run
+all notebooks for the preprocessing step, you can use this command (requires
+[GNU Parallel](https://www.gnu.org/software/parallel/)):
 
 ```bash
-bash scripts/run_nbs.sh
+cd nbs/
+parallel -k --lb --halt 2 -j1 'bash run_nbs.sh {}' ::: 01_preprocessing/*.ipynb
 ```
 
-Go to `http://localhost:8892` and browse the `nbs` folder. Then run notebooks in the specified order.
+Or if you want to run all the analysis, you can use:
+
+```bash
+parallel -k --lb --halt 2 -j1 'bash run_nbs.sh {}' ::: nbs/**/*.ipynb
+```
+
+## From your browser
+
+Alternatively, you can start your JupyterLab server by running:
+
+```bash
+bash scripts/run_nbs_server.sh
+```
+
+Then, go to `http://localhost:8892`, browse the `nbs` folder, and run the
+notebooks in the specified order.
+
