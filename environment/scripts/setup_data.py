@@ -280,7 +280,7 @@ def download_multiplier_recount2_model(**kwargs):
 
 def download_multiplier_recount2_data(**kwargs):
     """
-    This method downloads the MultiPLIER model on recount2.
+    This method downloads the recount2 data used in MultiPLIER.
     """
     _get_file_from_zip(
         zip_file_url="https://ndownloader.figshare.com/files/10881866",
