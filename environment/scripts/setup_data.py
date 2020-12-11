@@ -11,7 +11,7 @@ from log import get_logger
 logger = get_logger("setup")
 
 
-# Methods names (that download files) which should not be included in testing mode (see
+# Methods names (that download files) which should not be included in light mode (see
 # below).
 AVOID_IN_TESTING_MODE = {
     "download_phenomexcan_smultixcan_mashr_zscores",
@@ -197,9 +197,9 @@ if __name__ == "__main__":
     from collections import defaultdict
 
     # create a list of available options:
-    #   --mode=full:    it downloads all the data.
-    #   --mode=testing: it downloads minimal data needed for running unit tests.
-    #                   This is useful for Github Action workflows.
+    #   --mode=full:  it downloads all the data.
+    #   --mode=light: it downloads a smaller set of the data. This is useful for
+    #                 Github Action workflows.
     AVAILABLE_ACTIONS = defaultdict(list)
 
     # Obtain all local attributes of this module and run functions to download files
@@ -214,7 +214,7 @@ if __name__ == "__main__":
             continue
 
         if key not in AVOID_IN_TESTING_MODE:
-            AVAILABLE_ACTIONS["testing"].append((key, value))
+            AVAILABLE_ACTIONS["light"].append((key, value))
 
         AVAILABLE_ACTIONS["full"].append((key, value))
 
