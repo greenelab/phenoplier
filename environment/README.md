@@ -25,6 +25,12 @@ supported** now.
 
     # Adjust the number of cores available for general tasks
     export PHENOPLIER_N_JOBS=2
+
+    # If you run the notebooks from the command line (using the
+    # `nbs/run_nbs.sh` script), this variable tells papermill to automatically
+    # override notebooks once finished (recommended). If not set, it will
+    # ask what you want to do.
+    export PHENOPLIER_RUN_NBS_OVERRIDE=1
    
     # Export this variable if you downloaded the manuscript sources and want to
     # generate the figures for it.
