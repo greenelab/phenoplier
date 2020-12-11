@@ -136,7 +136,7 @@ def download_multiplier_model_z_pkl(**kwargs):
     curl(
         "https://upenn.box.com/shared/static/pz07jiy99f8yx0fx2grle8i5cstpn7fz.pkl",
         output_file,
-        "f684701c49eef8b107577a759a065d9b",
+        "c3c84d70250ab34d06625eedc3d5ff29",
     )
 
 
@@ -145,7 +145,7 @@ def download_multiplier_model_metadata_pkl(**kwargs):
     curl(
         "https://upenn.box.com/shared/static/efeulwvivjtucunvrx2nwq06pyzs3pkq.pkl",
         output_file,
-        "26e799fcfe2ab363788693d41155fa78",
+        "21cfd84270d04ad30ac2bca7049c7dab",
     )
 
 
