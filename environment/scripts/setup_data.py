@@ -242,7 +242,7 @@ if __name__ == "__main__":
     #   --mode=full:  it downloads all the data.
     #   --mode=light: it downloads a smaller set of the data. This is useful for
     #                 Github Action workflows.
-    AVAILABLE_ACTIONS = defaultdict(list)
+    AVAILABLE_ACTIONS = defaultdict(dict)
 
     # Obtain all local attributes of this module and run functions to download files
     local_items = list(locals().items())
@@ -256,17 +256,23 @@ if __name__ == "__main__":
             continue
 
         if key not in AVOID_IN_TESTING_MODE:
-            AVAILABLE_ACTIONS["light"].append((key, value))
+            AVAILABLE_ACTIONS["light"][key] = value
 
-        AVAILABLE_ACTIONS["full"].append((key, value))
+        AVAILABLE_ACTIONS["full"][key] = value
 
     parser = argparse.ArgumentParser(description="PhenoPLIER data setup.")
     parser.add_argument(
         "--mode",
         choices=list(AVAILABLE_ACTIONS.keys()),
-        default="full",
+        default="light",
         help="Specifies which kind of data should be downloaded. It "
-        "could be all the data or just different subsets.",
+             "could be all the data (full) or a small subset (light, which is "
+             "used by default).",
+    )
+    parser.add_argument(
+        "--action",
+        help="Specifies a single action to be executed. It could be any of "
+             "the following: " + ' '.join(AVAILABLE_ACTIONS["full"].keys()),
     )
     args = parser.parse_args()
 
@@ -275,5 +281,17 @@ if __name__ == "__main__":
 
     method_args = vars(args)
 
-    for method_name, method in AVAILABLE_ACTIONS[args.mode]:
+    methods_to_run = {}
+
+    if args.action is not None:
+        if args.action not in AVAILABLE_ACTIONS['full']:
+            import sys
+            logger.error(f"The action does not exist: {args.action}")
+            sys.exit(1)
+
+        methods_to_run[args.action] = AVAILABLE_ACTIONS['full'][args.action]
+    else:
+        methods_to_run = AVAILABLE_ACTIONS[args.mode]
+
+    for method_name, method in methods_to_run.items():
         method(**method_args)
