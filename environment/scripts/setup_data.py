@@ -11,12 +11,15 @@ from log import get_logger
 logger = get_logger("setup")
 
 
-# Methods names (that download files) which should not be included in light mode (see
-# below).
-AVOID_IN_TESTING_MODE = {
+#
+# These are methods names (which download files) which should be included
+# in the full mode only (see __main__ below).
+#
+DATA_IN_FULL_MODE_ONLY = {
     "download_phenomexcan_smultixcan_mashr_zscores",
     "download_phenomexcan_smultixcan_mashr_pvalues",
     "download_multiplier_recount2_model",
+    "download_multiplier_recount2_data",
 }
 
 
@@ -191,35 +194,44 @@ def download_multiplier_banchereau_mcp_neutrophils(**kwargs):
     )
 
 
-def download_multiplier_recount2_model(**kwargs):
+def _get_file_from_zip(zip_file_url, zip_file_path, zip_file_md5, zip_internal_filename, output_file, output_file_md5):
     """
-    This method downloads the MultiPLIER model on recount2. Since this file is inside
-    a public zip file, it first downloads the zip file and extracts only the requested
-    file.
+    This method downloads a zip file and extracts a particular file inside
+    it.
+
+    TODO: finish documentation of arguments
+
+    Args:
+        zip_file_url:
+        zip_file_path:
+        zip_file_md5:
+        zip_internal_filename:
+        output_file:
+        output_file_md5:
     """
-    # TODO: refactor this method into a generic one to download files within zip files.
     from utils import md5_matches
 
-    output_file = conf.MULTIPLIER["RECOUNT2_MODEL_FILE"]
+    # output_file = conf.MULTIPLIER["RECOUNT2_MODEL_FILE"]
 
     # do not download file again if it exists and MD5 matches the expected one
-    if output_file.exists() and md5_matches(
-        "fc7446ff989d0bd0f1aae1851d192dc6", output_file
-    ):
+    if output_file.exists() and md5_matches(output_file_md5, output_file):
         logger.info(f"File already downloaded: {output_file}")
         return
 
     # download zip file
-    parent_dir = conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent
-    zip_file_path = Path(parent_dir, "recount2_PLIER_data.zip").resolve()
+    parent_dir = Path(zip_file_path).parent
+    # parent_dir = conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent
+    # zip_file_path = Path(parent_dir, "recount2_PLIER_data.zip").resolve()
 
     curl(
-        "https://ndownloader.figshare.com/files/10881866",
+        zip_file_url,
         zip_file_path,
+        zip_file_md5,
+        logger,
     )
 
     # extract model from zip file
-    zip_internal_filename = Path("recount2_PLIER_data", "recount_PLIER_model.RDS")
+    # zip_internal_filename = Path("recount2_PLIER_data", "recount_PLIER_model.RDS")
     logger.info(f"Extracting {zip_internal_filename}")
     import zipfile
 
@@ -231,7 +243,47 @@ def download_multiplier_recount2_model(**kwargs):
     Path(parent_dir, zip_internal_filename.parent).rmdir()
 
     # delete zip file
-    zip_file_path.unlink()
+    # zip_file_path.unlink()
+
+
+def download_multiplier_recount2_model(**kwargs):
+    """
+    This method downloads the MultiPLIER model on recount2.
+    """
+    _get_file_from_zip(
+        zip_file_url="https://ndownloader.figshare.com/files/10881866",
+        zip_file_path=Path(
+            conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent,
+            "recount2_PLIER_data.zip"
+        ).resolve(),
+        zip_file_md5="f084992c5d91817820a2782c9441b9f6",
+        zip_internal_filename=Path(
+            "recount2_PLIER_data",
+            "recount_PLIER_model.RDS"
+        ),
+        output_file=conf.MULTIPLIER["RECOUNT2_MODEL_FILE"],
+        output_file_md5="fc7446ff989d0bd0f1aae1851d192dc6",
+    )
+
+
+def download_multiplier_recount2_data(**kwargs):
+    """
+    This method downloads the MultiPLIER model on recount2.
+    """
+    _get_file_from_zip(
+        zip_file_url="https://ndownloader.figshare.com/files/10881866",
+        zip_file_path=Path(
+            conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent,
+            "recount2_PLIER_data.zip"
+        ).resolve(),
+        zip_file_md5="f084992c5d91817820a2782c9441b9f6",
+        zip_internal_filename=Path(
+            "recount2_PLIER_data",
+            "recount_data_prep_PLIER.RDS"
+        ),
+        output_file=conf.RECOUNT2["PREPROCESSED_GENE_EXPRESSION_FILE"],
+        output_file_md5="4f806e06069fd339f8fcff7c98cecff0",
+    )
 
 
 if __name__ == "__main__":
@@ -255,7 +307,7 @@ if __name__ == "__main__":
         ):
             continue
 
-        if key not in AVOID_IN_TESTING_MODE:
+        if key not in DATA_IN_FULL_MODE_ONLY:
             AVAILABLE_ACTIONS["light"][key] = value
 
         AVAILABLE_ACTIONS["full"][key] = value
