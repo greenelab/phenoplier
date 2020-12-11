@@ -43,8 +43,12 @@ supported** now.
 1. Download the data:
 
     ```bash
-    python scripts/setup_data.py
+    python scripts/setup_data.py --mode light
     ```
+
+    Note that if you want to download all the data you have to use ``--mode
+    full``.  The full data set contains the original MultiPLIER RDS file with
+    the models, which is only necessary if you need to process it again.
 
 
 # Developer usage
