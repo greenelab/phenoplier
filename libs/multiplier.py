@@ -1,8 +1,6 @@
 """
 Classes and code with MultiPLIER related functionality.
 """
-from pathlib import Path
-
 import conf
 import numpy as np
 import pandas as pd

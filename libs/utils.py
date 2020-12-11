@@ -2,7 +2,6 @@
 General utility functions.
 """
 import hashlib
-import os
 import re
 from pathlib import Path
 from subprocess import run
