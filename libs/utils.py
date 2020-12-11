@@ -42,7 +42,7 @@ def chunker(seq, size):
     return (seq[pos : pos + size] for pos in range(0, len(seq), size))
 
 
-def curl(url: str, output_file: str, md5hash: str = None, logger=get_logger("setup")):
+def curl(url: str, output_file: str, md5hash: str = None, logger=None):
     """Downloads a file from an URL. If the md5hash option is specified, it checks
     if the file was successfully downloaded (whether MD5 matches).
 
@@ -56,6 +56,8 @@ def curl(url: str, output_file: str, md5hash: str = None, logger=get_logger("set
         md5hash: expected MD5 hash of file to download.
         logger: Logger instance.
     """
+    logger = logger or get_logger('none')
+
     if Path(output_file).exists() and (
         md5hash is None or md5_matches(md5hash, output_file)
     ):
