@@ -150,6 +150,9 @@ def download_multiplier_model_metadata_pkl(**kwargs):
 
 
 def download_ukb_to_efo_map_tsv(**kwargs):
+    # The original file was downloaded from:
+    # https://github.com/EBISPOT/EFO-UKB-mappings/blob/master/UK_Biobank_master_file.tsv
+    # on Nov 19, 2020
     output_file = conf.UK_BIOBANK["UKBCODE_TO_EFO_MAP_FILE"]
     curl(
         "https://upenn.box.com/shared/static/hwlpdlp3pq9buv955q5grlkxwwfxt6ul.tsv",
@@ -159,6 +162,9 @@ def download_ukb_to_efo_map_tsv(**kwargs):
 
 
 def download_efo_ontology(**kwargs):
+    # The original file was download from:
+    # http://www.ebi.ac.uk/efo/efo.obo
+    # on Nov 16, 2020
     output_file = conf.GENERAL["EFO_ONTOLOGY_OBO_FILE"]
     curl(
         "https://upenn.box.com/shared/static/nsrxx3szg4s69j84dg2oakx6mwjxoarb.obo",

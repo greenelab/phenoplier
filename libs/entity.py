@@ -182,11 +182,10 @@ class Trait(object, metaclass=ABCMeta):
 
     @staticmethod
     def _simplify_trait_name(s):
-        """Given any string representing a trait name, it returns a simplified version
-        of it.
-
-        It removes any character that is not a word, a number or a separator. Then
-        it replaces all separators by an underscore.
+        """
+        Given any string representing a trait name, it returns a simplified
+        version of it. It removes any character that is not a word, a number
+        or a separator. Then it replaces all separators by an underscore.
 
         Args:
             s (str): string to be simplified.

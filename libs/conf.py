@@ -152,9 +152,6 @@ PHENOMEXCAN["SMULTIXCAN_MASHR_PVALUES_FILE"] = Path(
 ).resolve()
 
 # GWAS info
-PHENOMEXCAN["UKBCODE_TO_EFO_MAPPING_FILE"] = Path(
-    PHENOMEXCAN["BASE_DIR"], 'ukbiobank_efo_mappings_all.tsv',
-).resolve()
 PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"] = Path(
     PHENOMEXCAN["BASE_DIR"], "phenotypes.both_sexes.tsv.gz"
 ).resolve()
