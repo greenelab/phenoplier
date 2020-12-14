@@ -9,12 +9,31 @@ import conf
 #
 # Generic reader
 #
-def read_pickle(file_path, **kwargs):
-    """Returns functions to read any python object stored as a pickle file."""
-    return lambda: pd.read_pickle(file_path)
+def read_pickle(file_path: str, **kwargs):
+    """
+    Returns functions to read any python object stored as a pickle file
+
+    Args:
+        file_path: file path to be loaded.
+        **kwargs: any other argument given to pandas.read_pickle
+
+    Returns:
+
+    """
+    return lambda: pd.read_pickle(file_path, **kwargs)
 
 
-def read_tsv(file_path, **kwargs):
+def read_tsv(file_path: str, **kwargs):
+    """
+    Return functions to read any tab-separated text data file.
+
+    Args:
+        file_path: file path to be loaded.
+        **kwargs: any other argument given to pandas.read_csv
+
+    Returns:
+
+    """
     return lambda: pd.read_csv(
         file_path,
         sep="\t",
@@ -76,14 +95,6 @@ def read_genes_biomart_data():
     )
 
 
-def read_gene_map_id_to_name():
-    return pd.read_pickle(conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"])
-
-
-def read_gene_map_name_to_id():
-    return pd.read_pickle(conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"])
-
-
 #
 # This dictionary specifies as the value the function that knows how to read the
 # file given in the key.
@@ -107,12 +118,6 @@ DATA_READERS = {
     conf.PHENOMEXCAN[
         "GTEX_GWAS_PHENO_INFO_FILE"
     ]: read_phenomexcan_gtex_gwas_pheno_info,
-    # conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"]: read_gene_map_id_to_name,
-    # conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"]: read_gene_map_name_to_id,
-
-    # # MultiPLIER
-    # conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]: read_multiplier_model_matrix_z,
-    # conf.MULTIPLIER["MODEL_B_MATRIX_FILE"]: read_multiplier_model_matrix_b,
 }
 
 #

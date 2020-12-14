@@ -4,20 +4,22 @@ pandas.DataFrame objects.
 """
 from pathlib import Path
 
+import pandas as pd
+
 from data.readers import DATA_READERS, DATA_FORMAT_READERS
 
 DATA_CACHE = {}
 
 
-def read_data(filepath: Path, **kwargs):
-    """Reads any data file given and returns a pandas.DataFrame object.
+def read_data(filepath: Path, **kwargs) -> pd.DataFrame:
+    """Reads any data file given and returns a data frame.
 
     Args:
-        filepath (str): any file path present in the conf module and which has a
+        filepath: any file path present in the conf module and which has a
         data reader (data.readers.DATA_READER).
 
     Returns:
-        A pandas.DataFrame instance.
+        The data as a dataframe.
 
     Raises:
         ValueError: if the file path has no data reader specified in
