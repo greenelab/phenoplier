@@ -6,7 +6,7 @@ steps to create a conda environment and download the necessary data.
 Keep in mind that the software only runs on Linux or macOS, **Windows is not
 supported** now.
 
-1. Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html).
+1. Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or Anaconda.
 1. Open a terminal, run `cd environment` from the folder where you cloned this
    repo, and execute all following steps in it.
 1. Run:
