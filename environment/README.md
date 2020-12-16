@@ -42,6 +42,8 @@ supported** now.
 
 1. Adjust your `PYTHONPATH` variable to include the `libs` directory:
 
+FIXME: readlink does not work in macOS!!!!!!!!!!!!!!!!!!!!!!!
+
     ```bash
     export PYTHONPATH=`readlink -f ../libs/`:$PYTHONPATH
     ```
