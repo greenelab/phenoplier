@@ -167,6 +167,9 @@ PHENOMEXCAN["TRAITS_FULLCODE_TO_EFO_MAP_FILE"] = Path(
 
 # gene association results
 PHENOMEXCAN["GENE_ASSOC_DIR"] = Path(PHENOMEXCAN["BASE_DIR"], "gene_assoc").resolve()
+PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"] = Path(
+    PHENOMEXCAN["GENE_ASSOC_DIR"], "spredixcan"
+).resolve()
 PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"] = Path(
     PHENOMEXCAN["GENE_ASSOC_DIR"], "smultixcan-mashr-zscores.pkl"
 ).resolve()
