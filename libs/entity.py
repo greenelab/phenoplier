@@ -82,13 +82,16 @@ class Trait(object, metaclass=ABCMeta):
 
     def get_efo_info(self, mapping_type=None):
         """
-        TODO: COMPLETE
+        It returns a EFO_INFO (namedtuple) with EFO code and label for this
+        trait.
 
         Args:
-            mapping_type:
+            mapping_type (str): mapping type to be used for the UK Biobank
+            mappings. It could be Exact, Broad or Narrow.
 
         Returns:
-
+            An EFO_INFO (namedtupled) with the EFO code and label for this
+            trait.
         """
         efo_map_data = self.get_traits_to_efo_map_data()
 
