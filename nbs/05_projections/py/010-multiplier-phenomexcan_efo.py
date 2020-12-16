@@ -15,6 +15,9 @@
 # %% [markdown] papermill={"duration": 0.047033, "end_time": "2020-12-14T21:31:29.800874", "exception": false, "start_time": "2020-12-14T21:31:29.753841", "status": "completed"} tags=[]
 # # Description
 
+# %% [markdown]
+# It projects the PhenomeXcan results (EFO version) into the MultiPLIER latent space.
+
 # %% [markdown] papermill={"duration": 0.011994, "end_time": "2020-12-14T21:31:29.828385", "exception": false, "start_time": "2020-12-14T21:31:29.816391", "status": "completed"} tags=[]
 # # Modules loading
 

@@ -15,6 +15,9 @@
 # %% [markdown] papermill={"duration": 0.068364, "end_time": "2020-12-14T21:24:23.427012", "exception": false, "start_time": "2020-12-14T21:24:23.358648", "status": "completed"} tags=[]
 # # Description
 
+# %% [markdown]
+# It creates a text file with mappings for all traits in PhenomeXcan (many of them are from UK Biobank, and a small set of 42 traits are from other studies) to EFO labels. It also adds a category for each trait, which now contains only one category: `disease` (or empty if not categorized).
+
 # %% [markdown] papermill={"duration": 0.031032, "end_time": "2020-12-14T21:24:23.491076", "exception": false, "start_time": "2020-12-14T21:24:23.460044", "status": "completed"} tags=[]
 # # Modules loading
 

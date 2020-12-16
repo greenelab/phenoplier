@@ -15,6 +15,9 @@
 # %% [markdown] papermill={"duration": 0.047347, "end_time": "2020-12-14T21:24:39.706211", "exception": false, "start_time": "2020-12-14T21:24:39.658864", "status": "completed"} tags=[]
 # # Description
 
+# %% [markdown]
+# It uses the PhenomeXcan traits to EFO mapping files to group traits that end up having the same EFO label. Currently, this only combines the S-MultiXcan results (z-scores) using the [Stouffer method](https://en.wikipedia.org/wiki/Fisher%27s_method#Relation_to_Stouffer's_Z-score_method) (implemented in functions `get_weights` and `_combine_z_scores` below).
+
 # %% [markdown] papermill={"duration": 0.031906, "end_time": "2020-12-14T21:24:39.770133", "exception": false, "start_time": "2020-12-14T21:24:39.738227", "status": "completed"} tags=[]
 # # Modules loading
 
@@ -82,6 +85,13 @@ traits_sample_size.head()
 
 # %% papermill={"duration": 0.025799, "end_time": "2020-12-14T21:24:41.488390", "exception": false, "start_time": "2020-12-14T21:24:41.462591", "status": "completed"} tags=[]
 def get_weights(traits_fullcodes):
+    """
+    This function takes a list of PhenomeXcan traits that map to the same EFO label, and returns their weights using sample sizes
+    from GWASs. In the case of binary traits (i.e. diseases) the formula is:
+        (n_cases / n_controls) * sqrt(n)
+    where n=n_cases+n_controls
+    In case of continuous traits (such as height) it is just n
+    """
     return np.array([
         (t.n_cases / t.n_controls) * np.sqrt(t.n)
         if not pd.isnull((t := phenomexcan_fullcode_to_traits[trait_name]).n_cases) and not pd.isnull(t.n_controls)
@@ -90,6 +100,19 @@ def get_weights(traits_fullcodes):
     ])
 
 def _combine_z_scores(x):
+    """
+    Combines PhenomeXcan traits that map to the same EFO label using the Stouffer's Z-score method:
+    https://en.wikipedia.org/wiki/Fisher%27s_method#Relation_to_Stouffer's_Z-score_method
+    
+    It uses weights for each traits, which are computed with function get_weights.
+    
+    Args:
+        x: a pandas.DataFrame with PhenomeXcan traits in the columns, and genes in the rows. Values are z-scores of association in S-MultiXcan.
+    
+    Returns:
+        pandas.Series for all genes and the single EFO label for which all traits in x map to. Values are the combined z-scores.
+    """
+    # combine z-scores using Stouffer's method
     weights = get_weights(x.columns)
     numerator = (x * weights).sum(1)
     denominator = np.sqrt(np.power(weights, 2).sum())
