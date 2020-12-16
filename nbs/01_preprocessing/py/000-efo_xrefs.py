@@ -15,6 +15,9 @@
 # %% [markdown] papermill={"duration": 0.038284, "end_time": "2020-12-14T21:24:14.404156", "exception": false, "start_time": "2020-12-14T21:24:14.365872", "status": "completed"} tags=[]
 # # Description
 
+# %% [markdown]
+# It extracts from the EFO ontology all the xrefs from efo labels to other ontologies/datasets (such as Disease Ontology, ICD9, etc).
+
 # %% [markdown] papermill={"duration": 0.012823, "end_time": "2020-12-14T21:24:14.429845", "exception": false, "start_time": "2020-12-14T21:24:14.417022", "status": "completed"} tags=[]
 # # Modules loading
 
