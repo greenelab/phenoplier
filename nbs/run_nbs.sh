@@ -5,6 +5,8 @@ set -e
 # papermill. When it finishes, it asks whether it should override the notebook
 # or not; this can be specified with environmental variable
 # PHENOPLIER_RUN_NBS_OVERRIDE=1
+#
+# This script must be run within the nbs/ folder.
 
 if [ -z "${1}" ]; then
   echo "Specify notebook to run"
@@ -29,4 +31,8 @@ if [ "${PHENOPLIER_RUN_NBS_OVERRIDE}" != "1" ]; then
     done
 else
     mv $filename $1
+fi
+
+if [ "${PHENOPLIER_RUN_NBS_NO_JUPYTEXT}" != "1" ]; then
+  bash ../scripts/convert_ipynb_to_py ${1}
 fi
