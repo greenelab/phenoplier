@@ -2,7 +2,7 @@
 set -e
 
 # This script runs a Jupyter notebook (.ipynb) from the command line using
-# parermill. When it finishes, it asks whether it should override the notebook
+# papermill. When it finishes, it asks whether it should override the notebook
 # or not; this can be specified with environmental variable
 # PHENOPLIER_RUN_NBS_OVERRIDE=1
 
