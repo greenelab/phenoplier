@@ -62,8 +62,7 @@ RESULTS["BASE_DIR"] = RESULTS_DIR
 RESULTS["PROJECTIONS_DIR"] = Path(RESULTS["BASE_DIR"], "projections").resolve()
 
 RESULTS["DATA_TRANSFORMATIONS_DIR"] = Path(
-    RESULTS["BASE_DIR"],
-    "data_transformations"
+    RESULTS["BASE_DIR"], "data_transformations"
 ).resolve()
 
 RESULTS["CLUSTERING_DIR"] = Path(RESULTS["BASE_DIR"], "clustering").resolve()

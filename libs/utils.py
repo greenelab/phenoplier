@@ -70,8 +70,9 @@ def md5_matches(expected_md5: str, filepath: str) -> bool:
         return expected_md5 == current_md5
 
 
-def generate_result_set_name(method_options: Dict, options_sep: str = '-',
-                             prefix: str = None, suffix: str = None) -> str:
+def generate_result_set_name(
+    method_options: Dict, options_sep: str = "-", prefix: str = None, suffix: str = None
+) -> str:
     """Generates a filename for a result set with the method's options given.
 
     When a method is run with several options (like a clustering/classification
@@ -98,16 +99,18 @@ def generate_result_set_name(method_options: Dict, options_sep: str = '-',
         return s
 
     output_file_suffix = options_sep.join(
-        [f'{simplify_option_name(k)}_{v}' for k, v in sorted(method_options.items(), reverse=False)]
+        [
+            f"{simplify_option_name(k)}_{v}"
+            for k, v in sorted(method_options.items(), reverse=False)
+        ]
     )
 
     filename = output_file_suffix
 
     if prefix is not None:
-        filename = f'{prefix}{filename}'
+        filename = f"{prefix}{filename}"
 
     if suffix is not None:
-        filename = f'{filename}{suffix}'
+        filename = f"{filename}{suffix}"
 
     return filename
-

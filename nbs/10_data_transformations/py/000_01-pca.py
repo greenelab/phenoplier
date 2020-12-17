@@ -43,13 +43,13 @@ from utils import generate_result_set_name
 # ## Input data
 
 # %% papermill={"duration": 0.020189, "end_time": "2020-11-30T18:31:24.439057", "exception": false, "start_time": "2020-11-30T18:31:24.418868", "status": "completed"} tags=[]
-INPUT_FILEPATH_STEM = 'projection-smultixcan-efo_partial-mashr-zscores'
+INPUT_FILEPATH_STEM = "projection-smultixcan-efo_partial-mashr-zscores"
 
 # %% papermill={"duration": 0.023337, "end_time": "2020-11-30T18:31:24.470745", "exception": false, "start_time": "2020-11-30T18:31:24.447408", "status": "completed"} tags=[]
 INPUT_FILEPATH = Path(
     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
-    'z_score_std',
-    f'z_score_std-{INPUT_FILEPATH_STEM}.pkl',
+    "z_score_std",
+    f"z_score_std-{INPUT_FILEPATH_STEM}.pkl",
 ).resolve()
 display(INPUT_FILEPATH)
 
@@ -61,10 +61,7 @@ display(input_filepath_stem)
 
 # %% papermill={"duration": 0.021432, "end_time": "2020-11-30T18:31:24.517997", "exception": false, "start_time": "2020-11-30T18:31:24.496565", "status": "completed"} tags=[]
 # output dir for this notebook
-RESULTS_DIR = Path(
-    conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
-    'pca'
-).resolve()
+RESULTS_DIR = Path(conf.RESULTS["DATA_TRANSFORMATIONS_DIR"], "pca").resolve()
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 display(RESULTS_DIR)
@@ -75,9 +72,9 @@ display(RESULTS_DIR)
 # %% papermill={"duration": 0.021201, "end_time": "2020-11-30T18:31:24.565989", "exception": false, "start_time": "2020-11-30T18:31:24.544788", "status": "completed"} tags=[]
 # parameters of the dimentionality reduction steps
 DR_OPTIONS = {
-    'n_components': 50,
-    'svd_solver': 'full',
-    'random_state': 0,
+    "n_components": 50,
+    "svd_solver": "full",
+    "random_state": 0,
 }
 
 # %% papermill={"duration": 0.021208, "end_time": "2020-11-30T18:31:24.596221", "exception": false, "start_time": "2020-11-30T18:31:24.575013", "status": "completed"} tags=[]
@@ -126,10 +123,8 @@ g = sns.pairplot(data=dr_data.iloc[:, :5])
 output_file = Path(
     RESULTS_DIR,
     generate_result_set_name(
-        ALL_OPTIONS,
-        prefix=f'pca-{input_filepath_stem}-',
-        suffix='.pkl'
-    )
+        ALL_OPTIONS, prefix=f"pca-{input_filepath_stem}-", suffix=".pkl"
+    ),
 ).resolve()
 
 display(output_file)

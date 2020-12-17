@@ -43,8 +43,8 @@ import conf
 
 # %% papermill={"duration": 0.025765, "end_time": "2020-11-30T18:31:21.532259", "exception": false, "start_time": "2020-11-30T18:31:21.506494", "status": "completed"} tags=[]
 INPUT_FILEPATH = Path(
-    conf.RESULTS['PROJECTIONS_DIR'],
-    'projection-smultixcan-efo_partial-mashr-zscores.pkl'
+    conf.RESULTS["PROJECTIONS_DIR"],
+    "projection-smultixcan-efo_partial-mashr-zscores.pkl",
 ).resolve()
 display(INPUT_FILEPATH)
 
@@ -56,10 +56,7 @@ display(input_filepath_stem)
 
 # %% papermill={"duration": 0.020543, "end_time": "2020-11-30T18:31:21.577496", "exception": false, "start_time": "2020-11-30T18:31:21.556953", "status": "completed"} tags=[]
 # output dir for this notebook
-RESULTS_DIR = Path(
-    conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
-    'z_score_std'
-).resolve()
+RESULTS_DIR = Path(conf.RESULTS["DATA_TRANSFORMATIONS_DIR"], "z_score_std").resolve()
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 display(RESULTS_DIR)
@@ -85,9 +82,7 @@ display(data_stats)
 
 # %% papermill={"duration": 0.11351, "end_time": "2020-11-30T18:31:21.907840", "exception": false, "start_time": "2020-11-30T18:31:21.794330", "status": "completed"} tags=[]
 scaled_data = pd.DataFrame(
-    data=scale(data),
-    index=data.index.copy(),
-    columns=data.columns.copy()
+    data=scale(data), index=data.index.copy(), columns=data.columns.copy()
 )
 
 # %% papermill={"duration": 0.02348, "end_time": "2020-11-30T18:31:21.942449", "exception": false, "start_time": "2020-11-30T18:31:21.918969", "status": "completed"} tags=[]
@@ -97,17 +92,27 @@ display(scaled_data.shape)
 display(scaled_data.head())
 
 # %% papermill={"duration": 0.050483, "end_time": "2020-11-30T18:31:22.051794", "exception": false, "start_time": "2020-11-30T18:31:22.001311", "status": "completed"} tags=[]
-scaled_data_stats = scaled_data.iloc[:,:10].describe()
+scaled_data_stats = scaled_data.iloc[:, :10].describe()
 display(scaled_data_stats)
 
 # %% [markdown] papermill={"duration": 0.010906, "end_time": "2020-11-30T18:31:22.073630", "exception": false, "start_time": "2020-11-30T18:31:22.062724", "status": "completed"} tags=[]
 # ## Testing
 
 # %% papermill={"duration": 0.023383, "end_time": "2020-11-30T18:31:22.107636", "exception": false, "start_time": "2020-11-30T18:31:22.084253", "status": "completed"} tags=[]
-assert np.all([np.isclose(scaled_data_stats.loc['mean', c], 0.0) for c in scaled_data_stats.columns])
+assert np.all(
+    [
+        np.isclose(scaled_data_stats.loc["mean", c], 0.0)
+        for c in scaled_data_stats.columns
+    ]
+)
 
 # %% papermill={"duration": 0.023189, "end_time": "2020-11-30T18:31:22.142127", "exception": false, "start_time": "2020-11-30T18:31:22.118938", "status": "completed"} tags=[]
-assert np.all([np.isclose(scaled_data_stats.loc['std', c], 1.0, atol=1e-03) for c in scaled_data_stats.columns])
+assert np.all(
+    [
+        np.isclose(scaled_data_stats.loc["std", c], 1.0, atol=1e-03)
+        for c in scaled_data_stats.columns
+    ]
+)
 
 # %% [markdown] papermill={"duration": 0.010762, "end_time": "2020-11-30T18:31:22.164014", "exception": false, "start_time": "2020-11-30T18:31:22.153252", "status": "completed"} tags=[]
 # # Save
@@ -115,7 +120,7 @@ assert np.all([np.isclose(scaled_data_stats.loc['std', c], 1.0, atol=1e-03) for 
 # %% papermill={"duration": 0.024102, "end_time": "2020-11-30T18:31:22.199112", "exception": false, "start_time": "2020-11-30T18:31:22.175010", "status": "completed"} tags=[]
 output_file = Path(
     RESULTS_DIR,
-    f'z_score_std-{input_filepath_stem}.pkl',
+    f"z_score_std-{input_filepath_stem}.pkl",
 ).resolve()
 
 display(output_file)

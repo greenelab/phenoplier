@@ -43,13 +43,13 @@ from utils import generate_result_set_name
 # ## Input data
 
 # %% papermill={"duration": 0.019311, "end_time": "2020-11-30T18:31:33.810267", "exception": false, "start_time": "2020-11-30T18:31:33.790956", "status": "completed"} tags=[]
-INPUT_FILEPATH_STEM = 'projection-smultixcan-efo_partial-mashr-zscores'
+INPUT_FILEPATH_STEM = "projection-smultixcan-efo_partial-mashr-zscores"
 
 # %% papermill={"duration": 0.022739, "end_time": "2020-11-30T18:31:33.840220", "exception": false, "start_time": "2020-11-30T18:31:33.817481", "status": "completed"} tags=[]
 INPUT_FILEPATH = Path(
     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
-    'z_score_std',
-    f'z_score_std-{INPUT_FILEPATH_STEM}.pkl',
+    "z_score_std",
+    f"z_score_std-{INPUT_FILEPATH_STEM}.pkl",
 ).resolve()
 display(INPUT_FILEPATH)
 
@@ -61,10 +61,7 @@ display(input_filepath_stem)
 
 # %% papermill={"duration": 0.02057, "end_time": "2020-11-30T18:31:33.884349", "exception": false, "start_time": "2020-11-30T18:31:33.863779", "status": "completed"} tags=[]
 # output dir for this notebook
-RESULTS_DIR = Path(
-    conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
-    'umap'
-).resolve()
+RESULTS_DIR = Path(conf.RESULTS["DATA_TRANSFORMATIONS_DIR"], "umap").resolve()
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 display(RESULTS_DIR)
@@ -76,10 +73,10 @@ display(RESULTS_DIR)
 # parameters of the dimentionality reduction steps
 # note that these are the default parameters of UMAP (metric and n_neighbors)
 DR_OPTIONS = {
-    'n_components': [5, 10, 20, 30, 40, 50],
-    'metric': 'euclidean',
-    'n_neighbors': 15,
-    'random_state': 0,
+    "n_components": [5, 10, 20, 30, 40, 50],
+    "metric": "euclidean",
+    "n_neighbors": 15,
+    "random_state": 0,
 }
 
 # %% papermill={"duration": 0.020501, "end_time": "2020-11-30T18:31:33.956090", "exception": false, "start_time": "2020-11-30T18:31:33.935589", "status": "completed"} tags=[]
@@ -111,36 +108,34 @@ from data.dimreduction import get_umap_proj
 
 # %% papermill={"duration": 116.453553, "end_time": "2020-11-30T18:33:30.613431", "exception": false, "start_time": "2020-11-30T18:31:34.159878", "status": "completed"} tags=[]
 # Get a UMAP representation for all n_components configurations
-for n_comp in DR_OPTIONS['n_components']:
-    print(f'# components: {n_comp}')
-    
+for n_comp in DR_OPTIONS["n_components"]:
+    print(f"# components: {n_comp}")
+
     # prepare options of n_comp
     options = ALL_OPTIONS.copy()
-    options['n_components'] = n_comp
-    options = {k:v for k, v in options.items() if k in DR_OPTIONS}
-    
+    options["n_components"] = n_comp
+    options = {k: v for k, v in options.items() if k in DR_OPTIONS}
+
     # get projection
     dr_data = get_umap_proj(data, options)
-    
+
     # check data dimensionality
     display(dr_data.shape)
     assert dr_data.shape == (data.shape[0], n_comp)
-    
+
     display(dr_data.iloc[:, 0:5].describe())
-    
+
     # save
     output_file = Path(
         RESULTS_DIR,
         generate_result_set_name(
-            options,
-            prefix=f'umap-{input_filepath_stem}-',
-            suffix='.pkl'
-        )
+            options, prefix=f"umap-{input_filepath_stem}-", suffix=".pkl"
+        ),
     ).resolve()
     display(output_file)
-    
+
     dr_data.to_pickle(output_file)
-    
-    print('\n')
+
+    print("\n")
 
 # %% papermill={"duration": 0.015327, "end_time": "2020-11-30T18:33:30.644774", "exception": false, "start_time": "2020-11-30T18:33:30.629447", "status": "completed"} tags=[]

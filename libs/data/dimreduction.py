@@ -18,14 +18,14 @@ def get_data_proj(dim_red_method_obj, data: pd.DataFrame) -> pd.DataFrame:
         a new data frame with the data projected using the method provided.
     """
     method_name = type(dim_red_method_obj).__name__
-    display(f'{method_name} object: {dim_red_method_obj}')
+    display(f"{method_name} object: {dim_red_method_obj}")
 
     proj_data = dim_red_method_obj.fit_transform(data)
 
     return pd.DataFrame(
         data=proj_data,
         index=data.index.copy(),
-        columns=[f'{method_name}{i+1}' for i in range(proj_data.shape[1])]
+        columns=[f"{method_name}{i+1}" for i in range(proj_data.shape[1])],
     )
 
 
