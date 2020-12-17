@@ -19,7 +19,12 @@ echo $nbs_xpref
 output_folder="${nbs_folder}/py"
 mkdir -p $output_folder
 
+output_file="${output_folder}/${nbs_xpref}.py"
+
 jupytext \
-  --to py:percent \
+  --to auto:percent \
   ${NOTEBOOK} \
-  --output ${output_folder}/${nbs_xpref}.py
+  --output ${output_file}
+
+black ${output_file}
+
