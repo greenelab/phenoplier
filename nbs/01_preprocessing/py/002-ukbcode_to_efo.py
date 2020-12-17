@@ -28,7 +28,6 @@
 
 # %% papermill={"duration": 0.382904, "end_time": "2020-12-14T21:24:23.979193", "exception": false, "start_time": "2020-12-14T21:24:23.596289", "status": "completed"} tags=[]
 import re
-from pathlib import Path
 from shutil import copyfile
 
 from IPython.display import display
@@ -325,7 +324,6 @@ def _add_term_labels(row):
         labels.append(new_label.lower())
 
     return " AND ".join(labels)
-
 
 # %% [markdown]
 # ## Apply
