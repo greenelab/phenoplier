@@ -39,9 +39,7 @@ from data.cache import read_data
 # # Settings
 
 # %% papermill={"duration": 0.025769, "end_time": "2020-12-11T20:14:36.162744", "exception": false, "start_time": "2020-12-11T20:14:36.136975", "status": "completed"} tags=[]
-RESULTS_PROJ_OUTPUT_DIR = Path(
-    conf.RESULTS['PROJECTIONS_DIR']
-)
+RESULTS_PROJ_OUTPUT_DIR = Path(conf.RESULTS["PROJECTIONS_DIR"])
 
 RESULTS_PROJ_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -91,10 +89,12 @@ smultixcan_results.head()
 # ## Remove duplicated gene entries
 
 # %% papermill={"duration": 0.026447, "end_time": "2020-12-11T20:14:40.231569", "exception": false, "start_time": "2020-12-11T20:14:40.205122", "status": "completed"} tags=[]
-smultixcan_results.index[smultixcan_results.index.duplicated(keep='first')]
+smultixcan_results.index[smultixcan_results.index.duplicated(keep="first")]
 
 # %% papermill={"duration": 0.433325, "end_time": "2020-12-11T20:14:40.678778", "exception": false, "start_time": "2020-12-11T20:14:40.245453", "status": "completed"} tags=[]
-smultixcan_results = smultixcan_results.loc[~smultixcan_results.index.duplicated(keep='first')]
+smultixcan_results = smultixcan_results.loc[
+    ~smultixcan_results.index.duplicated(keep="first")
+]
 
 # %% papermill={"duration": 0.026498, "end_time": "2020-12-11T20:14:40.722900", "exception": false, "start_time": "2020-12-11T20:14:40.696402", "status": "completed"} tags=[]
 smultixcan_results.shape
@@ -106,7 +106,7 @@ smultixcan_results.shape
 # **TODO**: it might be better to try to impute this values
 
 # %% papermill={"duration": 0.591332, "end_time": "2020-12-11T20:14:41.384591", "exception": false, "start_time": "2020-12-11T20:14:40.793259", "status": "completed"} tags=[]
-smultixcan_results = smultixcan_results.dropna(how='any')
+smultixcan_results = smultixcan_results.dropna(how="any")
 
 # %% papermill={"duration": 0.024689, "end_time": "2020-12-11T20:14:41.424853", "exception": false, "start_time": "2020-12-11T20:14:41.400164", "status": "completed"} tags=[]
 smultixcan_results.shape
@@ -133,26 +133,17 @@ smultixcan_into_multiplier.head()
 # # Quick analysis
 
 # %% papermill={"duration": 0.027054, "end_time": "2020-12-11T20:14:46.376539", "exception": false, "start_time": "2020-12-11T20:14:46.349485", "status": "completed"} tags=[]
-(
-    smultixcan_into_multiplier.loc['LV603']
-    .sort_values(ascending=False)
-    .head(20)
-)
+(smultixcan_into_multiplier.loc["LV603"].sort_values(ascending=False).head(20))
 
 # %% papermill={"duration": 0.027063, "end_time": "2020-12-11T20:14:46.419280", "exception": false, "start_time": "2020-12-11T20:14:46.392217", "status": "completed"} tags=[]
-(
-    smultixcan_into_multiplier.loc['LV136']
-    .sort_values(ascending=False)
-    .head(20)
-)
+(smultixcan_into_multiplier.loc["LV136"].sort_values(ascending=False).head(20))
 
 # %% [markdown] papermill={"duration": 0.015368, "end_time": "2020-12-11T20:14:46.450452", "exception": false, "start_time": "2020-12-11T20:14:46.435084", "status": "completed"} tags=[]
 # # Save
 
 # %% papermill={"duration": 0.025881, "end_time": "2020-12-11T20:14:46.491870", "exception": false, "start_time": "2020-12-11T20:14:46.465989", "status": "completed"} tags=[]
 output_file = Path(
-    RESULTS_PROJ_OUTPUT_DIR,
-    f'projection-{results_filename_stem}.pkl'
+    RESULTS_PROJ_OUTPUT_DIR, f"projection-{results_filename_stem}.pkl"
 ).resolve()
 
 display(output_file)

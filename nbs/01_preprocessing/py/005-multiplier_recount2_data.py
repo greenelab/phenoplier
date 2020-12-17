@@ -41,24 +41,22 @@ from rpy2.robjects.conversion import localconverter
 import conf
 
 # %% papermill={"duration": 0.033184, "end_time": "2020-12-11T19:38:20.000236", "exception": false, "start_time": "2020-12-11T19:38:19.967052", "status": "completed"} tags=[]
-readRDS = ro.r['readRDS']
+readRDS = ro.r["readRDS"]
 
 # %% [markdown] papermill={"duration": 0.021169, "end_time": "2020-12-11T19:38:20.042593", "exception": false, "start_time": "2020-12-11T19:38:20.021424", "status": "completed"} tags=[]
 # # Read entire recount data prep file
 
 # %% papermill={"duration": 0.036725, "end_time": "2020-12-11T19:38:20.099487", "exception": false, "start_time": "2020-12-11T19:38:20.062762", "status": "completed"} tags=[]
-conf.RECOUNT2['PREPROCESSED_GENE_EXPRESSION_FILE']
+conf.RECOUNT2["PREPROCESSED_GENE_EXPRESSION_FILE"]
 
 # %% papermill={"duration": 14.604403, "end_time": "2020-12-11T19:38:34.723232", "exception": false, "start_time": "2020-12-11T19:38:20.118829", "status": "completed"} tags=[]
-recount_data_prep = readRDS(str(
-    conf.RECOUNT2['PREPROCESSED_GENE_EXPRESSION_FILE']
-))
+recount_data_prep = readRDS(str(conf.RECOUNT2["PREPROCESSED_GENE_EXPRESSION_FILE"]))
 
 # %% [markdown] papermill={"duration": 0.021429, "end_time": "2020-12-11T19:38:34.765353", "exception": false, "start_time": "2020-12-11T19:38:34.743924", "status": "completed"} tags=[]
 # # Read recount2 gene expression data
 
 # %% papermill={"duration": 0.031272, "end_time": "2020-12-11T19:38:34.817440", "exception": false, "start_time": "2020-12-11T19:38:34.786168", "status": "completed"} tags=[]
-recount2_rpkl_cm = recount_data_prep.rx2('rpkm.cm')
+recount2_rpkl_cm = recount_data_prep.rx2("rpkm.cm")
 
 # %% papermill={"duration": 0.037961, "end_time": "2020-12-11T19:38:34.875512", "exception": false, "start_time": "2020-12-11T19:38:34.837551", "status": "completed"} tags=[]
 recount2_rpkl_cm
@@ -71,7 +69,7 @@ recount2_rpkl_cm.colnames
 
 # %% papermill={"duration": 4.924062, "end_time": "2020-12-11T19:38:39.924121", "exception": false, "start_time": "2020-12-11T19:38:35.000059", "status": "completed"} tags=[]
 with localconverter(ro.default_converter + pandas2ri.converter):
-  recount2_rpkl_cm = ro.conversion.rpy2py(recount2_rpkl_cm)
+    recount2_rpkl_cm = ro.conversion.rpy2py(recount2_rpkl_cm)
 
 # %% papermill={"duration": 0.029254, "end_time": "2020-12-11T19:38:39.976592", "exception": false, "start_time": "2020-12-11T19:38:39.947338", "status": "completed"} tags=[]
 # recount2_rpkl_cm = pd.DataFrame(
@@ -96,16 +94,16 @@ recount2_rpkl_cm.head()
 # Test whether what I load from a plain R session is the same as in here.
 
 # %% papermill={"duration": 0.036367, "end_time": "2020-12-11T19:38:40.307711", "exception": false, "start_time": "2020-12-11T19:38:40.271344", "status": "completed"} tags=[]
-recount2_rpkl_cm.loc['GAS6', 'SRP000599.SRR013549']
+recount2_rpkl_cm.loc["GAS6", "SRP000599.SRR013549"]
 
 # %% papermill={"duration": 0.037225, "end_time": "2020-12-11T19:38:40.366492", "exception": false, "start_time": "2020-12-11T19:38:40.329267", "status": "completed"} tags=[]
-assert recount2_rpkl_cm.loc['GAS6', 'SRP000599.SRR013549'].round(4) == -0.3125
+assert recount2_rpkl_cm.loc["GAS6", "SRP000599.SRR013549"].round(4) == -0.3125
 
 # %% papermill={"duration": 0.033094, "end_time": "2020-12-11T19:38:40.423206", "exception": false, "start_time": "2020-12-11T19:38:40.390112", "status": "completed"} tags=[]
-assert recount2_rpkl_cm.loc['GAS6', 'SRP045352.SRR1539229'].round(7) == -0.2843801
+assert recount2_rpkl_cm.loc["GAS6", "SRP045352.SRR1539229"].round(7) == -0.2843801
 
 # %% papermill={"duration": 0.034978, "end_time": "2020-12-11T19:38:40.481111", "exception": false, "start_time": "2020-12-11T19:38:40.446133", "status": "completed"} tags=[]
-assert recount2_rpkl_cm.loc['CFL2', 'SRP056840.SRR1951636'].round(7) == -0.3412832
+assert recount2_rpkl_cm.loc["CFL2", "SRP056840.SRR1951636"].round(7) == -0.3412832
 
 # %% papermill={"duration": 0.033706, "end_time": "2020-12-11T19:38:40.536369", "exception": false, "start_time": "2020-12-11T19:38:40.502663", "status": "completed"} tags=[]
 recount2_rpkl_cm.iloc[9, 16]
@@ -118,8 +116,7 @@ assert recount2_rpkl_cm.iloc[9, 16].round(7) == -0.4938852
 
 # %% papermill={"duration": 0.033325, "end_time": "2020-12-11T19:38:40.695236", "exception": false, "start_time": "2020-12-11T19:38:40.661911", "status": "completed"} tags=[]
 output_filename = Path(
-    conf.RECOUNT2['BASE_DIR'],
-    'recount_data_prep_PLIER.pkl'
+    conf.RECOUNT2["BASE_DIR"], "recount_data_prep_PLIER.pkl"
 ).resolve()
 
 display(output_filename)
@@ -139,7 +136,7 @@ recount2_rpkl_cm.to_pickle(output_filename)
 #     for idx, gene in enumerate(recount2_rpkl_cm.index):
 #         if idx % 100:
 #             print(f'', flush=True, end='')
-        
+
 #         clean_gene = simplify_string_for_hdf5(gene)
 #         store[clean_gene] = recount2_rpkl_cm.loc[gene]
 
@@ -150,7 +147,7 @@ del recount2_rpkl_cm
 # # Read recount2 pathways
 
 # %% papermill={"duration": 0.033127, "end_time": "2020-12-11T19:38:53.161545", "exception": false, "start_time": "2020-12-11T19:38:53.128418", "status": "completed"} tags=[]
-recount2_all_paths_cm = recount_data_prep.rx2('all.paths.cm')
+recount2_all_paths_cm = recount_data_prep.rx2("all.paths.cm")
 
 # %% papermill={"duration": 0.034734, "end_time": "2020-12-11T19:38:53.216452", "exception": false, "start_time": "2020-12-11T19:38:53.181718", "status": "completed"} tags=[]
 recount2_all_paths_cm
@@ -163,7 +160,7 @@ recount2_all_paths_cm.colnames
 
 # %% papermill={"duration": 0.033812, "end_time": "2020-12-11T19:38:53.392628", "exception": false, "start_time": "2020-12-11T19:38:53.358816", "status": "completed"} tags=[]
 with localconverter(ro.default_converter + pandas2ri.converter):
-  recount2_all_paths_cm_values = ro.conversion.rpy2py(recount2_all_paths_cm)
+    recount2_all_paths_cm_values = ro.conversion.rpy2py(recount2_all_paths_cm)
 
 # %% papermill={"duration": 0.03371, "end_time": "2020-12-11T19:38:53.449644", "exception": false, "start_time": "2020-12-11T19:38:53.415934", "status": "completed"} tags=[]
 recount2_all_paths_cm_values
@@ -192,25 +189,24 @@ recount2_all_paths_cm.head()
 # ## Testing
 
 # %% papermill={"duration": 0.038699, "end_time": "2020-12-11T19:38:53.888908", "exception": false, "start_time": "2020-12-11T19:38:53.850209", "status": "completed"} tags=[]
-recount2_all_paths_cm.loc['CTSD', 'REACTOME_SCFSKP2_MEDIATED_DEGRADATION_OF_P27_P21']
+recount2_all_paths_cm.loc["CTSD", "REACTOME_SCFSKP2_MEDIATED_DEGRADATION_OF_P27_P21"]
 
 # %% papermill={"duration": 0.033672, "end_time": "2020-12-11T19:38:53.946226", "exception": false, "start_time": "2020-12-11T19:38:53.912554", "status": "completed"} tags=[]
-assert not recount2_all_paths_cm.loc['CTSD', 'REACTOME_SCFSKP2_MEDIATED_DEGRADATION_OF_P27_P21']
+assert not recount2_all_paths_cm.loc[
+    "CTSD", "REACTOME_SCFSKP2_MEDIATED_DEGRADATION_OF_P27_P21"
+]
 
 # %% papermill={"duration": 0.036356, "end_time": "2020-12-11T19:38:54.007293", "exception": false, "start_time": "2020-12-11T19:38:53.970937", "status": "completed"} tags=[]
-assert recount2_all_paths_cm.loc['CTSD', 'PID_P53DOWNSTREAMPATHWAY']
+assert recount2_all_paths_cm.loc["CTSD", "PID_P53DOWNSTREAMPATHWAY"]
 
 # %% papermill={"duration": 0.03624, "end_time": "2020-12-11T19:38:54.068482", "exception": false, "start_time": "2020-12-11T19:38:54.032242", "status": "completed"} tags=[]
-assert recount2_all_paths_cm.loc['MMP14', 'PID_HIF2PATHWAY']
+assert recount2_all_paths_cm.loc["MMP14", "PID_HIF2PATHWAY"]
 
 # %% [markdown] papermill={"duration": 0.023676, "end_time": "2020-12-11T19:38:54.117344", "exception": false, "start_time": "2020-12-11T19:38:54.093668", "status": "completed"} tags=[]
 # ## Save
 
 # %% papermill={"duration": 0.036, "end_time": "2020-12-11T19:38:54.195313", "exception": false, "start_time": "2020-12-11T19:38:54.159313", "status": "completed"} tags=[]
-output_filename = Path(
-    conf.RECOUNT2['BASE_DIR'],
-    'recount_all_paths_cm.pkl'
-).resolve()
+output_filename = Path(conf.RECOUNT2["BASE_DIR"], "recount_all_paths_cm.pkl").resolve()
 
 display(output_filename)
 
