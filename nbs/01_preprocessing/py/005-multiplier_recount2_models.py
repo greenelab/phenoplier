@@ -85,6 +85,7 @@ assert multiplier_model_matrix_df.shape == (2157, 5)
 # %% papermill={"duration": 0.052815, "end_time": "2020-12-11T19:39:15.149429", "exception": false, "start_time": "2020-12-11T19:39:15.096614", "status": "completed"} tags=[]
 multiplier_model_matrix_df.head()
 
+
 # %% papermill={"duration": 0.054884, "end_time": "2020-12-11T19:39:15.241390", "exception": false, "start_time": "2020-12-11T19:39:15.186506", "status": "completed"} tags=[]
 def to_scinum(x):
     return np.format_float_scientific(x, 6)

@@ -35,8 +35,7 @@ import obonet
 
 import conf
 from data.cache import read_data
-from entity import Trait
-
+from entity import Trait, GTEXGWASTrait
 
 # %% [markdown] papermill={"duration": 0.030998, "end_time": "2020-12-14T21:24:24.044044", "exception": false, "start_time": "2020-12-14T21:24:24.013046", "status": "completed"} tags=[]
 # # Functions
@@ -130,9 +129,6 @@ ukb_to_efo = ukb_to_efo.rename(
 
 # %% [markdown] papermill={"duration": 0.031126, "end_time": "2020-12-14T21:24:31.374511", "exception": false, "start_time": "2020-12-14T21:24:31.343385", "status": "completed"} tags=[]
 # ## Add GTEx GWAS EFO terms
-
-# %% papermill={"duration": 0.043399, "end_time": "2020-12-14T21:24:31.449190", "exception": false, "start_time": "2020-12-14T21:24:31.405791", "status": "completed"} tags=[]
-from entity import Trait, GTEXGWASTrait
 
 # %% papermill={"duration": 0.04776, "end_time": "2020-12-14T21:24:31.531077", "exception": false, "start_time": "2020-12-14T21:24:31.483317", "status": "completed"} tags=[]
 all_gtex_gwas_phenos = [
@@ -297,6 +293,9 @@ assert term_id_to_label[new_efo_code] == "autoimmune bullous skin disease"
 # %% [markdown] papermill={"duration": 0.035634, "end_time": "2020-12-14T21:24:34.759833", "exception": false, "start_time": "2020-12-14T21:24:34.724199", "status": "completed"} tags=[]
 # # Add new EFO label
 
+# %% [markdown]
+# ## Functions
+
 # %% papermill={"duration": 0.049529, "end_time": "2020-12-14T21:24:34.845247", "exception": false, "start_time": "2020-12-14T21:24:34.795718", "status": "completed"} tags=[]
 term_pattern = re.compile(r"\w+:\w+")
 
@@ -325,6 +324,8 @@ def _add_term_labels(row):
 
     return " AND ".join(labels)
 
+# %% [markdown]
+# ## Apply
 
 # %% papermill={"duration": 0.093161, "end_time": "2020-12-14T21:24:35.168464", "exception": false, "start_time": "2020-12-14T21:24:35.075303", "status": "completed"} tags=[]
 ukb_to_efo = ukb_to_efo.assign(
