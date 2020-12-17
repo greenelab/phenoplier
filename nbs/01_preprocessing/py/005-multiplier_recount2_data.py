@@ -1,6 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
+#     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
 #       format_name: percent
@@ -71,13 +72,6 @@ recount2_rpkl_cm.colnames
 with localconverter(ro.default_converter + pandas2ri.converter):
     recount2_rpkl_cm = ro.conversion.rpy2py(recount2_rpkl_cm)
 
-# %% papermill={"duration": 0.029254, "end_time": "2020-12-11T19:38:39.976592", "exception": false, "start_time": "2020-12-11T19:38:39.947338", "status": "completed"} tags=[]
-# recount2_rpkl_cm = pd.DataFrame(
-#     data=pandas2ri.ri2py(recount2_rpkl_cm).values,
-#     index=recount2_rpkl_cm.rownames,
-#     columns=recount2_rpkl_cm.colnames,
-# )
-
 # %% papermill={"duration": 0.031644, "end_time": "2020-12-11T19:38:40.027865", "exception": false, "start_time": "2020-12-11T19:38:39.996221", "status": "completed"} tags=[]
 assert recount2_rpkl_cm.shape == (6750, 37032)
 
@@ -114,6 +108,9 @@ assert recount2_rpkl_cm.iloc[9, 16].round(7) == -0.4938852
 # %% [markdown] papermill={"duration": 0.02355, "end_time": "2020-12-11T19:38:40.639322", "exception": false, "start_time": "2020-12-11T19:38:40.615772", "status": "completed"} tags=[]
 # ## Save
 
+# %% [markdown]
+# ### Pickle format (binary)
+
 # %% papermill={"duration": 0.033325, "end_time": "2020-12-11T19:38:40.695236", "exception": false, "start_time": "2020-12-11T19:38:40.661911", "status": "completed"} tags=[]
 output_filename = Path(
     conf.RECOUNT2["BASE_DIR"], "recount_data_prep_PLIER.pkl"
@@ -123,6 +120,12 @@ display(output_filename)
 
 # %% papermill={"duration": 12.10829, "end_time": "2020-12-11T19:38:52.825435", "exception": false, "start_time": "2020-12-11T19:38:40.717145", "status": "completed"} tags=[]
 recount2_rpkl_cm.to_pickle(output_filename)
+
+# %% [markdown]
+# ### HDF5 format (binary)
+
+# %% [markdown]
+# This code is now commented out, but it might be helpful in the future if we wanted to save this data in HDF5 for more efficient access.
 
 # %% papermill={"duration": 0.033803, "end_time": "2020-12-11T19:38:52.881567", "exception": false, "start_time": "2020-12-11T19:38:52.847764", "status": "completed"} tags=[]
 # from utils.hdf5 import simplify_string_for_hdf5
@@ -141,6 +144,7 @@ recount2_rpkl_cm.to_pickle(output_filename)
 #         store[clean_gene] = recount2_rpkl_cm.loc[gene]
 
 # %% papermill={"duration": 0.035287, "end_time": "2020-12-11T19:38:53.059907", "exception": false, "start_time": "2020-12-11T19:38:53.024620", "status": "completed"} tags=[]
+# delete the object to save memory
 del recount2_rpkl_cm
 
 # %% [markdown] papermill={"duration": 0.02293, "end_time": "2020-12-11T19:38:53.105200", "exception": false, "start_time": "2020-12-11T19:38:53.082270", "status": "completed"} tags=[]
