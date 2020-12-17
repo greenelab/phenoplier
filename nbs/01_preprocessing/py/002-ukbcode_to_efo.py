@@ -1,6 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
+#     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
 #       format_name: percent
@@ -313,16 +314,10 @@ def _add_term_labels(row):
             else:
                 continue
     
-        labels.append(new_label.lower())# if isinstance(new_label, str) else None)
+        labels.append(new_label.lower())
     
     return ' AND '.join(labels)
 
-
-# %% papermill={"duration": 0.049663, "end_time": "2020-12-14T21:24:34.930854", "exception": false, "start_time": "2020-12-14T21:24:34.881191", "status": "completed"} tags=[]
-# ukb_to_efo[ukb_to_efo['term_codes'].str.upper().str.contains('NCIT:C27161')]
-
-# %% papermill={"duration": 0.047519, "end_time": "2020-12-14T21:24:35.038935", "exception": false, "start_time": "2020-12-14T21:24:34.991416", "status": "completed"} tags=[]
-# term_id_xrefs[term_id_xrefs['target_id'].str.upper().str.contains('C27161')]
 
 # %% papermill={"duration": 0.093161, "end_time": "2020-12-14T21:24:35.168464", "exception": false, "start_time": "2020-12-14T21:24:35.075303", "status": "completed"} tags=[]
 ukb_to_efo = ukb_to_efo.assign(
