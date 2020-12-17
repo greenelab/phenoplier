@@ -28,10 +28,9 @@
 
 # %% papermill={"duration": 0.297222, "end_time": "2020-12-11T20:14:36.087015", "exception": false, "start_time": "2020-12-11T20:14:35.789793", "status": "completed"} tags=[]
 from pathlib import Path
-import pickle
 
-import numpy as np
 import pandas as pd
+from IPython.display import display
 
 import conf
 from data.cache import read_data

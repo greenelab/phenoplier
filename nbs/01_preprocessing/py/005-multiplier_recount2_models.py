@@ -28,11 +28,11 @@
 # %autoreload 2
 
 # %% papermill={"duration": 0.440539, "end_time": "2020-12-11T19:38:57.718601", "exception": false, "start_time": "2020-12-11T19:38:57.278062", "status": "completed"} tags=[]
-from pathlib import Path
 import pickle
 
 import numpy as np
 import pandas as pd
+from IPython.display import display
 
 import rpy2.robjects as ro
 from rpy2.robjects import pandas2ri
