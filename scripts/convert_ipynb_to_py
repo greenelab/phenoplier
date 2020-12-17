@@ -23,4 +23,3 @@ jupytext \
   --to py:percent \
   ${NOTEBOOK} \
   --output ${output_folder}/${nbs_xpref}.py
-
