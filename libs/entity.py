@@ -52,7 +52,7 @@ class Trait(object, metaclass=ABCMeta):
         the trait.
     """
 
-    EFO_INFO = namedtuple('EfoInfo', ['id', 'label'])
+    EFO_INFO = namedtuple("EfoInfo", ["id", "label"])
 
     def __init__(self, code=None, full_code=None):
         if code is None and full_code is None:
@@ -101,15 +101,15 @@ class Trait(object, metaclass=ABCMeta):
         map_info = efo_map_data.loc[self.full_code]
 
         if mapping_type is not None:
-            map_info = map_info[map_info['mapping_type'] == mapping_type]
+            map_info = map_info[map_info["mapping_type"] == mapping_type]
 
-        efo_codes = map_info['term_codes']
+        efo_codes = map_info["term_codes"]
         if not isinstance(efo_codes, str):
-            efo_code = ', '.join(efo_codes.unique())
+            efo_code = ", ".join(efo_codes.unique())
         else:
             efo_code = efo_codes
 
-        label = map_info['current_term_label']
+        label = map_info["current_term_label"]
         if not isinstance(label, str):
             label = label.unique()
             assert label.shape[0] == 1
@@ -119,9 +119,9 @@ class Trait(object, metaclass=ABCMeta):
 
     @staticmethod
     def get_traits_to_efo_map_data():
-        return read_data(
-            conf.PHENOMEXCAN["TRAITS_FULLCODE_TO_EFO_MAP_FILE"]
-        ).set_index('ukb_fullcode')
+        return read_data(conf.PHENOMEXCAN["TRAITS_FULLCODE_TO_EFO_MAP_FILE"]).set_index(
+            "ukb_fullcode"
+        )
 
     @staticmethod
     def get_code_from_full_code(full_code):
@@ -369,7 +369,7 @@ class GTEXGWASTrait(Trait):
         # WARNING: this attribute retrieves the original EFO code in the GTEx
         # GWAS metadata. However, some EFO codes there are wrong. Use this
         # carefully, the get_efo_info is prefered.
-        self.orig_efo_id = self.pheno_data['EFO']
+        self.orig_efo_id = self.pheno_data["EFO"]
 
 
 class Gene(object):

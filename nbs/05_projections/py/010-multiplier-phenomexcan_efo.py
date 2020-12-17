@@ -41,14 +41,12 @@ from data.cache import read_data
 
 # %% papermill={"duration": 0.027255, "end_time": "2020-12-14T21:31:30.132036", "exception": false, "start_time": "2020-12-14T21:31:30.104781", "status": "completed"} tags=[]
 # The percentile name indicates the top percentage of genes retained
-PERCENTILE_NAME = 'pALL'
+PERCENTILE_NAME = "pALL"
 
 display(PERCENTILE_NAME)
 
 # %% papermill={"duration": 0.02383, "end_time": "2020-12-14T21:31:30.169498", "exception": false, "start_time": "2020-12-14T21:31:30.145668", "status": "completed"} tags=[]
-RESULTS_PROJ_OUTPUT_DIR = Path(
-    conf.RESULTS['PROJECTIONS_DIR']
-)
+RESULTS_PROJ_OUTPUT_DIR = Path(conf.RESULTS["PROJECTIONS_DIR"])
 
 RESULTS_PROJ_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -65,7 +63,9 @@ GENE_NAME_TO_ID_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"])
 # # Load PhenomeXcan data (S-MultiXcan)
 
 # %% papermill={"duration": 0.023574, "end_time": "2020-12-14T21:31:30.308387", "exception": false, "start_time": "2020-12-14T21:31:30.284813", "status": "completed"} tags=[]
-smultixcan_results_filename = conf.PHENOMEXCAN["SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE"]
+smultixcan_results_filename = conf.PHENOMEXCAN[
+    "SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE"
+]
 
 display(smultixcan_results_filename)
 
@@ -98,10 +98,12 @@ smultixcan_results.head()
 # ## Remove duplicated gene entries
 
 # %% papermill={"duration": 0.02823, "end_time": "2020-12-14T21:31:31.061744", "exception": false, "start_time": "2020-12-14T21:31:31.033514", "status": "completed"} tags=[]
-smultixcan_results.index[smultixcan_results.index.duplicated(keep='first')]
+smultixcan_results.index[smultixcan_results.index.duplicated(keep="first")]
 
 # %% papermill={"duration": 0.168551, "end_time": "2020-12-14T21:31:31.245604", "exception": false, "start_time": "2020-12-14T21:31:31.077053", "status": "completed"} tags=[]
-smultixcan_results = smultixcan_results.loc[~smultixcan_results.index.duplicated(keep='first')]
+smultixcan_results = smultixcan_results.loc[
+    ~smultixcan_results.index.duplicated(keep="first")
+]
 
 # %% papermill={"duration": 0.025256, "end_time": "2020-12-14T21:31:31.286738", "exception": false, "start_time": "2020-12-14T21:31:31.261482", "status": "completed"} tags=[]
 smultixcan_results.shape
@@ -113,7 +115,7 @@ smultixcan_results.shape
 # **TODO**: it might be better to try to impute this values
 
 # %% papermill={"duration": 0.305567, "end_time": "2020-12-14T21:31:31.665528", "exception": false, "start_time": "2020-12-14T21:31:31.359961", "status": "completed"} tags=[]
-smultixcan_results = smultixcan_results.dropna(how='any')
+smultixcan_results = smultixcan_results.dropna(how="any")
 
 # %% papermill={"duration": 0.024867, "end_time": "2020-12-14T21:31:31.706535", "exception": false, "start_time": "2020-12-14T21:31:31.681668", "status": "completed"} tags=[]
 smultixcan_results.shape
@@ -140,26 +142,17 @@ smultixcan_into_multiplier.head()
 # # Quick analysis
 
 # %% papermill={"duration": 0.02758, "end_time": "2020-12-14T21:31:34.858382", "exception": false, "start_time": "2020-12-14T21:31:34.830802", "status": "completed"} tags=[]
-(
-    smultixcan_into_multiplier.loc['LV603']
-    .sort_values(ascending=False)
-    .head(20)
-)
+(smultixcan_into_multiplier.loc["LV603"].sort_values(ascending=False).head(20))
 
 # %% papermill={"duration": 0.027231, "end_time": "2020-12-14T21:31:34.901425", "exception": false, "start_time": "2020-12-14T21:31:34.874194", "status": "completed"} tags=[]
-(
-    smultixcan_into_multiplier.loc['LV136']
-    .sort_values(ascending=False)
-    .head(20)
-)
+(smultixcan_into_multiplier.loc["LV136"].sort_values(ascending=False).head(20))
 
 # %% [markdown] papermill={"duration": 0.01596, "end_time": "2020-12-14T21:31:34.933702", "exception": false, "start_time": "2020-12-14T21:31:34.917742", "status": "completed"} tags=[]
 # # Save
 
 # %% papermill={"duration": 0.026234, "end_time": "2020-12-14T21:31:34.975461", "exception": false, "start_time": "2020-12-14T21:31:34.949227", "status": "completed"} tags=[]
 output_file = Path(
-    RESULTS_PROJ_OUTPUT_DIR,
-    f'projection-{results_filename_stem}.pkl'
+    RESULTS_PROJ_OUTPUT_DIR, f"projection-{results_filename_stem}.pkl"
 ).resolve()
 
 display(output_file)

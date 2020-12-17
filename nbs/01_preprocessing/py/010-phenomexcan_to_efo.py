@@ -38,9 +38,7 @@ from entity import Trait
 # # Load S-MultiXcan results
 
 # %% papermill={"duration": 0.301476, "end_time": "2020-12-14T21:24:40.530059", "exception": false, "start_time": "2020-12-14T21:24:40.228583", "status": "completed"} tags=[]
-smultixcan_zscores = read_data(
-    conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"]
-)
+smultixcan_zscores = read_data(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
 
 # %% papermill={"duration": 0.028251, "end_time": "2020-12-14T21:24:40.573779", "exception": false, "start_time": "2020-12-14T21:24:40.545528", "status": "completed"} tags=[]
 smultixcan_zscores.shape
@@ -67,15 +65,17 @@ assert len(phenomexcan_fullcode_to_traits) == smultixcan_zscores.columns.shape[0
 # # Change/combine traits in S-MultiXcan results
 
 # %% papermill={"duration": 0.029626, "end_time": "2020-12-14T21:24:41.367817", "exception": false, "start_time": "2020-12-14T21:24:41.338191", "status": "completed"} tags=[]
-traits_sample_size = pd.DataFrame([
-    {
-        'fullcode': fc,
-        'n_cases': t.n_cases,
-        'n_controls': t.n_controls,
-        'n': t.n,
-    }
-    for fc, t in phenomexcan_fullcode_to_traits.items()
-])
+traits_sample_size = pd.DataFrame(
+    [
+        {
+            "fullcode": fc,
+            "n_cases": t.n_cases,
+            "n_controls": t.n_controls,
+            "n": t.n,
+        }
+        for fc, t in phenomexcan_fullcode_to_traits.items()
+    ]
+)
 
 # %% papermill={"duration": 0.023718, "end_time": "2020-12-14T21:24:41.405440", "exception": false, "start_time": "2020-12-14T21:24:41.381722", "status": "completed"} tags=[]
 traits_sample_size.shape
@@ -93,23 +93,27 @@ def get_weights(traits_fullcodes):
     where n=n_cases+n_controls
     In case of continuous traits (such as height) it is just n
     """
-    return np.array([
-        (t.n_cases / t.n_controls) * np.sqrt(t.n)
-        if not pd.isnull((t := phenomexcan_fullcode_to_traits[trait_name]).n_cases) and not pd.isnull(t.n_controls)
-        else t.n
-        for trait_name in traits_fullcodes
-    ])
+    return np.array(
+        [
+            (t.n_cases / t.n_controls) * np.sqrt(t.n)
+            if not pd.isnull((t := phenomexcan_fullcode_to_traits[trait_name]).n_cases)
+            and not pd.isnull(t.n_controls)
+            else t.n
+            for trait_name in traits_fullcodes
+        ]
+    )
+
 
 def _combine_z_scores(x):
     """
     Combines PhenomeXcan traits that map to the same EFO label using the Stouffer's Z-score method:
     https://en.wikipedia.org/wiki/Fisher%27s_method#Relation_to_Stouffer's_Z-score_method
-    
+
     It uses weights for each traits, which are computed with function get_weights.
-    
+
     Args:
         x: a pandas.DataFrame with PhenomeXcan traits in the columns, and genes in the rows. Values are z-scores of association in S-MultiXcan.
-    
+
     Returns:
         pandas.Series for all genes and the single EFO label for which all traits in x map to. Values are the combined z-scores.
     """
@@ -118,7 +122,7 @@ def _combine_z_scores(x):
     numerator = (x * weights).sum(1)
     denominator = np.sqrt(np.power(weights, 2).sum())
     new_data = numerator / denominator
-    
+
     return pd.Series(
         data=new_data.values,
         index=x.index.copy(),
@@ -147,7 +151,9 @@ traits_efo_labels[:10]
 # ## Combine z-scores for same EFO labels
 
 # %% papermill={"duration": 6.719873, "end_time": "2020-12-14T21:24:51.063699", "exception": false, "start_time": "2020-12-14T21:24:44.343826", "status": "completed"} tags=[]
-smultixcan_zscores_combined = smultixcan_zscores.groupby(traits_efo_labels, axis=1).apply(_combine_z_scores)
+smultixcan_zscores_combined = smultixcan_zscores.groupby(
+    traits_efo_labels, axis=1
+).apply(_combine_z_scores)
 
 # %% papermill={"duration": 0.025116, "end_time": "2020-12-14T21:24:51.105728", "exception": false, "start_time": "2020-12-14T21:24:51.080612", "status": "completed"} tags=[]
 smultixcan_zscores_combined.shape
@@ -166,72 +172,66 @@ assert not smultixcan_zscores_combined.isna().any().any()
 
 # %% papermill={"duration": 0.025447, "end_time": "2020-12-14T21:24:51.374735", "exception": false, "start_time": "2020-12-14T21:24:51.349288", "status": "completed"} tags=[]
 _asthma_traits = [
-    '22127-Doctor_diagnosed_asthma',
-    '20002_1111-Noncancer_illness_code_selfreported_asthma',
-    'J45-Diagnoses_main_ICD10_J45_Asthma'
+    "22127-Doctor_diagnosed_asthma",
+    "20002_1111-Noncancer_illness_code_selfreported_asthma",
+    "J45-Diagnoses_main_ICD10_J45_Asthma",
 ]
 
 # %% papermill={"duration": 0.030594, "end_time": "2020-12-14T21:24:51.421078", "exception": false, "start_time": "2020-12-14T21:24:51.390484", "status": "completed"} tags=[]
 smultixcan_zscores[_asthma_traits]
 
 # %% papermill={"duration": 0.030275, "end_time": "2020-12-14T21:24:51.467871", "exception": false, "start_time": "2020-12-14T21:24:51.437596", "status": "completed"} tags=[]
-traits_sample_size[traits_sample_size['fullcode'].isin(_asthma_traits)]
+traits_sample_size[traits_sample_size["fullcode"].isin(_asthma_traits)]
 
 # %% papermill={"duration": 0.030206, "end_time": "2020-12-14T21:24:51.514718", "exception": false, "start_time": "2020-12-14T21:24:51.484512", "status": "completed"} tags=[]
-_trait = 'asthma'
+_trait = "asthma"
 
-_gene = 'ENSG00000000419'
-_weights = np.array([
-    ((41934.0 / 319207.0) * np.sqrt(361141)),
-    ((11717.0 / 80070.0) * np.sqrt(91787)),
-    ((1693.0 / 359501.0) * np.sqrt(361194)),
-])
+_gene = "ENSG00000000419"
+_weights = np.array(
+    [
+        ((41934.0 / 319207.0) * np.sqrt(361141)),
+        ((11717.0 / 80070.0) * np.sqrt(91787)),
+        ((1693.0 / 359501.0) * np.sqrt(361194)),
+    ]
+)
 assert smultixcan_zscores_combined.loc[_gene, _trait].round(3) == (
-        (
-            _weights[1] * 0.327024
-            + _weights[0] * 0.707137
-            + _weights[2] * 0.805021
-        ) / np.sqrt(_weights[0] ** 2 + _weights[1] ** 2 + _weights[2] ** 2)
-    ).round(3)
+    (_weights[1] * 0.327024 + _weights[0] * 0.707137 + _weights[2] * 0.805021)
+    / np.sqrt(_weights[0] ** 2 + _weights[1] ** 2 + _weights[2] ** 2)
+).round(3)
 
-_gene = 'ENSG00000284526'
+_gene = "ENSG00000284526"
 assert smultixcan_zscores_combined.loc[_gene, _trait].round(3) == (
-        (
-            _weights[1] * 0.302116
-            + _weights[0] * 0.006106
-            + _weights[2] * 0.463360
-        ) / np.sqrt(_weights[0] ** 2 + _weights[1] ** 2 + _weights[2] ** 2)
-    ).round(3)
+    (_weights[1] * 0.302116 + _weights[0] * 0.006106 + _weights[2] * 0.463360)
+    / np.sqrt(_weights[0] ** 2 + _weights[1] ** 2 + _weights[2] ** 2)
+).round(3)
 
 # %% [markdown] papermill={"duration": 0.017625, "end_time": "2020-12-14T21:24:51.549048", "exception": false, "start_time": "2020-12-14T21:24:51.531423", "status": "completed"} tags=[]
 # ### PhenomeXcan trait which has no EFO label.
 
 # %% papermill={"duration": 0.029284, "end_time": "2020-12-14T21:24:51.595943", "exception": false, "start_time": "2020-12-14T21:24:51.566659", "status": "completed"} tags=[]
-_trait = '100001_raw-Food_weight'
+_trait = "100001_raw-Food_weight"
 
 # %% papermill={"duration": 0.033309, "end_time": "2020-12-14T21:24:51.659574", "exception": false, "start_time": "2020-12-14T21:24:51.626265", "status": "completed"} tags=[]
-traits_sample_size[traits_sample_size['fullcode'].isin((_trait,))]
+traits_sample_size[traits_sample_size["fullcode"].isin((_trait,))]
 
 # %% papermill={"duration": 0.029512, "end_time": "2020-12-14T21:24:51.706284", "exception": false, "start_time": "2020-12-14T21:24:51.676772", "status": "completed"} tags=[]
 smultixcan_zscores[_trait]
 
 # %% papermill={"duration": 0.028189, "end_time": "2020-12-14T21:24:51.751962", "exception": false, "start_time": "2020-12-14T21:24:51.723773", "status": "completed"} tags=[]
-_gene = 'ENSG00000284513'
-_weights = np.array([
-    np.sqrt(51453),
-])
+_gene = "ENSG00000284513"
+_weights = np.array(
+    [
+        np.sqrt(51453),
+    ]
+)
 assert smultixcan_zscores_combined.loc[_gene, _trait].round(3) == (
-        (
-            _weights[0] * 1.522281
-        ) / np.sqrt(_weights[0] ** 2)
-    ).round(3)
+    (_weights[0] * 1.522281) / np.sqrt(_weights[0] ** 2)
+).round(3)
 
-_gene = 'ENSG00000000971'
+_gene = "ENSG00000000971"
 assert smultixcan_zscores_combined.loc[_gene, _trait].round(3) == (
-        (
-            _weights[0] * 0.548127
-        ) / np.sqrt(_weights[0] ** 2)
-    ).round(3)
+    (_weights[0] * 0.548127) / np.sqrt(_weights[0] ** 2)
+).round(3)
 
 # %% [markdown] papermill={"duration": 0.01664, "end_time": "2020-12-14T21:24:51.785620", "exception": false, "start_time": "2020-12-14T21:24:51.768980", "status": "completed"} tags=[]
 # # Save full (all traits, some with EFO, some not)
@@ -257,15 +257,12 @@ smultixcan_zscores_combined.to_pickle(output_file)
 
 # %% papermill={"duration": 0.028317, "end_time": "2020-12-14T21:24:55.997571", "exception": false, "start_time": "2020-12-14T21:24:55.969254", "status": "completed"} tags=[]
 # tsv format
-output_text_file = output_file.with_suffix('.tsv.gz')
+output_text_file = output_file.with_suffix(".tsv.gz")
 display(output_text_file)
 
 # %% papermill={"duration": 392.240426, "end_time": "2020-12-14T21:31:28.256860", "exception": false, "start_time": "2020-12-14T21:24:56.016434", "status": "completed"} tags=[]
 smultixcan_zscores_combined.to_csv(
-    output_text_file,
-    sep='\t',
-    index=True,
-    float_format="%.5e"
+    output_text_file, sep="\t", index=True, float_format="%.5e"
 )
 
 # %% papermill={"duration": 0.01856, "end_time": "2020-12-14T21:31:28.294646", "exception": false, "start_time": "2020-12-14T21:31:28.276086", "status": "completed"} tags=[]

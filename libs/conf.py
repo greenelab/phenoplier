@@ -48,17 +48,11 @@ GENERAL["N_JOBS"] = next(opt for opt in options if opt is not None)
 options = [settings.N_JOBS_HIGH, cpu_count()]
 GENERAL["N_JOBS_HIGH"] = next(opt for opt in options if opt is not None)
 
-GENERAL["TERM_ID_LABEL_FILE"] = Path(
-    DATA_DIR, "term_id_labels.tsv.gz"
-).resolve()
+GENERAL["TERM_ID_LABEL_FILE"] = Path(DATA_DIR, "term_id_labels.tsv.gz").resolve()
 
-GENERAL["TERM_ID_XREFS_FILE"] = Path(
-    DATA_DIR, "term_id_xrefs.tsv.gz"
-).resolve()
+GENERAL["TERM_ID_XREFS_FILE"] = Path(DATA_DIR, "term_id_xrefs.tsv.gz").resolve()
 
-GENERAL["EFO_ONTOLOGY_OBO_FILE"] = Path(
-    DATA_DIR, "efo.obo"
-).resolve()
+GENERAL["EFO_ONTOLOGY_OBO_FILE"] = Path(DATA_DIR, "efo.obo").resolve()
 
 #
 # Results
@@ -97,8 +91,7 @@ UK_BIOBANK["CODINGS_DIR"] = Path(UK_BIOBANK["BASE_DIR"], "codings").resolve()
 UK_BIOBANK["CODING_3_FILE"] = Path(UK_BIOBANK["CODINGS_DIR"], "coding3.tsv").resolve()
 UK_BIOBANK["CODING_6_FILE"] = Path(UK_BIOBANK["CODINGS_DIR"], "coding6.tsv").resolve()
 UK_BIOBANK["UKBCODE_TO_EFO_MAP_FILE"] = Path(
-    UK_BIOBANK["BASE_DIR"],
-    "UK_Biobank_master_file.tsv"
+    UK_BIOBANK["BASE_DIR"], "UK_Biobank_master_file.tsv"
 ).resolve()
 
 #
@@ -147,8 +140,7 @@ PHENOMEXCAN["GENE_MAP_NAME_TO_ID"] = Path(
     "genes_mapping_name_to_id.pkl",
 ).resolve()
 PHENOMEXCAN["TRAITS_FULLCODE_TO_EFO_MAP_FILE"] = Path(
-    PHENOMEXCAN["BASE_DIR"],
-    "phenomexcan_traits_fullcode_to_efo.tsv"
+    PHENOMEXCAN["BASE_DIR"], "phenomexcan_traits_fullcode_to_efo.tsv"
 ).resolve()
 
 # gene association results

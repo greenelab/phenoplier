@@ -195,7 +195,11 @@ def test_trait_get_trait_using_full_code_is_gtex_gwas():
         ("20002_1111", "EFO:0000270", "asthma"),
         ("22127", "EFO:0000270", "asthma"),
         ("J45", "EFO:0000270", "asthma"),
-        ("BCAC_Overall_BreastCancer_EUR", "EFO:0005606", "family history of breast cancer"),
+        (
+            "BCAC_Overall_BreastCancer_EUR",
+            "EFO:0005606",
+            "family history of breast cancer",
+        ),
     ],
 )
 def test_ukb_trait_efo(trait_code, efo_code, efo_name):

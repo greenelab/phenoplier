@@ -46,8 +46,10 @@ def read_tsv(file_path: str, **kwargs):
 #
 def read_term_id_xrefs():
     return pd.read_csv(
-        conf.GENERAL["TERM_ID_XREFS_FILE"], sep="\t", index_col="term_id",
-        dtype='category'
+        conf.GENERAL["TERM_ID_XREFS_FILE"],
+        sep="\t",
+        index_col="term_id",
+        dtype="category",
     )
 
 
@@ -56,13 +58,17 @@ def read_term_id_xrefs():
 #
 def read_phenomexcan_rapid_gwas_pheno_info_file():
     return pd.read_csv(
-        conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"], sep="\t", index_col="phenotype",
+        conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"],
+        sep="\t",
+        index_col="phenotype",
     )
 
 
 def read_phenomexcan_rapid_gwas_data_dict():
     return pd.read_csv(
-        conf.PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"], sep="\t", index_col="FieldID",
+        conf.PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"],
+        sep="\t",
+        index_col="FieldID",
     )
 
 
@@ -103,11 +109,9 @@ DATA_READERS = {
     # General
     conf.GENERAL["BIOMART_GENES_INFO_FILE"]: read_genes_biomart_data,
     conf.GENERAL["TERM_ID_XREFS_FILE"]: read_term_id_xrefs,
-
     # UK Biobank
     conf.UK_BIOBANK["CODING_3_FILE"]: read_uk_biobank_codings(3),
     conf.UK_BIOBANK["CODING_6_FILE"]: read_uk_biobank_codings(6),
-
     # PhenomeXcan
     conf.PHENOMEXCAN[
         "RAPID_GWAS_PHENO_INFO_FILE"
@@ -126,7 +130,7 @@ DATA_READERS = {
 # pickle.
 #
 DATA_FORMAT_READERS = {
-    '.pkl': read_pickle,
-    '.tsv': read_tsv,
-    '.tsv.gz': read_tsv,
+    ".pkl": read_pickle,
+    ".tsv": read_tsv,
+    ".tsv.gz": read_tsv,
 }
