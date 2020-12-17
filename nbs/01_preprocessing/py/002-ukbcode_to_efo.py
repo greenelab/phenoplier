@@ -325,6 +325,7 @@ def _add_term_labels(row):
 
     return " AND ".join(labels)
 
+
 # %% papermill={"duration": 0.093161, "end_time": "2020-12-14T21:24:35.168464", "exception": false, "start_time": "2020-12-14T21:24:35.075303", "status": "completed"} tags=[]
 ukb_to_efo = ukb_to_efo.assign(
     current_term_label=ukb_to_efo.apply(_add_term_labels, axis=1)
