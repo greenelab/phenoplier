@@ -119,7 +119,7 @@ assert graph.nodes['EFO:0000270'].get('name') == 'asthma'
 
 # %% papermill={"duration": 0.032709, "end_time": "2020-12-14T21:24:20.103558", "exception": false, "start_time": "2020-12-14T21:24:20.070849", "status": "completed"} tags=[]
 efo_terms = {
-    node_id for node_id in graph.nodes.keys()# if node_id.startswith('EFO:')# and is_disease(node_id)
+    node_id for node_id in graph.nodes.keys()
 }
 
 # %% papermill={"duration": 0.028124, "end_time": "2020-12-14T21:24:20.173254", "exception": false, "start_time": "2020-12-14T21:24:20.145130", "status": "completed"} tags=[]
