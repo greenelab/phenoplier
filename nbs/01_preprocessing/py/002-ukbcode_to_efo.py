@@ -325,6 +325,7 @@ def _add_term_labels(row):
 
     return " AND ".join(labels)
 
+
 # %% [markdown] papermill={"duration": 0.037245, "end_time": "2020-12-17T20:01:37.272934", "exception": false, "start_time": "2020-12-17T20:01:37.235689", "status": "completed"} tags=[]
 # ## Apply
 
