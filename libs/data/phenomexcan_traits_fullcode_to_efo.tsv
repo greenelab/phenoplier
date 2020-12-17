@@ -1,0 +1,1088 @@
+ukb_code	term_label	term_codes	mapping_type	ukb_fullcode	current_term_label	category
+K55	vascular disease	EFO:0004264, EFO:0009431	Broad	K55-Diagnoses_main_ICD10_K55_Vascular_disorders_of_intestine	vascular disease AND intestinal disease	disease
+M17	osteoarthritis || knee	EFO:0004616	Broad	M17-Diagnoses_main_ICD10_M17_Gonarthrosis_arthrosis_of_knee	osteoarthritis, knee	disease
+R30	dysuria	EFO:0003901	? Broad	R30-Diagnoses_main_ICD10_R30_Pain_associated_with_micturition	dysuria	
+O60	premature birth	EFO:0003917	? Exact	O60-Diagnoses_main_ICD10_O60_Preterm_delivery	premature birth	
+S64	carpal tunnel syndrome	EFO:0004143	? Narrow	S64-Diagnoses_main_ICD10_S64_Injury_of_nerves_at_wrist_and_hand_level	carpal tunnel syndrome	disease
+K29	gastritis	EFO:0000217	Broad	K29-Diagnoses_main_ICD10_K29_Gastritis_and_duodenitis	gastritis	disease
+Z85	neoplasm' (covers benign + malignant; otherwise create/import 'malignant neoplasm')	EFO:0000616	Broad	Z85-Diagnoses_main_ICD10_Z85_Personal_history_of_malignant_neoplasm	neoplasm	disease
+M05	rheumatoid arthritis	EFO:0000685	Broad	M05-Diagnoses_main_ICD10_M05_Seropositive_rheumatoid_arthritis	rheumatoid arthritis	disease
+L91	skin disease	EFO:0000701	Broad	L91-Diagnoses_main_ICD10_L91_Hypertrophic_disorders_of_skin	skin disease	disease
+K74	cirrhosis of liver	EFO:0001422	Broad	K74-Diagnoses_main_ICD10_K74_Fibrosis_and_cirrhosis_of_liver	cirrhosis of liver	disease
+M15	osteoarthritis	EFO:0002506	Broad	M15-Diagnoses_main_ICD10_M15_Polyarthrosis	osteoarthritis	disease
+Z34	pregnancy'	EFO:0002950	Broad	Z34-Diagnoses_main_ICD10_Z34_Supervision_of_normal_pregnancy	pregnancy	
+O23	urinary tract infection	EFO:0003103	Broad	O23-Diagnoses_main_ICD10_O23_Infections_of_genitourinary_tract_in_pregnancy	urinary tract infection	disease
+I24	heart disease	EFO:0003777	Broad	I24-Diagnoses_main_ICD10_I24_Other_acute_ischaemic_heart_diseases	heart disease	disease
+I51	heart disease	EFO:0003777	Broad	I51-Diagnoses_main_ICD10_I51_Complications_and_illdefined_descriptions_of_heart_disease	heart disease	disease
+S32	spinal fracture	EFO:0003902	Broad	S32-Diagnoses_main_ICD10_S32_Fracture_of_lumbar_spine_and_pelvis	spinal fracture	disease
+O42	spontaneous preterm birth	EFO:0006917	Broad	O42-Diagnoses_main_ICD10_O42_Premature_rupture_of_membranes	spontaneous preterm birth	
+N35	bladder neck obstruction	EFO:1000840	Broad	N35-Diagnoses_main_ICD10_N35_Urethral_stricture	bladder neck obstruction	disease
+H90	sensorineural hearing loss	EFO:1001176	Broad	H90-Diagnoses_main_ICD10_H90_Conductive_and_sensorineural_hearing_loss	sensorineural hearing loss	disease
+H74	auditory system disease	EFO:1001455	Broad	H74-Diagnoses_main_ICD10_H74_Other_disorders_of_middle_ear_and_mastoid	auditory system disease	disease
+N81	uterine prolapse	EFO:1001864	Broad	N81-Diagnoses_main_ICD10_N81_Female_genital_prolapse	uterine prolapse	disease
+K07	abnormality of the mouth	HP:0000153	Broad	K07-Diagnoses_main_ICD10_K07_Dentofacial_anomalies_including_malocclusion	abnormality of the mouth	
+H52	Abnormality of refraction	HP:0000539	Broad	H52-Diagnoses_main_ICD10_H52_Disorders_of_refraction_and_accommodation	abnormality of refraction	
+I83	varicose veins	HP:0002619	Broad	I83-Diagnoses_main_ICD10_I83_Varicose_veins_of_lower_extremities	varicose veins	
+I86	Varicose veins	HP:0002619	Broad	I86-Diagnoses_main_ICD10_I86_Varicose_veins_of_other_sites	varicose veins	
+K46	hernia of the abdominal wall	HP:0004299	Broad	K46-Diagnoses_main_ICD10_K46_Unspecified_abdominal_hernia	hernia of the abdominal wall	
+Q82	Malformation syndrome with skin/mucosae involvement	Orphanet:139027	Broad	Q82-Diagnoses_main_ICD10_Q82_Other_congenital_malformations_of_skin	malformation syndrome with skin/mucosae involvement	disease
+O16	preeclampsia	EFO:0000668	Exact	O16-Diagnoses_main_ICD10_O16_Unspecified_maternal_hypertension	preeclampsia	disease
+I64	stroke	EFO:0000712	Exact	I64-Diagnoses_main_ICD10_I64_Stroke_not_specified_as_haemorrhage_or_infarction	stroke	disease
+I60	subarachnoid hemorrhage	EFO:0000713	Exact	I60-Diagnoses_main_ICD10_I60_Subarachnoid_haemorrhage	subarachnoid hemorrhage	disease
+K76	liver disease	EFO:0001421	Exact	K76-Diagnoses_main_ICD10_K76_Other_diseases_of_liver	liver disease	disease
+I67	cerebrovascular disorder	EFO:0003763	Exact	I67-Diagnoses_main_ICD10_I67_Other_cerebrovascular_diseases	cerebrovascular disorder	disease
+K82	gallbladder disease	EFO:0003832	Exact	K82-Diagnoses_main_ICD10_K82_Other_diseases_of_gallbladder	gallbladder disease	disease
+R52	pain	EFO:0003843	Exact	R52-Diagnoses_main_ICD10_R52_Pain_not_elsewhere_classified	pain	
+R00	cardiac arrythmia	EFO:0004269	Exact	R00-Diagnoses_main_ICD10_R00_Abnormalities_of_heart_beat	cardiac arrhythmia	disease
+M41	scoliosis	EFO:0004273	Exact	M41-Diagnoses_main_ICD10_M41_Scoliosis	scoliosis	disease
+K00	tooth agenesis	EFO:0005410	Exact	K00-Diagnoses_main_ICD10_K00_Disorders_of_tooth_development_and_eruption	tooth agenesis	disease
+I61	intracerebral hemorrhage	EFO:0005669	Exact	I61-Diagnoses_main_ICD10_I61_Intracerebral_haemorrhage	intracerebral hemorrhage	disease
+H33	retinal detachment	EFO:0005773	Exact	H33-Diagnoses_main_ICD10_H33_Retinal_detachments_and_breaks	retinal detachment	disease
+N97	female infertility	EFO:0008560	Exact	N97-Diagnoses_main_ICD10_N97_Female_infertility	female infertility	disease
+G47	sleep disorder	EFO:0008568	Exact	G47-Diagnoses_main_ICD10_G47_Sleep_disorders	sleep disorder	disease
+K70	alcoholic liver disease	EFO:0008573	Exact	K70-Diagnoses_main_ICD10_K70_Alcoholic_liver_disease	alcoholic liver disease	disease
+K11	salivary gland disease	EFO:0008581	Exact	K11-Diagnoses_main_ICD10_K11_Diseases_of_salivary_glands	salivary gland disease	disease
+J46	status asthmaticus	EFO:0008590	Exact	J46-Diagnoses_main_ICD10_J46_Status_asthmaticus	status asthmaticus	disease
+N84	female genital tract polyp	EFO:0008622	Exact	N84-Diagnoses_main_ICD10_N84_Polyp_of_female_genital_tract	female genital tract polyp	disease
+H43	vitreous body disease	EFO:0008624	Exact	H43-Diagnoses_main_ICD10_H43_Disorders_of_vitreous_body	vitreous body disease	disease
+L92	granulomatous dermatitis	EFO:1000705	Exact	L92-Diagnoses_main_ICD10_L92_Granulomatous_disorders_of_skin_and_subcutaneous_tissue	granulomatous dermatitis	disease
+O21	hyperemesis gravidarum	EFO:1000971	Exact	O21-Diagnoses_main_ICD10_O21_Excessive_vomiting_in_pregnancy	hyperemesis gravidarum	disease
+E22	hyperpituitarism	EFO:1000973	Exact	E22-Diagnoses_main_ICD10_E22_Hyperfunction_of_pituitary_gland	hyperpituitarism	disease
+K57	diverticulitis	EFO:1001460	Exact	K57-Diagnoses_main_ICD10_K57_Diverticular_disease_of_intestine	diverticulitis	disease
+R33	Urinary retention	HP:0000016	Exact	R33-Diagnoses_main_ICD10_R33_Retention_of_urine	urinary retention	
+R32	Urinary incontinence	HP:0000020	Exact	R32-Diagnoses_main_ICD10_R32_Unspecified_urinary_incontinence	urinary incontinence	
+H53	Visual impairment	HP:0000505	Exact	H53-Diagnoses_main_ICD10_H53_Visual_disturbances	visual impairment	
+R31	hematuria	HP:0000790	Exact	R31-Diagnoses_main_ICD10_R31_Unspecified_haematuria	hematuria	
+K81	Cholecystitis	HP:0001082	Exact	K81-Diagnoses_main_ICD10_K81_Cholecystitis	cholecystitis	
+G24	Dystonia	HP:0001332	Exact	G24-Diagnoses_main_ICD10_G24_Dystonia	dystonia	
+R18	Ascites	HP:0001541	Exact	R18-Diagnoses_main_ICD10_R18_Ascites	ascites	
+D50	Iron deficiency anemia	HP:0001891	Exact	D50-Diagnoses_main_ICD10_D50_Iron_deficiency_anaemia	iron deficiency anemia	
+N17	acute kidney injury	HP:0001919	Exact	N17-Diagnoses_main_ICD10_N17_Acute_renal_failure	acute kidney injury	
+H25	age-related cataract	HP:0011141	Exact	H25-Diagnoses_main_ICD10_H25_Senile_cataract	age-related cataract	
+D70	Agranulocytosis	HP:0012234	Exact	D70-Diagnoses_main_ICD10_D70_Agranulocytosis	agranulocytosis	
+K59	intestinal disease	EFO:0009431	Broad	K59-Diagnoses_main_ICD10_K59_Other_functional_intestinal_disorders	intestinal disease	disease
+M47	spondyloarthropathy	EFO:0000706	Exact	M47-Diagnoses_main_ICD10_M47_Spondylosis	spondyloarthropathy	disease
+E23	hypopituitarism, pituitary gland disease	EFO:0001380, EFO:0009607	Exact	E23-Diagnoses_main_ICD10_E23_Hypofunction_and_other_disorders_of_pituitary_gland	hypopituitarism AND pituitary gland disease	disease
+H35	retinopathy	EFO:0003839	Exact	H35-Diagnoses_main_ICD10_H35_Other_retinal_disorders	retinopathy	disease
+I74	venous thromboembolism	EFO:0004286	Exact	I74-Diagnoses_main_ICD10_I74_Arterial_embolism_and_thrombosis	venous thromboembolism	disease
+I48	atrial fibrillation	EFO:0000275	Exact	I48-Diagnoses_main_ICD10_I48_Atrial_fibrillation_and_flutter	atrial fibrillation	disease
+N41	prostatitis	EFO:0003830	Exact	N41-Diagnoses_main_ICD10_N41_Inflammatory_diseases_of_prostate	prostatitis	disease
+N18	chronic kidney disease	EFO:0003884	Exact	N18-Diagnoses_main_ICD10_N18_Chronic_renal_failure	chronic kidney disease	disease
+O14	preeclampsia	EFO:0000668	Broad	O14-Diagnoses_main_ICD10_O14_Gestational_pregnancyinduced_hypertension_with_significant_proteinuria	preeclampsia	disease
+I25	coronary heart disease	EFO:0001645	Broad	I25-Diagnoses_main_ICD10_I25_Chronic_ischaemic_heart_disease	coronary artery disease	disease
+N60	breast fibrocystic disease	EFO:0003014	Broad	N60-Diagnoses_main_ICD10_N60_Benign_mammary_dysplasia	breast fibrocystic disease	disease
+F32	unipolar depression	EFO:0003761	Broad	F32-Diagnoses_main_ICD10_F32_Depressive_episode	unipolar depression	disease
+F33	unipolar depression	EFO:0003761	Broad	F33-Diagnoses_main_ICD10_F33_Recurrent_depressive_disorder	unipolar depression	disease
+F10	alcohol dependence	EFO:0003829	Broad	F10-Diagnoses_main_ICD10_F10_Mental_and_behavioural_disorders_due_to_use_of_alcohol	alcohol dependence	disease
+M54	pain	EFO:0003843	Broad	M54-Diagnoses_main_ICD10_M54_Dorsalgia	pain	
+N63	breast cyst	EFO:1000848	Broad	N63-Diagnoses_main_ICD10_N63_Unspecified_lump_in_breast	breast cyst	disease
+M00	infectious arthritis	EFO:1001351	Broad	M00-Diagnoses_main_ICD10_M00_Pyogenic_arthritis	infectious arthritis	disease
+I42	cardiomyopathy	EFO:0000318	Exact	I42-Diagnoses_main_ICD10_I42_Cardiomyopathy	cardiomyopathy	disease
+K50	Crohn's disease	EFO:0000384	Exact	K50-Diagnoses_main_ICD10_K50_Crohns_disease_regional_enteritis	crohn's disease	disease
+E14	diabetes mellitus	EFO:0000400	Exact	E14-Diagnoses_main_ICD10_E14_Unspecified_diabetes_mellitus	diabetes mellitus	disease
+G40	epilepsy	EFO:0000474	Exact	G40-Diagnoses_main_ICD10_G40_Epilepsy	epilepsy	disease
+H40	glaucoma	EFO:0000516	Exact	H40-Diagnoses_main_ICD10_H40_Glaucoma	glaucoma	disease
+K58	irritable bowel syndrome	EFO:0000555	Exact	K58-Diagnoses_main_ICD10_K58_Irritable_bowel_syndrome	irritable bowel syndrome	disease
+F20	schizophrenia	EFO:0000692	Exact	F20-Diagnoses_main_ICD10_F20_Schizophrenia	schizophrenia	disease
+K51	ulcerative colitis	EFO:0000729	Exact	K51-Diagnoses_main_ICD10_K51_Ulcerative_colitis	ulcerative colitis	disease
+B34	viral disease	EFO:0000763	Exact	B34-Diagnoses_main_ICD10_B34_Viral_infection_of_unspecified_site	viral disease	disease
+M60	myositis	EFO:0000783	Exact	M60-Diagnoses_main_ICD10_M60_Myositis	myositis	disease
+H26	cataract	EFO:0001059	Exact	H26-Diagnoses_main_ICD10_H26_Other_cataract	cataract	disease
+N80	endometriosis	EFO:0001065	Exact	N80-Diagnoses_main_ICD10_N80_Endometriosis	endometriosis	disease
+E66	obesity	EFO:0001073	Exact	E66-Diagnoses_main_ICD10_E66_Obesity	obesity	disease
+E10	type I diabetes mellitus	EFO:0001359	Exact	E10-Diagnoses_main_ICD10_E10_Insulindependent_diabetes_mellitus	type i diabetes mellitus	disease
+E11	type II diabetes mellitus	EFO:0001360	Exact	E11-Diagnoses_main_ICD10_E11_Noninsulindependent_diabetes_mellitus	type ii diabetes mellitus	disease
+G20	Parkinson's disease	EFO:0002508	Exact	G20-Diagnoses_main_ICD10_G20_Parkinsons_disease	parkinson's disease	disease
+L03	cellulitis	EFO:0003035	Exact	L03-Diagnoses_main_ICD10_L03_Cellulitis	cellulitis	disease
+M86	osteomyelitis	EFO:0003102	Exact	M86-Diagnoses_main_ICD10_M86_Osteomyelitis	osteomyelitis	disease
+I50	heart failure	EFO:0003144	Exact	I50-Diagnoses_main_ICD10_I50_Heart_failure	heart failure	disease
+K02	dental caries	EFO:0003819	Exact	K02-Diagnoses_main_ICD10_K02_Dental_caries	dental caries	disease
+G43	migraine disorder	EFO:0003821	Exact	G43-Diagnoses_main_ICD10_G43_Migraine	migraine disorder	disease
+I26	pulmonary embolism	EFO:0003827	Exact	I26-Diagnoses_main_ICD10_I26_Pulmonary_embolism	pulmonary embolism	disease
+I73	peripheral vascular disease	EFO:0003875	Exact	I73-Diagnoses_main_ICD10_I73_Other_peripheral_vascular_diseases	peripheral vascular disease	disease
+G35	multiple sclerosis	EFO:0003885	Exact	G35-Diagnoses_main_ICD10_G35_Multiple_sclerosis	multiple sclerosis	disease
+M45	ankylosing spondylitis	EFO:0003898	Exact	M45-Diagnoses_main_ICD10_M45_Ankylosing_spondylitis	ankylosing spondylitis	disease
+I20	angina pectoris	EFO:0003913	Exact	I20-Diagnoses_main_ICD10_I20_Angina_pectoris	angina pectoris	
+I70	atherosclerosis	EFO:0003914	Exact	I70-Diagnoses_main_ICD10_I70_Atherosclerosis	atherosclerosis	disease
+K21	gastroesophageal reflux disease	EFO:0003948	Exact	K21-Diagnoses_main_ICD10_K21_Gastrooesophageal_reflux_disease	gastroesophageal reflux disease	disease
+H80	otosclerosis	EFO:0004213	Exact	H80-Diagnoses_main_ICD10_H80_Otosclerosis	otosclerosis	disease
+N20	nephrolithiasis	EFO:0004253	Exact	N20-Diagnoses_main_ICD10_N20_Calculus_of_kidney_and_ureter	nephrolithiasis	disease
+M87	osteonecrosis	EFO:0004259	Exact	M87-Diagnoses_main_ICD10_M87_Osteonecrosis	osteonecrosis	disease
+D64	anemia	EFO:0004272	Exact	D64-Diagnoses_main_ICD10_D64_Other_anaemias	anemia (phenotype)	
+M10	gout	EFO:0004274	Exact	M10-Diagnoses_main_ICD10_M10_Gout	gout	disease
+K26	duodenal ulcer	EFO:0004607	Exact	K26-Diagnoses_main_ICD10_K26_Duodenal_ulcer	duodenal ulcer	disease
+K80	cholelithiasis	EFO:0004799	Exact	K80-Diagnoses_main_ICD10_K80_Cholelithiasis	cholelithiasis	disease
+I95	hypotension	EFO:0005251	Exact	I95-Diagnoses_main_ICD10_I95_Hypotension	hypotension	disease
+L50	urticaria	EFO:0005531	Exact	L50-Diagnoses_main_ICD10_L50_Urticaria	urticaria	disease
+L82	seborrheic keratosis	EFO:0005584	Exact	L82-Diagnoses_main_ICD10_L82_Seborrhoeic_keratosis	seborrheic keratosis	disease
+B02	Herpes Zoster	EFO:0006510	Exact	B02-Diagnoses_main_ICD10_B02_Zoster_herpes_zoster	herpes zoster	disease
+K37	appendicitis	EFO:0007149	Exact	K37-Diagnoses_main_ICD10_K37_Unspecified_appendicitis	appendicitis	disease
+O44	placenta praevia	EFO:0007442	Exact	O44-Diagnoses_main_ICD10_O44_Placenta_praevia	placenta praevia	disease
+H66	suppurative otitis media	EFO:0007503	Exact	H66-Diagnoses_main_ICD10_H66_Suppurative_and_unspecified_otitis_media	suppurative otitis media	disease
+S72	femur fracture	EFO:0008553	Exact	S72-Diagnoses_main_ICD10_S72_Fracture_of_femur	femur fracture	disease
+K44	diaphragmatic hernia	EFO:0008561	Exact	K44-Diagnoses_main_ICD10_K44_Diaphragmatic_hernia	diaphragmatic hernia	
+I21	acute myocardial infarction	EFO:0008583	Exact	I21-Diagnoses_main_ICD10_I21_Acute_myocardial_infarction	acute myocardial infarction	disease
+I22	Subsequent ST elevation (STEMI) and non-ST elevation (NSTEMI) myocardian infarction	EFO:0008584	Exact	I22-Diagnoses_main_ICD10_I22_Subsequent_myocardial_infarction	subsequent st elevation (stemi) and non-st elevation (nstemi) myocardial infarction	disease
+K65	peritonitis	EFO:0008588	Exact	K65-Diagnoses_main_ICD10_K65_Peritonitis	peritonitis	disease
+K63	intestinal disease	EFO:0009431	Exact	K63-Diagnoses_main_ICD10_K63_Other_diseases_of_intestine	intestinal disease	disease
+M72	fibroblastic disorder	EFO:0009432	Exact	M72-Diagnoses_main_ICD10_M72_Fibroblastic_disorders	fibroblastic disorder	disease
+J22	lower respiratory tract disease	EFO:0009433	Exact	J22-Diagnoses_main_ICD10_J22_Unspecified_acute_lower_respiratory_infection	lower respiratory tract disease	disease
+N30	cystitis	EFO:1000025	Exact	N30-Diagnoses_main_ICD10_N30_Cystitis	cystitis	disease
+K85	acute pancreatitis	EFO:1000652	Exact	K85-Diagnoses_main_ICD10_K85_Acute_pancreatitis	acute pancreatitis	disease
+H71	cholesteatoma of middle ear	EFO:1000678	Exact	H71-Diagnoses_main_ICD10_H71_Cholesteatoma_of_middle_ear	cholesteatoma of middle ear	disease
+R61	hypohidrosis	EFO:1000712	Exact	R61-Diagnoses_main_ICD10_R61_Hyperhidrosis	hypohidrosis	disease
+L43	lichen planus	EFO:1000726	Exact	L43-Diagnoses_main_ICD10_L43_Lichen_planus	lichen planus	disease
+L71	rosacea	EFO:1000760	Exact	L71-Diagnoses_main_ICD10_L71_Rosacea	rosacea	disease
+L90	skin atrophy	EFO:1000766	Exact	L90-Diagnoses_main_ICD10_L90_Atrophic_disorders_of_skin	skin atrophy	disease
+M16	osteoarthritis, hip	EFO:1000786	Exact	M16-Diagnoses_main_ICD10_M16_Coxarthrosis_arthrosis_of_hip	osteoarthritis, hip	disease
+N87	dysplasia of cervix	EFO:1000910	Exact	N87-Diagnoses_main_ICD10_N87_Dysplasia_of_cervix_uteri	dysplasia of cervix	disease
+A87	viral meningitis	EFO:1001236	Exact	A87-Diagnoses_main_ICD10_A87_Viral_meningitis	viral meningitis	disease
+O03	spontaneous abortion	EFO:1001255	Exact	O03-Diagnoses_main_ICD10_O03_Spontaneous_abortion	spontaneous abortion	disease
+I80	phlebitis || Thrombophlebitis	EFO:1001395, HP:0004418	Exact	I80-Diagnoses_main_ICD10_I80_Phlebitis_and_thrombophlebitis	phlebitis AND thrombophlebitis	disease
+N23	renal colic	EFO:1001412	Exact	N23-Diagnoses_main_ICD10_N23_Unspecified_renal_colic	renal colic	
+M65	tenosynovitis	EFO:1001435	Exact	M65-Diagnoses_main_ICD10_M65_Synovitis_and_tenosynovitis	tenosynovitis	disease
+K41	femoral hernia	EFO:1001791	Exact	K41-Diagnoses_main_ICD10_K41_Femoral_hernia	femoral hernia	disease
+K43	ventral hernia	EFO:1001866	Exact	K43-Diagnoses_main_ICD10_K43_Ventral_hernia	ventral hernia	
+R35	polyuria	HP:0000103	Exact	R35-Diagnoses_main_ICD10_R35_Polyuria	polyuria	
+L29	prutitus	HP:0000989	Exact	L29-Diagnoses_main_ICD10_L29_Pruritus	pruritus	
+R11	nausea and vomiting	HP:0002017	Exact	R11-Diagnoses_main_ICD10_R11_Nausea_and_vomiting	nausea and vomiting	
+K20	esophagitis	HP:0100633	Exact	K20-Diagnoses_main_ICD10_K20_Oesophagitis	esophagitis	disease
+D86	sarcoidosis	Orphanet:797	Exact	D86-Diagnoses_main_ICD10_D86_Sarcoidosis	sarcoidosis	disease
+H16	keratitis	EFO:0009449	Exact	H16-Diagnoses_main_ICD10_H16_Keratitis	keratitis	disease
+G81	hemiplagia	EFO:0009453	Exact	G81-Diagnoses_main_ICD10_G81_Hemiplegia	hemiplegia	disease
+K25	gastric ulcer	EFO:0009454	Exact	K25-Diagnoses_main_ICD10_K25_Gastric_ulcer	gastric ulcer	disease
+H04	lacrimal apparatus disease	EFO:0009455	Exact	H04-Diagnoses_main_ICD10_H04_Disorders_of_lachrymal_system	lacrimal apparatus disease	disease
+G51	facial nerve disease	EFO:1002051	Exact	G51-Diagnoses_main_ICD10_G51_Facial_nerve_disorders	facial nerve disease	disease
+I10	primary hypertension	EFO:1002032	Exact	I10-Diagnoses_main_ICD10_I10_Essential_primary_hypertension	primary hypertension	disease
+R87	Abnormality of female internal genitalia	HP:0000008	Broad	R87-Diagnoses_main_ICD10_R87_Abnormal_findings_in_specimens_from_female_genital_organs	abnormal morphology of female internal genitalia	
+R86	Abnormality of male internal genitalia	HP:0000022	Broad	R86-Diagnoses_main_ICD10_R86_Abnormal_findings_in_specimens_from_male_genital_organs	abnormality of male internal genitalia	
+R17	jaundice	HP:0000952	Exact	R17-Diagnoses_main_ICD10_R17_Unspecified_jaundice	jaundice	
+R26	gait disturbance	HP:0001288	Broad	R26-Diagnoses_main_ICD10_R26_Abnormalities_of_gait_and_mobility	gait disturbance	
+K42	umbilical hernia	HP:0001537	Exact	K42-Diagnoses_main_ICD10_K42_Umbilical_hernia	umbilical hernia	
+I46	cardiac arrest	EFO:0009492	Exact	I46-Diagnoses_main_ICD10_I46_Cardiac_arrest	cardiac arrest	disease
+Q66	Abnormality of the foot	HP:0001760	Broad	Q66-Diagnoses_main_ICD10_Q66_Congenital_deformities_of_feet	abnormal foot morphology	
+O62	Abnormal delivery	HP:0001787	Broad	O62-Diagnoses_main_ICD10_O62_Abnormalities_of_forces_of_labour	abnormal delivery	
+R59	lymphadenopathy	HP:0002716	Exact	R59-Diagnoses_main_ICD10_R59_Enlarged_lymph_nodes	lymphadenopathy	
+Q21	Abnormal cardiac septum morphology	HP:0001671	Exact	Q21-Diagnoses_main_ICD10_Q21_Congenital_malformations_of_cardiac_septa	abnormal cardiac septum morphology	
+K61	Rectal abscess	HP:0005224	Broad	K61-Diagnoses_main_ICD10_K61_Abscess_of_anal_and_rectal_regions	rectal abscess	
+R06	Breathing dysregulation	HP:0005957	Broad	R06-Diagnoses_main_ICD10_R06_Abnormalities_of_breathing	breathing dysregulation	
+I47	paroxysmal tachycardia	EFO:0009493	Exact	I47-Diagnoses_main_ICD10_I47_Paroxysmal_tachycardia	paroxysmal tachycardia	disease
+N62	breast hypertrophy	HP:0010313	Exact	N62-Diagnoses_main_ICD10_N62_Hypertrophy_of_breast	breast hypertrophy	
+L05	Pilonidal asbcess	HP:0010771	Broad	L05-Diagnoses_main_ICD10_L05_Pilonidal_cyst	pilonidal abscess	
+N72	cervicitis	HP:0030160	Broad	N72-Diagnoses_main_ICD10_N72_Inflammatory_disease_of_cervix_uteri	cervicitis	
+L02	Cutaneous abscess	HP:0031292	Broad	L02-Diagnoses_main_ICD10_L02_Cutaneous_abscess_furuncle_and_carbuncle	cutaneous abscess	
+R25	abnormality of movement	HP:0100022	Broad	R25-Diagnoses_main_ICD10_R25_Abnormal_involuntary_movements	abnormality of movement	
+M23	knee injury	EFO:0009507	Broad	M23-Diagnoses_main_ICD10_M23_Internal_derangement_of_knee	knee injury	disease
+N82	female genital tract fistula	EFO:0009524	Exact	N82-Diagnoses_main_ICD10_N82_Fistulae_involving_female_genital_tract	female genital tract fistula	disease
+O72	postpartum hemorrhage	EFO:0009579	Exact	O72-Diagnoses_main_ICD10_O72_Postpartum_haemorrhage	postpartum hemorrhage	disease
+R15	fecal incontinence	EFO:0009523	Exact	R15-Diagnoses_main_ICD10_R15_Faecal_incontinence	fecal incontinence	disease
+R20	disturbance of skin sensation	EFO:0009522	Exact	R20-Diagnoses_main_ICD10_R20_Disturbances_of_skin_sensation	disturbance of skin sensation	disease
+R94		EFO:0009628	Exact	R94-Diagnoses_main_ICD10_R94_Abnormal_results_of_function_studies	abnormal result of function studies	
+S00	head injury	EFO:0009505	Broad	S00-Diagnoses_main_ICD10_S00_Superficial_injury_of_head	head injury	disease
+S30	abdominal injury	EFO:0009502	Narrow	S30-Diagnoses_main_ICD10_S30_Superficial_injury_of_abdomen_lower_back_and_pelvis	abdominal injury	disease
+S62	wrist fracture	EFO:0009515	Narrow	S62-Diagnoses_main_ICD10_S62_Fracture_at_wrist_and_hand_level	wrist fracture	disease
+T18	foreign body in gastrointestinal tract	EFO:0009526	Exact	T18-Diagnoses_main_ICD10_T18_Foreign_body_in_alimentary_tract	foreign body in gastrointestinal tract	
+T82	device complication	EFO:0009519	Broad	T82-Diagnoses_main_ICD10_T82_Complications_of_cardiac_and_vascular_prosthetic_devices_implants_and_grafts	device complication	disease
+T83	device complication	EFO:0009519	Broad	T83-Diagnoses_main_ICD10_T83_Complications_of_genitourinary_prosthetic_devices_implants_and_grafts	device complication	disease
+T84	device complication	EFO:0009519	Broad	T84-Diagnoses_main_ICD10_T84_Complications_of_internal_orthopaedic_prosthetic_devices_implants_and_grafts	device complication	disease
+T85	device complication	EFO:0009519	Broad	T85-Diagnoses_main_ICD10_T85_Complications_of_other_internal_prosthetic_devices_implants_and_grafts	device complication	disease
+Z30	contraception	EFO:0009520	Exact	Z30-Diagnoses_main_ICD10_Z30_Contraceptive_management	contraception	
+Z35	high-risk pregnancy	EFO:0009573	Narrow	Z35-Diagnoses_main_ICD10_Z35_Supervision_of_highrisk_pregnancy	high-risk pregnancy	disease
+Z40	prophylactic surgery	EFO:0009580	Exact	Z40-Diagnoses_main_ICD10_Z40_Prophylactic_surgery	prophylactic surgery	
+Z47	orthopedic nursing	EFO:0009577	Broad	Z47-Diagnoses_main_ICD10_Z47_Other_orthopaedic_followup_care	orthopedic nursing	
+Z50	rehabilitation	EFO:0009581	Exact	Z50-Diagnoses_main_ICD10_Z50_Care_involving_use_of_rehabilitation_procedures	rehabilitation	
+E83	mineral metabolism disease	EFO:0009556	Exact	E83-Diagnoses_main_ICD10_E83_Disorders_of_mineral_metabolism	mineral metabolism disease	disease
+H18	corneal disease	EFO:0009464	Exact	H18-Diagnoses_main_ICD10_H18_Other_disorders_of_cornea	corneal disease	disease
+N19	kidney failure	EFO:1002048	Exact	N19-Diagnoses_main_ICD10_N19_Unspecified_renal_failure	kidney failure	disease
+I85	esophageal varices	EFO:0009545	Exact	I85-Diagnoses_main_ICD10_I85_Oesophageal_varices	esophageal varices	disease
+G56	mononeuropathy	EFO:0009558	Broad	G56-Diagnoses_main_ICD10_G56_Mononeuropathies_of_upper_limb	mononeuropathy	disease
+G57	mononeuropathy	EFO:0009558	Broad	G57-Diagnoses_main_ICD10_G57_Mononeuropathies_of_lower_limb	mononeuropathy	disease
+N71	uterine inflammatory disease	EFO:0009572	Exact	N71-Diagnoses_main_ICD10_N71_Inflammatory_disease_of_uterus_except_cervix	uterine inflammatory disease	disease
+N83	fallopian tube disease	EFO:0009548	Broad	N83-Diagnoses_main_ICD10_N83_Noninflammatory_disorders_of_ovary_Fallopian_tube_and_broad_ligament	fallopian tube disease	disease
+N94	female reproductive system disease	EFO:0009549	Broad	N94-Diagnoses_main_ICD10_N94_Pain_and_other_conditions_associated_with_female_genital_organs_and_menstrual_cycle	female reproductive system disease	disease
+I08	heart valve disease	EFO:0009551	Broad	I08-Diagnoses_main_ICD10_I08_Multiple_valve_diseases	heart valve disease	disease
+N13	urinary tract obstruction	EFO:0009571	Broad	N13-Diagnoses_main_ICD10_N13_Obstructive_and_reflux_uropathy	urinary tract obstruction	disease
+K04	dental pulp disease	EFO:0009540	Broad	K04-Diagnoses_main_ICD10_K04_Diseases_of_pulp_and_periapical_tissues	dental pulp disease	disease
+G50	trigeminal nerve disease	EFO:0009569	Exact	G50-Diagnoses_main_ICD10_G50_Disorders_of_trigeminal_nerve	trigeminal nerve disease	disease
+H73	tympanic membrane disease	EFO:0009570	Exact	H73-Diagnoses_main_ICD10_H73_Other_disorders_of_tympanic_membrane	tympanic membrane disease	disease
+K22	esophageal disease	EFO:0009544	Exact	K22-Diagnoses_main_ICD10_K22_Other_diseases_of_oesophagus	esophageal disease	disease
+I34	mitral valve disease	EFO:0009557	Broad	I34-Diagnoses_main_ICD10_I34_Nonrheumatic_mitral_valve_disorders	mitral valve disease	disease
+I35	aortic valve disease	EFO:0009531	Broad	I35-Diagnoses_main_ICD10_I35_Nonrheumatic_aortic_valve_disorders	aortic valve disease	disease
+H01	blepharitis	EFO:0009536	Exact	H01-Diagnoses_main_ICD10_H01_Other_inflammation_of_eyelid	blepharitis	disease
+H60	otitis externa	EFO:0009560	Exact	H60-Diagnoses_main_ICD10_H60_Otitis_externa	otitis externa	disease
+K83	biliary tract disease	EFO:0009534	Exact	K83-Diagnoses_main_ICD10_K83_Other_diseases_of_biliary_tract	biliary tract disease	disease
+I84	hemorrhoid	EFO:0009552	Exact	I84-Diagnoses_main_ICD10_I84_Haemorrhoids	hemorrhoid	disease
+M18	joint disease	EFO:1000999	Broad	M18-Diagnoses_main_ICD10_M18_Arthrosis_of_first_carpometacarpal_joint	joint disease	disease
+G61	chronic inflammatory demyelinating polyneuropathy	EFO:0009538	Broad	G61-Diagnoses_main_ICD10_G61_Inflammatory_polyneuropathy	chronic inflammatory demyelinating polyneuropathy	disease
+K66	disease of peritoneum	EFO:0009541	Exact	K66-Diagnoses_main_ICD10_K66_Other_disorders_of_peritoneum	disease of peritoneum	disease
+K90	malabsorption syndrome	EFO:0009554	Broad	K90-Diagnoses_main_ICD10_K90_Intestinal_malabsorption	malabsorption syndrome	disease
+G44	headache disorder	EFO:0009550	Exact	G44-Diagnoses_main_ICD10_G44_Other_headache_syndromes	headache disorder	disease
+G54	nerve plexus disease	EFO:0009559	Exact	G54-Diagnoses_main_ICD10_G54_Nerve_root_and_plexus_disorders	nerve plexus disease	disease
+L57	radiation-induced disorder	EFO:0009565	Broad	L57-Diagnoses_main_ICD10_L57_Skin_changes_due_to_chronic_exposure_to_nonionising_radiation	radiation-induced disorder	disease
+M50	cervical disc degenerative disease	EFO:0009537	Broad	M50-Diagnoses_main_ICD10_M50_Cervical_disk_disorders	cervical disc degenerative disorder	disease
+K38	disorder of appendix	EFO:0009542	Exact	K38-Diagnoses_main_ICD10_K38_Other_diseases_of_appendix	disorder of appendix	disease
+H72	tympanic membrane perforation	EFO:0009472	Exact	H72-Diagnoses_main_ICD10_H72_Perforation_of_tympanic_membrane	tympanic membrane perforation	
+K10	jaw disease	EFO:0009468	Exact	K10-Diagnoses_main_ICD10_K10_Other_diseases_of_jaws	jaw disease	disease
+N75	Bartholin's gland disease	EFO:0009469	Exact	N75-Diagnoses_main_ICD10_N75_Diseases_of_Bartholins_gland	bartholin gland disease	disease
+M70	soft tissue disease	EFO:0009470	Broad	M70-Diagnoses_main_ICD10_M70_Soft_tissue_disorders_related_to_use_overuse_and_pressure	soft tissue disease	disease
+1160	sleep duration	EFO:0005271	Exact	1160-Sleep_duration	sleep duration	
+1180	chronotype measurement	EFO:0008328	Exact	1180-Morningevening_person_chronotype	chronotype measurement	
+1200	insomnia	EFO:0004698	Exact	1200-Sleeplessness_insomnia	insomnia	disease
+1210	snoring measurement	EFO:0008341	Exact	1210-Snoring	snoring measurement	
+1558	alcohol consumption measurement	EFO:0007878	Exact	1558-Alcohol_intake_frequency	alcohol consumption measurement	
+1920	mood swings	HP:0000720	Exact	1920-Mood_swings	mood swings	
+1940	irritability	HP:0000737	Exact	1940-Irritability	irritability	
+2020	loneliness measurement	EFO:0007865	Exact	2020-Loneliness_isolation	loneliness measurement	disease
+2080	tiredness measurement	EFO:0007946	Exact	2080-Frequency_of_tiredness_lethargy_in_last_2_weeks	tiredness measurement	
+2257	hearing loss	EFO:0004238	Exact	2257-Hearing_difficultyproblems_with_background_noise	hearing loss	disease
+2335	chest pain	HP:0100749	Exact	2335-Chest_pain_or_discomfort	chest pain	
+2385	age at voice drop	EFO:0007888	Exact	2385-Relative_age_voice_broke	age at voice drop	
+2714	age at menarche	EFO:0004703	Exact	2714-Age_when_periods_started_menarche	age at menarche	
+2724	menopause	EFO:0003922	Exact	2724-Had_menopause	menopause	
+3404	shoulder pain  || neck pain	HP:0030834, HP:0030833	Broad	3404-Neckshoulder_pain_for_3_months	shoulder pain AND neck pain	
+3414	hip pain	HP:0030838	Broad	3414-Hip_pain_for_3_months	hip pain	
+3571	back pain	HP:0003418	Broad	3571-Back_pain_for_3_months	back pain	
+3591	hysterectomy	EFO:0003881	Broad	3591-Ever_had_hysterectomy_womb_removed	hysterectomy	
+3710	menstrual cycle measurement	EFO:0007786	Exact	3710-Length_of_menstrual_cycle	menstrual cycle measurement	
+3741	pain in abdomen	EFO:0003766	Exact	3741-Stomachabdominal_pain_for_3_months	pain in abdomen	
+3799	headache disorder  || headache	EFO:0009550, HP:0002315	Exact	3799-Headaches_for_3_months	headache disorder AND headache	disease
+4041	gestational diabetes	EFO:0004593	Exact	4041-Gestational_diabetes_only	gestational diabetes	disease
+4728	lower limb pain	HP:0012514	Broad	4728-Leg_pain_on_walking	lower limb pain	
+5452	lower limb pain	HP:0012514	Broad	5452-Leg_pain_when_standing_still_or_sitting	lower limb pain	
+5463	lower limb pain	HP:0012514	Broad	5463-Leg_pain_in_calfcalves	lower limb pain	
+6015	chest pain	HP:0100749	Broad	6015-Chest_pain_felt_during_physical_activity	chest pain	
+6016	chest pain	HP:0100749	Broad	6016-Chest_pain_felt_outside_physical_activity	chest pain	
+20122	bipolar disorder	EFO:0000289	Exact	20122-Bipolar_disorder_status	bipolar disorder	disease
+22126	seasonal allergic rhinitis	EFO:0003956	Exact	22126-Doctor_diagnosed_hayfever_or_allergic_rhinitis	seasonal allergic rhinitis	disease
+22127	asthma	EFO:0000270	Exact	22127-Doctor_diagnosed_asthma	asthma	disease
+22128	emphysema	EFO:0000464	Exact	22128-Doctor_diagnosed_emphysema	emphysema	disease
+22129	chronic bronchitis	EFO:0006505	Exact	22129-Doctor_diagnosed_chronic_bronchitis	chronic bronchitis	disease
+22130	chronic obstructive pulmonary disease	EFO:0000341	Exact	22130-Doctor_diagnosed_COPD_chronic_obstructive_pulmonary_disease	chronic obstructive pulmonary disease	disease
+22133	sarcoidosis	Orphanet:797	Exact	22133-Doctor_diagnosed_sarcoidosis	sarcoidosis	disease
+22134	bronchiectasis	HP:0002110	Exact	22134-Doctor_diagnosed_bronchiectasis	bronchiectasis	
+22137	tuberculosis	Orphanet:3389	Exact	22137-Doctor_diagnosed_tuberculosis	tuberculosis	disease
+22140	lung carcinoma	EFO:0001071	Narrow	22140-Doctor_diagnosed_lung_cancer_not_mesothelioma	lung carcinoma	disease
+20001_1001	lung carcinoma	EFO:0001071	Narrow	20001_1001-Cancer_code_selfreported_lung_cancer	lung carcinoma	disease
+20001_1003	skin carcinoma	EFO:0009259	Narrow	20001_1003-Cancer_code_selfreported_skin_cancer	skin carcinoma	disease
+20001_1006	laryngeal neoplasm	EFO:0003817	Broad	20001_1006-Cancer_code_selfreported_larynxthroat_cancer	laryngeal neoplasm	disease
+20001_1011	tongue neoplasm	EFO:0003871	Broad	20001_1011-Cancer_code_selfreported_tongue_cancer	tongue neoplasm	disease
+20001_1017	esophageal carcinoma	EFO:0002916	Narrow	20001_1017-Cancer_code_selfreported_oesophageal_cancer	esophageal carcinoma	disease
+20001_1018	stomach neoplasm	EFO:0003897	Broad	20001_1018-Cancer_code_selfreported_stomach_cancer	stomach neoplasm	disease
+20001_1019	small intestine carcinoma	EFO:0005588	Narrow	20001_1019-Cancer_code_selfreported_small_intestinesmall_bowel_cancer	small intestine carcinoma	disease
+20001_1020	colorectal carcinoma	EFO:1001951	Narrow	20001_1020-Cancer_code_selfreported_large_bowel_cancercolorectal_cancer	colorectal carcinoma	disease
+20001_1022	colon carcinoma	EFO:1001950	Narrow	20001_1022-Cancer_code_selfreported_colon_cancersigmoid_cancer	colon carcinoma	disease
+20001_1023	rectal cancer	EFO:1000657	Exact	20001_1023-Cancer_code_selfreported_rectal_cancer	rectum cancer	disease
+20001_1024	hepatocellular carcinoma	EFO:0000182	Narrow	20001_1024-Cancer_code_selfreported_liverhepatocellular_cancer	hepatocellular carcinoma	disease
+20001_1030	eye neoplasm	EFO:0003824	Broad	20001_1030-Cancer_code_selfreported_eye_andor_adnexal_cancer	eye neoplasm	disease
+20001_1032	brain neoplasm	EFO:0003833	Broad	20001_1032-Cancer_code_selfreported_brain_cancer_primary_malignant_brain_tumour	brain neoplasm	disease
+20001_1034	kidney neoplasm	EFO:0003865	Broad	20001_1034-Cancer_code_selfreported_kidneyrenal_cell_cancer	kidney neoplasm	disease
+20001_1035	bladder carcinoma	EFO:0000292	Narrow	20001_1035-Cancer_code_selfreported_bladder_cancer	bladder carcinoma	disease
+20001_1048	leukemia	EFO:0000565	Exact	20001_1048-Cancer_code_selfreported_leukaemia	leukemia	disease
+20001_1050	multiple myeloma	EFO:0001378	Exact	20001_1050-Cancer_code_selfreported_multiple_myeloma	multiple myeloma	disease
+20001_1052	Hodgkins lymphoma	EFO:0000183	Exact	20001_1052-Cancer_code_selfreported_hodgkins_lymphoma_hodgkins_disease	hodgkins lymphoma	disease
+20001_1053	non-Hodgkins lymphoma	EFO:0005952	Exact	20001_1053-Cancer_code_selfreported_nonhodgkins_lymphoma	non-hodgkins lymphoma	disease
+20001_1055	chronic lymphocytic leukemia	EFO:0000095	Exact	20001_1055-Cancer_code_selfreported_chronic_lymphocytic	chronic lymphocytic leukemia	disease
+20001_1059	melanoma	EFO:0000756	Exact	20001_1059-Cancer_code_selfreported_malignant_melanoma	melanoma	disease
+20001_1060	non-melanoma skin carcinoma	EFO:0009260	Narrow	20001_1060-Cancer_code_selfreported_nonmelanoma_skin_cancer	non-melanoma skin carcinoma	disease
+20001_1061	basal cell carcinoma	EFO:0004193	Exact	20001_1061-Cancer_code_selfreported_basal_cell_carcinoma	basal cell carcinoma	disease
+20001_1062	squamous cell carcinoma	EFO:0000707	Exact	20001_1062-Cancer_code_selfreported_squamous_cell_carcinoma	squamous cell carcinoma	disease
+20001_1063	bone neoplasm	EFO:0003820	Broad	20001_1063-Cancer_code_selfreported_primary_bone_cancer	bone neoplasm	disease
+20001_1065	thyroid carcinoma	EFO:0002892	Narrow	20001_1065-Cancer_code_selfreported_thyroid_cancer	thyroid carcinoma	disease
+20002_1065	hypertension	EFO:0000537	Exact	20002_1065-Noncancer_illness_code_selfreported_hypertension	hypertension	disease
+20002_1066	heart disease	EFO:0003777	Exact	20002_1066-Noncancer_illness_code_selfreported_heartcardiac_problem	heart disease	disease
+20002_1067	peripheral vascular disease	EFO:0003875	Exact	20002_1067-Noncancer_illness_code_selfreported_peripheral_vascular_disease	peripheral vascular disease	disease
+20002_1072	primary hypertension	EFO:1002032	Exact	20002_1072-Noncancer_illness_code_selfreported_essential_hypertension	primary hypertension	disease
+20002_1074	angina pectoris	EFO:0003913	Exact	20002_1074-Noncancer_illness_code_selfreported_angina	angina pectoris	
+20002_1075	myocardial infarction	EFO:0000612	Exact	20002_1075-Noncancer_illness_code_selfreported_heart_attackmyocardial_infarction	myocardial infarction	disease
+20002_1076	heart failure	EFO:0003144	Exact	20002_1076-Noncancer_illness_code_selfreported_heart_failurepulmonary_odema	heart failure	disease
+20002_1077	cardiac arrhythmia	EFO:0004269	Exact	20002_1077-Noncancer_illness_code_selfreported_heart_arrhythmia	cardiac arrhythmia	disease
+20002_1079	cardiomyopathy	EFO:0000318	Exact	20002_1079-Noncancer_illness_code_selfreported_cardiomyopathy	cardiomyopathy	disease
+20002_1081	stroke	EFO:0000712	Exact	20002_1081-Noncancer_illness_code_selfreported_stroke	stroke	disease
+20002_1082	transient ischemic attack	EFO:0003764	Exact	20002_1082-Noncancer_illness_code_selfreported_transient_ischaemic_attack_tia	transient ischemic attack	disease
+20002_1083	subdural hemorrhage	HP:0100309	Exact	20002_1083-Noncancer_illness_code_selfreported_subdural_haemorrhagehaematoma	subdural hemorrhage	disease
+20002_1086	subarachnoid hemorrhage	EFO:0000713	Exact	20002_1086-Noncancer_illness_code_selfreported_subarachnoid_haemorrhage	subarachnoid hemorrhage	disease
+20002_1087	intermittent vascular claudication	EFO:0003876	Exact	20002_1087-Noncancer_illness_code_selfreported_leg_claudication_intermittent_claudication	intermittent vascular claudication	disease
+20002_1093	pulmonary embolism	EFO:0003827	Exact	20002_1093-Noncancer_illness_code_selfreported_pulmonary_embolism_dvt	pulmonary embolism	disease
+20002_1094	deep vein thrombosis	EFO:0003907	Exact	20002_1094-Noncancer_illness_code_selfreported_deep_venous_thrombosis_dvt	deep vein thrombosis	
+20002_1111	asthma	EFO:0000270	Exact	20002_1111-Noncancer_illness_code_selfreported_asthma	asthma	disease
+20002_1112	chronic obstructive pulmonary disease	EFO:0000341	Exact	20002_1112-Noncancer_illness_code_selfreported_chronic_obstructive_airways_diseasecopd	chronic obstructive pulmonary disease	disease
+20002_1113	emphysema	EFO:0000464	Exact	20002_1113-Noncancer_illness_code_selfreported_emphysemachronic_bronchitis	emphysema	disease
+20002_1114	bronchiectasis	HP:0002110	Exact	20002_1114-Noncancer_illness_code_selfreported_bronchiectasis	bronchiectasis	
+20002_1115	interstitial lung disease	EFO:0004244	Exact	20002_1115-Noncancer_illness_code_selfreported_interstitial_lung_disease	interstitial lung disease	disease
+20002_1120	asbestosis	EFO:0007153	Exact	20002_1120-Noncancer_illness_code_selfreported_asbestosis	asbestosis	disease
+20002_1123	sleep apnea	EFO:0003877	Exact	20002_1123-Noncancer_illness_code_selfreported_sleep_apnoea	sleep apnea	disease
+20002_1125	pleurisy	EFO:1001825	Exact	20002_1125-Noncancer_illness_code_selfreported_pleurisy	pleurisy	disease
+20002_1126	spontaneous pneumothorax	HP:0002108	Exact	20002_1126-Noncancer_illness_code_selfreported_spontaneous_pneumothoraxrecurrent_pneumothorax	spontaneous pneumothorax	
+20002_1138	gastroesophageal reflux disease	EFO:0003948	Exact	20002_1138-Noncancer_illness_code_selfreported_gastrooesophageal_reflux_gord_gastric_reflux	gastroesophageal reflux disease	disease
+20002_1139	esophagitis  || Barrett's esophagus	HP:0100633, EFO:0000280	Exact	20002_1139-Noncancer_illness_code_selfreported_oesophagitisbarretts_oesophagus	esophagitis AND barrett's esophagus	disease
+20002_1142	peptic ulcer	HP:0004398	Exact	20002_1142-Noncancer_illness_code_selfreported_gastricstomach_ulcers	peptic ulcer	
+20002_1143	gastritis	EFO:0000217	Exact	20002_1143-Noncancer_illness_code_selfreported_gastritisgastric_erosions	gastritis	disease
+20002_1154	irritable bowel syndrome	EFO:0000555	Exact	20002_1154-Noncancer_illness_code_selfreported_irritable_bowel_syndrome	irritable bowel syndrome	disease
+20002_1155	hepatitis	HP:0012115	Exact	20002_1155-Noncancer_illness_code_selfreported_hepatitis	hepatitis	
+20002_1156	viral human hepatitis infection	EFO:0004196	Exact	20002_1156-Noncancer_illness_code_selfreported_infectiveviral_hepatitis	viral human hepatitis infection	disease
+20002_1158	cirrhosis of liver	EFO:0001422	Exact	20002_1158-Noncancer_illness_code_selfreported_liver_failurecirrhosis	cirrhosis of liver	disease
+20002_1161	gallbladder disease	EFO:0003832	Exact	20002_1161-Noncancer_illness_code_selfreported_gall_bladder_disease	gallbladder disease	disease
+20002_1162	gallstones  || cholelithiasis	EFO:0004210, EFO:0004799	Exact	20002_1162-Noncancer_illness_code_selfreported_cholelithiasisgall_stones	gallstones AND cholelithiasis	disease
+20002_1163	cholecystitis	HP:0001082	Exact	20002_1163-Noncancer_illness_code_selfreported_cholecystitis	cholecystitis	
+20002_1165	pancreatitis	EFO:0000278	Exact	20002_1165-Noncancer_illness_code_selfreported_pancreatitis	pancreatitis	disease
+20002_1190	peritonitis	EFO:0008588	Exact	20002_1190-Noncancer_illness_code_selfreported_peritonitis	peritonitis	disease
+20002_1191	gastrointestinal hemorrhage	HP:0002239	Exact	20002_1191-Noncancer_illness_code_selfreported_gastrointestinal_bleeding	gastrointestinal hemorrhage	
+20002_1192	kidney failure	EFO:1002048	Exact	20002_1192-Noncancer_illness_code_selfreported_renalkidney_failure	kidney failure	disease
+20002_1196	urinary tract infection	EFO:0003103	Exact	20002_1196-Noncancer_illness_code_selfreported_urinary_tract_infectionkidney_infection	urinary tract infection	disease
+20002_1197	nephrolithiasis  || ureterolithiasis  || bladder calculus	EFO:0004253, EFO:1001228, EFO:1000839	Exact	20002_1197-Noncancer_illness_code_selfreported_kidney_stoneureter_stonebladder_stone	nephrolithiasis AND ureterolithiasis AND bladder calculus	disease
+20002_1200	hydronephrosis	EFO:0005562	Exact	20002_1200-Noncancer_illness_code_selfreported_ureteric_obstructionhydronephrosis	hydronephrosis	disease
+20002_1202	urgency urinary incontinence	EFO:0006865	Exact	20002_1202-Noncancer_illness_code_selfreported_urinary_frequency_incontinence	urgency urinary incontinence	
+20002_1220	diabetes	EFO:0000400	Exact	20002_1220-Noncancer_illness_code_selfreported_diabetes	diabetes mellitus	disease
+20002_1222	type i diabetes mellitus	EFO:0001359	Exact	20002_1222-Noncancer_illness_code_selfreported_type_1_diabetes	type i diabetes mellitus	disease
+20002_1223	type ii diabetes mellitus	EFO:0001360	Exact	20002_1223-Noncancer_illness_code_selfreported_type_2_diabetes	type ii diabetes mellitus	disease
+20002_1225	hyperthyroidism  || thyrotoxicosis	EFO:0009189, EFO:0009190	Exact	20002_1225-Noncancer_illness_code_selfreported_hyperthyroidismthyrotoxicosis	hyperthyroidism AND thyrotoxicosis	disease
+20002_1226	hypothyroidism  || myxedema	EFO:0004705, EFO:1001055	Exact	20002_1226-Noncancer_illness_code_selfreported_hypothyroidismmyxoedema	hypothyroidism AND myxedema	disease
+20002_1238	pituitary gland adenoma	EFO:1000478	Exact	20002_1238-Noncancer_illness_code_selfreported_pituitary_adenomatumour	pituitary gland adenoma	disease
+20002_1246	encephalomyelitis	EFO:0001423	Exact	20002_1246-Noncancer_illness_code_selfreported_encephalitis	encephalomyelitis	disease
+20002_1250	Bell's palsy	EFO:0007167	Exact	20002_1250-Noncancer_illness_code_selfreported_bells_palsyfacial_nerve_palsy	bell's palsy	disease
+20002_1255	peripheral neuropathy	EFO:0003100	Exact	20002_1255-Noncancer_illness_code_selfreported_peripheral_neuropathy	peripheral neuropathy	disease
+20002_1256	Guillain-Barre syndrome	EFO:0007292	Exact	20002_1256-Noncancer_illness_code_selfreported_acute_infective_polyneuritisguillainbarre_syndrome	guillain-barre syndrome	disease
+20002_1261	multiple sclerosis	EFO:0003885	Exact	20002_1261-Noncancer_illness_code_selfreported_multiple_sclerosis	multiple sclerosis	disease
+20002_1262	Parkinson's disease	EFO:0002508	Exact	20002_1262-Noncancer_illness_code_selfreported_parkinsons_disease	parkinson's disease	disease
+20002_1264	epilepsy	EFO:0000474	Exact	20002_1264-Noncancer_illness_code_selfreported_epilepsy	epilepsy	disease
+20002_1265	migraine disorder	EFO:0003821	Exact	20002_1265-Noncancer_illness_code_selfreported_migraine	migraine disorder	disease
+20002_1267	spinal cord injury	EFO:1001919	Exact	20002_1267-Noncancer_illness_code_selfreported_spinal_injury	spinal cord injury	disease
+20002_1274	eye infection	EFO:1001888	Exact	20002_1274-Noncancer_illness_code_selfreported_eye_infection	eye infection	disease
+20002_1275	retinopathy	EFO:0003839	Exact	20002_1275-Noncancer_illness_code_selfreported_retinal_problem	retinopathy	disease
+20002_1277	glaucoma	EFO:0000516	Exact	20002_1277-Noncancer_illness_code_selfreported_glaucoma	glaucoma	disease
+20002_1278	cataract	EFO:0001059	Exact	20002_1278-Noncancer_illness_code_selfreported_cataract	cataract	disease
+20002_1281	retinal detachment	EFO:0005773	Exact	20002_1281-Noncancer_illness_code_selfreported_retinal_detachment	retinal detachment	disease
+20002_1282	retinal artery occlusion  || retinal vein occlusion	EFO:1001154, EFO:1001157	Exact	20002_1282-Noncancer_illness_code_selfreported_retinal_arteryvein_occlusion	retinal artery occlusion AND retinal vein occlusion	disease
+20002_1286	unipolar depression	EFO:0003761	Narrow	20002_1286-Noncancer_illness_code_selfreported_depression	unipolar depression	disease
+20002_1289	schizophrenia	EFO:0000692	Exact	20002_1289-Noncancer_illness_code_selfreported_schizophrenia	schizophrenia	disease
+20002_1290	attempted suicide	EFO:0004321	Exact	20002_1290-Noncancer_illness_code_selfreported_deliberate_selfharmsuicide_attempt	attempted suicide	
+20002_1291	bipolar disorder	EFO:0000289	Exact	20002_1291-Noncancer_illness_code_selfreported_maniabipolar_disordermanic_depression	bipolar disorder	disease
+20002_1293	bone disease	EFO:0004260	Exact	20002_1293-Noncancer_illness_code_selfreported_bone_disorder	bone disease	disease
+20002_1295	joint disease	EFO:1000999	Exact	20002_1295-Noncancer_illness_code_selfreported_joint_disorder	joint disease	disease
+20002_1308	osteomyelitis	EFO:0003102	Exact	20002_1308-Noncancer_illness_code_selfreported_osteomyelitis	osteomyelitis	disease
+20002_1309	osteoporosis	EFO:0003882	Exact	20002_1309-Noncancer_illness_code_selfreported_osteoporosis	osteoporosis	disease
+20002_1313	ankylosing spondylitis	EFO:0003898	Exact	20002_1313-Noncancer_illness_code_selfreported_ankylosing_spondylitis	ankylosing spondylitis	disease
+20002_1322	myositis  || myopathy	EFO:0000783, EFO:0004145	Exact	20002_1322-Noncancer_illness_code_selfreported_myositismyopathy	myositis AND myopathy	disease
+20002_1327	thrombocytopenia	HP:0001873	Exact	20002_1327-Noncancer_illness_code_selfreported_low_plateletsplatelet_disorder	thrombocytopenia	
+20002_1330	iron deficiency anemia	HP:0001891	Exact	20002_1330-Noncancer_illness_code_selfreported_iron_deficiency_anaemia	iron deficiency anemia	
+20002_1331	pernicious anemia	EFO:0005576	Exact	20002_1331-Noncancer_illness_code_selfreported_pernicious_anaemia	pernicious anemia	disease
+20002_1371	sarcoidosis	Orphanet:797	Exact	20002_1371-Noncancer_illness_code_selfreported_sarcoidosis	sarcoidosis	disease
+20002_1372	vasculitis	EFO:0006803	Exact	20002_1372-Noncancer_illness_code_selfreported_vasculitis	vasculitis	disease
+20002_1373	connective tissue disease	EFO:1001986	Exact	20002_1373-Noncancer_illness_code_selfreported_connective_tissue_disorder	connective tissue disease	disease
+20002_1374	allergy	EFO:0003785	Broad	20002_1374-Noncancer_illness_code_selfreported_allergyhypersensitivityanaphylaxis	allergy	disease
+20002_1377	polymyalgia rheumatica	EFO:0008518	Exact	20002_1377-Noncancer_illness_code_selfreported_polymyalgia_rheumatica	polymyalgia rheumatica	disease
+20002_1381	systemic lupus erythematosus	EFO:0002690	Exact	20002_1381-Noncancer_illness_code_selfreported_systemic_lupus_erythematosissle	systemic lupus erythematosus	disease
+20002_1382	Sjogren syndrome	EFO:0000699	Exact	20002_1382-Noncancer_illness_code_selfreported_sjogrens_syndromesicca_syndrome	sjogren syndrome	disease
+20002_1384	scleroderma  || systemic scleroderma	EFO:1001993, EFO:0000717	Exact	20002_1384-Noncancer_illness_code_selfreported_sclerodermasystemic_sclerosis	scleroderma AND systemic scleroderma	disease
+20002_1385	food allergy	EFO:1001890	Exact	20002_1385-Noncancer_illness_code_selfreported_allergy_or_anaphylactic_reaction_to_food	food allergy	disease
+20002_1387	seasonal allergic rhinitis  || allergic rhinitis	EFO:0003956, EFO:0005854	Exact	20002_1387-Noncancer_illness_code_selfreported_hayfeverallergic_rhinitis	seasonal allergic rhinitis AND allergic rhinitis	disease
+20002_1398	pneumonia	EFO:0003106	Exact	20002_1398-Noncancer_illness_code_selfreported_pneumonia	pneumonia	disease
+20002_1400	peptic ulcer	HP:0004398	Exact	20002_1400-Noncancer_illness_code_selfreported_peptic_ulcer	peptic ulcer	
+20002_1408	alcohol dependence	EFO:0003829	Exact	20002_1408-Noncancer_illness_code_selfreported_alcohol_dependency	alcohol dependence	disease
+20002_1415	auditory system disease	EFO:1001455	Broad	20002_1415-Noncancer_illness_code_selfreported_earvestibular_disorder	auditory system disease	disease
+20002_1416	sinusitis	EFO:0007486	Broad	20002_1416-Noncancer_illness_code_selfreported_chronic_sinusitis	sinusitis	disease
+20002_1417	nasal cavity polyp	EFO:1000391	Exact	20002_1417-Noncancer_illness_code_selfreported_nasal_polyps	nasal cavity polyp	disease
+20002_1420	otosclerosis	EFO:0004213	Exact	20002_1420-Noncancer_illness_code_selfreported_otosclerosis	otosclerosis	disease
+20002_1421	Meniere disease	EFO:0006862	Exact	20002_1421-Noncancer_illness_code_selfreported_menieres_disease	meniere disease	disease
+20002_1425	brain aneurysm	EFO:0003870	Exact	20002_1425-Noncancer_illness_code_selfreported_cerebral_aneurysm	brain aneurysm	disease
+20002_1427	polycystic kidney disease	EFO:0008620	Exact	20002_1427-Noncancer_illness_code_selfreported_polycystic_kidney	polycystic kidney disease	disease
+20002_1428	thyroid disease	EFO:1000627	Exact	20002_1428-Noncancer_illness_code_selfreported_thyroiditis	thyroid disease	disease
+20002_1430	hypopituitarism	EFO:0001380	Exact	20002_1430-Noncancer_illness_code_selfreported_hypopituitarism	hypopituitarism	disease
+20002_1433	cerebral palsy	EFO:1000632	Exact	20002_1433-Noncancer_illness_code_selfreported_cerebral_palsy	cerebral palsy	disease
+20002_1435	optic neuritis	EFO:0007405	Exact	20002_1435-Noncancer_illness_code_selfreported_optic_neuritis	optic neuritis	disease
+20002_1436	headache	HP:0002315	Exact	20002_1436-Noncancer_illness_code_selfreported_headaches_not_migraine	headache	
+20002_1437	myasthenia gravis	EFO:0004991	Exact	20002_1437-Noncancer_illness_code_selfreported_myasthenia_gravis	myasthenia gravis	disease
+20002_1438	polycythemia vera	EFO:0002429	Exact	20002_1438-Noncancer_illness_code_selfreported_polycythaemia_vera	polycythemia vera	disease
+20002_1439	HIV infection  || AIDS	EFO:0000764, EFO:0000765	Exact	20002_1439-Noncancer_illness_code_selfreported_hivaids	hiv infection AND aids	disease
+20002_1440	tuberculosis	Orphanet:3389	Exact	20002_1440-Noncancer_illness_code_selfreported_tuberculosis_tb	tuberculosis	disease
+20002_1441	malaria	EFO:0001068	Exact	20002_1441-Noncancer_illness_code_selfreported_malaria	malaria	disease
+20002_1442	Helicobacter pylori	NCBITaxon:210	Exact	20002_1442-Noncancer_illness_code_selfreported_helicobacter_pylori	helicobacter pylori	
+20002_1446	anemia	EFO:0004272	Exact	20002_1446-Noncancer_illness_code_selfreported_anaemia	anemia (phenotype)	
+20002_1452	eczema	HP:0000964	Exact	20002_1452-Noncancer_illness_code_selfreported_eczemadermatitis	eczema	
+20002_1453	psoriasis	EFO:0000676	Exact	20002_1453-Noncancer_illness_code_selfreported_psoriasis	psoriasis	disease
+20002_1455	chronic ulcer of skin	EFO:0007066	Exact	20002_1455-Noncancer_illness_code_selfreported_chronic_skin_ulcers	chronic ulcer of skin	
+20002_1456	celiac disease	EFO:0001060	Exact	20002_1456-Noncancer_illness_code_selfreported_malabsorptioncoeliac_disease	celiac disease	disease
+20002_1457	duodenal ulcer	EFO:0004607	Exact	20002_1457-Noncancer_illness_code_selfreported_duodenal_ulcer	duodenal ulcer	disease
+20002_1458	diverticulitis	EFO:1001460	Exact	20002_1458-Noncancer_illness_code_selfreported_diverticular_diseasediverticulitis	diverticulitis	disease
+20002_1459	colitis	EFO:0003872	Exact	20002_1459-Noncancer_illness_code_selfreported_colitisnot_crohns_or_ulcerative_colitis	colitis	disease
+20002_1460	adenomatous colon polyp	EFO:1000633	Exact	20002_1460-Noncancer_illness_code_selfreported_rectal_or_colon_adenomapolyps	adenomatous colon polyp	disease
+20002_1461	inflammatory bowel disease	EFO:0003767	Exact	20002_1461-Noncancer_illness_code_selfreported_inflammatory_bowel_disease	inflammatory bowel disease	disease
+20002_1462	Crohn's disease	EFO:0000384	Exact	20002_1462-Noncancer_illness_code_selfreported_crohns_disease	crohn's disease	disease
+20002_1463	ulcerative colitis	EFO:0000729	Exact	20002_1463-Noncancer_illness_code_selfreported_ulcerative_colitis	ulcerative colitis	disease
+20002_1464	rheumatoid arthritis	EFO:0000685	Exact	20002_1464-Noncancer_illness_code_selfreported_rheumatoid_arthritis	rheumatoid arthritis	disease
+20002_1465	osteoarthritis	EFO:0002506	Exact	20002_1465-Noncancer_illness_code_selfreported_osteoarthritis	osteoarthritis	disease
+20002_1466	gout	EFO:0004274	Exact	20002_1466-Noncancer_illness_code_selfreported_gout	gout	disease
+20002_1469	post-traumatic stress disorder	EFO:0001358	Exact	20002_1469-Noncancer_illness_code_selfreported_posttraumatic_stress_disorder	post-traumatic stress disorder	disease
+20002_1470	eating disorder	EFO:0005203	Broad	20002_1470-Noncancer_illness_code_selfreported_anorexiabulimiaother_eating_disorder	eating disorder	disease
+20002_1471	atrial fibrillation	EFO:0000275	Exact	20002_1471-Noncancer_illness_code_selfreported_atrial_fibrillation	atrial fibrillation	disease
+20002_1472	emphysema	EFO:0000464	Exact	20002_1472-Noncancer_illness_code_selfreported_emphysema	emphysema	disease
+20002_1473	hypercholesterolemia	HP:0003124	Exact	20002_1473-Noncancer_illness_code_selfreported_high_cholesterol	hypercholesterolemia	
+20002_1474	hiatus hernia	HP:0002036	Exact	20002_1474-Noncancer_illness_code_selfreported_hiatus_hernia	hiatus hernia	
+20002_1476	sciatica	HP:0011868	Exact	20002_1476-Noncancer_illness_code_selfreported_sciatica	sciatica	
+20002_1477	psoriatic arthritis	EFO:0003778	Exact	20002_1477-Noncancer_illness_code_selfreported_psoriatic_arthropathy	psoriatic arthritis	disease
+20002_1479	rheumatic fever	EFO:1001160	Exact	20002_1479-Noncancer_illness_code_selfreported_rheumatic_fever	rheumatic fever	disease
+20002_1482	chronic fatigue syndrome	EFO:0004540	Exact	20002_1482-Noncancer_illness_code_selfreported_chronic_fatigue_syndrome	chronic fatigue syndrome	disease
+20002_1485	cardiac arrhythmia	EFO:0004269	Exact	20002_1485-Noncancer_illness_code_selfreported_irregular_heart_beat	cardiac arrhythmia	disease
+20002_1491	intracranial hemorrhage	EFO:0000551	Exact	20002_1491-Noncancer_illness_code_selfreported_brain_haemorrhage	intracranial hemorrhage	disease
+20002_1494	varicose veins	HP:0002619	Exact	20002_1494-Noncancer_illness_code_selfreported_varicose_veins	varicose veins	
+20002_1495	lymphedema	Orphanet:79383	Exact	20002_1495-Noncancer_illness_code_selfreported_lymphoedema	lymphedema	disease
+20002_1497	pneumothorax	HP:0002107	Exact	20002_1497-Noncancer_illness_code_selfreported_pneumothorax	pneumothorax	
+20002_1499	labyrinthitis	EFO:0009604	Exact	20002_1499-Noncancer_illness_code_selfreported_labyrinthitis	labyrinthitis	disease
+20002_1500	vertigo	HP:0002321	Exact	20002_1500-Noncancer_illness_code_selfreported_vertigo	vertigo	
+20002_1501	pyloric stenosis	EFO:0009626	Exact	20002_1501-Noncancer_illness_code_selfreported_pyloric_stenosis	pyloric stenosis	disease
+20002_1502	appendicitis	EFO:0007149	Exact	20002_1502-Noncancer_illness_code_selfreported_appendicitis	appendicitis	disease
+20002_1504	anal fissure	HP:0012390	Exact	20002_1504-Noncancer_illness_code_selfreported_anal_fissure	anal fissure	
+20002_1505	hemorrhoid	EFO:0009552	Exact	20002_1505-Noncancer_illness_code_selfreported_haemorrhoids_piles	hemorrhoid	disease
+20002_1508	jaundice	HP:0000952	Exact	20002_1508-Noncancer_illness_code_selfreported_jaundice_unknown_cause	jaundice	
+20002_1509	gastroenteritis  || dysentery	EFO:1001463, EFO:1001869	Exact	20002_1509-Noncancer_illness_code_selfreported_gastroenteritisdysentry	gastroenteritis AND dysentery	disease
+20002_1510	dyspepsia	EFO:0008533	Exact	20002_1510-Noncancer_illness_code_selfreported_dyspepsia_indigestion	dyspepsia	disease
+20002_1511	hernia of the abdominal wall	HP:0004299	Exact	20002_1511-Noncancer_illness_code_selfreported_abdominal_hernia	hernia of the abdominal wall	
+20002_1512	umbilical hernia	HP:0001537	Exact	20002_1512-Noncancer_illness_code_selfreported_umbilical_hernia	umbilical hernia	
+20002_1513	inguinal hernia	HP:0000023	Exact	20002_1513-Noncancer_illness_code_selfreported_inguinal_hernia	inguinal hernia	
+20002_1514	cystitis	EFO:1000025	Exact	20002_1514-Noncancer_illness_code_selfreported_cystitis	cystitis	disease
+20002_1523	trigeminal neuralgia	EFO:1001219	Exact	20002_1523-Noncancer_illness_code_selfreported_trigemminal_neuralgia	trigeminal neuralgia	disease
+20002_1525	essential tremor	EFO:0003108	Exact	20002_1525-Noncancer_illness_code_selfreported_benign_essential_tremor	essential tremor	disease
+20002_1526	poliomyelitis	EFO:0007450	Exact	20002_1526-Noncancer_illness_code_selfreported_polio_poliomyelitis	poliomyelitis	disease
+20002_1529	dry eye syndrome	EFO:1000906	Exact	20002_1529-Noncancer_illness_code_selfreported_dry_eyes	dry eye syndrome	disease
+20002_1530	iritis	EFO:1000997	Exact	20002_1530-Noncancer_illness_code_selfreported_iritis	iritis	disease
+20002_1533	lumbar disc degeneration	EFO:0004994	Exact	20002_1533-Noncancer_illness_code_selfreported_disc_degeneration	lumbar disc degeneration	disease
+20002_1534	back pain	HP:0003418	Exact	20002_1534-Noncancer_illness_code_selfreported_back_pain	back pain	
+20002_1535	scoliosis	EFO:0004273	Exact	20002_1535-Noncancer_illness_code_selfreported_scoliosis	scoliosis	disease
+20002_1536	spinal stenosis	EFO:0007490	Exact	20002_1536-Noncancer_illness_code_selfreported_spinal_stenosis	spinal stenosis	disease
+20002_1537	arthralgia	HP:0002829	Exact	20002_1537-Noncancer_illness_code_selfreported_joint_pain	arthralgia	
+20002_1538	arthritis	EFO:0005856	Exact	20002_1538-Noncancer_illness_code_selfreported_arthritis_nos	arthritis	disease
+20002_1540	plantar fasciitis	EFO:1001909	Exact	20002_1540-Noncancer_illness_code_selfreported_plantar_fascitis	plantar fasciitis	
+20002_1541	carpal tunnel syndrome	EFO:0004143	Exact	20002_1541-Noncancer_illness_code_selfreported_carpal_tunnel_syndrome	carpal tunnel syndrome	disease
+20002_1542	fibromyalgia	EFO:0005687	Exact	20002_1542-Noncancer_illness_code_selfreported_fibromyalgia	fibromyalgia	disease
+20002_1544	Dupuytren contracture	EFO:0004229	Exact	20002_1544-Noncancer_illness_code_selfreported_dupuytrens_contracture	dupuytren contracture	disease
+20002_1548	acne	EFO:0003894	Exact	20002_1548-Noncancer_illness_code_selfreported_acneacne_vulgaris	acne	disease
+20002_1549	lichen planus	EFO:1000726	Exact	20002_1549-Noncancer_illness_code_selfreported_lichen_planus	lichen planus	disease
+20002_1550	lichen disease	EFO:1000724	Broad	20002_1550-Noncancer_illness_code_selfreported_lichen_sclerosis	lichen disease	disease
+20002_1561	Raynaud disease	EFO:1001145	Exact	20002_1561-Noncancer_illness_code_selfreported_raynauds_phenomenondisease	raynaud disease	disease
+20002_1562	food allergy	EFO:1001890	Exact	20002_1562-Noncancer_illness_code_selfreported_food_intolerance	food allergy	disease
+20002_1563	urticaria	EFO:0005531	Exact	20002_1563-Noncancer_illness_code_selfreported_urticaria	urticaria	disease
+20002_1567	infectious mononucleosis  || Epstein-Barr virus infection	EFO:0007326, EFO:0000769	Exact	20002_1567-Noncancer_illness_code_selfreported_infectious_mononucleosis_glandular_fever_epstein_barr_virus_ebv	infectious mononucleosis AND epstein-barr virus infection	disease
+20002_1568	measles	EFO:1002025	Exact	20002_1568-Noncancer_illness_code_selfreported_measles_morbillivirus	measles	disease
+20002_1569	mumps infectious disease	EFO:0007383	Exact	20002_1569-Noncancer_illness_code_selfreported_mumps_epidemic_parotitis	mumps virus infectious disease	disease
+20002_1570	rubella	EFO:1002026	Exact	20002_1570-Noncancer_illness_code_selfreported_rubella_german_measles	rubella	disease
+20002_1571	chickenpox	EFO:0007204	Exact	20002_1571-Noncancer_illness_code_selfreported_chickenpox	chickenpox	disease
+20002_1572	whooping cough	EFO:0000650	Exact	20002_1572-Noncancer_illness_code_selfreported_whooping_cough_pertussis	whooping cough	disease
+20002_1573	Herpes Zoster	EFO:0006510	Exact	20002_1573-Noncancer_illness_code_selfreported_shingles	herpes zoster	disease
+20002_1575	herpes simplex infection	EFO:1002022	Exact	20002_1575-Noncancer_illness_code_selfreported_herpes_simplex	herpes simplex infection	disease
+20002_1578	hepatitis a	EFO:0007305	Exact	20002_1578-Noncancer_illness_code_selfreported_hepatitis_a	hepatitis a virus infection	disease
+20002_1585	mitral valve disease	EFO:0009557	Broad	20002_1585-Noncancer_illness_code_selfreported_mitral_regurgitation_incompetence	mitral valve disease	disease
+20002_1597	tinnitus	HP:0000360	Exact	20002_1597-Noncancer_illness_code_selfreported_tinnitus_tiniitis	tinnitus	
+20002_1598	tonsillitis	HP:0011110	Exact	20002_1598-Noncancer_illness_code_selfreported_tonsiltis	tonsillitis	
+20002_1599	constipation	HP:0002019	Exact	20002_1599-Noncancer_illness_code_selfreported_constipation	constipation	
+20002_1603	rectal prolapse	HP:0002035	Exact	20002_1603-Noncancer_illness_code_selfreported_rectal_prolapse	rectal prolapse	
+20002_1605	femoral hernia	EFO:1001791	Exact	20002_1605-Noncancer_illness_code_selfreported_femoral_hernia	femoral hernia	disease
+20002_1608	nephritis	EFO:1002050	Exact	20002_1608-Noncancer_illness_code_selfreported_nephritis	nephritis	disease
+20002_1610	goiter	EFO:0004283	Exact	20002_1610-Noncancer_illness_code_selfreported_thyroid_goitre	goiter	disease
+20002_1613	blepharitis	EFO:0009536	Exact	20002_1613-Noncancer_illness_code_selfreported_blepharitis_eyelid_infection	blepharitis	disease
+20002_1616	insomnia	EFO:0004698	Exact	20002_1616-Noncancer_illness_code_selfreported_insomnia	insomnia	disease
+20002_1617	osteopenia	HP:0000938	Exact	20002_1617-Noncancer_illness_code_selfreported_osteopenia	osteopenia	
+20002_1619	tendinopathy  || tenosynovitis	EFO:1001434, EFO:1001435	Exact	20002_1619-Noncancer_illness_code_selfreported_tendonitis_tendinitis_tenosynovitis	tendinopathy AND tenosynovitis	disease
+20002_1620	frozen shoulder	EFO:1000941	Exact	20002_1620-Noncancer_illness_code_selfreported_bursitis	frozen shoulder	disease
+20002_1623	lateral epicondylitis	EFO:1001896	Exact	20002_1623-Noncancer_illness_code_selfreported_tennis_elbow_lateral_epicondylitis	lateral epicondylitis	disease
+20002_1625	cellulitis	EFO:0003035	Exact	20002_1625-Noncancer_illness_code_selfreported_cellulitis	cellulitis	disease
+20002_1626	skull fractures	EFO:1001425	Exact	20002_1626-Noncancer_illness_code_selfreported_fracture_skull_head	skull fractures	disease
+20002_1635	radius fracture	EFO:0003957	Exact	20002_1635-Noncancer_illness_code_selfreported_fracture_radius	radius fracture	disease
+20002_1636	ulna fracture	EFO:0003950	Exact	20002_1636-Noncancer_illness_code_selfreported_fracture_ulna	ulna fracture	disease
+20002_1652	tibia fracture	EFO:0003944	Exact	20002_1652-Noncancer_illness_code_selfreported_fracture_tibia	tibia fracture	disease
+20002_1657	sepsis	HP:0100806	Exact	20002_1657-Noncancer_illness_code_selfreported_septicaemia_sepsis	sepsis	
+20002_1660	rosacea	EFO:1000760	Exact	20002_1660-Noncancer_illness_code_selfreported_rosacea	rosacea	disease
+20002_1661	vitiligo	EFO:0004208	Exact	20002_1661-Noncancer_illness_code_selfreported_vitiligo	vitiligo	disease
+20002_1677	scarlet fever	EFO:0007477	Exact	20002_1677-Noncancer_illness_code_selfreported_scarlet_fever_scarlatina	scarlet fever	disease
+2247_1	hearing loss	EFO:0004238	Exact	2247_1-Hearing_difficultyproblems_Yes	hearing loss	disease
+1697	body height	EFO:0004339	Broad	1697-Comparative_height_size_at_age_10	body height	
+1930	emotional symptom measurement	EFO:0007803	Broad	1930-Miserableness	emotional symptom measurement	disease
+1950	emotional symptom measurement	EFO:0007803	Broad	1950-Sensitivity_hurt_feelings	emotional symptom measurement	disease
+1960	emotional symptom measurement	EFO:0007803	Broad	1960-Fedup_feelings	emotional symptom measurement	disease
+1970	emotional symptom measurement	EFO:0007803	Broad	1970-Nervous_feelings	emotional symptom measurement	disease
+2030	emotional symptom measurement	EFO:0007803	Broad	2030-Guilty_feelings	emotional symptom measurement	disease
+2040	behavioural disinhibition measurement	EFO:0006946	Broad	2040-Risk_taking	behavioural disinhibition measurement	disease
+2178	self rated health	EFO:0004778	Exact	2178-Overall_health_rating	self rated health	
+2956	Chronic pain	HP:0012532	Exact	2956-General_pain_for_3_months	chronic pain	
+3606	chest pain	HP:0100749	Broad	3606-Chest_pain_or_discomfort_walking_normally	chest pain	
+3616	chest pain	HP:0100749	Broad	3616-Chest_pain_due_to_walking_ceases_when_standing_still	chest pain	
+3751	chest pain	HP:0100749	Broad	3751-Chest_pain_or_discomfort_when_walking_uphill_or_hurrying	chest pain	
+3773	knee pain	HP:0030839	Broad	3773-Knee_pain_for_3_months	knee pain	
+3839	spontaneous abortion	EFO:1001255	Exact	3839-Number_of_spontaneous_miscarriages	spontaneous abortion	disease
+4559	wellbeing measurement  || family relaitonship	EFO:0007869, EFO:0004424	Broad	4559-Family_relationship_satisfaction	wellbeing measurement AND family relationship	disease
+20018	episodic memory	EFO:0004333	Broad	20018-Prospective_memory_result	episodic memory	
+22502	cough	HP:0012735	Exact	22502-Cough_on_most_days	cough	
+20002_1136	liver disease  || biliary tract disease  || pancreas disease	EFO:0001421, EFO:0009534, EFO:0009605	Exact	20002_1136-Noncancer_illness_code_selfreported_liverbiliarypancreas_problem	liver disease AND biliary tract disease AND pancreas disease	disease
+20002_1243	mental or behavioural disorder	EFO:0005407	?	20002_1243-Noncancer_illness_code_selfreported_psychologicalpsychiatric_problem	psychosis	disease
+20002_1266	head injury	EFO:0009505	Exact	20002_1266-Noncancer_illness_code_selfreported_head_injury	head injury	disease
+20002_1394	peripheral nerve injury	EFO:0009510	Exact	20002_1394-Noncancer_illness_code_selfreported_peripheral_nerve_injury	peripheral nerve injury	disease
+20002_1627	jaw fracture	EFO:0009612	Exact	20002_1627-Noncancer_illness_code_selfreported_fracture_jaw	jaw fracture	disease
+20002_1628	nose injury	EFO:0009623	Exact	20002_1628-Noncancer_illness_code_selfreported_fracture_nose	nose injury	disease
+20002_1629	orbital fracture	EFO:0009611	Narrow	20002_1629-Noncancer_illness_code_selfreported_fracture_face_orbit_eye_socket	orbital fracture	disease
+20002_1631	clavicle facture	EFO:0009614	Exact	20002_1631-Noncancer_illness_code_selfreported_fracture_clavicle_collar_bone	clavicle fracture	disease
+20002_1632	shoulder fracture	EFO:0009621	Exact	20002_1632-Noncancer_illness_code_selfreported_fracture_shoulder_scapula	shoulder fracture	disease
+20002_1634	wrist fracture	EFO:0009515	Exact	20002_1634-Noncancer_illness_code_selfreported_fracture_forearm_wrist	wrist fracture	disease
+20002_1637	wrist fracture	EFO:0009515	Exact	20002_1637-Noncancer_illness_code_selfreported_fracture_wrist_colles_fracture	wrist fracture	disease
+20002_1638	hand fracture	NCIT:C27161	Exact	20002_1638-Noncancer_illness_code_selfreported_fracture_hand	hand fracture	
+20002_1639	finger fracture	EFO:0009616	Exact	20002_1639-Noncancer_illness_code_selfreported_fracture_finger	finger fracture	disease
+20002_1644	rib fracture	EFO:0009620	Exact	20002_1644-Noncancer_illness_code_selfreported_fracture_rib	rib fracture	disease
+20002_1647	facture of pelvis	EFO:0009622	Exact	20002_1647-Noncancer_illness_code_selfreported_fracture_pelvis	fracture of pelvis	disease
+20002_1648	femur fracture  || hip fracture	EFO:0008553, EFO:0003964	Broad	20002_1648-Noncancer_illness_code_selfreported_fracture_neck_of_femur_hip	femur fracture AND hip fracture	disease
+20002_1649	femur fracture	EFO:0008553	Broad	20002_1649-Noncancer_illness_code_selfreported_fracture_shaft_of_femur	femur fracture	disease
+20002_1650	knee fracture	EFO:0009617	Exact	20002_1650-Noncancer_illness_code_selfreported_fracture_patella_knee	knee fracture	disease
+20002_1651	ankle fracture  || lower extremity fracture	EFO:0009615, EFO:0009512	Exact	20002_1651-Noncancer_illness_code_selfreported_fracture_lower_leg_ankle	ankle fracture AND lower extremity fracture	disease
+20002_1653	fibula fracture	EFO:0009613	Exact	20002_1653-Noncancer_illness_code_selfreported_fracture_fibula	fibula fracture	disease
+20002_1654	foot fracture	EFO:0009618	Exact	20002_1654-Noncancer_illness_code_selfreported_fracture_foot	foot fracture	disease
+20002_1655	bone fracture	EFO:0003931	Broad	20002_1655-Noncancer_illness_code_selfreported_fracture_metatarsal	bone fracture	disease
+20002_1656	foot fracture	EFO:0009618	Broad	20002_1656-Noncancer_illness_code_selfreported_fracture_toe	foot fracture	disease
+2395_2	androgenic alopecia  || balding measurement	EFO:0004191, EFO:0007825	Broad	2395_2-Hairbalding_pattern_Pattern_2	androgenetic alopecia AND balding measurement	disease
+2395_3	androgenic alopecia  || balding measurement	EFO:0004191, EFO:0007825	Broad	2395_3-Hairbalding_pattern_Pattern_3	androgenetic alopecia AND balding measurement	disease
+2395_4	androgenic alopecia  || balding measurement	EFO:0004191, EFO:0007825	Broad	2395_4-Hairbalding_pattern_Pattern_4	androgenetic alopecia AND balding measurement	disease
+845	self reported educational attainment	EFO:0004784	Exact	845-Age_completed_full_time_education	self reported educational attainment	
+1220	excessive daytime sleepiness  || narcolepsy without cataplexy	EFO:0007875, EFO:0005855	Exact	1220-Daytime_dozing_sleeping_narcolepsy	excessive daytime sleepiness measurement AND narcolepsy without cataplexy	disease
+1239	smoking behavior	EFO:0004318	Broad	1239-Current_tobacco_smoking	smoking behavior	
+1249	smoking cessation	EFO:0004319	Broad	1249-Past_tobacco_smoking	smoking cessation	
+1269	environmental tobacco smoke exposure measurement	EFO:0008361	Broad	1269-Exposure_to_tobacco_smoke_at_home	environmental tobacco smoke exposure measurement	
+1279	environmental tobacco smoke exposure measurement	EFO:0008361	Broad	1279-Exposure_to_tobacco_smoke_outside_home	environmental tobacco smoke exposure measurement	
+1980	anxiety	EFO:0005230	Exact	1980-Worrier_anxious_feelings	anxiety	
+2050	emotional symptom measurement	EFO:0007803	Broad	2050-Frequency_of_depressed_mood_in_last_2_weeks	emotional symptom measurement	disease
+2060	emotional symptom measurement	EFO:0007803	Broad	2060-Frequency_of_unenthusiasm_disinterest_in_last_2_weeks	emotional symptom measurement	disease
+2443	diabetes mellitus	EFO:0000400	Exact	2443-Diabetes_diagnosed_by_doctor	diabetes mellitus	disease
+2453	cancer	EFO:0000311	Exact	2453-Cancer_diagnosed_by_doctor	cancer	disease
+2463	bone fracture	EFO:0003931	Exact	2463-Fracturedbroken_bones_in_last_5_years	bone fracture	disease
+2814	hormone replacement therapy	EFO:0003961	Exact	2814-Ever_used_hormonereplacement_therapy_HRT	hormone replacement therapy	
+3005	bone fracture	EFO:0003931	Broad	3005-Fracture_resulting_from_simple_fall	bone fracture	disease
+4067	facial pain	EFO:0009625	Broad	4067-Facial_pains_for_3_months	facial pain	
+4620	depressive episode measurement	EFO:0007704	Exact	4620-Number_of_depression_episodes	depressive episode measurement	disease
+1707_2	functional laterality	EFO:0003889	Broad	1707_2-Handedness_chiralitylaterality_Lefthanded	functional laterality	
+1707_3	functional laterality	EFO:0003889	Broad	1707_3-Handedness_chiralitylaterality_Use_both_right_and_left_hands_equally	functional laterality	
+20001_1068	sarcoma  || fibrosarcoma	EFO:0000691, EFO:0002087	Exact	20001_1068-Cancer_code_selfreported_sarcomafibrosarcoma	sarcoma AND fibrosarcoma	disease
+20001_1073	basal cell carcinoma	EFO:0004193	?	20001_1073-Cancer_code_selfreported_rodent_ulcer	basal cell carcinoma	disease
+20002_1078	heart valve disease	EFO:0009551	Exact	20002_1078-Noncancer_illness_code_selfreported_heart_valve_problemheart_murmur	heart valve disease	disease
+20002_1080	pericarditis	EFO:0007427	Exact	20002_1080-Noncancer_illness_code_selfreported_pericardial_problem	pericarditis	disease
+20002_1117	respiratory system disease	EFO:0000684	Exact	20002_1117-Noncancer_illness_code_selfreported_other_respiratory_problems	respiratory system disease	disease
+20002_1134	esophageal disease	EFO:0009544	Exact	20002_1134-Noncancer_illness_code_selfreported_oesophageal_disorder	esophageal disease	disease
+20002_1135	stomach disease	EFO:0009608	Exact	20002_1135-Noncancer_illness_code_selfreported_stomach_disorder	stomach disease	disease
+20002_1157	hepatitis	HP:0012115	Broad	20002_1157-Noncancer_illness_code_selfreported_noninfective_hepatitis	hepatitis	
+20002_1193	kidney failure	EFO:1002048	Broad	20002_1193-Noncancer_illness_code_selfreported_renal_failure_requiring_dialysis	kidney failure	disease
+20002_1194	kidney failure	EFO:1002048	Broad	20002_1194-Noncancer_illness_code_selfreported_renal_failure_not_requiring_dialysis	kidney failure	disease
+20002_1229	parathyroid disease	EFO:0005754	Exact	20002_1229-Noncancer_illness_code_selfreported_parathyroid_gland_problem_not_cancer	parathyroid disease	disease
+20002_1247	infectious meningitis	EFO:0000584	?	20002_1247-Noncancer_illness_code_selfreported_meningitis	infectious meningitis	disease
+20002_1258	neurodegenerative disease	EFO:0005772	Exact	20002_1258-Noncancer_illness_code_selfreported_chronicdegenerative_neurological_problem	neurodegenerative disease	disease
+20002_1287	anxiety  || panic disorder	EFO:0005230, EFO:0004262	Exact	20002_1287-Noncancer_illness_code_selfreported_anxietypanic_attacks	anxiety AND panic disorder	disease
+20002_1297	soft tissue disease	EFO:0009470	Exact	20002_1297-Noncancer_illness_code_selfreported_musclesoft_tissue_problem	soft tissue disease	disease
+20002_1311	osteoarthritis, spine	EFO:1000787	Narrow	20002_1311-Noncancer_illness_code_selfreported_spine_arthritisspondylitis	osteoarthritis, spine	disease
+20002_1312	lumbar disc herniation	EFO:1002005	Narrow	20002_1312-Noncancer_illness_code_selfreported_prolapsed_discslipped_disc	lumbar disc herniation	disease
+20002_1405	kidney disease	EFO:0003086	Exact	20002_1405-Noncancer_illness_code_selfreported_other_renalkidney_problem	kidney disease	disease
+20002_1412	bronchial disease	EFO:1002018	Broad	20002_1412-Noncancer_illness_code_selfreported_bronchitis	bronchial disease	disease
+20002_1467	joint disease	EFO:1000999	Exact	20002_1467-Noncancer_illness_code_selfreported_other_joint_disorder	joint disease	disease
+20002_1468	diabetic neuropathy	EFO:1000783	Exact	20002_1468-Noncancer_illness_code_selfreported_diabetic_neuropathyulcers	diabetic neuropathy	disease
+20002_1478	spondylosis, cervical	EFO:0009610	Exact	20002_1478-Noncancer_illness_code_selfreported_cervical_spondylosis	cervical spondylosis	disease
+20002_1487	supraventricular tachycardia	HP:0004755	Exact	20002_1487-Noncancer_illness_code_selfreported_svt_supraventricular_tachycardia	supraventricular tachycardia	disease
+20002_1528	macular degeneration	EFO:0009606	Exact	20002_1528-Noncancer_illness_code_selfreported_macular_degeneration	macular degeneration	disease
+20002_1602	gastrointestinal obstruction	HP:0004796	Exact	20002_1602-Noncancer_illness_code_selfreported_bowel_intestinal_obstruction	gastrointestinal obstruction	
+20002_1614	psychosocial stress measurement	EFO:1001920	?	20002_1614-Noncancer_illness_code_selfreported_stress	stress-induced anxiety-like behavior	
+20002_1633	upper extremity fracture	EFO:0009514	Broad	20002_1633-Noncancer_illness_code_selfreported_fracture_upper_arm_humerus_elbow	upper extremity fracture	disease
+20002_1646	spinal fracture	EFO:0003902	Broad	20002_1646-Noncancer_illness_code_selfreported_fracture_vertebra_crush_fracture_vertebral_collapse	spinal fracture	disease
+20002_1668	response to biological dust exposure	EFO:0006992	Broad	20002_1668-Noncancer_illness_code_selfreported_allergy_to_house_dust_mite	response to biological dust exposure	
+20002_1683	neuroma	EFO:0009619	Exact	20002_1683-Noncancer_illness_code_selfreported_benign_neuroma	neuroma	disease
+134	cancer	EFO:0009800	Exact	134-Number_of_selfreported_cancers	number of cancers, self-reported	
+135	disease	EFO:0009801	Exact	135-Number_of_selfreported_noncancer_illnesses	number of non-cancer illnesses, self-reported	
+136	medical prodecure	EFO:0009802	Exact	136-Number_of_operations_selfreported	number of operations, self-reported	
+137	treatment	EFO:0009803	Exact	137-Number_of_treatmentsmedications_taken	number of treatments or medications taken, self-reported	
+1170		EFO:0009817	Exact	1170-Getting_up_in_morning	ease of getting up in the morning, self-reported	
+1190	Need to sleep during day	EFO:0009818	Exact	1190-Nap_during_day	nap during day, self-reported	
+1687	body height	EFO:0009819	Exact	1687-Comparative_body_size_at_age_10	comparative body size at age 10, self-reported	
+1873	number of siblings	EFO:0009713	Broad	1873-Number_of_full_brothers	number of siblings	
+1883	number of siblings	EFO:0009713	Broad	1883-Number_of_full_sisters	number of siblings	
+1990	feeling tense measurement	EFO:0009596	Narrow	1990-Tense_highly_strung	feeling tense measurement	disease
+2000	worry measurement	EFO:0009589	Broad	2000-Worry_too_long_after_embarrassment	worry measurement	disease
+2010	nervousness	NCIT:C74532	Exact	2010-Suffer_from_nerves	nervousness	disease
+2090	mental or behavioural disorder	EFO:0009820	Exact	2090-Seen_doctor_GP_for_nerves_anxiety_tension_or_depression	seeing a general practitioner for nerves, anxiety, tension or depression, self-reported	
+2100	mental or behavioural disorder	EFO:0009821	Exact	2100-Seen_a_psychiatrist_for_nerves_anxiety_tension_or_depression	seeing a psychiatrist for nerves, anxiety, tension or depression, self-reported	
+2188	chronic	EFO:0009714	Broad	2188-Longstanding_illness_disability_or_infirmity	chronic disease	disease
+2296	fall	EFO:0009631	Broad	2296-Falls_in_the_last_year	fall	
+2316	wheezing	EFO:0009715	Broad	2316-Wheeze_or_whistling_in_the_chest_in_last_year	wheezing	
+2375	puberty onset measurement	EFO:0009716	Exact	2375-Relative_age_of_first_facial_hair	age at first facial hair	
+2405	number of children ever born measurement	EFO:0009814	Exact	2405-Number_of_children_fathered	number of children fathered measurement	
+2744	birth weight	EFO:0004344	Broad	2744-Birth_weight_of_first_child	birth weight	
+2834	bilateral oophorectomy	EFO:0009717	Exact	2834-Bilateral_oophorectomy_both_ovaries_removed	bilateral oophorectomy	
+3079	cardiac pacemaker	EFO:0009719	Exact	3079-Pacemaker	artificial cardiac pacemaker	
+3393	hearing assistance system/able to hear with hearing aids	EFO:0009720	Broad	3393-Hearing_aid_user	able to hear with hearing aids	
+3829	?	EFO:0009722	Exact	3829-Number_of_stillbirths	number of stillbirths	
+4526	emotional symptom measurement	EFO:0007803	Broad	4526-Happiness	emotional symptom measurement	disease
+4537	job satisfaction	EFO:0009723	Exact	4537-Workjob_satisfaction	job satisfaction measurement	disease
+4548	satisfaction	EFO:0009724	Exact	4548-Health_satisfaction	health satisfaction measurement	disease
+4570	satisfaction	EFO:0009725	Exact	4570-Friendships_satisfaction	friendship satisfaction measurement	disease
+4581	satisfied with current financial situation	EFO:0009726	Exact	4581-Financial_situation_satisfaction	financial situation satisfaction measurement	disease
+4598	depressive episode measurement	EFO:0007704	Broad	4598-Ever_depressed_for_a_whole_week	depressive episode measurement	disease
+4631	depressive symptom measurement	EFO:0007006	Broad	4631-Ever_unenthusiasticdisinterested_for_a_whole_week	depressive symptom measurement	disease
+4642	manic episode measurement	EFO:0007705	Exact	4642-Ever_manichyper_for_2_days	manic episode measurement	disease
+4653	irritability measurement	EFO:0009594	Exact	4653-Ever_highly_irritableargumentative_for_2_days	irritability measurement	disease
+4717	have shortness of breath	EFO:0009727	Broad	4717-Shortness_of_breath_walking_on_level_ground	shortness of breath	
+4814	tinnitus	HP:0000360	Broad	4814-Tinnitus_severitynuisance	tinnitus	
+5386	depressive episode measurement	EFO:0007704	Broad	5386-Number_of_unenthusiasticdisinterested_episodes	depressive episode measurement	disease
+5529	medical procedure	EFO:0009729	Broad	5529-Surgery_on_leg_arteries_other_than_for_varicose_veins	surgery on leg artery	
+5663	manic episode measurement||irritability measurement	EFO:0007705||EFO:0009594	Exact	5663-Length_of_longest_manicirritable_episode	manic episode measurement AND irritability measurement	disease
+5674	manic episode measurement||irritability measurement	EFO:0007705||EFO:0009594	Exact	5674-Severity_of_manicirritable_episodes	manic episode measurement AND irritability measurement	disease
+6017	physical activity	EFO:0009822	Exact	6017-Able_to_walk_or_cycle_unaided_for_10_minutes	ability to walk or cycle unaided for 10 minutes, self-reported	
+6034	heart rate	EFO:0009823	Exact	6034-Target_heart_rate_achieved	achievement of target heart rate, self-reported	
+22504	?	EFO:0009824	Exact	22504-Bring_up_phlegmsputummucus_on_most_days	bringing up phlegm, sputum or mucus on most days, self-reported	
+40009	cancer	EFO:0000311	Exact	40009-Reported_occurrences_of_cancer	cancer	disease
+Z31	family planning services	EFO:0009787	Broad	Z31-Diagnoses_main_ICD10_Z31_Procreative_management	encounter with health service related to reproduction	
+20002_1137	pain in abdomen	EFO:0003766	Narrow	20002_1137-Noncancer_illness_code_selfreported_other_abdominal_problem	pain in abdomen	
+20002_1201	bladder disease	EFO:1000018	Exact	20002_1201-Noncancer_illness_code_selfreported_bladder_problem_not_cancer	bladder disease	disease
+20002_1224	thyroid disease	EFO:1000627	Exact	20002_1224-Noncancer_illness_code_selfreported_thyroid_problem_not_cancer	thyroid disease	disease
+20002_1234	adrenocortical insufficiency	EFO:0009491	Exact	20002_1234-Noncancer_illness_code_selfreported_adrenocortical_insufficiencyaddisons_disease	adrenocortical insufficiency	disease
+20002_1240	nervous system injury	EFO:0009490	Exact	20002_1240-Noncancer_illness_code_selfreported_neurological_injurytrauma	nervous system injury	disease
+20002_1242	eye disease	EFO:0003966	Broad	20002_1242-Noncancer_illness_code_selfreported_eyeeyelid_problem	eye disease	disease
+20002_1249	cranial nerve palsy	EFO:0009489	Exact	20002_1249-Noncancer_illness_code_selfreported_cranial_nerve_problempalsy	cranial nerve palsy	disease
+20002_1251	spinal cord disease	EFO:0009488	Exact	20002_1251-Noncancer_illness_code_selfreported_spinal_cord_disorder	spinal cord disease	disease
+20002_1254	peripheral nervous system disease	EFO:0009387	Exact	20002_1254-Noncancer_illness_code_selfreported_peripheral_nerve_disorder	peripheral nervous system disease	disease
+20002_1257	nerve compression syndrome	EFO:0009487	Exact	20002_1257-Noncancer_illness_code_selfreported_trapped_nervecompressed_nerve	nerve compression syndrome	disease
+20002_1276	diabetic eye disease	EFO:0009486	Exact	20002_1276-Noncancer_illness_code_selfreported_diabetic_eye_disease	diabetic eye disease	disease
+20002_1279	eye injury	EFO:0009485	Exact	20002_1279-Noncancer_illness_code_selfreported_eye_trauma	eye injury	disease
+20002_1288	mental or behavioural disorder	EFO:0000677	Broad	20002_1288-Noncancer_illness_code_selfreported_nervous_breakdown	mental or behavioural disorder	disease
+20002_1294	back pain	HP:0003418	Exact	20002_1294-Noncancer_illness_code_selfreported_back_problem	back pain	
+20002_1386	drug allergy	EFO:0009482	Exact	20002_1386-Noncancer_illness_code_selfreported_allergy_or_anaphylactic_reaction_to_drug	drug allergy	disease
+20002_1406	injury	EFO:0000546	Broad	20002_1406-Noncancer_illness_code_selfreported_muscle_or_soft_tissue_injuries	injury	disease
+20002_1407	burn	EFO:0009516	Exact	20002_1407-Noncancer_illness_code_selfreported_burns	burn	disease
+20002_1413	paranasal sinus disease	EFO:0009481	Exact	20002_1413-Noncancer_illness_code_selfreported_nasalsinus_disorder	paranasal sinus disease	disease
+20002_1414	throat disease	EFO:0009479	Exact	20002_1414-Noncancer_illness_code_selfreported_throat_or_larynx_disorder	throat disease	disease
+20002_1419	vocal cord polyp	EFO:0009478	Exact	20002_1419-Noncancer_illness_code_selfreported_vocal_cord_polyp	vocal cord polyp	disease
+20002_1434	nervous system disease	EFO:0000618	Exact	20002_1434-Noncancer_illness_code_selfreported_other_neurological_problem	nervous system disease	disease
+20002_1445	blood coagulation disease	EFO:0009314	Exact	20002_1445-Noncancer_illness_code_selfreported_clotting_disorderexcessive_bleeding	blood coagulation disease	disease
+20002_1451	hematologic disease	EFO:0005803	Broad	20002_1451-Noncancer_illness_code_selfreported_hereditarygenetic_haematological_disorder	hematologic disease	disease
+20002_1454	bullous skin disease	EFO:1000673	Narrow	20002_1454-Noncancer_illness_code_selfreported_blisteringdesquamating_skin_disorder	autoimmune bullous skin disease	
+20002_1532	vertebral joint disease	EFO:0009477	Exact	20002_1532-Noncancer_illness_code_selfreported_disc_problem	vertebral joint disease	disease
+20002_1545	neck injury	EFO:0009476	Broad	20002_1545-Noncancer_illness_code_selfreported_neck_probleminjury	neck injury	disease
+E86	?	HP:0011106	Exact	E86-Diagnoses_main_ICD10_E86_Volume_depletion	hypovolemia	
+M75		EFO:0009470	Broad	M75-Diagnoses_main_ICD10_M75_Shoulder_lesions	soft tissue disease	disease
+O32		EFO:0009682	Broad	O32-Diagnoses_main_ICD10_O32_Maternal_care_for_known_or_suspected_malpresentation_of_foetus	pregnancy disorder	disease
+O34		EFO:0009682	Broad	O34-Diagnoses_main_ICD10_O34_Maternal_care_for_known_or_suspected_abnormality_of_pelvic_organs	pregnancy disorder	disease
+O63	birthing labor	EFO:0009682	Broad	O63-Diagnoses_main_ICD10_O63_Long_labour	pregnancy disorder	disease
+O70	first degree perineal laceration	EFO:0009816	Exact	O70-Diagnoses_main_ICD10_O70_Perineal_laceration_during_delivery	perineal laceration during delivery	disease
+S27	injury	EFO:0009887	Exact	S27-Diagnoses_main_ICD10_S27_Injury_of_other_and_unspecified_intrathoracic_organs	intrathoracic organ injury	disease
+Z76		EFO:0009786	Broad	Z76-Diagnoses_main_ICD10_Z76_Persons_encountering_health_services_in_other_circumstances	encounter with health service	
+Z71		EFO:0009786	Broad	Z71-Diagnoses_main_ICD10_Z71_Persons_encountering_health_services_for_other_counselling_and_medical_advice_not_elsewhere_classified	encounter with health service	
+B07	warts	EFO:0009662	Exact	B07-Diagnoses_main_ICD10_B07_Viral_warts	common wart	disease
+Z53		EFO:0009786	Broad	Z53-Diagnoses_main_ICD10_Z53_Persons_encountering_health_services_for_specifie_procedures_not_carried_out	encounter with health service	
+R04	hemorrhage	MP:0001914	Broad	R04-Diagnoses_main_ICD10_R04_Haemorrhage_from_respiratory_passages	hemorrhage	
+N45	orchitis	EFO:1001078	Broad	N45-Diagnoses_main_ICD10_N45_Orchitis_and_epididymitis	orchitis	disease
+R42	vertigo	HP:0002321	Broad	R42-Diagnoses_main_ICD10_R42_Dizziness_and_giddiness	vertigo	
+I12	renal hypertension	EFO:1002039	Exact	I12-Diagnoses_main_ICD10_I12_Hypertensive_renal_disease	renal hypertension	disease
+S02	skull factures	EFO:1001425	Broad	S02-Diagnoses_main_ICD10_S02_Fracture_of_skull_and_facial_bones	skull fractures	disease
+R51	Headache	HP:0002315	Exact	R51-Diagnoses_main_ICD10_R51_Headache	headache	
+R50	fever of unknown origin	EFO:0003952	Exact	R50-Diagnoses_main_ICD10_R50_Fever_of_unknown_origin	fever of unknown origin	
+R13	Dysphagia	HP:0002015	Exact	R13-Diagnoses_main_ICD10_R13_Dysphagia	dysphagia	
+R12	dyspepsia	EFO:0008533	Broad	R12-Diagnoses_main_ICD10_R12_Heartburn	dyspepsia	disease
+R05	Cough	HP:0012735	Exact	R05-Diagnoses_main_ICD10_R05_Cough	cough	
+M13	arthritis	EFO:0005856	Exact	M13-Diagnoses_main_ICD10_M13_Other_arthritis	arthritis	disease
+L40	psoriasis	EFO:0000676	Exact	L40-Diagnoses_main_ICD10_L40_Psoriasis	psoriasis	disease
+L72	Follicular cysts	EFO:1001329	Broad	L72-Diagnoses_main_ICD10_L72_Follicular_cysts_of_skin_and_subcutaneous_tissue	follicular cyst	disease
+L81	pigmentation disease	EFO:1000755	Exact	L81-Diagnoses_main_ICD10_L81_Other_disorders_of_pigmentation	pigmentation disease	disease
+L97	ulcer of lower limb	EFO:0007068	Exact	L97-Diagnoses_main_ICD10_L97_Ulcer_of_lower_limb_not_elsewhere_classified	ulcer of lower limb	
+K30	dyspepsia	EFO:0008533	Exact	K30-Diagnoses_main_ICD10_K30_Dyspepsia	dyspepsia	disease
+K40	inguinal hernia	HP:0000023	Exact	K40-Diagnoses_main_ICD10_K40_Inguinal_hernia	inguinal hernia	
+J01	sinusitis	EFO:0007486	Broad	J01-Diagnoses_main_ICD10_J01_Acute_sinusitis	sinusitis	disease
+J13	pneumococcal infection	EFO:0000772	Broad	J13-Diagnoses_main_ICD10_J13_Pneumonia_due_to_Streptococcus_pneumoniae	pneumococcal infection	disease
+J15	bacterial pneumonia	EFO:1001272	Exact	J15-Diagnoses_main_ICD10_J15_Bacterial_pneumonia_not_elsewhere_classified	bacterial pneumonia	disease
+J18	pneumonia	EFO:0003106	Exact	J18-Diagnoses_main_ICD10_J18_Pneumonia_organism_unspecified	pneumonia	disease
+J33	nasal cavity polyp	EFO:1000391	Exact	J33-Diagnoses_main_ICD10_J33_Nasal_polyp	nasal cavity polyp	disease
+J36	peritonsillar abscess	EFO:0007429	Exact	J36-Diagnoses_main_ICD10_J36_Peritonsillar_abscess	peritonsillar abscess	disease
+J43	emphysema	EFO:0000464	Exact	J43-Diagnoses_main_ICD10_J43_Emphysema	emphysema	disease
+J44	chronic obstructive pulmonary disease	EFO:0000341	Exact	J44-Diagnoses_main_ICD10_J44_Other_chronic_obstructive_pulmonary_disease	chronic obstructive pulmonary disease	disease
+J45	asthma	EFO:0000270	Exact	J45-Diagnoses_main_ICD10_J45_Asthma	asthma	disease
+J47	Bronchiectasis	HP:0002110	Exact	J47-Diagnoses_main_ICD10_J47_Bronchiectasis	bronchiectasis	
+J84	interstitial lung disease	EFO:0004244	Exact	J84-Diagnoses_main_ICD10_J84_Other_interstitial_pulmonary_diseases	interstitial lung disease	disease
+J98	respiratory system disease	EFO:0000684	Exact	J98-Diagnoses_main_ICD10_J98_Other_respiratory_disorders	respiratory system disease	disease
+I71	aortic aneurysm	EFO:0001666	Broad	I71-Diagnoses_main_ICD10_I71_Aortic_aneurysm_and_dissection	aortic aneurysm	disease
+H00	Hordeolum	EFO:0007315	Broad	H00-Diagnoses_main_ICD10_H00_Hordeolum_and_chalazion	hordeolum	disease
+F31	bipolar disorder	EFO:0000289	Exact	F31-Diagnoses_main_ICD10_F31_Bipolar_affective_disorder	bipolar disorder	disease
+F52	sexual dysfunction	EFO:0004714	Exact	F52-Diagnoses_main_ICD10_F52_Sexual_dysfunction_not_caused_by_organic_disorder_or_disease	sexual dysfunction	
+E03	hypothyroidism	EFO:0004705	Exact	E03-Diagnoses_main_ICD10_E03_Other_hypothyroidism	hypothyroidism	disease
+D03	Clark level I melanoma	EFO:0004957	Exact	D03-Diagnoses_main_ICD10_D03_Melanoma_in_situ	clark level i	
+D18	Hemangioma	EFO:1000635	Broad	D18-Diagnoses_main_ICD10_D18_Haemangioma_and_lymphangioma_any_site	hemangioma	disease
+D25	uterine fibroid	EFO:0000731	Broad	D25-Diagnoses_main_ICD10_D25_Leiomyoma_of_uterus	uterine fibroid	disease
+D27	benign ovarian neoplasm	EFO:1000116	Exact	D27-Diagnoses_main_ICD10_D27_Benign_neoplasm_of_ovary	benign ovarian neoplasm	disease
+D28	Genital neoplasm, female	EFO:1001331	Broad	D28-Diagnoses_main_ICD10_D28_Benign_neoplasm_of_other_and_unspecified_female_genital_organs	genital neoplasm, female	disease
+D33	Benign brain neoplasm	EFO:1000107	Broad	D33-Diagnoses_main_ICD10_D33_Benign_neoplasm_of_brain_and_other_parts_of_central_nervous_system	benign brain neoplasm	disease
+D34	benign thyroid gland neoplasm	EFO:1000122	Exact	D34-Diagnoses_main_ICD10_D34_Benign_neoplasm_of_thyroid_gland	benign thyroid gland neoplasm	disease
+D45	Polycythaemia vera	EFO:0002429	Exact	D45-Diagnoses_main_ICD10_D45_Polycythaemia_vera	polycythemia vera	disease
+D46	myelodysplastic syndrome	EFO:0000198	Exact	D46-Diagnoses_main_ICD10_D46_Myelodysplastic_syndromes	myelodysplastic syndrome	disease
+D69	Purpura	HP:0000979	Broad	D69-Diagnoses_main_ICD10_D69_Purpura_and_other_haemorrhagic_conditions	purpura	
+C18	colon carcinoma	EFO:1001950	Exact	C18-Diagnoses_main_ICD10_C18_Malignant_neoplasm_of_colon	colon carcinoma	disease
+C32	Malignant Laryngeal Neoplasm	EFO:1000354	Exact	C32-Diagnoses_main_ICD10_C32_Malignant_neoplasm_of_larynx	malignant laryngeal neoplasm	disease
+C45	mesothelioma	EFO:0000588	Exact	C45-Diagnoses_main_ICD10_C45_Mesothelioma	mesothelioma	disease
+C77	metastasis to lymph node	EFO:0004906	Broad	C77-Diagnoses_main_ICD10_C77_Secondary_and_unspecified_malignant_neoplasm_of_lymph_nodes	lymph node metastatic carcinoma	disease
+C81	Hodgkins lymphoma	EFO:0000183	Exact	C81-Diagnoses_main_ICD10_C81_Hodgkins_disease	hodgkins lymphoma	disease
+C82	Cutaneous Follicular Lymphoma	EFO:1000211	Broad	C82-Diagnoses_main_ICD10_C82_Follicular_nodular_nonHodgkins_lymphoma	cutaneous follicular lymphoma	disease
+C90	multiple myeloma	EFO:0001378	Broad	C90-Diagnoses_main_ICD10_C90_Multiple_myeloma_and_malignant_plasma_cell_neoplasms	multiple myeloma	disease
+C91	lymphoid leukemia	EFO:0004289	Exact	C91-Diagnoses_main_ICD10_C91_Lymphoid_leukaemia	lymphoid leukemia	disease
+C92	acute myeloid leukemia	EFO:0000222	Exact	C92-Diagnoses_main_ICD10_C92_Myeloid_leukaemia	acute myeloid leukemia	disease
+S42	Bone fracture from OLS	EFO:0003931	Broad	S42-Diagnoses_main_ICD10_S42_Fracture_of_shoulder_and_upper_arm	bone fracture	disease
+R73	fasting blood glucose measurement rather than elvated	EFO:0004468	Broad	R73-Diagnoses_main_ICD10_R73_Elevated_blood_glucose_level	glucose measurement	disease
+M31	vasculitis	EFO:0006803	Broad	M31-Diagnoses_main_ICD10_M31_Other_necrotising_vasculopathies	vasculitis	disease
+L08	General skin disease term	EFO:0000701	Broad	L08-Diagnoses_main_ICD10_L08_Other_local_infections_of_skin_and_subcutaneous_tissue	skin disease	disease
+H34	retinal vein occlusion	EFO:1001157	Narrow	H34-Diagnoses_main_ICD10_H34_Retinal_vascular_occlusions	retinal vein occlusion	disease
+F43	psychosocial stress measurement	EFO:0006783	Broad	F43-Diagnoses_main_ICD10_F43_Reaction_to_severe_stress_and_adjustment_disorders	psychosocial stress measurement	
+D12	anal neoplasm, not malignant specific	EFO:0003835	Broad	D12-Diagnoses_main_ICD10_D12_Benign_neoplasm_of_colon_rectum_anus_and_anal_canal	anal neoplasm	disease
+D24	breast neoplasm, not malignant specific	EFO:0003869	Broad	D24-Diagnoses_main_ICD10_D24_Benign_neoplasm_of_breast	breast neoplasm	disease
+C19	rectal cancer, not malignant specific	EFO:1000657	Broad	C19-Diagnoses_main_ICD10_C19_Malignant_neoplasm_of_rectosigmoid_junction	rectum cancer	disease
+C50	breast neoplasm, not necessarily malignant	EFO:0003869	Broad	C50-Diagnoses_main_ICD10_C50_Malignant_neoplasm_of_breast	breast neoplasm	disease
+C61	prostate carcinoma	EFO:0001663	Broad	C61-Diagnoses_main_ICD10_C61_Malignant_neoplasm_of_prostate	prostate carcinoma	disease
+C62	testicular carcinoma, not malignant spcific	EFO:0005088	Broad	C62-Diagnoses_main_ICD10_C62_Malignant_neoplasm_of_testis	testicular carcinoma	disease
+C71	brain neoplasm, not malignant specific	EFO:0003833	Broad	C71-Diagnoses_main_ICD10_C71_Malignant_neoplasm_of_brain	brain neoplasm	disease
+T86	transplant outcome measurement	EFO:0005198	Broad	T86-Diagnoses_main_ICD10_T86_Failure_and_rejection_of_transplanted_organs_and_tissues	transplant outcome measurement	
+T50	poisoning	EFO:0008546	Broad	T50-Diagnoses_main_ICD10_T50_Poisoning_by_diuretics_and_other_and_unspecified_drugs_medicaments_and_biological_substances	poisoning	disease
+T43	poisoning	EFO:0008546	Broad	T43-Diagnoses_main_ICD10_T43_Poisoning_by_psychotropic_drugs_not_elsewhere_classified	poisoning	disease
+T42	poisoning	EFO:0008546	Broad	T42-Diagnoses_main_ICD10_T42_Poisoning_by_antiepileptic_sedativehypnotic_and_antiParkinsonism_drugs	poisoning	disease
+T40	poisoning	EFO:0008546	Broad	T40-Diagnoses_main_ICD10_T40_Poisoning_by_narcotics_and_psychodysleptics_hallucinogens	poisoning	disease
+T39	poisoning	EFO:0008546	Broad	T39-Diagnoses_main_ICD10_T39_Poisoning_by_nonopioid_analgesics_antipyretics_and_antirheumatics	poisoning	disease
+S93	ankle injury	EFO:1002021	Broad	S93-Diagnoses_main_ICD10_S93_Dislocation_sprain_and_strain_of_joints_and_ligaments_at_ankle_and_foot_level	ankle injury	disease
+S92	Bone fracture	EFO:0003931	Broad	S92-Diagnoses_main_ICD10_S92_Fracture_of_foot_except_ankle	bone fracture	disease
+S52	Bone fracture	EFO:0003931	Broad	S52-Diagnoses_main_ICD10_S52_Fracture_of_forearm	bone fracture	disease
+R10	pain in abdomen	EFO:0003766	Broad	R10-Diagnoses_main_ICD10_R10_Abdominal_and_pelvic_pain	pain in abdomen	
+O04	abortion	EFO:1001491	Broad	O04-Diagnoses_main_ICD10_O04_Medical_abortion	abortion	disease
+N32	bladder disease	EFO:1000018	Exact	N32-Diagnoses_main_ICD10_N32_Other_disorders_of_bladder	bladder disease	disease
+N43	testicular hydrocele || spermatocele EFO_1001189	EFO:1001859, EFO:1001189	Broad	N43-Diagnoses_main_ICD10_N43_Hydrocele_and_spermatocele	testicular hydrocele AND spermatocele	disease
+N47	phimosis	EFO:1001104	Broad	N47-Diagnoses_main_ICD10_N47_Redundant_prepuce_phimosis_and_paraphimosis	phimosis	disease
+N70	Pelvic Inflammatory Disease	EFO:1001388	Broad	N70-Diagnoses_main_ICD10_N70_Salpingitis_and_oophoritis	pelvic inflammatory disease	disease
+N76	vaginal inflammation	EFO:0005757	Exact	N76-Diagnoses_main_ICD10_N76_Other_inflammation_of_vagina_and_vulva	vaginal inflammation	
+M06	rheumatoid arthritis	EFO:0000685	Exact	M06-Diagnoses_main_ICD10_M06_Other_rheumatoid_arthritis	rheumatoid arthritis	disease
+M25	joint disease	EFO:1000999	Exact	M25-Diagnoses_main_ICD10_M25_Other_joint_disorders_not_elsewhere_classified	joint disease	disease
+M81	osteoporosis	EFO:0003882	Broad	M81-Diagnoses_main_ICD10_M81_Osteoporosis_without_pathological_fracture	osteoporosis	disease
+L28	lichen disease	EFO:1000724	Broad	L28-Diagnoses_main_ICD10_L28_Lichen_simplex_chronicus_and_prurigo	lichen disease	disease
+L98	skin disease	EFO:0000701	Exact	L98-Diagnoses_main_ICD10_L98_Other_disorders_of_skin_and_subcutaneous_tissue_not_elsewhere_classified	skin disease	disease
+K35	appendicitis	EFO:0007149	Broad	K35-Diagnoses_main_ICD10_K35_Acute_appendicitis	appendicitis	disease
+J32	sinusitis	EFO:0007486	Broad	J32-Diagnoses_main_ICD10_J32_Chronic_sinusitis	sinusitis	disease
+J93	spontaneous pneumothorax	HP:0002108	Broad	J93-Diagnoses_main_ICD10_J93_Pneumothorax	spontaneous pneumothorax	
+I30	pericarditis	EFO:0007427	Broad	I30-Diagnoses_main_ICD10_I30_Acute_pericarditis	pericarditis	disease
+I62	intracranial hemorrhage NOS	EFO:0000551	Broad	I62-Diagnoses_main_ICD10_I62_Other_nontraumatic_intracranial_haemorrhage	intracranial hemorrhage	disease
+I63	brain infarction	EFO:0004277	Broad	I63-Diagnoses_main_ICD10_I63_Cerebral_infarction	brain infarction	disease
+I72	aneurysm	EFO:0009659	Exact	I72-Diagnoses_main_ICD10_I72_Other_aneurysm	aneurysm	disease
+H91	hearing loss	EFO:0004238	Exact	H91-Diagnoses_main_ICD10_H91_Other_hearing_loss	hearing loss	disease
+G45	transient ischemic attack	EFO:0003764	Broad	G45-Diagnoses_main_ICD10_G45_Transient_cerebral_ischaemic_attacks_and_related_syndromes	transient ischemic attack	disease
+F41	General anxiety disorder	EFO:0006788	Exact	F41-Diagnoses_main_ICD10_F41_Other_anxiety_disorders	anxiety disorder	disease
+F99	General mental or behavioural disorder term	EFO:0000677	Broad	F99-Diagnoses_main_ICD10_F99_Mental_disorder_not_otherwise_specified	mental or behavioural disorder	disease
+E21	Hyperparathyroidism	EFO:0008506	Broad	E21-Diagnoses_main_ICD10_E21_Hyperparathyroidism_and_other_disorders_of_parathyroid_gland	hyperparathyroidism	disease
+D04	skin neoplasm	EFO:0004198	Broad	D04-Diagnoses_main_ICD10_D04_Carcinoma_in_situ_of_skin	skin neoplasm	disease
+D05	breast carcinoma	EFO:0000305	Broad	D05-Diagnoses_main_ICD10_D05_Carcinoma_in_situ_of_breast	breast carcinoma	disease
+D06	cervical carcinoma	EFO:0001061	Broad	D06-Diagnoses_main_ICD10_D06_Carcinoma_in_situ_of_cervix_uteri	cervical carcinoma	disease
+D10	mouth neoplasm	EFO:0003868	Broad	D10-Diagnoses_main_ICD10_D10_Benign_neoplasm_of_mouth_and_pharynx	mouth neoplasm	disease
+D11	salivary gland neoplasm	EFO:0003826	Broad	D11-Diagnoses_main_ICD10_D11_Benign_neoplasm_of_major_salivary_glands	salivary gland neoplasm	disease
+D26	uterus neoplasm	EFO:0003859	Broad	D26-Diagnoses_main_ICD10_D26_Other_benign_neoplasms_of_uterus	uterine neoplasm	disease
+D39	Genital neoplasm, female	EFO:1001331	Exact	D39-Diagnoses_main_ICD10_D39_Neoplasm_of_uncertain_or_unknown_behaviour_of_female_genital_organs	genital neoplasm, female	disease
+D44	endocrine neoplasm	EFO:0003769	Exact	D44-Diagnoses_main_ICD10_D44_Neoplasm_of_uncertain_or_unknown_behaviour_of_endocrine_glands	endocrine neoplasm	disease
+C02	tongue neoplasm	EFO:0003871	Broad	C02-Diagnoses_main_ICD10_C02_Malignant_neoplasm_of_other_and_unspecified_parts_of_tongue	tongue neoplasm	disease
+C09	tonsil cancer	EFO:1001214	Exact	C09-Diagnoses_main_ICD10_C09_Malignant_neoplasm_of_tonsil	tonsil cancer	disease
+C15	esophageal carcinoma	EFO:0002916	Narrow	C15-Diagnoses_main_ICD10_C15_Malignant_neoplasm_of_oesophagus	esophageal carcinoma	disease
+C16	stomach neoplasm	EFO:0003897	Broad	C16-Diagnoses_main_ICD10_C16_Malignant_neoplasm_of_stomach	stomach neoplasm	disease
+C20	rectum cancer	EFO:1000657	Exact	C20-Diagnoses_main_ICD10_C20_Malignant_neoplasm_of_rectum	rectum cancer	disease
+C21	anal neoplasm	EFO:0003835	Broad	C21-Diagnoses_main_ICD10_C21_Malignant_neoplasm_of_anus_and_anal_canal	anal neoplasm	disease
+C22	Liver neoplasm	EFO:1001513	Broad	C22-Diagnoses_main_ICD10_C22_Malignant_neoplasm_of_liver_and_intrahepatic_bile_ducts	liver neoplasm	disease
+C25	pancreatic carcinoma	EFO:0002618	Narrow	C25-Diagnoses_main_ICD10_C25_Malignant_neoplasm_of_pancreas	pancreatic carcinoma	disease
+C34	Lung carcinoma	EFO:0001071	Broad	C34-Diagnoses_main_ICD10_C34_Malignant_neoplasm_of_bronchus_and_lung	lung carcinoma	disease
+C43	cutaneous melanoma	EFO:0000389	Exact	C43-Diagnoses_main_ICD10_C43_Malignant_melanoma_of_skin	cutaneous melanoma	disease
+C53	cervical carcinoma	EFO:0001061	Broad	C53-Diagnoses_main_ICD10_C53_Malignant_neoplasm_of_cervix_uteri	cervical carcinoma	disease
+C54	uterine corpus cancer	EFO:0007532	Broad	C54-Diagnoses_main_ICD10_C54_Malignant_neoplasm_of_corpus_uteri	uterine corpus cancer	disease
+C56	Not malignant specific	EFO:0003893	Broad	C56-Diagnoses_main_ICD10_C56_Malignant_neoplasm_of_ovary	ovarian neoplasm	disease
+C64	kidney neoplasm	EFO:0003865	Broad	C64-Diagnoses_main_ICD10_C64_Malignant_neoplasm_of_kidney_except_renal_pelvis	kidney neoplasm	disease
+C67	bladder carcinoma	EFO:0000292	Narrow	C67-Diagnoses_main_ICD10_C67_Malignant_neoplasm_of_bladder	bladder carcinoma	disease
+C69	eye neoplasm	EFO:0003824	Broad	C69-Diagnoses_main_ICD10_C69_Malignant_neoplasm_of_eye_and_adnexa	eye neoplasm	disease
+C73	thyroid carcinoma	EFO:0002892	Narrow	C73-Diagnoses_main_ICD10_C73_Malignant_neoplasm_of_thyroid_gland	thyroid carcinoma	disease
+C83	non-Hodgkins lymphoma	EFO:0005952	Broad	C83-Diagnoses_main_ICD10_C83_Diffuse_nonHodgkins_lymphoma	non-hodgkins lymphoma	disease
+B18	viral hepatitis	EFO:0007540	Broad	B18-Diagnoses_main_ICD10_B18_Chronic_viral_hepatitis	animal viral hepatitis	disease
+A09	diarrhoea||gastroenteritis	EFO:1001463, EFO:1001463	Broad	A09-Diagnoses_main_ICD10_A09_Diarrhoea_and_gastroenteritis_of_presumed_infectious_origin	gastroenteritis AND gastroenteritis	disease
+A41	sepsis	HP:0100806	Exact	A41-Diagnoses_main_ICD10_A41_Other_septicaemia	sepsis	
+Z87	clinical history	EFO:0000352	Broad	Z87-Diagnoses_main_ICD10_Z87_Personal_history_of_other_diseases_and_conditions	clinical history	
+Z80	There is only family history of breast or lung cancer, could use a parent term like family history of cancer?	EFO:0009640	Exact	Z80-Diagnoses_main_ICD10_Z80_Family_history_of_malignant_neoplasm	family history of cancer	
+Z51	health care delivery	EFO:0009786	Broad	Z51-Diagnoses_main_ICD10_Z51_Other_medical_care	encounter with health service	
+Z46	?	EFO:0009786	Broad	Z46-Diagnoses_main_ICD10_Z46_Fitting_and_adjustment_of_other_devices	encounter with health service	
+Z45	?	EFO:0009786	Broad	Z45-Diagnoses_main_ICD10_Z45_Adjustment_and_management_of_implanted_device	encounter with health service	
+Z52	organ donor||tissue donor	EFO:0009634, EFO:0009633	Exact	Z52-Diagnoses_main_ICD10_Z52_Donors_of_organs_and_tissues	organ donor AND tissue donor	
+Z48	follow-up	EFO:0009642	Broad	Z48-Diagnoses_main_ICD10_Z48_Other_surgical_followup_care	follow-up	
+Z43	?	EFO:0009786	Broad	Z43-Diagnoses_main_ICD10_Z43_Attention_to_artificial_openings	encounter with health service	
+Z39	patient care? follow-up care?	EFO:0009787	Broad	Z39-Diagnoses_main_ICD10_Z39_Postpartum_care_and_examination	encounter with health service related to reproduction	
+Z36	screening	EFO:0009787	Broad	Z36-Diagnoses_main_ICD10_Z36_Antenatal_screening	encounter with health service related to reproduction	
+T79	complication	EFO:0009888	Broad	T79-Diagnoses_main_ICD10_T79_Certain_early_complications_of_trauma_not_elsewhere_classified	complication	disease
+Z42	follow-up	EFO:0009642	Broad	Z42-Diagnoses_main_ICD10_Z42_Followup_care_involving_plastic_surgery	follow-up	
+Z41	medical procedure	EFO:0002571	Broad	Z41-Diagnoses_main_ICD10_Z41_Procedures_for_purposes_other_than_remedying_health_state	medical procedure	
+R93	abnormal finding	EFO:0009827	Exact	R93-Diagnoses_main_ICD10_R93_Abnormal_findings_on_diagnostic_imaging_of_other_body_structures	abnormal result of diagnostic imaging	
+R63	sign or symptom	EFO:0009825	Exact	R63-Diagnoses_main_ICD10_R63_Symptoms_and_signs_concerning_food_and_fluid_intake	sign or symptom concerning food and fluid intake	
+Z13	medical examination	EFO:0009517	Broad	Z13-Diagnoses_main_ICD10_Z13_Special_screening_examination_for_other_diseases_and_disorders	checkup	
+Z12	medical examination	EFO:0009517	Broad	Z12-Diagnoses_main_ICD10_Z12_Special_screening_examination_for_neoplasms	checkup	
+Z11	medical examination	EFO:0009517	Broad	Z11-Diagnoses_main_ICD10_Z11_Special_screening_examination_for_infectious_and_parasitic_diseases	checkup	
+Z09	follow-up	EFO:0009642	Broad	Z09-Diagnoses_main_ICD10_Z09_Followup_examination_after_treatment_for_conditions_other_than_malignant_neoplasms	follow-up	
+Z08	follow-up	EFO:0009642	Broad	Z08-Diagnoses_main_ICD10_Z08_Followup_examination_after_treatment_for_malignant_neoplasm	follow-up	
+Z04	medical examination	EFO:0009517	Broad	Z04-Diagnoses_main_ICD10_Z04_Examination_and_observation_for_other_reasons	checkup	
+Z03	medical examination	EFO:0009517	Broad	Z03-Diagnoses_main_ICD10_Z03_Medical_observation_and_evaluation_for_suspected_diseases_and_conditions	checkup	
+Z01	medical examination	EFO:0009517	Broad	Z01-Diagnoses_main_ICD10_Z01_Other_special_examinations_and_investigations_of_persons_without_complaint_or_reported_diagnosis	checkup	
+Z00	medical examination	EFO:0009517	Broad	Z00-Diagnoses_main_ICD10_Z00_General_examination_and_investigation_of_persons_without_complaint_or_reported_diagnosis	checkup	
+T88	complication	EFO:0009518	Broad	T88-Diagnoses_main_ICD10_T88_Other_complications_of_surgical_and_medical_care_not_elsewhere_classified	complication	disease
+T87	complication	EFO:0009518	Broad	T87-Diagnoses_main_ICD10_T87_Complications_peculiar_to_reattachment_and_amputation	complication	disease
+T81	complication	EFO:0009518	Broad	T81-Diagnoses_main_ICD10_T81_Complications_of_procedures_not_elsewhere_classified	complication	disease
+T79	complication	EFO:0009518	Broad	T79-Diagnoses_main_ICD10_T79_Certain_early_complications_of_trauma_not_elsewhere_classified	complication	disease
+T78	No general adverse effects term	EFO:0009658	Exact	T78-Diagnoses_main_ICD10_T78_Adverse_effects_not_elsewhere_classified	adverse effect	disease
+T17	foreign body	EFO:0009525	Broad	T17-Diagnoses_main_ICD10_T17_Foreign_body_in_respiratory_tract	foreign body	
+T14	injury	EFO:0000546	Exact	T14-Diagnoses_main_ICD10_T14_Injury_of_unspecified_body_region	injury	disease
+S91	ankle injury||skin wound	EFO:1002021||EFO:0005756	Broad	S91-Diagnoses_main_ICD10_S91_Open_wound_of_ankle_and_foot	ankle injury AND skin wound	disease
+S89	injury	EFO:0000546	Broad	S89-Diagnoses_main_ICD10_S89_Other_and_unspecified_injuries_of_lower_leg	injury	disease
+S86	injury	EFO:0000546	Broad	S86-Diagnoses_main_ICD10_S86_Injury_of_muscle_and_tendon_at_lower_leg_level	injury	disease
+S83	knee injury	EFO:0009507		S83-Diagnoses_main_ICD10_S83_Dislocation_sprain_and_strain_of_joints_and_ligaments_of_knee	knee injury	disease
+S82	lower extremity fracture	EFO:0009512	Broad	S82-Diagnoses_main_ICD10_S82_Fracture_of_lower_leg_including_ankle	lower extremity fracture	disease
+S81	leg injury	EFO:0009508	Broad	S81-Diagnoses_main_ICD10_S81_Open_wound_of_lower_leg	leg injury	disease
+S80	leg injury	EFO:0009508	Broad	S80-Diagnoses_main_ICD10_S80_Superficial_injury_of_lower_leg	leg injury	disease
+S76	leg injury	EFO:0009508	Broad	S76-Diagnoses_main_ICD10_S76_Injury_of_muscle_and_tendon_at_hip_and_thigh_level	leg injury	disease
+S69	injury	EFO:0000546	Broad	S69-Diagnoses_main_ICD10_S69_Other_and_unspecified_injuries_of_wrist_and_hand	injury	disease
+S68	amputation	EFO:0009632	Broad	S68-Diagnoses_main_ICD10_S68_Traumatic_amputation_of_wrist_and_hand	amputation	
+S67	crush injury	EFO:0009504	Broad	S67-Diagnoses_main_ICD10_S67_Crushing_injury_of_wrist_and_hand	crush injury	disease
+S66	injury	EFO:0000546	Broad	S66-Diagnoses_main_ICD10_S66_Injury_of_muscle_and_tendon_at_wrist_and_hand_level	injury	disease
+S63	dislocation||sprain	EFO:0009521||EFO:0009582	Broad	S63-Diagnoses_main_ICD10_S63_Dislocation_sprain_and_strain_of_joints_and_ligaments_at_wrist_and_hand_level	dislocation AND sprain	disease
+S61	skin wound	EFO:0005756	Broad	S61-Diagnoses_main_ICD10_S61_Open_wound_of_wrist_and_hand	skin wound	
+S60	injury	EFO:0000546	Broad	S60-Diagnoses_main_ICD10_S60_Superficial_injury_of_wrist_and_hand	injury	disease
+S56	injury	EFO:0000546	Broad	S56-Diagnoses_main_ICD10_S56_Injury_of_muscle_and_tendon_at_forearm_level	injury	disease
+S51	skin wound	EFO:0005756	Broad	S51-Diagnoses_main_ICD10_S51_Open_wound_of_forearm	skin wound	
+S46	shoulder impingement syndrome	EFO:1001178	Narrow	S46-Diagnoses_main_ICD10_S46_Injury_of_muscle_and_tendon_at_shoulder_and_upper_arm_level	shoulder impingement syndrome	disease
+S43	dislocation||sprain	EFO:0009521||EFO:0009582	Broad	S43-Diagnoses_main_ICD10_S43_Dislocation_sprain_and_strain_of_joints_and_ligaments_of_shoulder_girdle	dislocation AND sprain	disease
+S39	abdominal injury	EFO:0009502	Broad	S39-Diagnoses_main_ICD10_S39_Other_and_unspecified_injuries_of_abdomen_lower_back_and_pelvis	abdominal injury	disease
+S31	abdominal injury	EFO:0009502	Broad	S31-Diagnoses_main_ICD10_S31_Open_wound_of_abdomen_lower_back_and_pelvis	abdominal injury	disease
+S22	rib fracture	EFO:0009620	Narrow	S22-Diagnoses_main_ICD10_S22_Fracture_of_ribs_sternum_and_thoracic_spine	rib fracture	disease
+S20	injury	EFO:0000546	Broad	S20-Diagnoses_main_ICD10_S20_Superficial_injury_of_thorax	injury	disease
+S12	spinal fracture	EFO:0003902	Broad	S12-Diagnoses_main_ICD10_S12_Fracture_of_neck	spinal fracture	disease
+S09	head injury	EFO:0009505	Broad	S09-Diagnoses_main_ICD10_S09_Other_and_unspecified_injuries_of_head	head injury	disease
+S06	head injury	EFO:0009505	Broad	S06-Diagnoses_main_ICD10_S06_Intracranial_injury	head injury	disease
+S05	eye injury	EFO:0009485	Broad	S05-Diagnoses_main_ICD10_S05_Injury_of_eye_and_orbit	eye injury	disease
+S01	head injury	EFO:0009505	Broad	S01-Diagnoses_main_ICD10_S01_Open_wound_of_head	head injury	disease
+O02	conception	EFO:0009682	Broad	O02-Diagnoses_main_ICD10_O02_Other_abnormal_products_of_conception	pregnancy disorder	disease
+R91	abnormality of the lung	HP:0002088	Broad	R91-Diagnoses_main_ICD10_R91_Abnormal_findings_on_diagnostic_imaging_of_lung	abnormal lung morphology	
+R90	morphological abnormality of the central nervous system	HP:0002011	?	R90-Diagnoses_main_ICD10_R90_Abnormal_findings_on_diagnostic_imaging_of_central_nervous_system	morphological central nervous system abnormality	
+R79	abnormal blood homeostasis	HP:0001871	Broad	R79-Diagnoses_main_ICD10_R79_Other_abnormal_findings_of_blood_chemistry	abnormality of blood and blood-forming tissues	
+R76	abnormality of the immune system	HP:0002715	Broad	R76-Diagnoses_main_ICD10_R76_Other_abnormal_immunological_findings_in_serum	abnormality of the immune system	
+R69	disease	EFO:0000408	?	R69-Diagnoses_main_ICD10_R69_Unknown_and_unspecified_causes_of_morbidity	disease	disease
+R68	sign or symptom	EFO:0003765	Exact	R68-Diagnoses_main_ICD10_R68_Other_general_symptoms_and_signs	sign or symptom	
+O26	patient care?	EFO:0009682	Broad	O26-Diagnoses_main_ICD10_O26_Maternal_care_for_other_conditions_predominantly_related_to_pregnancy	pregnancy disorder	disease
+R60	edema	EFO:0009373	Exact	R60-Diagnoses_main_ICD10_R60_Oedema_not_elsewhere_classified	edema	disease
+R56	seizures	HP:0001250	Narrow	R56-Diagnoses_main_ICD10_R56_Convulsions_not_elsewhere_classified	seizure	
+R55	syncope	HP:0001279	Exact	R55-Diagnoses_main_ICD10_R55_Syncope_and_collapse	syncope	
+R54	cognitive impairment	HP:0100543	Broad	R54-Diagnoses_main_ICD10_R54_Senility	cognitive impairment	
+R53	fatigue||malaise	HP:0012378 | EFO:0009641	Exact	R53-Diagnoses_main_ICD10_R53_Malaise_and_fatigue	fatigue AND malaise	
+R49	voice disturbance	EFO:0009692	Exact	R49-Diagnoses_main_ICD10_R49_Voice_disturbances	voice disorders	disease
+R47	speech apraxia	HP:0011098	Narrow	R47-Diagnoses_main_ICD10_R47_Speech_disturbances_not_elsewhere_classified	speech apraxia	
+R41	cognitive impairment	HP:0100543	Broad	R41-Diagnoses_main_ICD10_R41_Other_symptoms_and_signs_involving_cognitive_functions_and_awareness	cognitive impairment	
+R40	coma	HP:0001259	Broad	R40-Diagnoses_main_ICD10_R40_Somnolence_stupor_and_coma	coma	
+R39	abnormality of the urinary system	HP:0000079	Exact	R39-Diagnoses_main_ICD10_R39_Other_symptoms_and_signs_involving_the_urinary_system	abnormality of the urinary system	
+R29	abnormality of the musculature||abnormality of the skeletal system||abnormality of the nervous system	HP:0003011||HP:0000924||HP:0000707	Broad	R29-Diagnoses_main_ICD10_R29_Other_symptoms_and_signs_involving_the_nervous_and_musculoskeletal_systems	abnormality of the musculature AND abnormality of the skeletal system AND abnormality of the nervous system	
+R23	abnormality of the skin	HP:0000951	Exact	R23-Diagnoses_main_ICD10_R23_Other_skin_changes	abnormality of the skin	
+R22	lymphedema	Orphanet:79383	?	R22-Diagnoses_main_ICD10_R22_Localised_swelling_mass_and_lump_of_skin_and_subcutaneous_tissue	lymphedema	disease
+R21	skin disease	EFO:0000701	Broad	R21-Diagnoses_main_ICD10_R21_Rash_and_other_nonspecific_skin_eruption	skin disease	disease
+R19	abnormality of the digestive system	HP:0025031	Broad	R19-Diagnoses_main_ICD10_R19_Other_symptoms_and_signs_involving_the_digestive_system_and_abdomen	abnormality of the digestive system	
+R14	flatulence	EFO:0009669	Exact	R14-Diagnoses_main_ICD10_R14_Flatulence_and_related_conditions	flatulence	disease
+R09	abnormality of the respiratory system||abnormality of the cardiovascular system	HP:0002086||HP:0001626	Broad	R09-Diagnoses_main_ICD10_R09_Other_symptoms_and_signs_involving_the_circulatory_and_respiratory_systems	abnormality of the respiratory system AND abnormality of the cardiovascular system	
+R07	pain	EFO:0003843	Broad	R07-Diagnoses_main_ICD10_R07_Pain_in_throat_and_chest	pain	
+Q38	rare genetic developmental defect during embryogenesis	Orphanet:183530	Broad	Q38-Diagnoses_main_ICD10_Q38_Other_congenital_malformations_of_tongue_mouth_and_pharynx	rare genetic developmental defect during embryogenesis	disease
+Q18	rare genetic developmental defect during embryogenesis	Orphanet:183530	Broad	Q18-Diagnoses_main_ICD10_Q18_Other_congenital_malformations_of_face_and_neck	rare genetic developmental defect during embryogenesis	disease
+O00	ectopic pregnancy	HP:0031456	Exact	O00-Diagnoses_main_ICD10_O00_Ectopic_pregnancy	ectopic pregnancy	
+O35	fetal disorder? patient care? 	EFO:0009682	Broad	O35-Diagnoses_main_ICD10_O35_Maternal_care_for_known_or_suspected_foetal_abnormality_and_damage	pregnancy disorder	disease
+O13	preeclampsia||proteinuria	EFO:0000668||HP:0000093	Broad	O13-Diagnoses_main_ICD10_O13_Gestational_pregnancyinduced_hypertension_without_significant_proteinuria	preeclampsia AND proteinuria	disease
+O20	hemorrhage	MP:0001914	Broad	O20-Diagnoses_main_ICD10_O20_Haemorrhage_in_early_pregnancy	hemorrhage	
+O36	fetal disorder? patient care? 	EFO:0009682	Broad	O36-Diagnoses_main_ICD10_O36_Maternal_care_for_other_known_or_suspected_foetal_problems	pregnancy disorder	disease
+M43	-	EFO:0002461	Broad	M43-Diagnoses_main_ICD10_M43_Other_deforming_dorsopathies	skeletal system disease	disease
+M46	-	EFO:0004260	Broad	M46-Diagnoses_main_ICD10_M46_Other_inflammatory_spondylopathies	bone disease	disease
+O46	antepartum hemorrhage	HP:0025328	Exact	O46-Diagnoses_main_ICD10_O46_Antepartum_haemorrhage_not_elsewhere_classified	antepartum hemorrhage	
+O47	Braxton-Hicks contraction	EFO:0009639	Exact	O47-Diagnoses_main_ICD10_O47_False_labour	braxton-hicks contractions	
+O48	post term pregnancy	EFO:0009681	Exact	O48-Diagnoses_main_ICD10_O48_Prolonged_pregnancy	post term pregnancy	disease
+O64	abnormal delivery	HP:0001787	Broad	O64-Diagnoses_main_ICD10_O64_Obstructed_labour_due_to_malposition_and_malpresentation_of_foetus	abnormal delivery	
+O68	abnormal delivery	HP:0001787	Broad	O68-Diagnoses_main_ICD10_O68_Labour_and_delivery_complicated_by_foetal_stress_distress	abnormal delivery	
+O69	abnormal delivery	HP:0001787	Broad	O69-Diagnoses_main_ICD10_O69_Labour_and_delivery_complicated_by_umbilical_cord_complications	abnormal delivery	
+O75	abnormal delivery	HP:0001787	Broad	O75-Diagnoses_main_ICD10_O75_Other_complications_of_labour_and_delivery_not_elsewhere_classified	abnormal delivery	
+O80	spontaneous labor and birth	EFO:0009638	Exact	O80-Diagnoses_main_ICD10_O80_Single_spontaneous_delivery	spontaneous labor and birth	
+O82	cesarean section	EFO:0009636	Broad	O82-Diagnoses_main_ICD10_O82_Single_delivery_by_Caesarean_section	cesarean section	
+O99	pregnancy disorder	EFO:0009682	Exact	O99-Diagnoses_main_ICD10_O99_Other_maternal_diseases_classifiable_elsewhere_but_complicating_pregnancy_childbirth_and_the_puerperium	pregnancy disorder	disease
+N02	hematuria	HP:0000790	Broad	N02-Diagnoses_main_ICD10_N02_Recurrent_and_persistent_haematuria	hematuria	
+N10	nephritis	EFO:1002050	Broad	N10-Diagnoses_main_ICD10_N10_Acute_tubulointerstitial_nephritis	nephritis	disease
+N12	nephritis	EFO:1002050	Broad	N12-Diagnoses_main_ICD10_N12_Tubulointerstitial_nephritis_not_specified_as_acute_or_chronic	nephritis	disease
+N21	ureterolithiasis	EFO:1001228	Exact	N21-Diagnoses_main_ICD10_N21_Calculus_of_lower_urinary_tract	ureterolithiasis	disease
+N28	urinary system disease	EFO:0009690	Broad	N28-Diagnoses_main_ICD10_N28_Other_disorders_of_kidney_and_ureter_not_elsewhere_classified	urinary system disease	disease
+N31	neurogenic bladder	HP:0000011	Exact	N31-Diagnoses_main_ICD10_N31_Neuromuscular_dysfunction_of_bladder_not_elsewhere_classified	neurogenic bladder	disease
+N36	urethral disease	EFO:0009689	Exact	N36-Diagnoses_main_ICD10_N36_Other_disorders_of_urethra	urethral disease	disease
+N39	urinary system disease	EFO:0009690	Exact	N39-Diagnoses_main_ICD10_N39_Other_disorders_of_urinary_system	urinary system disease	disease
+N40	benign prostatic hyperplasia	EFO:0000284	Exact	N40-Diagnoses_main_ICD10_N40_Hyperplasia_of_prostate	benign prostatic hyperplasia	disease
+N42	prostate disease	EFO:0009602	Exact	N42-Diagnoses_main_ICD10_N42_Other_disorders_of_prostate	prostate disease	disease
+N48	male reproductive system disease	EFO:0009555	Broad	N48-Diagnoses_main_ICD10_N48_Other_disorders_of_penis	male reproductive system disease	disease
+N49	male reproductive system disease	EFO:0009555	Broad	N49-Diagnoses_main_ICD10_N49_Inflammatory_disorders_of_male_genital_organs_not_elsewhere_classified	male reproductive system disease	disease
+N50	male reproductive system disease	EFO:0009555	Broad	N50-Diagnoses_main_ICD10_N50_Other_disorders_of_male_genital_organs	male reproductive system disease	disease
+N61	mastitis	EFO:1001034	Broad	N61-Diagnoses_main_ICD10_N61_Inflammatory_disorders_of_breast	mastitis	disease
+N64	breast disease	EFO:0009483	Exact	N64-Diagnoses_main_ICD10_N64_Other_disorders_of_breast	breast disease	disease
+N73	pelvic inflammatory disease	EFO:1001388	Broad	N73-Diagnoses_main_ICD10_N73_Other_female_pelvic_inflammatory_diseases	pelvic inflammatory disease	disease
+N85	female reproductive system disease	EFO:0009549	Broad	N85-Diagnoses_main_ICD10_N85_Other_noninflammatory_disorders_of_uterus_except_cervix	female reproductive system disease	disease
+N86	cervix erosion	EFO:1000862	Exact	N86-Diagnoses_main_ICD10_N86_Erosion_and_ectropion_of_cervix_uteri	cervix erosion	disease
+N88	female reproductive system disease	EFO:0009549	Broad	N88-Diagnoses_main_ICD10_N88_Other_noninflammatory_disorders_of_cervix_uteri	female reproductive system disease	disease
+N89	female reproductive system disease	EFO:0009549	Broad	N89-Diagnoses_main_ICD10_N89_Other_noninflammatory_disorders_of_vagina	female reproductive system disease	disease
+N90	female reproductive system disease	EFO:0009549	Broad	N90-Diagnoses_main_ICD10_N90_Other_noninflammatory_disorders_of_vulva_and_perineum	female reproductive system disease	disease
+N92	menorrhagia	HP:0000132	Broad	N92-Diagnoses_main_ICD10_N92_Excessive_frequent_and_irregular_menstruation	menorrhagia	
+N93	metrorrhagia	HP:0100608	Exact	N93-Diagnoses_main_ICD10_N93_Other_abnormal_uterine_and_vaginal_bleeding	metrorrhagia	
+N95	menopause	EFO:0003922	Broad	N95-Diagnoses_main_ICD10_N95_Menopausal_and_other_perimenopausal_disorders	menopause	
+N99	disease of genitourinary system	EFO:0009663	Broad	N99-Diagnoses_main_ICD10_N99_Postprocedural_disorders_of_genitourinary_system_not_elsewhere_classified	disease of genitourinary system	disease
+M19	osteoarthritis	EFO:0002506	Exact	M19-Diagnoses_main_ICD10_M19_Other_arthrosis	osteoarthritis	disease
+M20	congenital deformities of fingers	Orphanet:294947	Broad	M20-Diagnoses_main_ICD10_M20_Acquired_deformities_of_fingers_and_toes	congenital deformities of fingers	disease
+M21	congenital deformities of limbs	Orphanet:294944	Exact	M21-Diagnoses_main_ICD10_M21_Other_acquired_deformities_of_limbs	congenital deformities of limbs	disease
+M22	abnormality of the patella	EFO:0009665	Exact	M22-Diagnoses_main_ICD10_M22_Disorders_of_patella	disorder of patella	disease
+M24	joint disease	EFO:1000999	Broad	M24-Diagnoses_main_ICD10_M24_Other_specific_joint_derangements	joint disease	disease
+M35	connective tissue disease	EFO:1001986	Broad	M35-Diagnoses_main_ICD10_M35_Other_systemic_involvement_of_connective_tissue	connective tissue disease	disease
+M48	-	EFO:0004260	Broad	M48-Diagnoses_main_ICD10_M48_Other_spondylopathies	bone disease	disease
+M53	-	EFO:0009676	Broad	M53-Diagnoses_main_ICD10_M53_Other_dorsopathies_not_elsewhere_classified	musculoskeletal system disease	disease
+M48	spondyloarthropathy	EFO:0004260	Broad	M48-Diagnoses_main_ICD10_M48_Other_spondylopathies	bone disease	disease
+M51	discitis	EFO:1000900	Narrow	M51-Diagnoses_main_ICD10_M51_Other_intervertebral_disk_disorders	discitis	disease
+M53	back pain	EFO:0009676	Broad	M53-Diagnoses_main_ICD10_M53_Other_dorsopathies_not_elsewhere_classified	musculoskeletal system disease	disease
+M62	muscular disease	EFO:0002970	Exact	M62-Diagnoses_main_ICD10_M62_Other_disorders_of_muscle	muscular disease	disease
+M66	tendon rupture	HP:0100550	Broad	M66-Diagnoses_main_ICD10_M66_Spontaneous_rupture_of_synovium_and_tendon	tendon rupture	
+M67	tenosynovitis	EFO:1001435	Exact	M67-Diagnoses_main_ICD10_M67_Other_disorders_of_synovium_and_tendon	tenosynovitis	disease
+M71	joint disease	EFO:1000999	Broad	M71-Diagnoses_main_ICD10_M71_Other_bursopathies	joint disease	disease
+M76	enthesopathy	EFO:0009666	Broad	M76-Diagnoses_main_ICD10_M76_Enthesopathies_of_lower_limb_excluding_foot	enthesopathy	disease
+M77	enthesopathy	EFO:0009666	Exact	M77-Diagnoses_main_ICD10_M77_Other_enthesopathies	enthesopathy	disease
+M79	soft tissue disease	EFO:0009470	Exact	M79-Diagnoses_main_ICD10_M79_Other_soft_tissue_disorders_not_elsewhere_classified	soft tissue disease	disease
+M80	osteoporosis	EFO:0003882	Broad	M80-Diagnoses_main_ICD10_M80_Osteoporosis_with_pathological_fracture	osteoporosis	disease
+M84	bone disease	EFO:0004260	Broad	M84-Diagnoses_main_ICD10_M84_Disorders_of_continuity_of_bone	bone disease	disease
+M85	bone density	EFO:0003923	Broad	M85-Diagnoses_main_ICD10_M85_Other_disorders_of_bone_density_and_structure	bone density	disease
+M89	bone disease	EFO:0004260	Exact	M89-Diagnoses_main_ICD10_M89_Other_disorders_of_bone	bone disease	disease
+M94	cartilage disease	EFO:0005802	Exact	M94-Diagnoses_main_ICD10_M94_Other_disorders_of_cartilage	cartilage disease	disease
+M95	musculoskeletal system disease | connective tissue disease	EFO:0009676 | EFO:1001986	Exact	M95-Diagnoses_main_ICD10_M95_Other_acquired_deformities_of_musculoskeletal_system_and_connective_tissue	musculoskeletal system disease AND connective tissue disease	disease
+M96	musculoskeletal system disease	EFO:0009676	Broad	M96-Diagnoses_main_ICD10_M96_Postprocedural_musculoskeletal_disorders_not_elsewhere_classified	musculoskeletal system disease	disease
+L27	dermatitis due to unspecified substance taken internally	HP:0000964	Broad	L27-Diagnoses_main_ICD10_L27_Dermatitis_due_to_substances_taken_internally	eczema	
+L30	skin disease	EFO:0000701	Broad	L30-Diagnoses_main_ICD10_L30_Other_dermatitis	skin disease	disease
+L53	skin disease	EFO:0000701	Broad	L53-Diagnoses_main_ICD10_L53_Other_erythematous_conditions	skin disease	disease
+L60	genetic nail anomaly	Orphanet:183454	Narrow	L60-Diagnoses_main_ICD10_L60_Nail_disorders	genetic nail anomaly	disease
+L73	folliculitis	EFO:1000702	Narrow	L73-Diagnoses_main_ICD10_L73_Other_follicular_disorders	folliculitis	disease
+L85	epidermal thickening	HP:0011368	Exact	L85-Diagnoses_main_ICD10_L85_Other_epidermal_thickening	epidermal thickening	
+K01	impacted tooth	HP:0011079	Exact	K01-Diagnoses_main_ICD10_K01_Embedded_and_impacted_teeth	impacted tooth	
+K05	periodontitis	EFO:0000649	Broad	K05-Diagnoses_main_ICD10_K05_Gingivitis_and_periodontal_diseases	periodontitis	disease
+K06	gingival disease	EFO:0009670	Narrow	K06-Diagnoses_main_ICD10_K06_Other_disorders_of_gingiva_and_edentulous_alveolar_ridge	gingival disease	disease
+K08	tooth disease	EFO:1001216	Exact	K08-Diagnoses_main_ICD10_K08_Other_disorders_of_teeth_and_supporting_structures	tooth disease	disease
+K09	mouth neoplasm	EFO:0003868	Broad	K09-Diagnoses_main_ICD10_K09_Cysts_of_oral_region_not_elsewhere_classified	mouth neoplasm	disease
+K12	stomatitis	EFO:0009688	Exact	K12-Diagnoses_main_ICD10_K12_Stomatitis_and_related_lesions	stomatitis	disease
+K13	mouth disease	EFO:1001047	Broad	K13-Diagnoses_main_ICD10_K13_Other_diseases_of_lip_and_oral_mucosa	mouth disease	disease
+K14	mouth disease	EFO:1001047	Broad	K14-Diagnoses_main_ICD10_K14_Diseases_of_tongue	mouth disease	disease
+K31	digestive system disease	EFO:0000405	Broad	K31-Diagnoses_main_ICD10_K31_Other_diseases_of_stomach_and_duodenum	digestive system disease	disease
+K52	gastroenteritis	EFO:1001463	Broad	K52-Diagnoses_main_ICD10_K52_Other_noninfective_gastroenteritis_and_colitis	gastroenteritis	disease
+K56	gastrointestinal obstruction	HP:0004796	Broad	K56-Diagnoses_main_ICD10_K56_Paralytic_ileus_and_intestinal_obstruction_without_hernia	gastrointestinal obstruction	
+K60	anal fistula	HP:0012390	Narrow	K60-Diagnoses_main_ICD10_K60_Fissure_and_fistula_of_anal_and_rectal_regions	anal fissure	
+K62	anus disease||rectal disease	EFO:0009660 | EFO:0009685	Exact	K62-Diagnoses_main_ICD10_K62_Other_diseases_of_anus_and_rectum	anus disease AND rectal disease	disease
+K75	liver disease	EFO:0001421	Broad	K75-Diagnoses_main_ICD10_K75_Other_inflammatory_liver_diseases	liver disease	disease
+K86	pancreas disease	EFO:0009605	Exact	K86-Diagnoses_main_ICD10_K86_Other_diseases_of_pancreas	pancreas disease	disease
+K91	digestive system disease	EFO:0000405	Broad	K91-Diagnoses_main_ICD10_K91_Postprocedural_disorders_of_digestive_system_not_elsewhere_classified	digestive system disease	disease
+K92	digestive system disease	EFO:0000405	Exact	K92-Diagnoses_main_ICD10_K92_Other_diseases_of_digestive_system	digestive system disease	disease
+J02	pharyngitis	EFO:0009657	Exact	J02-Diagnoses_main_ICD10_J02_Acute_pharyngitis	acute pharyngitis	disease
+J03	tonsillitis	HP:0011110	Broad	J03-Diagnoses_main_ICD10_J03_Acute_tonsillitis	tonsillitis	
+J06	respiratory system disease	EFO:0000684	Broad	J06-Diagnoses_main_ICD10_J06_Acute_upper_respiratory_infections_of_multiple_and_unspecified_sites	respiratory system disease	disease
+J31	rhinitis	EFO:0008521	Broad	J31-Diagnoses_main_ICD10_J31_Chronic_rhinitis_nasopharyngitis_and_pharyngitis	rhinitis	disease
+J34	respiratory system disease	EFO:0000684	Broad	J34-Diagnoses_main_ICD10_J34_Other_disorders_of_nose_and_nasal_sinuses	respiratory system disease	disease
+J35	lympathic system disease	EFO:0007352	Broad	J35-Diagnoses_main_ICD10_J35_Chronic_diseases_of_tonsils_and_adenoids	lymphatic system disease	disease
+J38	laryngeal disease	EFO:0009673	Exact	J38-Diagnoses_main_ICD10_J38_Diseases_of_vocal_cords_and_larynx_not_elsewhere_classified	laryngeal disease	disease
+J39	respiratory system disease	EFO:0000684	Broad	J39-Diagnoses_main_ICD10_J39_Other_diseases_of_upper_respiratory_tract	respiratory system disease	disease
+J40	bronchitis	EFO:0009661	Exact	J40-Diagnoses_main_ICD10_J40_Bronchitis_not_specified_as_acute_or_chronic	bronchitis	disease
+J86	pleural empyema	EFO:0009680	Exact	J86-Diagnoses_main_ICD10_J86_Pyothorax	pleural empyema	disease
+J90	pleural effusion	EFO:0009637	Exact	J90-Diagnoses_main_ICD10_J90_Pleural_effusion_not_elsewhere_classified	pleural effusion	
+J96	respiratory failure	EFO:0009686	Exact	J96-Diagnoses_main_ICD10_J96_Respiratory_failure_not_elsewhere_classified	respiratory failure	disease
+I31	pericarditis	EFO:0007427	Exact	I31-Diagnoses_main_ICD10_I31_Other_diseases_of_pericardium	pericarditis	disease
+I33	endocarditis	EFO:0000465	Broad	I33-Diagnoses_main_ICD10_I33_Acute_and_subacute_endocarditis	endocarditis	disease
+I44	bundle branch block	EFO:0004138	Broad	I44-Diagnoses_main_ICD10_I44_Atrioventricular_and_left_bundlebranch_block	bundle branch block	disease
+I45	conduction system disease	EFO:0005137	Exact	I45-Diagnoses_main_ICD10_I45_Other_conduction_disorders	conduction system disorder	disease
+I49	cardiac arrythmia	EFO:0004269	Exact	I49-Diagnoses_main_ICD10_I49_Other_cardiac_arrhythmias	cardiac arrhythmia	disease
+I65	occlusion precerebral artery	EFO:0009677	Exact	I65-Diagnoses_main_ICD10_I65_Occlusion_and_stenosis_of_precerebral_arteries_not_resulting_in_cerebral_infarction	occlusion precerebral artery	disease
+I77	vascular disease	EFO:0004264	Broad	I77-Diagnoses_main_ICD10_I77_Other_disorders_of_arteries_and_arterioles	vascular disease	disease
+I78	vascular disease	EFO:0004264	Broad	I78-Diagnoses_main_ICD10_I78_Diseases_of_capillaries	vascular disease	disease
+I82	venous thromboembolism	EFO:0004286	Exact	I82-Diagnoses_main_ICD10_I82_Other_venous_embolism_and_thrombosis	venous thromboembolism	disease
+I87	vascular disease	EFO:0004264	Broad	I87-Diagnoses_main_ICD10_I87_Other_disorders_of_veins	vascular disease	disease
+I89	lymphatic system disease	EFO:0007352	Exact	I89-Diagnoses_main_ICD10_I89_Other_noninfective_disorders_of_lymphatic_vessels_and_lymph_nodes	lymphatic system disease	disease
+H02	eyelid disease	EFO:0009547	Exact	H02-Diagnoses_main_ICD10_H02_Other_disorders_of_eyelid	eyelid disease	disease
+H05	disease of orbital region	EFO:0009664	Exact	H05-Diagnoses_main_ICD10_H05_Disorders_of_orbit	disease of orbital region	disease
+H11	conjunctival disorder	EFO:1000203	Exact	H11-Diagnoses_main_ICD10_H11_Other_disorders_of_conjunctiva	conjunctival disorder	disease
+H27	lens disease	EFO:0009674	Exact	H27-Diagnoses_main_ICD10_H27_Other_disorders_of_lens	lens disease	disease
+H49	paralytic strabismus	EFO:0009678	Exact	H49-Diagnoses_main_ICD10_H49_Paralytic_strabismus	paralytic strabismus	disease
+H50	strabismus	HP:0000486	Exact	H50-Diagnoses_main_ICD10_H50_Other_strabismus	strabismus	
+H57	eye adnexa disease	EFO:0009546	Exact	H57-Diagnoses_main_ICD10_H57_Other_disorders_of_eye_and_adnexa	eye adnexa disease	disease
+H59	eye adnexa disease	EFO:0009546	Broad	H59-Diagnoses_main_ICD10_H59_Postprocedural_disorders_of_eye_and_adnexa_not_elsewhere_classified	eye adnexa disease	disease
+H61	external ear disease	EFO:0009668	Exact	H61-Diagnoses_main_ICD10_H61_Other_disorders_of_external_ear	external ear disease	disease
+H65	non-suppurative otitis media	EFO:0007415	Narrow	H65-Diagnoses_main_ICD10_H65_Nonsuppurative_otitis_media	otitis media with effusion	disease
+H69	eustachian tube disease	EFO:0009667	Exact	H69-Diagnoses_main_ICD10_H69_Other_disorders_of_Eustachian_tube	eustachian tube disease	disease
+H81	vestibular disease	EFO:0009691	Exact	H81-Diagnoses_main_ICD10_H81_Disorders_of_vestibular_function	vestibular disease	disease
+H83	inner ear disease	EFO:0009672	Exact	H83-Diagnoses_main_ICD10_H83_Other_diseases_of_inner_ear	inner ear disease	disease
+H92	ear pain||otitis media with effusion	HP:0030766 | EFO:0007415	Exact	H92-Diagnoses_main_ICD10_H92_Otalgia_and_effusion_of_ear	ear pain AND otitis media with effusion	disease
+H93	auditory system disease	EFO:1001455	Exact	H93-Diagnoses_main_ICD10_H93_Other_disorders_of_ear_not_elsewhere_classified	auditory system disease	disease
+G37	CNS demyelinating autoimmune disease	EFO:1000870	Narrow?	G37-Diagnoses_main_ICD10_G37_Other_demyelinating_diseases_of_central_nervous_system	cns demyelinating autoimmune disease	disease
+G58	mononeuropathy	EFO:0009558	Exact	G58-Diagnoses_main_ICD10_G58_Other_mononeuropathies	mononeuropathy	disease
+G62	polyneuropathy	EFO:0009562	Exact	G62-Diagnoses_main_ICD10_G62_Other_polyneuropathies	polyneuropathy	disease
+G93	brain disease	EFO:0005774	Exact	G93-Diagnoses_main_ICD10_G93_Other_disorders_of_brain	brain disease	disease
+G95	spinal cord disease	EFO:0009488	Exact	G95-Diagnoses_main_ICD10_G95_Other_diseases_of_spinal_cord	spinal cord disease	disease
+F45	somatoform disorder	EFO:0009687	Exact	F45-Diagnoses_main_ICD10_F45_Somatoform_disorders	somatoform disorder	disease
+E04	goiter	EFO:0004283	Broad	E04-Diagnoses_main_ICD10_E04_Other_nontoxic_goitre	goiter	disease
+E05	hyperthyroidism	EFO:0009189	Exact	E05-Diagnoses_main_ICD10_E05_Thyrotoxicosis_hyperthyroidism	hyperthyroidism	disease
+E16	pancreas disease	EFO:0009605	Broad	E16-Diagnoses_main_ICD10_E16_Other_disorders_of_pancreatic_internal_secretion	pancreas disease	disease
+E87	abnormality of metabolism/homeostasis	HP:0001939	Exact	E87-Diagnoses_main_ICD10_E87_Other_disorders_of_fluid_electrolyte_and_acidbase_balance	abnormality of metabolism/homeostasis	
+D07	urogenital neoplasm	EFO:0003863	Broad	D07-Diagnoses_main_ICD10_D07_Carcinoma_in_situ_of_other_and_unspecified_genital_organs	urogenital neoplasm	disease
+D09	carcinoma	EFO:0000313	Broad	D09-Diagnoses_main_ICD10_D09_Carcinoma_in_situ_of_other_and_unspecified_sites	carcinoma	disease
+D13	digestive system neoplasm	EFO:0008549	Broad	D13-Diagnoses_main_ICD10_D13_Benign_neoplasm_of_other_and_illdefined_parts_of_digestive_system	digestive system neoplasm	disease
+D14	respiratory system neoplasm	EFO:0003853	Broad	D14-Diagnoses_main_ICD10_D14_Benign_neoplasm_of_middle_ear_and_respiratory_system	respiratory system neoplasm	disease
+D16	bone neoplasm	EFO:0003820	Broad	D16-Diagnoses_main_ICD10_D16_Benign_neoplasm_of_bone_and_articular_cartilage	bone neoplasm	disease
+D17	lipoma	EFO:0000759	Exact	D17-Diagnoses_main_ICD10_D17_Benign_lipomatous_neoplasm	lipoma	disease
+D21	soft tissue neoplasm	EFO:1000541	Broad	D21-Diagnoses_main_ICD10_D21_Other_benign_neoplasms_of_connective_and_other_soft_tissue	soft tissue neoplasm	disease
+D22	Melanocytic nevus	EFO:0009675	Exact	D22-Diagnoses_main_ICD10_D22_Melanocytic_naevi	melanocytic nevus	disease
+D23	skin neoplasm	EFO:0004198	Broad	D23-Diagnoses_main_ICD10_D23_Other_benign_neoplasms_of_skin	skin neoplasm	disease
+D30	urogenital neoplasm	EFO:0003863	Broad	D30-Diagnoses_main_ICD10_D30_Benign_neoplasm_of_urinary_organs	urogenital neoplasm	disease
+D32	benign brain neoplasm	EFO:1000107	Broad	D32-Diagnoses_main_ICD10_D32_Benign_neoplasm_of_meninges	benign brain neoplasm	disease
+D35	endocrine neoplasm	EFO:0003769	Exact	D35-Diagnoses_main_ICD10_D35_Benign_neoplasm_of_other_and_unspecified_endocrine_glands	endocrine neoplasm	disease
+D36	benign neoplasm	EFO:0002422	Exact	D36-Diagnoses_main_ICD10_D36_Benign_neoplasm_of_other_and_unspecified_sites	benign neoplasm	disease
+D37	digestive system neoplasm	EFO:0008549	Exact	D37-Diagnoses_main_ICD10_D37_Neoplasm_of_uncertain_or_unknown_behaviour_of_oral_cavity_and_digestive_organs	digestive system neoplasm	disease
+D38	respiratory system neoplasm	EFO:0003853	Broad	D38-Diagnoses_main_ICD10_D38_Neoplasm_of_uncertain_or_unknown_behaviour_of_middle_ear_and_respiratory_and_intrathoracic_organs	respiratory system neoplasm	disease
+D41	urogenital neoplasm	EFO:0003863	Broad	D41-Diagnoses_main_ICD10_D41_Neoplasm_of_uncertain_or_unknown_behaviour_of_urinary_organs	urogenital neoplasm	disease
+D47	lymphoid neoplasm||common hematopoietic neoplasm	EFO:0001642||EFO:1000201	Exact	D47-Diagnoses_main_ICD10_D47_Other_neoplasms_of_uncertain_or_unknown_behaviour_of_lymphoid_haematopoietic_and_related_tissue	lymphoid neoplasm AND common hematopoietic neoplasm	disease
+D48	neoplasm	EFO:0000616	Broad	D48-Diagnoses_main_ICD10_D48_Neoplasm_of_uncertain_or_unknown_behaviour_of_other_and_unspecified_sites	neoplasm	disease
+D61	aplastic anemia	HP:0001915	Exact	D61-Diagnoses_main_ICD10_D61_Other_aplastic_anaemias	aplastic anemia	
+D75	hematologic disease	EFO:0005803	Exact	D75-Diagnoses_main_ICD10_D75_Other_diseases_of_blood_and_bloodforming_organs	hematologic disease	disease
+D89	immune system disease	EFO:0000540	Exact	D89-Diagnoses_main_ICD10_D89_Other_disorders_involving_the_immune_mechanism_not_elsewhere_classified	immune system disease	disease
+C44	skin neoplasm	EFO:0004198	Broad	C44-Diagnoses_main_ICD10_C44_Other_malignant_neoplasms_of_skin	skin neoplasm	disease
+C49	soft tissue neoplasm	EFO:1000541	Broad	C49-Diagnoses_main_ICD10_C49_Malignant_neoplasm_of_other_connective_and_soft_tissue	soft tissue neoplasm	disease
+C78	respiratory system neoplasm||digestive system neoplasm	EFO:0009812	Broad	C78-Diagnoses_main_ICD10_C78_Secondary_malignant_neoplasm_of_respiratory_and_digestive_organs	secondary malignant neoplasm	disease
+C79	neoplasm	EFO:0009812	Broad	C79-Diagnoses_main_ICD10_C79_Secondary_malignant_neoplasm_of_other_sites	secondary malignant neoplasm	disease
+C80	cancer	EFO:0000311	Broad	C80-Diagnoses_main_ICD10_C80_Malignant_neoplasm_without_specification_of_site	cancer	disease
+C85	non-Hodgkins lymphoma	EFO:0005952	Exact	C85-Diagnoses_main_ICD10_C85_Other_and_unspecified_types_of_nonHodgkins_lymphoma	non-hodgkins lymphoma	disease
+B37	Candidiasis, Invasive	EFO:1001283	Narrow	B37-Diagnoses_main_ICD10_B37_Candidiasis	candidiasis, invasive	disease
+A04	intestinal disease||bacterial disease	EFO:0009431||EFO:0000771	Broad	A04-Diagnoses_main_ICD10_A04_Other_bacterial_intestinal_infections	intestinal disease AND bacterial disease	disease
+A08	intestinal disease||viral disease	EFO:0009431||EFO:0000763	Broad	A08-Diagnoses_main_ICD10_A08_Viral_and_other_specified_intestinal_infections	intestinal disease AND viral disease	disease
+A63	bacterial sexually transmitted disease	EFO:0003955	Narrow	A63-Diagnoses_main_ICD10_A63_Other_predominantly_sexually_transmitted_diseases_not_elsewhere_classified	bacterial sexually transmitted disease	disease
+E27	adrenal gland disease	EFO:0005539	Exact	E27-Diagnoses_main_ICD10_E27_Other_disorders_of_adrenal_gland	adrenal gland disease	disease
+BCAC_Overall_BreastCancer_EUR		EFO:0005606		BCAC_Overall_BreastCancer_EUR	family history of breast cancer	disease
+Astle_et_al_2016_Sum_neutrophil_eosinophil_counts		EFO:0004842		Astle_et_al_2016_Sum_neutrophil_eosinophil_counts	eosinophil count	
+BCAC_ER_negative_BreastCancer_EUR		EFO:1000650		BCAC_ER_negative_BreastCancer_EUR	estrogen-receptor negative breast cancer	disease
+Astle_et_al_2016_Eosinophil_counts		EFO:0004842		Astle_et_al_2016_Eosinophil_counts	eosinophil count	
+Astle_et_al_2016_Reticulocyte_count		EFO:0007986		Astle_et_al_2016_Reticulocyte_count	reticulocyte count	
+Astle_et_al_2016_Lymphocyte_counts		EFO:0004587		Astle_et_al_2016_Lymphocyte_counts	lymphocyte count	disease
+MAGIC_ln_FastingInsulin		EFO:0004466		MAGIC_ln_FastingInsulin	fasting blood insulin measurement	disease
+IMMUNOBASE_Systemic_lupus_erythematosus_hg19		EFO:0002690		IMMUNOBASE_Systemic_lupus_erythematosus_hg19	systemic lupus erythematosus	disease
+CNCR_Insomnia_all		EFO:0004698		CNCR_Insomnia_all	insomnia	disease
+Astle_et_al_2016_Monocyte_count		EFO:0005091		Astle_et_al_2016_Monocyte_count	monocyte count	
+GEFOS_Forearm		EFO:0003923		GEFOS_Forearm	bone density	disease
+Astle_et_al_2016_Neutrophil_count		EFO:0004833		Astle_et_al_2016_Neutrophil_count	neutrophil count	
+CARDIoGRAM_C4D_CAD_ADDITIVE		EFO:0001645		CARDIoGRAM_C4D_CAD_ADDITIVE	coronary artery disease	disease
+Astle_et_al_2016_White_blood_cell_count		EFO:0004308		Astle_et_al_2016_White_blood_cell_count	leukocyte count	
+IBD.EUR.Ulcerative_Colitis		EFO:0003767		IBD.EUR.Ulcerative_Colitis	inflammatory bowel disease	disease
+IBD.EUR.Crohns_Disease		EFO:0003767		IBD.EUR.Crohns_Disease	inflammatory bowel disease	disease
+Astle_et_al_2016_Myeloid_white_cell_count		EFO:0007988		Astle_et_al_2016_Myeloid_white_cell_count	myeloid white cell count	
+Astle_et_al_2016_Granulocyte_count		EFO:0007987		Astle_et_al_2016_Granulocyte_count	granulocyte count	
+IGAP_Alzheimer		EFO:0000249		IGAP_Alzheimer	alzheimer's disease	disease
+Astle_et_al_2016_Platelet_count		EFO:0004309		Astle_et_al_2016_Platelet_count	platelet count	
+Jones_et_al_2016_SleepDuration		EFO:0005271		Jones_et_al_2016_SleepDuration	sleep duration	
+Astle_et_al_2016_Sum_eosinophil_basophil_counts		EFO:0004842		Astle_et_al_2016_Sum_eosinophil_basophil_counts	eosinophil count	
+ENIGMA_Intracraneal_Volume		EFO:0004886		ENIGMA_Intracraneal_Volume	intracranial volume measurement	
+GIANT_HEIGHT		EFO:0004339		GIANT_HEIGHT	body height	
+EGG_BW3_EUR		EFO:0004344		EGG_BW3_EUR	birth weight	
+Astle_et_al_2016_Sum_basophil_neutrophil_counts		EFO:0004833		Astle_et_al_2016_Sum_basophil_neutrophil_counts	neutrophil count	
+RA_OKADA_TRANS_ETHNIC		EFO:0000685		RA_OKADA_TRANS_ETHNIC	rheumatoid arthritis	disease
+pgc.scz2		EFO:0000692		pgc.scz2	schizophrenia	disease
+PGC_ADHD_EUR_2017		EFO:0003888		PGC_ADHD_EUR_2017	attention deficit hyperactivity disorder	disease
+MAGIC_FastingGlucose		EFO:0004465		MAGIC_FastingGlucose	fasting blood glucose measurement	disease
+Astle_et_al_2016_Red_blood_cell_count		EFO:0004305		Astle_et_al_2016_Red_blood_cell_count	erythrocyte count	
+SSGAC_Depressive_Symptoms		EFO:0007006		SSGAC_Depressive_Symptoms	depressive symptom measurement	disease
+BCAC_ER_positive_BreastCancer_EUR		EFO:1000649		BCAC_ER_positive_BreastCancer_EUR	estrogen-receptor positive breast cancer	disease
+IBD.EUR.Inflammatory_Bowel_Disease		EFO:0003767		IBD.EUR.Inflammatory_Bowel_Disease	inflammatory bowel disease	disease
+Astle_et_al_2016_High_light_scatter_reticulocyte_count		EFO:0007986		Astle_et_al_2016_High_light_scatter_reticulocyte_count	reticulocyte count	

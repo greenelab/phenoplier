@@ -5,6 +5,7 @@ from abc import ABCMeta, abstractmethod
 from enum import Enum, auto
 import re
 from collections import namedtuple
+from pathlib import Path
 
 import pandas as pd
 
@@ -53,6 +54,12 @@ class Trait(object, metaclass=ABCMeta):
     """
 
     EFO_INFO = namedtuple("EfoInfo", ["id", "label"])
+
+    UKB_TO_EFO_MAP_FILE = Path(
+        Path(__file__).parent,
+        "data",
+        conf.PHENOMEXCAN["TRAITS_FULLCODE_TO_EFO_MAP_FILE"].name
+    ).resolve()
 
     def __init__(self, code=None, full_code=None):
         if code is None and full_code is None:
@@ -119,8 +126,10 @@ class Trait(object, metaclass=ABCMeta):
 
     @staticmethod
     def get_traits_to_efo_map_data():
-        return read_data(conf.PHENOMEXCAN["TRAITS_FULLCODE_TO_EFO_MAP_FILE"]).set_index(
-            "ukb_fullcode"
+        return pd.read_csv(
+            Trait.UKB_TO_EFO_MAP_FILE,
+            sep='\t',
+            index_col='ukb_fullcode'
         )
 
     @staticmethod
