@@ -28,6 +28,8 @@
 
 # %% papermill={"duration": 0.382904, "end_time": "2020-12-14T21:24:23.979193", "exception": false, "start_time": "2020-12-14T21:24:23.596289", "status": "completed"} tags=[]
 import re
+from pathlib import Path
+from shutil import copyfile
 
 from IPython.display import display
 import pandas as pd
@@ -466,10 +468,26 @@ assert not _tmp.duplicated().any()
 # %% [markdown] papermill={"duration": 0.041566, "end_time": "2020-12-14T21:24:37.752274", "exception": false, "start_time": "2020-12-14T21:24:37.710708", "status": "completed"} tags=[]
 # # Save
 
+# %% [markdown]
+# ## In main data folder
+
 # %% papermill={"duration": 0.059995, "end_time": "2020-12-14T21:24:37.853320", "exception": false, "start_time": "2020-12-14T21:24:37.793325", "status": "completed"} tags=[]
 outfile = conf.PHENOMEXCAN["TRAITS_FULLCODE_TO_EFO_MAP_FILE"]
 display(outfile)
 
 ukb_to_efo.to_csv(outfile, sep="\t", index=False)
 
+# %% [markdown]
+# ## In libs/data folder
+
+# %% [markdown]
+# Since this file (`outfile`) is used by the Trait class to return EFO codes/labels for PhenomeXcan traits, it is copied also to a source code folder and it is supposed to be versioned.
+
+# %%
+display(Trait.UKB_TO_EFO_MAP_FILE)
+
 # %% papermill={"duration": 0.041717, "end_time": "2020-12-14T21:24:37.936675", "exception": false, "start_time": "2020-12-14T21:24:37.894958", "status": "completed"} tags=[]
+copyfile(
+    outfile,
+    Trait.UKB_TO_EFO_MAP_FILE,
+)
