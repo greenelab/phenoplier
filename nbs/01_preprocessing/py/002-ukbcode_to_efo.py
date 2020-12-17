@@ -325,6 +325,7 @@ def _add_term_labels(row):
 
     return " AND ".join(labels)
 
+
 # %% [markdown]
 # ## Apply
 
