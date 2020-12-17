@@ -28,13 +28,13 @@
 
 # %% papermill={"duration": 0.190401, "end_time": "2020-12-14T21:31:30.067170", "exception": false, "start_time": "2020-12-14T21:31:29.876769", "status": "completed"} tags=[]
 from pathlib import Path
-import pickle
 
-import numpy as np
+from IPython.display import display
 import pandas as pd
 
 import conf
 from data.cache import read_data
+from multiplier import MultiplierProjection
 
 # %% [markdown] papermill={"duration": 0.012328, "end_time": "2020-12-14T21:31:30.092521", "exception": false, "start_time": "2020-12-14T21:31:30.080193", "status": "completed"} tags=[]
 # # Settings
@@ -122,9 +122,6 @@ smultixcan_results.shape
 
 # %% [markdown] papermill={"duration": 0.015047, "end_time": "2020-12-14T21:31:31.737171", "exception": false, "start_time": "2020-12-14T21:31:31.722124", "status": "completed"} tags=[]
 # # Project S-MultiXcan data into MultiPLIER latent space
-
-# %% papermill={"duration": 0.024402, "end_time": "2020-12-14T21:31:31.776644", "exception": false, "start_time": "2020-12-14T21:31:31.752242", "status": "completed"} tags=[]
-from multiplier import MultiplierProjection
 
 # %% papermill={"duration": 0.024302, "end_time": "2020-12-14T21:31:31.815949", "exception": false, "start_time": "2020-12-14T21:31:31.791647", "status": "completed"} tags=[]
 mproj = MultiplierProjection()

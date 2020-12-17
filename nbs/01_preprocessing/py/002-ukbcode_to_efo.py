@@ -27,7 +27,11 @@
 # %autoreload 2
 
 # %% papermill={"duration": 0.382904, "end_time": "2020-12-14T21:24:23.979193", "exception": false, "start_time": "2020-12-14T21:24:23.596289", "status": "completed"} tags=[]
+import re
+
+from IPython.display import display
 import pandas as pd
+import obonet
 
 import conf
 from data.cache import read_data
@@ -63,9 +67,6 @@ def is_disease(graph, node):
 
 # %% [markdown] papermill={"duration": 0.030818, "end_time": "2020-12-14T21:24:24.178525", "exception": false, "start_time": "2020-12-14T21:24:24.147707", "status": "completed"} tags=[]
 # # Load EFO Ontology
-
-# %% papermill={"duration": 0.21541, "end_time": "2020-12-14T21:24:24.424283", "exception": false, "start_time": "2020-12-14T21:24:24.208873", "status": "completed"} tags=[]
-import obonet
 
 # %% papermill={"duration": 4.790495, "end_time": "2020-12-14T21:24:29.248624", "exception": false, "start_time": "2020-12-14T21:24:24.458129", "status": "completed"} tags=[]
 url = conf.GENERAL["EFO_ONTOLOGY_OBO_FILE"]
@@ -297,9 +298,7 @@ assert term_id_to_label[new_efo_code] == "autoimmune bullous skin disease"
 # # Add new EFO label
 
 # %% papermill={"duration": 0.049529, "end_time": "2020-12-14T21:24:34.845247", "exception": false, "start_time": "2020-12-14T21:24:34.795718", "status": "completed"} tags=[]
-import re
-
-term_pattern = re.compile("\w+:\w+")
+term_pattern = re.compile(r"\w+:\w+")
 
 
 def _add_term_labels(row):
@@ -326,7 +325,6 @@ def _add_term_labels(row):
 
     return " AND ".join(labels)
 
-
 # %% papermill={"duration": 0.093161, "end_time": "2020-12-14T21:24:35.168464", "exception": false, "start_time": "2020-12-14T21:24:35.075303", "status": "completed"} tags=[]
 ukb_to_efo = ukb_to_efo.assign(
     current_term_label=ukb_to_efo.apply(_add_term_labels, axis=1)
@@ -351,7 +349,6 @@ def _get_disease_category(row):
 
     matches = term_pattern.findall(term_ids)
 
-    labels = []
     for m in matches:
         if is_disease(graph, m):
             return "disease"

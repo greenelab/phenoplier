@@ -31,6 +31,7 @@
 # %% papermill={"duration": 0.425798, "end_time": "2020-12-11T19:38:19.946829", "exception": false, "start_time": "2020-12-11T19:38:19.521031", "status": "completed"} tags=[]
 from pathlib import Path
 
+from IPython.display import display
 import pandas as pd
 
 import rpy2.robjects as ro

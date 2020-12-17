@@ -16,8 +16,8 @@
 # %% [markdown] papermill={"duration": 0.012236, "end_time": "2020-12-11T20:14:35.703942", "exception": false, "start_time": "2020-12-11T20:14:35.691706", "status": "completed"} tags=[]
 # # Description
 
-# %% [markdown] papermill={"duration": 0.01028, "end_time": "2020-12-11T20:14:35.724793", "exception": false, "start_time": "2020-12-11T20:14:35.714513", "status": "completed"} tags=[]
-# For this projection, this notebook takes **ALL non-zero gene loadings** from each latent variable (LV) in the MultiPLIER model.
+# %% [markdown]
+# It projects the PhenomeXcan results into the MultiPLIER latent space.
 
 # %% [markdown] papermill={"duration": 0.011233, "end_time": "2020-12-11T20:14:35.746265", "exception": false, "start_time": "2020-12-11T20:14:35.735032", "status": "completed"} tags=[]
 # # Modules loading
@@ -29,11 +29,12 @@
 # %% papermill={"duration": 0.297222, "end_time": "2020-12-11T20:14:36.087015", "exception": false, "start_time": "2020-12-11T20:14:35.789793", "status": "completed"} tags=[]
 from pathlib import Path
 
-import pandas as pd
 from IPython.display import display
+import pandas as pd
 
 import conf
 from data.cache import read_data
+from multiplier import MultiplierProjection
 
 # %% [markdown] papermill={"duration": 0.018339, "end_time": "2020-12-11T20:14:36.124493", "exception": false, "start_time": "2020-12-11T20:14:36.106154", "status": "completed"} tags=[]
 # # Settings
@@ -113,9 +114,6 @@ smultixcan_results.shape
 
 # %% [markdown] papermill={"duration": 0.014189, "end_time": "2020-12-11T20:14:41.453568", "exception": false, "start_time": "2020-12-11T20:14:41.439379", "status": "completed"} tags=[]
 # # Project S-MultiXcan data into MultiPLIER latent space
-
-# %% papermill={"duration": 0.028271, "end_time": "2020-12-11T20:14:41.496232", "exception": false, "start_time": "2020-12-11T20:14:41.467961", "status": "completed"} tags=[]
-from multiplier import MultiplierProjection
 
 # %% papermill={"duration": 0.023353, "end_time": "2020-12-11T20:14:41.533964", "exception": false, "start_time": "2020-12-11T20:14:41.510611", "status": "completed"} tags=[]
 mproj = MultiplierProjection()

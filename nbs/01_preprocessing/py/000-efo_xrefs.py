@@ -29,8 +29,8 @@
 # %% papermill={"duration": 0.36795, "end_time": "2020-12-14T21:24:14.845672", "exception": false, "start_time": "2020-12-14T21:24:14.477722", "status": "completed"} tags=[]
 from collections import defaultdict
 
+from IPython.display import display
 import pandas as pd
-import networkx
 import obonet
 
 import conf

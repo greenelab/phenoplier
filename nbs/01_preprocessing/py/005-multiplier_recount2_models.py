@@ -86,7 +86,8 @@ assert multiplier_model_matrix_df.shape == (2157, 5)
 multiplier_model_matrix_df.head()
 
 # %% papermill={"duration": 0.054884, "end_time": "2020-12-11T19:39:15.241390", "exception": false, "start_time": "2020-12-11T19:39:15.186506", "status": "completed"} tags=[]
-to_scinum = lambda x: np.format_float_scientific(x, 6)
+def to_scinum(x):
+    return np.format_float_scientific(x, 6)
 
 # make sure I'm seeing the same when loaded with R
 _tmp = multiplier_model_matrix_df.set_index(["pathway", "LV index"])

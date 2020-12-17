@@ -27,6 +27,7 @@
 # %autoreload 2
 
 # %% papermill={"duration": 0.36702, "end_time": "2020-12-14T21:24:40.187800", "exception": false, "start_time": "2020-12-14T21:24:39.820780", "status": "completed"} tags=[]
+from IPython.display import display
 import numpy as np
 import pandas as pd
 
