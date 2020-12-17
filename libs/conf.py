@@ -10,8 +10,8 @@ from pathlib import Path
 
 import settings
 
-# IMPORTANT: for variables or dictionary keys pointing to a directory, add the _DIR
-# suffix to make sure the directory is created during setup.
+# IMPORTANT: for variables or dictionary keys pointing to a directory,
+# add the _DIR suffix to make sure the directory is created during setup.
 
 #
 # PhenoPLIER, general file structure
