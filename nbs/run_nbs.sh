@@ -34,5 +34,5 @@ else
 fi
 
 if [ "${PHENOPLIER_RUN_NBS_NO_JUPYTEXT}" != "1" ]; then
-  bash ../scripts/convert_ipynb_to_py ${1}
+  bash ../scripts/convert_ipynb_to_py.sh ${1}
 fi
