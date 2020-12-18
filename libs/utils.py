@@ -56,7 +56,7 @@ def curl(url: str, output_file: str, md5hash: str = None, logger=None):
         md5hash: expected MD5 hash of file to download.
         logger: Logger instance.
     """
-    logger = logger or get_logger('none')
+    logger = logger or get_logger("none")
 
     if Path(output_file).exists() and (
         md5hash is None or md5_matches(md5hash, output_file)

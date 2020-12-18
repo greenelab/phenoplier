@@ -206,7 +206,14 @@ def download_multiplier_banchereau_mcp_neutrophils(**kwargs):
     )
 
 
-def _get_file_from_zip(zip_file_url, zip_file_path, zip_file_md5, zip_internal_filename, output_file, output_file_md5):
+def _get_file_from_zip(
+    zip_file_url,
+    zip_file_path,
+    zip_file_md5,
+    zip_internal_filename,
+    output_file,
+    output_file_md5,
+):
     """
     This method downloads a zip file and extracts a particular file inside
     it.
@@ -265,14 +272,10 @@ def download_multiplier_recount2_model(**kwargs):
     _get_file_from_zip(
         zip_file_url="https://ndownloader.figshare.com/files/10881866",
         zip_file_path=Path(
-            conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent,
-            "recount2_PLIER_data.zip"
+            conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent, "recount2_PLIER_data.zip"
         ).resolve(),
         zip_file_md5="f084992c5d91817820a2782c9441b9f6",
-        zip_internal_filename=Path(
-            "recount2_PLIER_data",
-            "recount_PLIER_model.RDS"
-        ),
+        zip_internal_filename=Path("recount2_PLIER_data", "recount_PLIER_model.RDS"),
         output_file=conf.MULTIPLIER["RECOUNT2_MODEL_FILE"],
         output_file_md5="fc7446ff989d0bd0f1aae1851d192dc6",
     )
@@ -285,13 +288,11 @@ def download_multiplier_recount2_data(**kwargs):
     _get_file_from_zip(
         zip_file_url="https://ndownloader.figshare.com/files/10881866",
         zip_file_path=Path(
-            conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent,
-            "recount2_PLIER_data.zip"
+            conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent, "recount2_PLIER_data.zip"
         ).resolve(),
         zip_file_md5="f084992c5d91817820a2782c9441b9f6",
         zip_internal_filename=Path(
-            "recount2_PLIER_data",
-            "recount_data_prep_PLIER.RDS"
+            "recount2_PLIER_data", "recount_data_prep_PLIER.RDS"
         ),
         output_file=conf.RECOUNT2["PREPROCESSED_GENE_EXPRESSION_FILE"],
         output_file_md5="4f806e06069fd339f8fcff7c98cecff0",
@@ -330,13 +331,13 @@ if __name__ == "__main__":
         choices=list(AVAILABLE_ACTIONS.keys()),
         default="light",
         help="Specifies which kind of data should be downloaded. It "
-             "could be all the data (full) or a small subset (light, which is "
-             "used by default).",
+        "could be all the data (full) or a small subset (light, which is "
+        "used by default).",
     )
     parser.add_argument(
         "--action",
         help="Specifies a single action to be executed. It could be any of "
-             "the following: " + ' '.join(AVAILABLE_ACTIONS["full"].keys()),
+        "the following: " + " ".join(AVAILABLE_ACTIONS["full"].keys()),
     )
     args = parser.parse_args()
 
@@ -348,12 +349,13 @@ if __name__ == "__main__":
     methods_to_run = {}
 
     if args.action is not None:
-        if args.action not in AVAILABLE_ACTIONS['full']:
+        if args.action not in AVAILABLE_ACTIONS["full"]:
             import sys
+
             logger.error(f"The action does not exist: {args.action}")
             sys.exit(1)
 
-        methods_to_run[args.action] = AVAILABLE_ACTIONS['full'][args.action]
+        methods_to_run[args.action] = AVAILABLE_ACTIONS["full"][args.action]
     else:
         methods_to_run = AVAILABLE_ACTIONS[args.mode]
 
