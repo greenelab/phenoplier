@@ -33,7 +33,8 @@ the necessary data.
 
 The code to preprocess data and generate results is in the `nbs/` folder. All
 notebooks are organized by directories, such as `01_preprocessing`, with file
-names that indicate the order in which they should be run. For example, to run
+names that indicate the order in which they should be run (if they share the prefix, then it
+means they can be run in parallel). For example, to run
 all notebooks for the preprocessing step, you can use this command (requires
 [GNU Parallel](https://www.gnu.org/software/parallel/)):
 
