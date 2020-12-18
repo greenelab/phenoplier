@@ -1,6 +1,7 @@
 # PhenoPLIER
 
 ![tests](https://github.com/greenelab/phenoplier/workflows/tests/badge.svg)
+![lint](https://github.com/greenelab/phenoplier/workflows/lint/badge.svg)
 
 Transcriptome-wide association studies (TWAS) allow to compute a gene-based
 association by imputing the genetically regulated gene expression and then
