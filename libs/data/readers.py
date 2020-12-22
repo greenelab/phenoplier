@@ -34,6 +34,8 @@ def read_tsv(file_path: str, **kwargs):
     Returns:
 
     """
+    kwargs.pop("sep", None)
+
     return lambda: pd.read_csv(
         file_path,
         sep="\t",

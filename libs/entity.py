@@ -54,12 +54,23 @@ class Trait(object, metaclass=ABCMeta):
         the trait.
     """
 
-    EFO_INFO = namedtuple("EfoInfo", ["id", "label"])
+    MAP_INFO = namedtuple("EfoInfo", ["id", "label"])
 
     UKB_TO_EFO_MAP_FILE = Path(
         Path(__file__).parent,
         "data",
         conf.PHENOMEXCAN["TRAITS_FULLCODE_TO_EFO_MAP_FILE"].name,
+    ).resolve()
+
+    EFO_XREFS_FILE = Path(
+        Path(__file__).parent,
+        "data",
+        conf.GENERAL["TERM_ID_XREFS_FILE"].name,
+    ).resolve()
+
+    DO_XREFS_FILE = Path(
+        Path(__file__).parent,
+        "data", "xrefs-prop-slim.tsv"
     ).resolve()
 
     def __init__(self, code=None, full_code=None):
@@ -123,12 +134,58 @@ class Trait(object, metaclass=ABCMeta):
             assert label.shape[0] == 1
             label = label[0]
 
-        return self.EFO_INFO(id=efo_code, label=label)
+        return self.MAP_INFO(id=efo_code, label=label)
+
+    def get_do_info(self, mapping_type=None):
+        efo_info = self.get_efo_info(mapping_type=mapping_type)
+        if efo_info is None:
+            return None
+
+        efo_id_part = efo_info.id[4:]
+
+        efo_xrefs_data = self.get_efo_xrefs_data()
+        efo_xrefs_data = efo_xrefs_data[
+            (efo_xrefs_data['term_id'] == efo_info.id) &
+            (efo_xrefs_data['target_id_type'] == "DOID")
+        ]['target_id']
+
+        do_xrefs_data = self.get_do_xrefs_data()
+        do_xrefs_data = do_xrefs_data[
+            (do_xrefs_data['resource'] == "EFO") &
+            (do_xrefs_data['resource_id'] == efo_id_part)
+        ]['doid_code']
+
+        doid_maps = set(efo_xrefs_data.values).union(set(do_xrefs_data.values))
+
+        if len(doid_maps) == 0:
+            return None
+        # if efo_info.id not in efo_xrefs_data.index:
+        #     return None
+
+        # efo_xrefs = efo_xrefs_data.loc[[efo_info.id]]
+        # efo_doid_map = efo_xrefs[efo_xrefs['target_id_type'] == 'DOID']
+        # if efo_doid_map.shape[0] == 0:
+        #     return None
+
+        return self.MAP_INFO(id=list(doid_maps), label=None)
+
+    @staticmethod
+    def get_efo_xrefs_data():
+        return read_data(
+            # Trait.EFO_XREFS_FILE, sep="\t", index_col="term_id"
+            Trait.EFO_XREFS_FILE, sep="\t"
+        )
+
+    @staticmethod
+    def get_do_xrefs_data():
+        return read_data(
+            Trait.DO_XREFS_FILE, sep="\t"
+        )
 
     @staticmethod
     @lru_cache(maxsize=None)
     def get_traits_to_efo_map_data():
-        return pd.read_csv(
+        return read_data(
             Trait.UKB_TO_EFO_MAP_FILE, sep="\t", index_col="ukb_fullcode"
         )
 
