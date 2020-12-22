@@ -51,6 +51,16 @@ OUTPUT_DATA_DIR = Path(OUTPUT_DIR, "data")
 display(OUTPUT_DATA_DIR)
 OUTPUT_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
+# %%
+OUTPUT_RAW_DATA_DIR = Path(OUTPUT_DATA_DIR, "raw")
+display(OUTPUT_RAW_DATA_DIR)
+OUTPUT_RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+# %%
+OUTPUT_PROJ_DATA_DIR = Path(OUTPUT_DATA_DIR, "proj")
+display(OUTPUT_PROJ_DATA_DIR)
+OUTPUT_PROJ_DATA_DIR.mkdir(parents=True, exist_ok=True)
+
 # %% [markdown]
 # # Load LINCS consensi drugbank (Daniel)
 
@@ -166,8 +176,8 @@ assert not lincs_data.isna().any().any()
 
 # %%
 output_file = Path(
-    OUTPUT_DATA_DIR,
-    "lincs_data.pkl"
+    OUTPUT_RAW_DATA_DIR,
+    "lincs-data.pkl"
 ).resolve()
 display(output_file)
 
@@ -197,8 +207,8 @@ lincs_projection.head()
 
 # %%
 output_file = Path(
-    OUTPUT_DATA_DIR,
-    "lincs_data_projection.pkl"
+    OUTPUT_PROJ_DATA_DIR,
+    "lincs-projection.pkl"
 ).resolve()
 display(output_file)
 
