@@ -16,11 +16,8 @@
 # %% [markdown] papermill={"duration": 0.044577, "end_time": "2020-12-18T22:38:21.345879", "exception": false, "start_time": "2020-12-18T22:38:21.301302", "status": "completed"} tags=[]
 # # Description
 
-# %% [markdown] papermill={"duration": 0.012468, "end_time": "2020-12-18T22:38:21.374713", "exception": false, "start_time": "2020-12-18T22:38:21.362245", "status": "completed"} tags=[]
-# **TODO:** revise
-
 # %% [markdown] papermill={"duration": 0.011764, "end_time": "2020-12-18T22:38:21.398073", "exception": false, "start_time": "2020-12-18T22:38:21.386309", "status": "completed"} tags=[]
-# It computes a single matrix all traits and genes in PhenomeXcan using S-PrediXcan results, which have direction of effect (in contrast to S-MultiXcan results). For each gene-trait pair, it takes the most significant result across all tissues.
+# It computes a single matrix with all traits and genes in PhenomeXcan using S-PrediXcan results, which have direction of effect (in contrast to S-MultiXcan results). For each gene-trait pair, it takes the most significant result across all tissues.
 
 # %% [markdown] papermill={"duration": 0.011799, "end_time": "2020-12-18T22:38:21.422136", "exception": false, "start_time": "2020-12-18T22:38:21.410337", "status": "completed"} tags=[]
 # # Modules loading
