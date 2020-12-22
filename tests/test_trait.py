@@ -222,3 +222,52 @@ def test_ukb_trait_efo(trait_code, efo_code, efo_name):
     trait_efo_info = trait.get_efo_info()
     assert trait_efo_info.id == efo_code
     assert trait_efo_info.label == efo_name
+
+
+@pytest.mark.parametrize(
+    "trait_code",
+    [
+        "50_raw",
+        "49_raw",
+    ],
+)
+def test_ukb_trait_efo_not_mapped(trait_code):
+    trait = Trait.get_trait(code=trait_code)
+    trait_efo_info = trait.get_efo_info()
+    assert trait_efo_info is None
+
+
+@pytest.mark.parametrize(
+    "trait_code,do_id,do_name",
+    [
+        ("20002_1111", "DOID:2841", "asthma"),
+        ("22127", "DOID:2841", "asthma"),
+        ("J45", "DOID:2841", "asthma"),
+        ("20002_1065", "DOID:10763", "hypertension"),
+        ("20002_1440", "DOID:399", "tuberculosis"),
+    ],
+)
+def test_ukb_trait_do(trait_code, do_id, do_name):
+    trait = Trait.get_trait(code=trait_code)
+    trait_do_info = trait.get_do_info()
+    assert isinstance(trait_do_info.id, list)
+    assert len(trait_do_info.id) == 1
+    assert trait_do_info.id[0] == do_id
+    # FIXME: not adding labels for DO for now, but should be included later
+    # assert trait_do_info.label == do_name
+
+
+@pytest.mark.parametrize(
+    "trait_code",
+    [
+        "50_raw",
+        "49_raw",
+        "K10"
+    ],
+)
+def test_ukb_trait_do_not_mapped(trait_code):
+    trait = Trait.get_trait(code=trait_code)
+    trait_do_info = trait.get_do_info()
+    assert trait_do_info is None
+    # FIXME: not adding labels for DO for now, but should be included later
+    # assert trait_do_info.label == do_name
