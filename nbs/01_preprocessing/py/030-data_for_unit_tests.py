@@ -51,7 +51,7 @@ smultixcan_zscores.head()
 # # Save slices of data for unit testing
 
 # %% papermill={"duration": 0.037367, "end_time": "2020-12-14T21:24:40.624901", "exception": false, "start_time": "2020-12-14T21:24:40.587534", "status": "completed"} tags=[]
-smultixcan_zscores.columns[smultixcan_zscores.columns.str.lower().str.contains("22137")]
+smultixcan_zscores.columns[smultixcan_zscores.columns.str.lower().str.contains("20002_1499")]
 
 # %% papermill={"duration": 0.557081, "end_time": "2020-12-14T21:24:41.222794", "exception": false, "start_time": "2020-12-14T21:24:40.665713", "status": "completed"} tags=[]
 phenomexcan_fullcode_to_traits = [
@@ -73,6 +73,8 @@ phenomexcan_fullcode_to_traits = [
     # tuberculosis    Orphanet_3389
     "20002_1440-Noncancer_illness_code_selfreported_tuberculosis_tb",
     "22137-Doctor_diagnosed_tuberculosis",
+    # labyrinthitis   EFO_0009604 -> this one maps to several DOID: DOID:3930, DOID:1468
+    "20002_1499-Noncancer_illness_code_selfreported_labyrinthitis", 
 ]
 
 # %%

@@ -1,4 +1,7 @@
+from pathlib import Path
+
 import pytest
+import numpy as np
 import pandas as pd
 
 from entity import Trait, UKBiobankTrait, Study, GTEXGWASTrait
@@ -271,3 +274,147 @@ def test_ukb_trait_do_not_mapped(trait_code):
     assert trait_do_info is None
     # FIXME: not adding labels for DO for now, but should be included later
     # assert trait_do_info.label == do_name
+
+
+def test_map_to_doid_simple():
+    data = pd.read_pickle(Path(
+        Path(__file__).parent,
+        "test_cases",
+        "smultixcan_zscores",
+        "smultixcan-slice01.pkl"
+    ))
+
+    # select traits
+    data = data[[
+        # asthma  EFO_0000270
+        "20002_1111-Noncancer_illness_code_selfreported_asthma",
+        "22127-Doctor_diagnosed_asthma",
+        "J45-Diagnoses_main_ICD10_J45_Asthma",
+        # hypertension    EFO_0000537
+        "20002_1065-Noncancer_illness_code_selfreported_hypertension",
+    ]]
+
+    data_mapped = Trait.map_to_doid(data)
+
+    assert data_mapped.shape == data.shape
+    assert data_mapped.index.equals(data.index)
+
+    assert not data_mapped.columns.equals(data.columns)
+    assert data_mapped.columns.tolist() == [
+        "DOID:2841", "DOID:2841", "DOID:2841", "DOID:10763"
+    ]
+
+    np.testing.assert_array_equal(data.values, data_mapped.values)
+
+
+def test_map_to_doid_using_preferred_doid_list():
+    data = pd.read_pickle(Path(
+        Path(__file__).parent,
+        "test_cases",
+        "smultixcan_zscores",
+        "smultixcan-slice01.pkl"
+    ))
+
+    # select traits
+    data = data[[
+        # asthma  EFO_0000270
+        "20002_1111-Noncancer_illness_code_selfreported_asthma",
+        "22127-Doctor_diagnosed_asthma",
+        "J45-Diagnoses_main_ICD10_J45_Asthma",
+        # labyrinthitis   EFO_0009604 -> this one maps to several DOID: DOID:3930, DOID:1468
+        "20002_1499-Noncancer_illness_code_selfreported_labyrinthitis",
+    ]]
+
+    # using first DOID
+    data_mapped = Trait.map_to_doid(data, preferred_doid_list=["DOID:3930"])
+
+    assert data_mapped.shape == data.shape
+    assert data_mapped.index.equals(data.index)
+
+    assert not data_mapped.columns.equals(data.columns)
+    assert data_mapped.columns.tolist() == [
+        "DOID:2841", "DOID:2841", "DOID:2841", "DOID:3930"
+    ]
+
+    np.testing.assert_array_equal(data.values, data_mapped.values)
+
+    # using second DOID
+    data_mapped = Trait.map_to_doid(data, preferred_doid_list=["DOID:1468"])
+
+    assert data_mapped.shape == data.shape
+    assert data_mapped.index.equals(data.index)
+
+    assert not data_mapped.columns.equals(data.columns)
+    assert data_mapped.columns.tolist() == [
+        "DOID:2841", "DOID:2841", "DOID:2841", "DOID:1468"
+    ]
+
+    np.testing.assert_array_equal(data.values, data_mapped.values)
+
+
+def test_map_to_doid_simple_combine_max():
+    data = pd.read_pickle(Path(
+        Path(__file__).parent,
+        "test_cases",
+        "smultixcan_zscores",
+        "smultixcan-slice01.pkl"
+    ))
+
+    # select traits
+    data = data[[
+        # asthma  EFO_0000270
+        "20002_1111-Noncancer_illness_code_selfreported_asthma",
+        "22127-Doctor_diagnosed_asthma",
+        "J45-Diagnoses_main_ICD10_J45_Asthma",
+        # hypertension    EFO_0000537
+        "20002_1065-Noncancer_illness_code_selfreported_hypertension",
+    ]]
+
+    data_mapped = Trait.map_to_doid(data, combine="max")
+
+    assert data_mapped.shape == (data.shape[0], 2)
+    assert data_mapped.index.equals(data.index)
+
+    assert not data_mapped.columns.equals(data.columns)
+    assert set(data_mapped.columns) == set([
+        "DOID:2841", "DOID:10763"
+    ])
+
+    assert data_mapped.loc["ENSG00000242715", "DOID:2841"].round(6) == 0.659602
+    assert data_mapped.loc["ENSG00000237567", "DOID:2841"].round(6) == 1.292931
+    assert data_mapped.loc["ENSG00000205643", "DOID:10763"].round(6) == 0.283507
+    assert data_mapped.loc["ENSG00000229722", "DOID:10763"].round(6) == 0.694461
+
+
+def test_map_to_doid_some_non_existent():
+    data = pd.read_pickle(Path(
+        Path(__file__).parent,
+        "test_cases",
+        "smultixcan_zscores",
+        "smultixcan-slice01.pkl"
+    ))
+
+    # select traits
+    data = data[[
+        # preeclampsia    EFO_0000668
+        "O16-Diagnoses_main_ICD10_O16_Unspecified_maternal_hypertension",
+        "O14-Diagnoses_main_ICD10_O14_Gestational_pregnancyinduced_hypertension_with_significant_proteinuria",
+        # Traits not mapped to DOID
+        "50_raw-Standing_height",
+        "20096_1-Size_of_red_wine_glass_drunk_small_125ml",
+    ]]
+
+    data_mapped = Trait.map_to_doid(data)
+
+    assert data_mapped.shape == (data.shape[0], 2)
+    assert data_mapped.index.equals(data.index)
+
+    assert not data_mapped.columns.equals(data.columns)
+    assert data_mapped.columns.tolist() == [
+        "DOID:10591", "DOID:10591"
+    ]
+
+    np.testing.assert_array_equal(
+        data.iloc[:, 0:2].values,
+        data_mapped.iloc[:, 0:2].values
+    )
