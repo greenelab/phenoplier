@@ -147,15 +147,16 @@ class Trait(object, metaclass=ABCMeta):
         efo_xrefs_data = efo_xrefs_data[
             (efo_xrefs_data['term_id'] == efo_info.id) &
             (efo_xrefs_data['target_id_type'] == "DOID")
-        ]['target_id']
+        ]['target_id'].values
+        # efo_xrefs_data = set()
 
         do_xrefs_data = self.get_do_xrefs_data()
         do_xrefs_data = do_xrefs_data[
             (do_xrefs_data['resource'] == "EFO") &
             (do_xrefs_data['resource_id'] == efo_id_part)
-        ]['doid_code']
+        ]['doid_code'].values
 
-        doid_maps = set(efo_xrefs_data.values).union(set(do_xrefs_data.values))
+        doid_maps = set(efo_xrefs_data).union(set(do_xrefs_data))
 
         if len(doid_maps) == 0:
             return None
@@ -168,6 +169,20 @@ class Trait(object, metaclass=ABCMeta):
         #     return None
 
         return self.MAP_INFO(id=list(doid_maps), label=None)
+
+    def get_plain_name(self):
+        """Returns the plain name of the trait, which coincides with the full
+        code."""
+        if self.study in (Study.GTEX_GWAS,):
+            return self.code
+
+        if not pd.isnull(self.description):
+            return f"{self.code}-{self._simplify_trait_name(self.description)}"
+        else:
+            return self.code
+
+    def __repr__(self):
+        return self.get_plain_name()
 
     @staticmethod
     def get_efo_xrefs_data():
@@ -315,19 +330,56 @@ class Trait(object, metaclass=ABCMeta):
 
         return s
 
-    def get_plain_name(self):
-        """Returns the plain name of the trait, which coincides with the full
-        code."""
-        if self.study in (Study.GTEX_GWAS,):
-            return self.code
+    @staticmethod
+    def _select_doid(doids: list, preferred_doid_list: set):
+        """
+        TODO: FINISH/complete
 
-        if not pd.isnull(self.description):
-            return f"{self.code}-{self._simplify_trait_name(self.description)}"
-        else:
-            return self.code
+        It takes a list of Disease Ontology IDs, and returns the first one that
+        appears in a preferred DOID list (such as those present in the gold standard).
+        If none in the list is there, return the first one.
+        """
+        for doid in doids:
+            if doid in preferred_doid_list:
+                return doid
 
-    def __repr__(self):
-        return self.get_plain_name()
+        return doids[0]
+
+    @staticmethod
+    def map_to_doid(
+            data: pd.DataFrame,
+            preferred_doid_list: set = None,
+            combine: str = None,
+    ) -> pd.DataFrame:
+        """
+        TODO: complete
+
+        Args:
+            data: columns should have the traits list
+            preferred_doid_list:
+            combine:
+
+        Returns:
+
+        """
+        if preferred_doid_list is None:
+            preferred_doid_list = set()
+
+        traits_full_code_to_do_map = {
+            fc: Trait._select_doid(t.get_do_info().id, preferred_doid_list)
+            for fc in data.columns
+            if (t := Trait.get_trait(full_code=fc)).get_do_info() is not None
+        }
+
+        data_mapped = data.loc[
+            :, data.columns.isin(traits_full_code_to_do_map.keys())
+        ].rename(columns=traits_full_code_to_do_map)
+
+        if combine == 'max':
+            data_mapped = data_mapped.groupby(data_mapped.columns, axis=1).max()
+            assert data_mapped.columns.is_unique, "Columns not unique"
+
+        return data_mapped
 
 
 class UKBiobankTrait(Trait):
