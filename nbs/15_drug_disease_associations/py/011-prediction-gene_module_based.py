@@ -27,15 +27,19 @@
 # %autoreload 2
 
 # %% papermill={"duration": 0.192251, "end_time": "2020-12-18T22:38:21.659996", "exception": false, "start_time": "2020-12-18T22:38:21.467745", "status": "completed"} tags=[]
+from IPython.display import display
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 import conf
 
 # %% [markdown] papermill={"duration": 0.011416, "end_time": "2020-12-18T22:38:21.683356", "exception": false, "start_time": "2020-12-18T22:38:21.671940", "status": "completed"} tags=[]
 # # Settings
+
+# %%
+# if True, then it doesn't check if result files already exist and runs everything again
+FORCE_RUN = False
 
 # %%
 PREDICTION_METHOD = "Module-based"
@@ -46,19 +50,18 @@ display(OUTPUT_DIR)
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # %%
-OUTPUT_DATA_DIR = Path(OUTPUT_DIR, "data")
-display(OUTPUT_DATA_DIR)
-OUTPUT_DATA_DIR.mkdir(parents=True, exist_ok=True)
+# OUTPUT_DATA_DIR = Path(OUTPUT_DIR, "data")
+# display(OUTPUT_DATA_DIR)
+# OUTPUT_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # %%
-OUTPUT_RAW_DATA_DIR = Path(OUTPUT_DATA_DIR, "raw")
-display(OUTPUT_RAW_DATA_DIR)
-OUTPUT_RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-# %%
-OUTPUT_PROJ_DATA_DIR = Path(OUTPUT_DATA_DIR, "proj")
-display(OUTPUT_PROJ_DATA_DIR)
-OUTPUT_PROJ_DATA_DIR.mkdir(parents=True, exist_ok=True)
+INPUT_DATA_DIR = Path(
+    OUTPUT_DIR,
+    "data",
+    "proj",
+)
+display(INPUT_DATA_DIR)
+INPUT_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # %%
 OUTPUT_PREDICTIONS_DIR = Path(OUTPUT_DIR, "predictions")
@@ -74,10 +77,10 @@ gold_standard = pd.read_pickle(
 )
 
 # %%
-gold_standard.shape
+display(gold_standard.shape)
 
 # %%
-gold_standard.head()
+display(gold_standard.head())
 
 # %%
 doids_in_gold_standard = set(gold_standard["trait"])
@@ -89,8 +92,7 @@ doids_in_gold_standard = set(gold_standard["trait"])
 # ## Projected data
 
 # %%
-# TODO: hardcoded
-input_file = Path(OUTPUT_PROJ_DATA_DIR, "lincs-projection.pkl").resolve()
+input_file = Path(INPUT_DATA_DIR, "lincs-projection.pkl").resolve()
 
 display(input_file)
 
@@ -98,10 +100,10 @@ display(input_file)
 lincs_projection = pd.read_pickle(input_file)
 
 # %%
-lincs_projection.shape
+display(lincs_projection.shape)
 
 # %%
-lincs_projection.head()
+display(lincs_projection.head())
 
 # %% [markdown]
 # # Load S-PrediXcan
@@ -112,7 +114,7 @@ from entity import Trait
 # %%
 phenomexcan_input_file_list = [
     f
-    for f in OUTPUT_PROJ_DATA_DIR.glob("*.pkl")
+    for f in INPUT_DATA_DIR.glob("*.pkl")
     if f.name.startswith(("smultixcan-", "spredixcan-"))
 ]
 
@@ -123,6 +125,9 @@ display(len(phenomexcan_input_file_list))
 # # Predict drug-disease associations
 
 # %%
+from drug_disease import predict_dotprod, predict_dotprod_neg
+
+# %%
 for phenomexcan_input_file in phenomexcan_input_file_list:
     print(phenomexcan_input_file.name)
 
@@ -130,43 +135,26 @@ for phenomexcan_input_file in phenomexcan_input_file_list:
     phenomexcan_projection = pd.read_pickle(phenomexcan_input_file)
     print(f"  shape: {phenomexcan_projection.shape}")
 
-    # prediction
-    print(f"  predicting...")
-    drug_disease_assocs = lincs_projection.T.dot(phenomexcan_projection)
-    print(f"    shape: {drug_disease_assocs.shape}")
-    drug_disease_assocs = Trait.map_to_doid(
-        drug_disease_assocs, doids_in_gold_standard, combine="max"
+    predict_dotprod(
+        lincs_projection,
+        phenomexcan_input_file,
+        phenomexcan_projection,
+        OUTPUT_PREDICTIONS_DIR,
+        PREDICTION_METHOD,
+        doids_in_gold_standard,
+        FORCE_RUN,
     )
-    print(f"    shape (after DOID map): {drug_disease_assocs.shape}")
-    assert drug_disease_assocs.index.is_unique
-    assert drug_disease_assocs.columns.is_unique
 
-    # build classifier data
-    print(f"  building classifier data...")
-    classifier_data = (
-        drug_disease_assocs.unstack()
-        .reset_index()
-        .rename(columns={"level_0": "trait", "perturbagen": "drug", 0: "score"})
+    predict_dotprod_neg(
+        lincs_projection,
+        phenomexcan_input_file,
+        phenomexcan_projection,
+        OUTPUT_PREDICTIONS_DIR,
+        PREDICTION_METHOD,
+        doids_in_gold_standard,
+        FORCE_RUN,
     )
-    assert classifier_data.shape == classifier_data.dropna().shape
-    print(f"    shape: {classifier_data.shape}")
-    display(classifier_data.describe())
 
-    # save
-    output_file = Path(
-        OUTPUT_PREDICTIONS_DIR, f"{phenomexcan_input_file.stem}-prediction_scores.h5"
-    ).resolve()
-    print(f"    saving to: {str(output_file)}")
-
-    classifier_data.to_hdf(output_file, mode="w", complevel=4, key="prediction")
-
-    pd.Series(
-        {
-            "method": PREDICTION_METHOD,
-            "data": phenomexcan_input_file.stem,
-        }
-    ).to_hdf(output_file, mode="r+", key="metadata")
-
-    print("")
+    print("\n")
 
 # %%
