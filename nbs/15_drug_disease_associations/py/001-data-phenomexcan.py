@@ -27,17 +27,13 @@
 # %autoreload 2
 
 # %% papermill={"duration": 0.192251, "end_time": "2020-12-18T22:38:21.659996", "exception": false, "start_time": "2020-12-18T22:38:21.467745", "status": "completed"} tags=[]
+from IPython.display import display
 from pathlib import Path
 
-# import numpy as np
 import pandas as pd
 
 import conf
 from multiplier import MultiplierProjection
-
-# from entity import Gene
-# from data.cache import read_data
-# from data.hdf5 import simplify_trait_fullcode, HDF5_FILE_PATTERN
 
 # %% [markdown] papermill={"duration": 0.011416, "end_time": "2020-12-18T22:38:21.683356", "exception": false, "start_time": "2020-12-18T22:38:21.671940", "status": "completed"} tags=[]
 # # Settings
@@ -77,13 +73,6 @@ input_file_list = [
 
 # %%
 # add S-PrediXcan results for each tissue
-
-# input_file = Path(
-#     conf.PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"],
-#     "pkl",
-#     "spredixcan-mashr-zscores-Whole_Blood.pkl"
-# ).resolve()
-
 input_file_list = input_file_list + [
     f
     for f in Path(conf.PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"], "pkl").glob(
@@ -92,7 +81,9 @@ input_file_list = input_file_list + [
 ]
 
 # %%
-display(len(input_file_list))
+_tmp = len(input_file_list)
+display(_tmp)
+assert _tmp == 51
 
 # %%
 for input_file in input_file_list:
