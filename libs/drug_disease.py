@@ -2,6 +2,8 @@ from pathlib import Path
 from IPython.display import display
 
 import pandas as pd
+from sklearn.metrics import pairwise_distances
+
 from entity import Trait
 
 
@@ -146,6 +148,192 @@ def predict_dotprod_neg(
 
     def _func(drugs_data, gene_assoc_data):
         return -1.0 * drugs_data.T.dot(gene_assoc_data)
+
+    _predict(
+        lincs_projection,
+        phenomexcan_input_file,
+        phenomexcan_projection,
+        output_dir,
+        _func,
+        base_method_name,
+        preferred_doid_list,
+        force_run,
+    )
+
+
+def _compute_pearson_distance(x, y):
+    """
+    TODO: complete
+
+    Args:
+        x:
+        y:
+
+    Returns:
+
+    """
+    return pd.DataFrame(
+        data=pairwise_distances(x.T, y.T, metric="correlation"),
+        index=x.columns.copy(),
+        columns=y.columns.copy(),
+    )
+
+
+def predict_pearson(
+    lincs_projection,
+    phenomexcan_input_file,
+    phenomexcan_projection,
+    output_dir_base,
+    base_method_name,
+    preferred_doid_list,
+    force_run,
+):
+    """
+    TODO: complete
+
+    Args:
+        lincs_projection:
+        phenomexcan_input_file:
+        phenomexcan_projection:
+        output_dir_base:
+        base_method_name:
+        preferred_doid_list:
+        force_run:
+
+    Returns:
+
+    """
+    output_dir = output_dir_base / "pearson"
+
+    def _func(drugs_data, gene_assoc_data):
+        return 1 - _compute_pearson_distance(drugs_data, gene_assoc_data)
+
+    _predict(
+        lincs_projection,
+        phenomexcan_input_file,
+        phenomexcan_projection,
+        output_dir,
+        _func,
+        base_method_name,
+        preferred_doid_list,
+        force_run,
+    )
+
+
+def predict_pearson_neg(
+    lincs_projection,
+    phenomexcan_input_file,
+    phenomexcan_projection,
+    output_dir_base,
+    base_method_name,
+    preferred_doid_list,
+    force_run,
+):
+    """
+    TODO: complete
+
+    Args:
+        lincs_projection:
+        phenomexcan_input_file:
+        phenomexcan_projection:
+        output_dir_base:
+        base_method_name:
+        preferred_doid_list:
+        force_run:
+
+    Returns:
+
+    """
+    output_dir = output_dir_base / "pearson_neg"
+
+    def _func(drugs_data, gene_assoc_data):
+        return _compute_pearson_distance(drugs_data, gene_assoc_data)
+
+    _predict(
+        lincs_projection,
+        phenomexcan_input_file,
+        phenomexcan_projection,
+        output_dir,
+        _func,
+        base_method_name,
+        preferred_doid_list,
+        force_run,
+    )
+
+
+def predict_spearman(
+    lincs_projection,
+    phenomexcan_input_file,
+    phenomexcan_projection,
+    output_dir_base,
+    base_method_name,
+    preferred_doid_list,
+    force_run,
+):
+    """
+    TODO: complete
+
+    Args:
+        lincs_projection:
+        phenomexcan_input_file:
+        phenomexcan_projection:
+        output_dir_base:
+        base_method_name:
+        preferred_doid_list:
+        force_run:
+
+    Returns:
+
+    """
+    from sklearn.metrics import pairwise_distances
+
+    output_dir = output_dir_base / "spearman"
+
+    def _func(drugs_data, gene_assoc_data):
+        return 1 - _compute_pearson_distance(drugs_data.rank(), gene_assoc_data.rank())
+
+    _predict(
+        lincs_projection,
+        phenomexcan_input_file,
+        phenomexcan_projection,
+        output_dir,
+        _func,
+        base_method_name,
+        preferred_doid_list,
+        force_run,
+    )
+
+
+def predict_spearman_neg(
+    lincs_projection,
+    phenomexcan_input_file,
+    phenomexcan_projection,
+    output_dir_base,
+    base_method_name,
+    preferred_doid_list,
+    force_run,
+):
+    """
+    TODO: complete
+
+    Args:
+        lincs_projection:
+        phenomexcan_input_file:
+        phenomexcan_projection:
+        output_dir_base:
+        base_method_name:
+        preferred_doid_list:
+        force_run:
+
+    Returns:
+
+    """
+    from sklearn.metrics import pairwise_distances
+
+    output_dir = output_dir_base / "spearman_neg"
+
+    def _func(drugs_data, gene_assoc_data):
+        return _compute_pearson_distance(drugs_data.rank(), gene_assoc_data.rank())
 
     _predict(
         lincs_projection,
