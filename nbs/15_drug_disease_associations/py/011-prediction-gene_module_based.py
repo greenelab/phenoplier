@@ -125,7 +125,14 @@ display(len(phenomexcan_input_file_list))
 # # Predict drug-disease associations
 
 # %% papermill={"duration": 0.028271, "end_time": "2020-12-23T18:05:22.083712", "exception": false, "start_time": "2020-12-23T18:05:22.055441", "status": "completed"} tags=[]
-from drug_disease import predict_dotprod, predict_dotprod_neg
+from drug_disease import (
+    predict_dotprod,
+    predict_dotprod_neg,
+    predict_pearson,
+    predict_pearson_neg,
+    predict_spearman,
+    predict_spearman_neg,
+)
 
 # %% papermill={"duration": 2056.463755, "end_time": "2020-12-23T18:39:38.560240", "exception": false, "start_time": "2020-12-23T18:05:22.096485", "status": "completed"} tags=[]
 for phenomexcan_input_file in phenomexcan_input_file_list:
@@ -146,6 +153,46 @@ for phenomexcan_input_file in phenomexcan_input_file_list:
     )
 
     predict_dotprod_neg(
+        lincs_projection,
+        phenomexcan_input_file,
+        phenomexcan_projection,
+        OUTPUT_PREDICTIONS_DIR,
+        PREDICTION_METHOD,
+        doids_in_gold_standard,
+        FORCE_RUN,
+    )
+
+    predict_pearson(
+        lincs_projection,
+        phenomexcan_input_file,
+        phenomexcan_projection,
+        OUTPUT_PREDICTIONS_DIR,
+        PREDICTION_METHOD,
+        doids_in_gold_standard,
+        FORCE_RUN,
+    )
+
+    predict_pearson_neg(
+        lincs_projection,
+        phenomexcan_input_file,
+        phenomexcan_projection,
+        OUTPUT_PREDICTIONS_DIR,
+        PREDICTION_METHOD,
+        doids_in_gold_standard,
+        FORCE_RUN,
+    )
+
+    predict_spearman(
+        lincs_projection,
+        phenomexcan_input_file,
+        phenomexcan_projection,
+        OUTPUT_PREDICTIONS_DIR,
+        PREDICTION_METHOD,
+        doids_in_gold_standard,
+        FORCE_RUN,
+    )
+
+    predict_spearman_neg(
         lincs_projection,
         phenomexcan_input_file,
         phenomexcan_projection,
