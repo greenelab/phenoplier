@@ -157,15 +157,11 @@ class Trait(object, metaclass=ABCMeta):
 
         if len(doid_maps) == 0:
             return None
-        # if efo_info.id not in efo_xrefs_data.index:
-        #     return None
 
-        # efo_xrefs = efo_xrefs_data.loc[[efo_info.id]]
-        # efo_doid_map = efo_xrefs[efo_xrefs['target_id_type'] == 'DOID']
-        # if efo_doid_map.shape[0] == 0:
-        #     return None
+        doid_maps = list(doid_maps)
+        doid_maps.sort()
 
-        return self.MAP_INFO(id=list(doid_maps), label=None)
+        return self.MAP_INFO(id=doid_maps, label=None)
 
     def get_plain_name(self):
         """Returns the plain name of the trait, which coincides with the full
@@ -361,7 +357,7 @@ class Trait(object, metaclass=ABCMeta):
 
         traits_full_code_to_do_map = {
             fc: Trait._select_doid(t.get_do_info().id, preferred_doid_list)
-            for fc in data.columns
+            for fc in data.columns.sort_values()
             if (t := Trait.get_trait(full_code=fc)).get_do_info() is not None
         }
 
