@@ -51,7 +51,7 @@ OUTPUT_PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
 # # Remove previous predictions
 
 # %%
-current_prediction_files = OUTPUT_PREDICTIONS_DIR.glob("*.h5")
+current_prediction_files = OUTPUT_PREDICTIONS_DIR.rglob("*.h5")
 
 # %%
 for f in current_prediction_files:
