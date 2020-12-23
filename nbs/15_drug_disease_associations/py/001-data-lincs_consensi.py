@@ -33,8 +33,10 @@ from pathlib import Path
 import pandas as pd
 
 import conf
+
 # from multiplier import MultiplierProjection
 from entity import Gene
+
 # from data.cache import read_data
 # from data.hdf5 import simplify_trait_fullcode, HDF5_FILE_PATTERN
 
@@ -67,16 +69,13 @@ OUTPUT_PROJ_DATA_DIR.mkdir(parents=True, exist_ok=True)
 # %%
 # TODO: hardcoded
 input_file = Path(
-    conf.DATA_DIR,
-    "hetionet",
-    "lincs-v2.0",
-    "consensi-drugbank.tsv.bz2"
+    conf.DATA_DIR, "hetionet", "lincs-v2.0", "consensi-drugbank.tsv.bz2"
 ).resolve()
 
 display(input_file)
 
 # %%
-lincs_data = pd.read_csv(input_file, sep='\t', index_col='perturbagen').T
+lincs_data = pd.read_csv(input_file, sep="\t", index_col="perturbagen").T
 
 # %%
 lincs_data.shape
@@ -102,6 +101,7 @@ assert lincs_data.columns.is_unique
 from rpy2.robjects.packages import importr
 import rpy2.robjects as robjects
 from rpy2.robjects import pandas2ri
+
 pandas2ri.activate()
 
 # %%
@@ -120,26 +120,37 @@ clusterProfiler = importr("clusterProfiler")
 # _not_mapped_genes
 
 # %%
-_now_mapped_genes = clusterProfiler.bitr(lincs_data.index.tolist(), fromType='ENTREZID', toType='ENSEMBL', OrgDb="org.Hs.eg.db")
+_now_mapped_genes = clusterProfiler.bitr(
+    lincs_data.index.tolist(),
+    fromType="ENTREZID",
+    toType="ENSEMBL",
+    OrgDb="org.Hs.eg.db",
+)
 
 # %%
 _now_mapped_genes.shape
 
 # %%
 # some genes have entrez ids that map to several ensembl id
-display(_now_mapped_genes[_now_mapped_genes['ENTREZID'].duplicated(keep=False)])
+display(_now_mapped_genes[_now_mapped_genes["ENTREZID"].duplicated(keep=False)])
 
 # %%
-_now_mapped_genes = _now_mapped_genes.assign(in_phenomexcan=_now_mapped_genes['ENSEMBL'].apply(lambda x: x in Gene.GENE_ID_TO_NAME_MAP))
+_now_mapped_genes = _now_mapped_genes.assign(
+    in_phenomexcan=_now_mapped_genes["ENSEMBL"].apply(
+        lambda x: x in Gene.GENE_ID_TO_NAME_MAP
+    )
+)
 
 # %%
-_now_mapped_genes[_now_mapped_genes['in_phenomexcan']].shape
+_now_mapped_genes[_now_mapped_genes["in_phenomexcan"]].shape
 
 # %%
 _now_mapped_genes.head()
 
 # %%
-_now_mapped_genes = _now_mapped_genes[_now_mapped_genes['in_phenomexcan']].drop_duplicates(subset=['ENTREZID'])
+_now_mapped_genes = _now_mapped_genes[
+    _now_mapped_genes["in_phenomexcan"]
+].drop_duplicates(subset=["ENTREZID"])
 
 # %%
 _now_mapped_genes.shape
@@ -148,10 +159,12 @@ _now_mapped_genes.shape
 _now_mapped_genes.head()
 
 # %%
-_now_mapped_genes_dict = _now_mapped_genes.set_index('ENTREZID').to_dict()['ENSEMBL']
+_now_mapped_genes_dict = _now_mapped_genes.set_index("ENTREZID").to_dict()["ENSEMBL"]
 
 # %%
-lincs_data = lincs_data.loc[_now_mapped_genes_dict.keys()].rename(index=_now_mapped_genes_dict)
+lincs_data = lincs_data.loc[_now_mapped_genes_dict.keys()].rename(
+    index=_now_mapped_genes_dict
+)
 
 # %%
 lincs_data.head()
@@ -175,10 +188,7 @@ assert not lincs_data.isna().any().any()
 # ## Save
 
 # %%
-output_file = Path(
-    OUTPUT_RAW_DATA_DIR,
-    "lincs-data.pkl"
-).resolve()
+output_file = Path(OUTPUT_RAW_DATA_DIR, "lincs-data.pkl").resolve()
 display(output_file)
 
 # %%
@@ -206,10 +216,7 @@ lincs_projection.head()
 # ## Save
 
 # %%
-output_file = Path(
-    OUTPUT_PROJ_DATA_DIR,
-    "lincs-projection.pkl"
-).resolve()
+output_file = Path(OUTPUT_PROJ_DATA_DIR, "lincs-projection.pkl").resolve()
 display(output_file)
 
 # %%

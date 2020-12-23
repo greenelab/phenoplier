@@ -28,11 +28,13 @@
 
 # %% papermill={"duration": 0.36702, "end_time": "2020-12-14T21:24:40.187800", "exception": false, "start_time": "2020-12-14T21:24:39.820780", "status": "completed"} tags=[]
 from IPython.display import display
+
 # import numpy as np
 import pandas as pd
 
 import conf
 from data.cache import read_data
+
 # from entity import Trait
 
 # %% [markdown] papermill={"duration": 0.01365, "end_time": "2020-12-14T21:24:40.215577", "exception": false, "start_time": "2020-12-14T21:24:40.201927", "status": "completed"} tags=[]
@@ -51,7 +53,9 @@ smultixcan_zscores.head()
 # # Save slices of data for unit testing
 
 # %% papermill={"duration": 0.037367, "end_time": "2020-12-14T21:24:40.624901", "exception": false, "start_time": "2020-12-14T21:24:40.587534", "status": "completed"} tags=[]
-smultixcan_zscores.columns[smultixcan_zscores.columns.str.lower().str.contains("20002_1499")]
+smultixcan_zscores.columns[
+    smultixcan_zscores.columns.str.lower().str.contains("20002_1499")
+]
 
 # %% papermill={"duration": 0.557081, "end_time": "2020-12-14T21:24:41.222794", "exception": false, "start_time": "2020-12-14T21:24:40.665713", "status": "completed"} tags=[]
 phenomexcan_fullcode_to_traits = [
@@ -74,11 +78,13 @@ phenomexcan_fullcode_to_traits = [
     "20002_1440-Noncancer_illness_code_selfreported_tuberculosis_tb",
     "22137-Doctor_diagnosed_tuberculosis",
     # labyrinthitis   EFO_0009604 -> this one maps to several DOID: DOID:3930, DOID:1468
-    "20002_1499-Noncancer_illness_code_selfreported_labyrinthitis", 
+    "20002_1499-Noncancer_illness_code_selfreported_labyrinthitis",
 ]
 
 # %%
-smultixcan_slice = smultixcan_zscores.sample(n=10, random_state=0)[phenomexcan_fullcode_to_traits]
+smultixcan_slice = smultixcan_zscores.sample(n=10, random_state=0)[
+    phenomexcan_fullcode_to_traits
+]
 
 # %%
 smultixcan_slice.shape
@@ -100,17 +106,14 @@ output_folder = Path(
     Path(inspect.getfile(Trait)).parent.parent,
     "tests",
     "test_cases",
-    "smultixcan_zscores"
+    "smultixcan_zscores",
 ).resolve()
 output_folder.mkdir(exist_ok=True, parents=True)
 
 display(output_folder)
 
 # %%
-output_file = Path(
-    output_folder,
-    f"smultixcan-slice01.pkl"
-).resolve()
+output_file = Path(output_folder, f"smultixcan-slice01.pkl").resolve()
 
 display(output_file)
 

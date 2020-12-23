@@ -33,6 +33,7 @@ import numpy as np
 import pandas as pd
 
 import conf
+
 # from multiplier import MultiplierProjection
 # from entity import Trait
 
@@ -64,13 +65,13 @@ gold_standard.shape
 gold_standard.head()
 
 # %%
-gold_standard['true_class'].value_counts()
+gold_standard["true_class"].value_counts()
 
 # %%
-gold_standard['true_class'].value_counts(normalize=True)
+gold_standard["true_class"].value_counts(normalize=True)
 
 # %%
-doids_in_gold_standard = set(gold_standard['trait'])
+doids_in_gold_standard = set(gold_standard["trait"])
 
 # %% [markdown]
 # # Load PhenomeXcan data
@@ -116,25 +117,23 @@ display(len(current_prediction_files))
 predictions = []
 
 for f in current_prediction_files:
-#     print(f.name)
-    
+    #     print(f.name)
+
     prediction_data = pd.read_hdf(f, key="prediction")
     prediction_data = pd.merge(
-        prediction_data, gold_standard,
-        on=['trait', 'drug'],
-        how='inner'
+        prediction_data, gold_standard, on=["trait", "drug"], how="inner"
     )
-    
+
     metadata = pd.read_hdf(f, key="metadata")
-    
-#     new_predictions[f"{metadata.method}"][metadata.data] = prediction_data
-    prediction_data['trait'] = prediction_data['trait'].astype('category')
-    prediction_data['drug'] = prediction_data['drug'].astype('category')
+
+    #     new_predictions[f"{metadata.method}"][metadata.data] = prediction_data
+    prediction_data["trait"] = prediction_data["trait"].astype("category")
+    prediction_data["drug"] = prediction_data["drug"].astype("category")
     prediction_data = prediction_data.assign(method=metadata.method)
     prediction_data = prediction_data.assign(data=metadata.data)
-    
+
     predictions.append(prediction_data)
-    
+
 #     print(f"  shape: {prediction_data.shape}")
 
 # %%
@@ -152,15 +151,25 @@ predictions.head()
 
 # %%
 def _reduce(x):
-    return pd.Series({
-        'score': x['score'].max(),
-        'true_class': x['true_class'].unique()[0] if x['true_class'].unique().shape[0] == 1 else None,
-        'data': x['method'].iloc[0],
-    })
+    return pd.Series(
+        {
+            "score": x["score"].max(),
+            "true_class": x["true_class"].unique()[0]
+            if x["true_class"].unique().shape[0] == 1
+            else None,
+            "data": x["method"].iloc[0],
+        }
+    )
 
 
 # %%
-predictions_avg = predictions.groupby(['trait', 'drug', 'method']).apply(_reduce).dropna().sort_index().reset_index()
+predictions_avg = (
+    predictions.groupby(["trait", "drug", "method"])
+    .apply(_reduce)
+    .dropna()
+    .sort_index()
+    .reset_index()
+)
 
 # %%
 predictions_avg.shape
@@ -175,10 +184,14 @@ predictions_avg.head()
 from sklearn.metrics import roc_auc_score
 
 # %%
-predictions.groupby(['method', 'data']).apply(lambda x: roc_auc_score(x['true_class'], x['score'])).groupby('method').describe()
+predictions.groupby(["method", "data"]).apply(
+    lambda x: roc_auc_score(x["true_class"], x["score"])
+).groupby("method").describe()
 
 # %%
-predictions_avg.groupby(['method', 'data']).apply(lambda x: roc_auc_score(x['true_class'], x['score'])).groupby('method').describe()
+predictions_avg.groupby(["method", "data"]).apply(
+    lambda x: roc_auc_score(x["true_class"], x["score"])
+).groupby("method").describe()
 
 # %% [markdown]
 # # PR
@@ -187,9 +200,13 @@ predictions_avg.groupby(['method', 'data']).apply(lambda x: roc_auc_score(x['tru
 from sklearn.metrics import average_precision_score
 
 # %%
-predictions.groupby(['method', 'data']).apply(lambda x: average_precision_score(x['true_class'], x['score'])).groupby('method').describe()
+predictions.groupby(["method", "data"]).apply(
+    lambda x: average_precision_score(x["true_class"], x["score"])
+).groupby("method").describe()
 
 # %%
-predictions_avg.groupby(['method', 'data']).apply(lambda x: average_precision_score(x['true_class'], x['score'])).groupby('method').describe()
+predictions_avg.groupby(["method", "data"]).apply(
+    lambda x: average_precision_score(x["true_class"], x["score"])
+).groupby("method").describe()
 
 # %%
