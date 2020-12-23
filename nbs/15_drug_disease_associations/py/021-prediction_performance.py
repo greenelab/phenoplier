@@ -31,11 +31,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 import conf
-
-# from multiplier import MultiplierProjection
-# from entity import Trait
 
 # %% [markdown] papermill={"duration": 0.011416, "end_time": "2020-12-18T22:38:21.683356", "exception": false, "start_time": "2020-12-18T22:38:21.671940", "status": "completed"} tags=[]
 # # Settings
@@ -46,7 +44,7 @@ display(OUTPUT_DIR)
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # %%
-OUTPUT_PREDICTIONS_DIR = Path(OUTPUT_DIR, "predictions")
+OUTPUT_PREDICTIONS_DIR = Path(OUTPUT_DIR, "predictions", "dotprod_neg")
 display(OUTPUT_PREDICTIONS_DIR)
 OUTPUT_PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -74,36 +72,6 @@ gold_standard["true_class"].value_counts(normalize=True)
 doids_in_gold_standard = set(gold_standard["trait"])
 
 # %% [markdown]
-# # Load PhenomeXcan data
-
-# %%
-# input_file = Path(
-#     conf.PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"],
-#     "most_signif",
-#     "spredixcan-most_signif.pkl"
-# ).resolve()
-
-# display(input_file)
-
-# %%
-# phenomexcan_data = pd.read_pickle(input_file)
-
-# %%
-# phenomexcan_data.shape
-
-# %%
-# phenomexcan_data = phenomexcan_data.dropna(how='any')
-
-# %%
-# phenomexcan_data.shape
-
-# %%
-# phenomexcan_data.head()
-
-# %%
-# assert phenomexcan_data.index.is_unique
-
-# %% [markdown]
 # # Load drug-disease predictions
 
 # %%
@@ -114,27 +82,29 @@ current_prediction_files = list(OUTPUT_PREDICTIONS_DIR.glob("*.h5"))
 display(len(current_prediction_files))
 
 # %%
+current_prediction_files[:5]
+
+# %%
 predictions = []
 
-for f in current_prediction_files:
-    #     print(f.name)
-
+for f in tqdm(current_prediction_files, ncols=100):
+    # exclude S-MultiXcan results, since they have no direction of effect
+    if f.name.startswith("smultixcan-"):
+        continue
+    
     prediction_data = pd.read_hdf(f, key="prediction")
     prediction_data = pd.merge(
         prediction_data, gold_standard, on=["trait", "drug"], how="inner"
     )
 
     metadata = pd.read_hdf(f, key="metadata")
-
-    #     new_predictions[f"{metadata.method}"][metadata.data] = prediction_data
+    
     prediction_data["trait"] = prediction_data["trait"].astype("category")
     prediction_data["drug"] = prediction_data["drug"].astype("category")
     prediction_data = prediction_data.assign(method=metadata.method)
     prediction_data = prediction_data.assign(data=metadata.data)
 
     predictions.append(prediction_data)
-
-#     print(f"  shape: {prediction_data.shape}")
 
 # %%
 predictions = pd.concat(predictions, ignore_index=True)
@@ -145,9 +115,15 @@ predictions.shape
 # %%
 predictions.head()
 
+# %%
+# all prediction tables should have the same shape
+predictions_shape = predictions.groupby(['method', 'data']).apply(lambda x: x.shape).unique()
+display(predictions_shape)
+assert predictions_shape.shape[0] == 1
+
 
 # %% [markdown]
-# # Average predictions
+# # Aggregate predictions
 
 # %%
 def _reduce(x):
@@ -157,7 +133,6 @@ def _reduce(x):
             "true_class": x["true_class"].unique()[0]
             if x["true_class"].unique().shape[0] == 1
             else None,
-            "data": x["method"].iloc[0],
         }
     )
 
@@ -175,6 +150,13 @@ predictions_avg = (
 predictions_avg.shape
 
 # %%
+# predictions_avg should have twice the number of rows in the predictions table, since has both methods
+assert predictions_avg.shape[0] == int(predictions_shape[0][0] * 2)
+
+# %%
+assert predictions_avg.dropna().shape == predictions_avg.shape
+
+# %%
 predictions_avg.head()
 
 # %% [markdown]
@@ -189,7 +171,7 @@ predictions.groupby(["method", "data"]).apply(
 ).groupby("method").describe()
 
 # %%
-predictions_avg.groupby(["method", "data"]).apply(
+predictions_avg.groupby(["method"]).apply(
     lambda x: roc_auc_score(x["true_class"], x["score"])
 ).groupby("method").describe()
 
@@ -205,7 +187,7 @@ predictions.groupby(["method", "data"]).apply(
 ).groupby("method").describe()
 
 # %%
-predictions_avg.groupby(["method", "data"]).apply(
+predictions_avg.groupby(["method"]).apply(
     lambda x: average_precision_score(x["true_class"], x["score"])
 ).groupby("method").describe()
 
