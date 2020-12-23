@@ -38,7 +38,7 @@ import conf
 # # Settings
 
 # %%
-PREDICTION_METHOD="Module-based"
+PREDICTION_METHOD = "Module-based"
 
 # %%
 OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"]
@@ -80,7 +80,7 @@ gold_standard.shape
 gold_standard.head()
 
 # %%
-doids_in_gold_standard = set(gold_standard['trait'])
+doids_in_gold_standard = set(gold_standard["trait"])
 
 # %% [markdown]
 # # Load LINCS
@@ -90,10 +90,7 @@ doids_in_gold_standard = set(gold_standard['trait'])
 
 # %%
 # TODO: hardcoded
-input_file = Path(
-    OUTPUT_PROJ_DATA_DIR,
-    "lincs-projection.pkl"
-).resolve()
+input_file = Path(OUTPUT_PROJ_DATA_DIR, "lincs-projection.pkl").resolve()
 
 display(input_file)
 
@@ -114,7 +111,9 @@ from entity import Trait
 
 # %%
 phenomexcan_input_file_list = [
-    f for f in OUTPUT_PROJ_DATA_DIR.glob("*.pkl") if f.name.startswith(('smultixcan-', 'spredixcan-'))
+    f
+    for f in OUTPUT_PROJ_DATA_DIR.glob("*.pkl")
+    if f.name.startswith(("smultixcan-", "spredixcan-"))
 ]
 
 # %%
@@ -126,44 +125,48 @@ display(len(phenomexcan_input_file_list))
 # %%
 for phenomexcan_input_file in phenomexcan_input_file_list:
     print(phenomexcan_input_file.name)
-    
+
     # read phenomexcan data
     phenomexcan_projection = pd.read_pickle(phenomexcan_input_file)
     print(f"  shape: {phenomexcan_projection.shape}")
-    
+
     # prediction
     print(f"  predicting...")
     drug_disease_assocs = lincs_projection.T.dot(phenomexcan_projection)
     print(f"    shape: {drug_disease_assocs.shape}")
-    drug_disease_assocs = Trait.map_to_doid(drug_disease_assocs, doids_in_gold_standard, combine="max")
+    drug_disease_assocs = Trait.map_to_doid(
+        drug_disease_assocs, doids_in_gold_standard, combine="max"
+    )
     print(f"    shape (after DOID map): {drug_disease_assocs.shape}")
     assert drug_disease_assocs.index.is_unique
     assert drug_disease_assocs.columns.is_unique
-    
+
     # build classifier data
     print(f"  building classifier data...")
-    classifier_data = drug_disease_assocs\
-        .unstack().reset_index()\
-        .rename(columns={'level_0': 'trait', 'perturbagen': 'drug', 0: 'score'})
+    classifier_data = (
+        drug_disease_assocs.unstack()
+        .reset_index()
+        .rename(columns={"level_0": "trait", "perturbagen": "drug", 0: "score"})
+    )
     assert classifier_data.shape == classifier_data.dropna().shape
     print(f"    shape: {classifier_data.shape}")
     display(classifier_data.describe())
-    
+
     # save
     output_file = Path(
-        OUTPUT_PREDICTIONS_DIR,
-        f"{phenomexcan_input_file.stem}-prediction_scores.h5"
+        OUTPUT_PREDICTIONS_DIR, f"{phenomexcan_input_file.stem}-prediction_scores.h5"
     ).resolve()
     print(f"    saving to: {str(output_file)}")
-    
-    classifier_data.to_hdf(output_file, mode="w", complevel=4, key='prediction')
-    
-    pd.Series({
-        'method': PREDICTION_METHOD,
-        'data': phenomexcan_input_file.stem,
-    })\
-    .to_hdf(output_file, mode="r+", key='metadata')
-    
+
+    classifier_data.to_hdf(output_file, mode="w", complevel=4, key="prediction")
+
+    pd.Series(
+        {
+            "method": PREDICTION_METHOD,
+            "data": phenomexcan_input_file.stem,
+        }
+    ).to_hdf(output_file, mode="r+", key="metadata")
+
     print("")
 
 # %%

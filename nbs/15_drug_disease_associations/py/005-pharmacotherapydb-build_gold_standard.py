@@ -53,13 +53,11 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 # %%
 # TODO hardcoded
 input_file = Path(
-    conf.DATA_DIR,
-    'hetionet/pharmacotherapydb-v1.0',
-    'indications.tsv'
+    conf.DATA_DIR, "hetionet/pharmacotherapydb-v1.0", "indications.tsv"
 ).resolve()
 display(input_file)
 
-pharmadb_gold_standard = pd.read_csv(input_file, sep='\t')
+pharmadb_gold_standard = pd.read_csv(input_file, sep="\t")
 
 # %%
 pharmadb_gold_standard.shape
@@ -68,27 +66,30 @@ pharmadb_gold_standard.shape
 pharmadb_gold_standard.head()
 
 # %%
-pharmadb_gold_standard['doid_id'].unique().shape
+pharmadb_gold_standard["doid_id"].unique().shape
 
 # %%
-pharmadb_gold_standard['drugbank_id'].unique().shape
+pharmadb_gold_standard["drugbank_id"].unique().shape
 
 # %% [markdown]
 # ## Build gold standard
 
 # %%
-pharmadb_gold_standard['category'].value_counts()
+pharmadb_gold_standard["category"].value_counts()
 
 # %%
 gold_standard = (
-    pharmadb_gold_standard[pharmadb_gold_standard['category'].isin(('DM', 'NOT'))]
-    .set_index(['doid_id', 'drugbank_id'])
-    .apply(lambda x: int(x.category in ('DM',)), axis=1).reset_index()
-    .rename(columns={
-        'doid_id': 'trait',
-        'drugbank_id': 'drug',
-        0: 'true_class',
-    })
+    pharmadb_gold_standard[pharmadb_gold_standard["category"].isin(("DM", "NOT"))]
+    .set_index(["doid_id", "drugbank_id"])
+    .apply(lambda x: int(x.category in ("DM",)), axis=1)
+    .reset_index()
+    .rename(
+        columns={
+            "doid_id": "trait",
+            "drugbank_id": "drug",
+            0: "true_class",
+        }
+    )
 )
 
 # %%
@@ -102,28 +103,25 @@ assert gold_standard.shape[0] == 998
 gold_standard.head()
 
 # %%
-gold_standard['trait'].unique().shape
+gold_standard["trait"].unique().shape
 
 # %%
-gold_standard['drug'].unique().shape
+gold_standard["drug"].unique().shape
 
 # %%
-gold_standard['true_class'].value_counts()
+gold_standard["true_class"].value_counts()
 
 # %%
 gold_standard.dropna().shape
 
 # %%
-doids_in_gold_standard = set(gold_standard['trait'].values)
+doids_in_gold_standard = set(gold_standard["trait"].values)
 
 # %% [markdown]
 # # Save
 
 # %%
-output_file = Path(
-    OUTPUT_DIR,
-    "gold_standard.pkl"
-).resolve()
+output_file = Path(OUTPUT_DIR, "gold_standard.pkl").resolve()
 display(output_file)
 
 # %%

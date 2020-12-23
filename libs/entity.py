@@ -68,10 +68,7 @@ class Trait(object, metaclass=ABCMeta):
         conf.GENERAL["TERM_ID_XREFS_FILE"].name,
     ).resolve()
 
-    DO_XREFS_FILE = Path(
-        Path(__file__).parent,
-        "data", "xrefs-prop-slim.tsv"
-    ).resolve()
+    DO_XREFS_FILE = Path(Path(__file__).parent, "data", "xrefs-prop-slim.tsv").resolve()
 
     def __init__(self, code=None, full_code=None):
         if code is None and full_code is None:
@@ -145,16 +142,16 @@ class Trait(object, metaclass=ABCMeta):
 
         efo_xrefs_data = self.get_efo_xrefs_data()
         efo_xrefs_data = efo_xrefs_data[
-            (efo_xrefs_data['term_id'] == efo_info.id) &
-            (efo_xrefs_data['target_id_type'] == "DOID")
-        ]['target_id'].values
+            (efo_xrefs_data["term_id"] == efo_info.id)
+            & (efo_xrefs_data["target_id_type"] == "DOID")
+        ]["target_id"].values
         # efo_xrefs_data = set()
 
         do_xrefs_data = self.get_do_xrefs_data()
         do_xrefs_data = do_xrefs_data[
-            (do_xrefs_data['resource'] == "EFO") &
-            (do_xrefs_data['resource_id'] == efo_id_part)
-        ]['doid_code'].values
+            (do_xrefs_data["resource"] == "EFO")
+            & (do_xrefs_data["resource_id"] == efo_id_part)
+        ]["doid_code"].values
 
         doid_maps = set(efo_xrefs_data).union(set(do_xrefs_data))
 
@@ -188,21 +185,18 @@ class Trait(object, metaclass=ABCMeta):
     def get_efo_xrefs_data():
         return read_data(
             # Trait.EFO_XREFS_FILE, sep="\t", index_col="term_id"
-            Trait.EFO_XREFS_FILE, sep="\t"
+            Trait.EFO_XREFS_FILE,
+            sep="\t",
         )
 
     @staticmethod
     def get_do_xrefs_data():
-        return read_data(
-            Trait.DO_XREFS_FILE, sep="\t"
-        )
+        return read_data(Trait.DO_XREFS_FILE, sep="\t")
 
     @staticmethod
     @lru_cache(maxsize=None)
     def get_traits_to_efo_map_data():
-        return read_data(
-            Trait.UKB_TO_EFO_MAP_FILE, sep="\t", index_col="ukb_fullcode"
-        )
+        return read_data(Trait.UKB_TO_EFO_MAP_FILE, sep="\t", index_col="ukb_fullcode")
 
     @staticmethod
     def get_code_from_full_code(full_code):
@@ -347,9 +341,9 @@ class Trait(object, metaclass=ABCMeta):
 
     @staticmethod
     def map_to_doid(
-            data: pd.DataFrame,
-            preferred_doid_list: set = None,
-            combine: str = None,
+        data: pd.DataFrame,
+        preferred_doid_list: set = None,
+        combine: str = None,
     ) -> pd.DataFrame:
         """
         TODO: complete
@@ -375,7 +369,7 @@ class Trait(object, metaclass=ABCMeta):
             :, data.columns.isin(traits_full_code_to_do_map.keys())
         ].rename(columns=traits_full_code_to_do_map)
 
-        if combine == 'max':
+        if combine == "max":
             data_mapped = data_mapped.groupby(data_mapped.columns, axis=1).max()
             assert data_mapped.columns.is_unique, "Columns not unique"
 
