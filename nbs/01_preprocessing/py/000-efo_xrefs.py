@@ -28,6 +28,7 @@
 # %autoreload 2
 
 # %% tags=[]
+from shutil import copyfile
 from collections import defaultdict
 
 from IPython.display import display
@@ -35,6 +36,7 @@ import pandas as pd
 import obonet
 
 import conf
+from entity import Trait
 
 
 # %% [markdown] tags=[]
@@ -212,10 +214,31 @@ assert _tmp.iloc[1]["target_id"] == "SNOMEDCT:118259007"
 assert _tmp.iloc[2]["target_id_type"] == "SNOMEDCT"
 assert _tmp.iloc[2]["target_id"] == "SNOMEDCT:387045004"
 
+# %% [markdown] tags=[]
+# # Save
+
+# %% [markdown] tags=[]
+# ## In main data folder
+
 # %% tags=[]
 outfile = conf.GENERAL["TERM_ID_XREFS_FILE"]
 display(outfile)
 
 efo_full_data.to_csv(outfile, sep="\t")
+
+# %% [markdown] tags=[]
+# ## In libs/data folder
+
+# %% [markdown] tags=[]
+# Since this file (`outfile`) is used by the Trait class to return Disease Ontology codes/labels for PhenomeXcan traits, it is copied also to a source code folder and it is supposed to be versioned.
+
+# %%
+display(Trait.EFO_XREFS_FILE)
+
+# %%
+copyfile(
+    outfile,
+    Trait.EFO_XREFS_FILE,
+)
 
 # %% tags=[]
