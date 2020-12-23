@@ -91,14 +91,15 @@ for f in tqdm(current_prediction_files, ncols=100):
     # exclude S-MultiXcan results, since they have no direction of effect
     if f.name.startswith("smultixcan-"):
         continue
-    
+
     prediction_data = pd.read_hdf(f, key="prediction")
     prediction_data = pd.merge(
         prediction_data, gold_standard, on=["trait", "drug"], how="inner"
     )
 
     metadata = pd.read_hdf(f, key="metadata")
-    
+
+    prediction_data["score"] = prediction_data["score"].rank()
     prediction_data["trait"] = prediction_data["trait"].astype("category")
     prediction_data["drug"] = prediction_data["drug"].astype("category")
     prediction_data = prediction_data.assign(method=metadata.method)
@@ -115,11 +116,26 @@ predictions.shape
 # %%
 predictions.head()
 
+# %% [markdown]
+# ## Testing
+
 # %%
 # all prediction tables should have the same shape
-predictions_shape = predictions.groupby(['method', 'data']).apply(lambda x: x.shape).unique()
+predictions_shape = (
+    predictions.groupby(["method", "data"]).apply(lambda x: x.shape).unique()
+)
 display(predictions_shape)
 assert predictions_shape.shape[0] == 1
+
+# %% [markdown]
+# ## Save
+
+# %%
+output_file = Path(OUTPUT_DIR, "predictions", "predictions_results.pkl").resolve()
+display(output_file)
+
+# %%
+predictions.to_pickle(output_file)
 
 
 # %% [markdown]
@@ -158,6 +174,18 @@ assert predictions_avg.dropna().shape == predictions_avg.shape
 
 # %%
 predictions_avg.head()
+
+# %% [markdown]
+# ## Save
+
+# %%
+output_file = Path(
+    OUTPUT_DIR, "predictions", "predictions_results_aggregated.pkl"
+).resolve()
+display(output_file)
+
+# %%
+predictions_avg.to_pickle(output_file)
 
 # %% [markdown]
 # # ROC
