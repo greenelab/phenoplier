@@ -164,6 +164,58 @@ def eac(ensemble, k, linkage_method='average'):
     # return fcluster(z, k, criterion='maxclust')
 
 
+def cspa(ensemble, k):
+    return consensus_function('cspa', ensemble, k)
+
+
+def hgpa(ensemble, k):
+    return consensus_function('hgpa', ensemble, k)
+
+
+def mcla(ensemble, k):
+    return consensus_function('mcla', ensemble, k)
+
+
+def consensus_function(consensus_algorithm, ensemble, k):
+    # save ensemble to temp file
+    ensemble_file = get_temp_file_name('.mat')
+    sio.savemat(ensemble_file, {'ensemble': ensemble})
+
+    consensus_part_file = get_temp_file_name('.mat')
+
+    graphfunc_path = _get_graphfunc_path()
+
+    call(['octave', '--no-gui-libs', '--path', graphfunc_path,
+          '--eval', _get_code(consensus_algorithm, ensemble_file, k, consensus_part_file, graphfunc_path)])
+
+    res = sio.loadmat(consensus_part_file, matlab_compatible=True)
+    os.remove(ensemble_file)
+    os.remove(consensus_part_file)
+
+    return res['cons_part'][0]
+
+
+def _get_graphfunc_path():
+    dirname = os.path.dirname
+    current_module_path = dirname(dirname(dirname(__file__)))
+
+    # TODO: migrate to pathlib
+    cluster_ensemble_folder = os.path.join(current_module_path, 'libs/ClusterEnsemble-V2.0')
+    if not os.path.exists(cluster_ensemble_folder):
+        raise Exception(f'Cluster ensembles path does not exist: {cluster_ensemble_folder}')
+
+    return cluster_ensemble_folder
+
+
+def _get_code(consensus_algorithm, ensemble_file, k, consensus_part_file, graphfunc_path):
+    return "clear all;" \
+           "setenv('PMETIS_PATH', ['" + graphfunc_path + "' filesep 'pmetis']);" \
+           "setenv('SHMETIS_PATH', ['" + graphfunc_path + "' filesep 'shmetis']);" \
+           "load('" + ensemble_file + "');" \
+           "cons_part = " + consensus_algorithm + "(ensemble, " + str(k) + ");" \
+           "save('" + consensus_part_file + "', 'cons_part', '-v6');"
+
+
 def supraconsensus(ensemble, k, methods=None, selection_criterion=aami):
     # if methods are not provided, then use EAC methods by default (because
     # these do not depend on Octave like graph-based ones).
