@@ -29,7 +29,7 @@ from IPython.display import display
 
 import conf
 
-N_JOBS = conf.GENERAL['N_JOBS']
+N_JOBS = conf.GENERAL["N_JOBS"]
 display(N_JOBS)
 
 # %% papermill={"duration": 0.020341, "end_time": "2020-12-02T17:57:32.655854", "exception": false, "start_time": "2020-12-02T17:57:32.635513", "status": "completed"} tags=[]
@@ -64,7 +64,7 @@ from clustering.ensemble import generate_ensemble
 # # Global settings
 
 # %% papermill={"duration": 0.030894, "end_time": "2020-12-02T17:57:34.413118", "exception": false, "start_time": "2020-12-02T17:57:34.382224", "status": "completed"} tags=[]
-CLUSTERING_ATTRIBUTES_TO_SAVE = ['n_clusters']
+CLUSTERING_ATTRIBUTES_TO_SAVE = ["n_clusters"]
 
 # %% [markdown] papermill={"duration": 0.014372, "end_time": "2020-12-02T17:57:34.443001", "exception": false, "start_time": "2020-12-02T17:57:34.428629", "status": "completed"} tags=[]
 # # Data version: pca
@@ -73,17 +73,17 @@ CLUSTERING_ATTRIBUTES_TO_SAVE = ['n_clusters']
 # ## Settings
 
 # %% papermill={"duration": 0.028426, "end_time": "2020-12-02T17:57:34.513962", "exception": false, "start_time": "2020-12-02T17:57:34.485536", "status": "completed"} tags=[]
-INPUT_SUBSET = 'pca'
+INPUT_SUBSET = "pca"
 
 # %% papermill={"duration": 0.02825, "end_time": "2020-12-02T17:57:34.557155", "exception": false, "start_time": "2020-12-02T17:57:34.528905", "status": "completed"} tags=[]
-INPUT_STEM = 'z_score_std-projection-smultixcan-efo_partial-mashr-zscores'
+INPUT_STEM = "z_score_std-projection-smultixcan-efo_partial-mashr-zscores"
 
 # %% papermill={"duration": 0.028488, "end_time": "2020-12-02T17:57:34.600748", "exception": false, "start_time": "2020-12-02T17:57:34.572260", "status": "completed"} tags=[]
 # parameters of the dimentionality reduction steps
 DR_OPTIONS = {
-    'n_components': 50,
-    'svd_solver': 'full',
-    'random_state': 0,
+    "n_components": 50,
+    "svd_solver": "full",
+    "random_state": 0,
 }
 
 # %% papermill={"duration": 0.031104, "end_time": "2020-12-02T17:57:34.646862", "exception": false, "start_time": "2020-12-02T17:57:34.615758", "status": "completed"} tags=[]
@@ -91,14 +91,12 @@ input_filepath = Path(
     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
     INPUT_SUBSET,
     generate_result_set_name(
-        DR_OPTIONS,
-        prefix=f'{INPUT_SUBSET}-{INPUT_STEM}-',
-        suffix='.pkl'
-    )
+        DR_OPTIONS, prefix=f"{INPUT_SUBSET}-{INPUT_STEM}-", suffix=".pkl"
+    ),
 ).resolve()
 display(input_filepath)
 
-assert input_filepath.exists(), 'Input file does not exist'
+assert input_filepath.exists(), "Input file does not exist"
 
 input_filepath_stem = input_filepath.stem
 display(input_filepath_stem)
@@ -107,7 +105,7 @@ display(input_filepath_stem)
 # output dir for this notebook
 RESULTS_DIR = Path(
     conf.RESULTS["CLUSTERING_RUNS_DIR"],
-    f'{INPUT_SUBSET}-{INPUT_STEM}',
+    f"{INPUT_SUBSET}-{INPUT_STEM}",
 ).resolve()
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -132,7 +130,7 @@ assert not data.isna().any().any()
 # ## Tests different k values (k-NN)
 
 # %% papermill={"duration": 0.030639, "end_time": "2020-12-02T17:57:35.005560", "exception": false, "start_time": "2020-12-02T17:57:34.974921", "status": "completed"} tags=[]
-k_values = np.arange(2, 100+1, 1)
+k_values = np.arange(2, 100 + 1, 1)
 k_values_to_explore = (2, 5, 10, 15, 20, 30, 40, 50, 75, 100)
 
 # %% papermill={"duration": 5.091421, "end_time": "2020-12-02T17:57:40.113877", "exception": false, "start_time": "2020-12-02T17:57:35.022456", "status": "completed"} tags=[]
@@ -151,20 +149,20 @@ eps_range_per_k_to_explore = {k: min_max_range for k in k_values_to_explore}
 
 # %% papermill={"duration": 0.927149, "end_time": "2020-12-02T17:57:41.105329", "exception": false, "start_time": "2020-12-02T17:57:40.178180", "status": "completed"} tags=[]
 for k, (distances, indices) in results.items():
-    d = distances[:,1:].mean(axis=1)
+    d = distances[:, 1:].mean(axis=1)
     d = np.sort(d)
-    
+
     fig, ax = plt.subplots()
     plt.plot(d)
-    
+
     r = eps_range_per_k_to_explore[k]
-    plt.hlines(r[0], 0, data.shape[0], color='red')
-    plt.hlines(r[1], 0, data.shape[0], color='red')
-    
+    plt.hlines(r[0], 0, data.shape[0], color="red")
+    plt.hlines(r[1], 0, data.shape[0], color="red")
+
     plt.xlim((3000, data.shape[0]))
-    plt.title(f'k={k}')
+    plt.title(f"k={k}")
     display(fig)
-    
+
     plt.close(fig)
 
 # %% [markdown] papermill={"duration": 0.020024, "end_time": "2020-12-02T17:57:41.146134", "exception": false, "start_time": "2020-12-02T17:57:41.126110", "status": "completed"} tags=[]
@@ -177,10 +175,10 @@ for k, (distances, indices) in results.items():
 CLUSTERING_OPTIONS = {}
 
 # K_RANGE is the min_samples parameter in DBSCAN (sklearn)
-CLUSTERING_OPTIONS['K_RANGE'] = k_values
-CLUSTERING_OPTIONS['EPS_RANGE_PER_K'] = eps_range_per_k
-CLUSTERING_OPTIONS['EPS_STEP'] = 33
-CLUSTERING_OPTIONS['METRIC'] = 'euclidean'
+CLUSTERING_OPTIONS["K_RANGE"] = k_values
+CLUSTERING_OPTIONS["EPS_RANGE_PER_K"] = eps_range_per_k
+CLUSTERING_OPTIONS["EPS_STEP"] = 33
+CLUSTERING_OPTIONS["METRIC"] = "euclidean"
 
 display(CLUSTERING_OPTIONS)
 
@@ -189,20 +187,16 @@ CLUSTERERS = {}
 
 idx = 0
 
-for k in CLUSTERING_OPTIONS['K_RANGE']:
-    eps_range = CLUSTERING_OPTIONS['EPS_RANGE_PER_K'][k]
-    eps_values = np.linspace(
-        eps_range[0],
-        eps_range[1],
-        CLUSTERING_OPTIONS['EPS_STEP']
-    )
-    
+for k in CLUSTERING_OPTIONS["K_RANGE"]:
+    eps_range = CLUSTERING_OPTIONS["EPS_RANGE_PER_K"][k]
+    eps_values = np.linspace(eps_range[0], eps_range[1], CLUSTERING_OPTIONS["EPS_STEP"])
+
     for eps in eps_values:
-        clus = DBSCAN(min_samples=k, eps=eps, metric='precomputed', n_jobs=N_JOBS)
-        
+        clus = DBSCAN(min_samples=k, eps=eps, metric="precomputed", n_jobs=N_JOBS)
+
         method_name = type(clus).__name__
-        CLUSTERERS[f'{method_name} #{idx}'] = clus
-        
+        CLUSTERERS[f"{method_name} #{idx}"] = clus
+
         idx = idx + 1
 
 # %% papermill={"duration": 0.035584, "end_time": "2020-12-02T17:57:41.373506", "exception": false, "start_time": "2020-12-02T17:57:41.337922", "status": "completed"} tags=[]
@@ -221,7 +215,7 @@ display(clustering_method_name)
 # ### Generate ensemble
 
 # %% papermill={"duration": 0.194685, "end_time": "2020-12-02T17:57:41.753539", "exception": false, "start_time": "2020-12-02T17:57:41.558854", "status": "completed"} tags=[]
-data_dist = pairwise_distances(data, metric=CLUSTERING_OPTIONS['METRIC'])
+data_dist = pairwise_distances(data, metric=CLUSTERING_OPTIONS["METRIC"])
 
 # %% papermill={"duration": 0.036712, "end_time": "2020-12-02T17:57:41.812368", "exception": false, "start_time": "2020-12-02T17:57:41.775656", "status": "completed"} tags=[]
 data_dist.shape
@@ -244,37 +238,33 @@ ensemble.shape
 ensemble.head()
 
 # %% papermill={"duration": 0.551893, "end_time": "2020-12-02T18:08:26.163407", "exception": false, "start_time": "2020-12-02T18:08:25.611514", "status": "completed"} tags=[]
-ensemble['n_clusters'].value_counts().head()
+ensemble["n_clusters"].value_counts().head()
 
 # %% papermill={"duration": 0.551258, "end_time": "2020-12-02T18:08:27.246288", "exception": false, "start_time": "2020-12-02T18:08:26.695030", "status": "completed"} tags=[]
-ensemble_stats = ensemble['n_clusters'].describe()
+ensemble_stats = ensemble["n_clusters"].describe()
 display(ensemble_stats)
 
 # %% [markdown] papermill={"duration": 0.537921, "end_time": "2020-12-02T18:08:28.320680", "exception": false, "start_time": "2020-12-02T18:08:27.782759", "status": "completed"} tags=[]
 # ### Testing
 
 # %% papermill={"duration": 0.577933, "end_time": "2020-12-02T18:08:29.437542", "exception": false, "start_time": "2020-12-02T18:08:28.859609", "status": "completed"} tags=[]
-assert ensemble_stats['min'] > 1
+assert ensemble_stats["min"] > 1
 
 # %% papermill={"duration": 0.554278, "end_time": "2020-12-02T18:08:30.526282", "exception": false, "start_time": "2020-12-02T18:08:29.972004", "status": "completed"} tags=[]
-assert not ensemble['n_clusters'].isna().any()
+assert not ensemble["n_clusters"].isna().any()
 
 # %% papermill={"duration": 0.554341, "end_time": "2020-12-02T18:08:31.614158", "exception": false, "start_time": "2020-12-02T18:08:31.059817", "status": "completed"} tags=[]
 # assert ensemble.shape[0] == len(CLUSTERERS)
 
 # %% papermill={"duration": 0.563803, "end_time": "2020-12-02T18:08:32.719255", "exception": false, "start_time": "2020-12-02T18:08:32.155452", "status": "completed"} tags=[]
 # all partitions have the right size
-assert np.all([
-    part['partition'].shape[0] == data.shape[0]
-    for idx, part in ensemble.iterrows()
-])
+assert np.all(
+    [part["partition"].shape[0] == data.shape[0] for idx, part in ensemble.iterrows()]
+)
 
 # %% papermill={"duration": 0.566354, "end_time": "2020-12-02T18:08:33.853665", "exception": false, "start_time": "2020-12-02T18:08:33.287311", "status": "completed"} tags=[]
 # no partition has negative clusters (noisy points)
-assert not np.any([
-    (part['partition'] < 0).any()
-    for idx, part in ensemble.iterrows()
-])
+assert not np.any([(part["partition"] < 0).any() for idx, part in ensemble.iterrows()])
 
 # %% [markdown] papermill={"duration": 0.534006, "end_time": "2020-12-02T18:08:34.924297", "exception": false, "start_time": "2020-12-02T18:08:34.390291", "status": "completed"} tags=[]
 # ### Save
@@ -284,10 +274,10 @@ output_filename = Path(
     RESULTS_DIR,
     generate_result_set_name(
         {},
-#         CLUSTERING_OPTIONS,
-        prefix=f'{clustering_method_name}',
-        suffix='.pkl',
-    )
+        #         CLUSTERING_OPTIONS,
+        prefix=f"{clustering_method_name}",
+        suffix=".pkl",
+    ),
 ).resolve()
 display(output_filename)
 

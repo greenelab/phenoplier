@@ -27,7 +27,7 @@ from IPython.display import display
 
 import conf
 
-N_JOBS = conf.GENERAL['N_JOBS']
+N_JOBS = conf.GENERAL["N_JOBS"]
 display(N_JOBS)
 
 # %% papermill={"duration": 0.019624, "end_time": "2020-12-04T19:11:06.100027", "exception": false, "start_time": "2020-12-04T19:11:06.080403", "status": "completed"} tags=[]
@@ -48,6 +48,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
 # from sklearn.cluster import SpectralClustering
 # import umap
 import matplotlib.pyplot as plt
@@ -134,10 +135,7 @@ MAX_ENSEMBLE_SIZE = 300
 
 # %% papermill={"duration": 0.026492, "end_time": "2020-12-04T19:11:07.290307", "exception": false, "start_time": "2020-12-04T19:11:07.263815", "status": "completed"} tags=[]
 # output dir for this notebook
-RESULTS_DIR = Path(
-    conf.RESULTS["CLUSTERING_DIR"],
-    'consensus_clustering'
-).resolve()
+RESULTS_DIR = Path(conf.RESULTS["CLUSTERING_DIR"], "consensus_clustering").resolve()
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 display(RESULTS_DIR)
@@ -157,12 +155,12 @@ display(input_dir)
 # %% papermill={"duration": 0.027369, "end_time": "2020-12-04T19:11:07.431762", "exception": false, "start_time": "2020-12-04T19:11:07.404393", "status": "completed"} tags=[]
 included_pkl_files = []
 
-for pkl_file in input_dir.rglob('*.pkl'):
+for pkl_file in input_dir.rglob("*.pkl"):
     pkl_file_str = str(pkl_file)
-    
-    if '-stability-' in pkl_file_str:
+
+    if "-stability-" in pkl_file_str:
         continue
-    
+
     included_pkl_files.append(pkl_file)
 
 # %% papermill={"duration": 0.027422, "end_time": "2020-12-04T19:11:07.474668", "exception": false, "start_time": "2020-12-04T19:11:07.447246", "status": "completed"} tags=[]
@@ -182,31 +180,39 @@ ensembles_list = []
 # %% papermill={"duration": 0.165073, "end_time": "2020-12-04T19:11:07.768183", "exception": false, "start_time": "2020-12-04T19:11:07.603110", "status": "completed"} tags=[]
 for ens_file in included_pkl_files:
     ens = pd.read_pickle(ens_file)
-#     ens_by_k = ens.groupby('n_clusters').apply(
-#         lambda x: np.concatenate(x['partition'].apply(lambda x: x.reshape(1, -1)), axis=0)
-#     )
+    #     ens_by_k = ens.groupby('n_clusters').apply(
+    #         lambda x: np.concatenate(x['partition'].apply(lambda x: x.reshape(1, -1)), axis=0)
+    #     )
     short_file_path = Path(*ens_file.parts[-2:])
-    
+
     if ens.shape[0] < MIN_ENSEMBLE_SIZE:
-        print(f'Less partitions than expected in {short_file_path}')
-        
-        ens = ens.sample(n=EXPECTED_ENSEMBLE_SIZE, replace=True, random_state=RANDOM_GENERATOR.bit_generator)
-        assert ens.shape[0] == EXPECTED_ENSEMBLE_SIZE
-    
-    elif ens.shape[0] > MAX_ENSEMBLE_SIZE:
-        print(f'More partitions than expected in {short_file_path}')
-        
-        ens = ens.sample(n=EXPECTED_ENSEMBLE_SIZE, random_state=RANDOM_GENERATOR.bit_generator)
+        print(f"Less partitions than expected in {short_file_path}")
+
+        ens = ens.sample(
+            n=EXPECTED_ENSEMBLE_SIZE,
+            replace=True,
+            random_state=RANDOM_GENERATOR.bit_generator,
+        )
         assert ens.shape[0] == EXPECTED_ENSEMBLE_SIZE
 
-    ens_full_format = np.concatenate(ens['partition'].apply(lambda x: x.reshape(1, -1)), axis=0)
-    
+    elif ens.shape[0] > MAX_ENSEMBLE_SIZE:
+        print(f"More partitions than expected in {short_file_path}")
+
+        ens = ens.sample(
+            n=EXPECTED_ENSEMBLE_SIZE, random_state=RANDOM_GENERATOR.bit_generator
+        )
+        assert ens.shape[0] == EXPECTED_ENSEMBLE_SIZE
+
+    ens_full_format = np.concatenate(
+        ens["partition"].apply(lambda x: x.reshape(1, -1)), axis=0
+    )
+
     # check ensemble size
-#     n_parts = ensemble_full_format.shape[0]
-#     if n_parts > MAX_ENSEMBLE_SIZE:
-    
+    #     n_parts = ensemble_full_format.shape[0]
+    #     if n_parts > MAX_ENSEMBLE_SIZE:
+
     n_partitions += ens_full_format.shape[0]
-    
+
     ensembles_list.append(ens_full_format)
 
 # %% papermill={"duration": 0.029031, "end_time": "2020-12-04T19:11:07.815621", "exception": false, "start_time": "2020-12-04T19:11:07.786590", "status": "completed"} tags=[]
@@ -233,10 +239,7 @@ assert full_ensemble.shape == (n_partitions, n_data_objects)
 # ## Save
 
 # %% papermill={"duration": 0.029261, "end_time": "2020-12-04T19:11:08.305298", "exception": false, "start_time": "2020-12-04T19:11:08.276037", "status": "completed"} tags=[]
-output_file = Path(
-    RESULTS_DIR,
-    'ensemble.npy'
-).resolve()
+output_file = Path(RESULTS_DIR, "ensemble.npy").resolve()
 display(output_file)
 
 # %% papermill={"duration": 0.030471, "end_time": "2020-12-04T19:11:08.353081", "exception": false, "start_time": "2020-12-04T19:11:08.322610", "status": "completed"} tags=[]
@@ -267,10 +270,7 @@ ensemble_coassoc_matrix
 # ## Save
 
 # %% papermill={"duration": 0.031667, "end_time": "2020-12-04T19:26:12.006893", "exception": false, "start_time": "2020-12-04T19:26:11.975226", "status": "completed"} tags=[]
-output_file = Path(
-    RESULTS_DIR,
-    'ensemble_coassoc_matrix.npy'
-).resolve()
+output_file = Path(RESULTS_DIR, "ensemble_coassoc_matrix.npy").resolve()
 display(output_file)
 
 # %% papermill={"duration": 0.082496, "end_time": "2020-12-04T19:26:12.107274", "exception": false, "start_time": "2020-12-04T19:26:12.024778", "status": "completed"} tags=[]
