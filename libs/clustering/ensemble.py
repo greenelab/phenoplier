@@ -2,21 +2,14 @@ import os
 from subprocess import call
 
 import scipy.io as sio
-
 import numpy as np
-
-# from scipy.spatial.distance import pdist, squareform
 import pandas as pd
 from sklearn.metrics import pairwise_distances
 from sklearn.metrics import adjusted_rand_score as ari
 from sklearn.metrics import adjusted_mutual_info_score as ami
 from sklearn.metrics import normalized_mutual_info_score as nmi
 from sklearn.cluster import AgglomerativeClustering, SpectralClustering
-
-# from scipy.cluster.hierarchy import fcluster, linkage
 from tqdm import tqdm
-
-from utils import get_temp_file_name
 
 
 def reset_estimator(estimator_obj):
@@ -202,83 +195,6 @@ def eac(ensemble, k, linkage_method="average", ensemble_is_coassoc_matrix=False)
         linkage=linkage_method,
     ).fit_predict(y)
 
-    # z = linkage(y, method=linkage_method)
-    # return fcluster(z, k, criterion='maxclust')
-
-
-def cspa(ensemble, k):
-    return consensus_function("cspa", ensemble, k)
-
-
-def hgpa(ensemble, k):
-    return consensus_function("hgpa", ensemble, k)
-
-
-def mcla(ensemble, k):
-    return consensus_function("mcla", ensemble, k)
-
-
-def consensus_function(consensus_algorithm, ensemble, k):
-    # save ensemble to temp file
-    ensemble_file = get_temp_file_name(".mat")
-    sio.savemat(ensemble_file, {"ensemble": ensemble})
-
-    consensus_part_file = get_temp_file_name(".mat")
-
-    graphfunc_path = _get_graphfunc_path()
-
-    call(
-        [
-            "octave",
-            "--no-gui-libs",
-            "--path",
-            graphfunc_path,
-            "--eval",
-            _get_code(
-                consensus_algorithm,
-                ensemble_file,
-                k,
-                consensus_part_file,
-                graphfunc_path,
-            ),
-        ]
-    )
-
-    res = sio.loadmat(consensus_part_file, matlab_compatible=True)
-    os.remove(ensemble_file)
-    os.remove(consensus_part_file)
-
-    return res["cons_part"][0]
-
-
-def _get_graphfunc_path():
-    dirname = os.path.dirname
-    current_module_path = dirname(dirname(dirname(__file__)))
-
-    # TODO: migrate to pathlib
-    cluster_ensemble_folder = os.path.join(
-        current_module_path, "libs/ClusterEnsemble-V2.0"
-    )
-    if not os.path.exists(cluster_ensemble_folder):
-        raise Exception(
-            f"Cluster ensembles path does not exist: {cluster_ensemble_folder}"
-        )
-
-    return cluster_ensemble_folder
-
-
-def _get_code(
-    consensus_algorithm, ensemble_file, k, consensus_part_file, graphfunc_path
-):
-    return (
-        "clear all;"
-        "setenv('PMETIS_PATH', ['" + graphfunc_path + "' filesep 'pmetis']);"
-        "setenv('SHMETIS_PATH', ['" + graphfunc_path + "' filesep 'shmetis']);"
-        "load('" + ensemble_file + "');"
-        "cons_part = " + consensus_algorithm + "(ensemble, " + str(k) + ");"
-        "save('" + consensus_part_file + "', 'cons_part', '-v6');"
-    )
-
 
 def eac_single(ensemble, k):
     return eac(ensemble, k, linkage_method="single")
@@ -308,14 +224,6 @@ def eac_average_coassoc_matrix(coassoc_matrix, k):
     return eac(
         coassoc_matrix, k, ensemble_is_coassoc_matrix=True, linkage_method="average"
     )
-
-
-def sc_consensus(distance_matrix, k, n_init=10):
-    return SpectralClustering(
-        n_clusters=k,
-        affinity="precomputed",
-        n_init=n_init,
-    ).fit_predict(1.0 - distance_matrix)
 
 
 def supraconsensus(
