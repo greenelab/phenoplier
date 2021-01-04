@@ -5,10 +5,6 @@ from sklearn.metrics import adjusted_rand_score as ari
 from sklearn.cluster import KMeans
 
 from clustering.ensemble import (
-    eac,
-    cspa,
-    hgpa,
-    mcla,
     eac_single,
     eac_complete,
     eac_average,
@@ -93,9 +89,9 @@ class SupraconsensusTest(unittest.TestCase):
         # Run
         consensus_part = supraconsensus(ensemble, 2)[0]
 
-        eac_single_part = eac(ensemble, 2, linkage_method="single")
-        eac_complete_part = eac(ensemble, 2, linkage_method="complete")
-        eac_average_part = eac(ensemble, 2, linkage_method="average")
+        eac_single_part = eac_single(ensemble, 2)
+        eac_complete_part = eac_complete(ensemble, 2)
+        eac_average_part = eac_average(ensemble, 2)
 
         # supraconsensus partition should be one of the others
         assert (
@@ -108,41 +104,6 @@ class SupraconsensusTest(unittest.TestCase):
         assert anmi(ensemble, consensus_part) >= anmi(ensemble, eac_single_part)
         assert anmi(ensemble, consensus_part) >= anmi(ensemble, eac_complete_part)
         assert anmi(ensemble, consensus_part) >= anmi(ensemble, eac_average_part)
-
-    def test_anmi_max_graphs(self):
-        # Prepare
-        np.random.seed(1)
-
-        data, ref_part = datasets.make_circles(n_samples=150, factor=0.3, noise=0.05)
-
-        ensemble = np.array(
-            [
-                KMeans(n_clusters=k, init="random", n_init=1).fit_predict(data)
-                for k in range(2, 6)
-            ]
-        )
-
-        # Run
-        consensus_results = supraconsensus(ensemble, 2, methods=(cspa, hgpa, mcla))
-        consensus_part = consensus_results[0]
-        consensus_best_method = consensus_results[1]
-
-        cspa_part = cspa(ensemble, 2)
-        hgpa_part = hgpa(ensemble, 2)
-        mcla_part = mcla(ensemble, 2)
-
-        # supraconsensus partition should be one of the others
-        assert (
-            ari(consensus_part, cspa_part) == 1.0
-            or ari(consensus_part, hgpa_part) == 1.0
-            or ari(consensus_part, mcla_part) == 1.0
-        )
-        assert consensus_best_method in ("cspa", "hgpa", "mcla")
-
-        # ANMI should be greater or equal for the supraconsensus
-        assert anmi(ensemble, consensus_part) >= anmi(ensemble, cspa_part)
-        assert anmi(ensemble, consensus_part) >= anmi(ensemble, hgpa_part)
-        assert anmi(ensemble, consensus_part) >= anmi(ensemble, mcla_part)
 
     def test_supraconsensus_returns_stats(self):
         # Prepare
@@ -158,14 +119,11 @@ class SupraconsensusTest(unittest.TestCase):
             ]
         )
 
-        consensus_methods = (eac_single, eac_complete, eac_average, cspa, hgpa, mcla)
+        consensus_methods = (eac_single, eac_complete, eac_average)
         consensus_methods_names = (
             "eac_single",
             "eac_complete",
             "eac_average",
-            "cspa",
-            "hgpa",
-            "mcla",
         )
 
         # Run
