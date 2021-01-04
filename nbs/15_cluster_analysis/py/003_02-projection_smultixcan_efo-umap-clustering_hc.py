@@ -27,7 +27,7 @@ from IPython.display import display
 
 import conf
 
-N_JOBS = conf.GENERAL['N_JOBS']
+N_JOBS = conf.GENERAL["N_JOBS"]
 display(N_JOBS)
 
 # %% papermill={"duration": 0.022543, "end_time": "2020-12-03T02:17:52.513497", "exception": false, "start_time": "2020-12-03T02:17:52.490954", "status": "completed"} tags=[]
@@ -61,18 +61,18 @@ from utils import generate_result_set_name
 # ## Input data
 
 # %% papermill={"duration": 0.029912, "end_time": "2020-12-03T02:17:54.294843", "exception": false, "start_time": "2020-12-03T02:17:54.264931", "status": "completed"} tags=[]
-INPUT_SUBSET = 'umap'
+INPUT_SUBSET = "umap"
 
 # %% papermill={"duration": 0.029359, "end_time": "2020-12-03T02:17:54.340076", "exception": false, "start_time": "2020-12-03T02:17:54.310717", "status": "completed"} tags=[]
-INPUT_STEM = 'z_score_std-projection-smultixcan-efo_partial-mashr-zscores'
+INPUT_STEM = "z_score_std-projection-smultixcan-efo_partial-mashr-zscores"
 
 # %% papermill={"duration": 0.029488, "end_time": "2020-12-03T02:17:54.385580", "exception": false, "start_time": "2020-12-03T02:17:54.356092", "status": "completed"} tags=[]
 # parameters of the dimentionality reduction steps
 DR_OPTIONS = {
-    'n_components': 50,
-    'metric': 'euclidean',
-    'n_neighbors': 15,
-    'random_state': 0,
+    "n_components": 50,
+    "metric": "euclidean",
+    "n_neighbors": 15,
+    "random_state": 0,
 }
 
 # %% papermill={"duration": 0.031802, "end_time": "2020-12-03T02:17:54.433398", "exception": false, "start_time": "2020-12-03T02:17:54.401596", "status": "completed"} tags=[]
@@ -80,14 +80,12 @@ input_filepath = Path(
     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
     INPUT_SUBSET,
     generate_result_set_name(
-        DR_OPTIONS,
-        prefix=f'{INPUT_SUBSET}-{INPUT_STEM}-',
-        suffix='.pkl'
-    )
+        DR_OPTIONS, prefix=f"{INPUT_SUBSET}-{INPUT_STEM}-", suffix=".pkl"
+    ),
 ).resolve()
 display(input_filepath)
 
-assert input_filepath.exists(), 'Input file does not exist'
+assert input_filepath.exists(), "Input file does not exist"
 
 input_filepath_stem = input_filepath.stem
 display(input_filepath_stem)
@@ -99,15 +97,15 @@ display(input_filepath_stem)
 from sklearn.cluster import AgglomerativeClustering
 
 # %% papermill={"duration": 0.030281, "end_time": "2020-12-03T02:17:54.566961", "exception": false, "start_time": "2020-12-03T02:17:54.536680", "status": "completed"} tags=[]
-CLUSTERING_ATTRIBUTES_TO_SAVE = ['n_clusters']
+CLUSTERING_ATTRIBUTES_TO_SAVE = ["n_clusters"]
 
 # %% papermill={"duration": 0.031305, "end_time": "2020-12-03T02:17:54.614481", "exception": false, "start_time": "2020-12-03T02:17:54.583176", "status": "completed"} tags=[]
 CLUSTERING_OPTIONS = {}
 
-CLUSTERING_OPTIONS['K_MIN'] = 2
-CLUSTERING_OPTIONS['K_MAX'] = 75 # sqrt(3749) + some more to get closer to 295
-CLUSTERING_OPTIONS['LINKAGE'] = {'ward', 'complete', 'average', 'single'}
-CLUSTERING_OPTIONS['AFFINITY'] = 'euclidean'
+CLUSTERING_OPTIONS["K_MIN"] = 2
+CLUSTERING_OPTIONS["K_MAX"] = 75  # sqrt(3749) + some more to get closer to 295
+CLUSTERING_OPTIONS["LINKAGE"] = {"ward", "complete", "average", "single"}
+CLUSTERING_OPTIONS["AFFINITY"] = "euclidean"
 
 display(CLUSTERING_OPTIONS)
 
@@ -116,22 +114,22 @@ CLUSTERERS = {}
 
 idx = 0
 
-for k in range(CLUSTERING_OPTIONS['K_MIN'], CLUSTERING_OPTIONS['K_MAX']+1):
-    for linkage in CLUSTERING_OPTIONS['LINKAGE']:
-        if linkage == 'ward':
-            affinity = 'euclidean'
+for k in range(CLUSTERING_OPTIONS["K_MIN"], CLUSTERING_OPTIONS["K_MAX"] + 1):
+    for linkage in CLUSTERING_OPTIONS["LINKAGE"]:
+        if linkage == "ward":
+            affinity = "euclidean"
         else:
-            affinity = 'precomputed'
-        
+            affinity = "precomputed"
+
         clus = AgglomerativeClustering(
-                n_clusters=k,
-                affinity=affinity,
-                linkage=linkage,
-            )
-        
+            n_clusters=k,
+            affinity=affinity,
+            linkage=linkage,
+        )
+
         method_name = type(clus).__name__
-        CLUSTERERS[f'{method_name} #{idx}'] = clus
-        
+        CLUSTERERS[f"{method_name} #{idx}"] = clus
+
         idx = idx + 1
 
 # %% papermill={"duration": 0.03075, "end_time": "2020-12-03T02:17:54.711697", "exception": false, "start_time": "2020-12-03T02:17:54.680947", "status": "completed"} tags=[]
@@ -153,7 +151,7 @@ display(clustering_method_name)
 # output dir for this notebook
 RESULTS_DIR = Path(
     conf.RESULTS["CLUSTERING_RUNS_DIR"],
-    f'{INPUT_SUBSET}-{INPUT_STEM}',
+    f"{INPUT_SUBSET}-{INPUT_STEM}",
 ).resolve()
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -185,7 +183,7 @@ from sklearn.metrics import pairwise_distances
 from clustering.ensemble import generate_ensemble
 
 # %% papermill={"duration": 0.176116, "end_time": "2020-12-03T02:17:55.467606", "exception": false, "start_time": "2020-12-03T02:17:55.291490", "status": "completed"} tags=[]
-data_dist = pairwise_distances(data, metric=CLUSTERING_OPTIONS['AFFINITY'])
+data_dist = pairwise_distances(data, metric=CLUSTERING_OPTIONS["AFFINITY"])
 
 # %% papermill={"duration": 0.033045, "end_time": "2020-12-03T02:17:55.519393", "exception": false, "start_time": "2020-12-03T02:17:55.486348", "status": "completed"} tags=[]
 data_dist.shape
@@ -209,51 +207,47 @@ ensemble.shape
 ensemble.head()
 
 # %% papermill={"duration": 0.082424, "end_time": "2020-12-03T02:45:25.287808", "exception": false, "start_time": "2020-12-03T02:45:25.205384", "status": "completed"} tags=[]
-ensemble['n_clusters'].value_counts().head()
+ensemble["n_clusters"].value_counts().head()
 
 # %% papermill={"duration": 0.083507, "end_time": "2020-12-03T02:45:25.438790", "exception": false, "start_time": "2020-12-03T02:45:25.355283", "status": "completed"} tags=[]
-ensemble_stats = ensemble['n_clusters'].describe()
+ensemble_stats = ensemble["n_clusters"].describe()
 display(ensemble_stats)
 
 # %% [markdown] papermill={"duration": 0.065573, "end_time": "2020-12-03T02:45:25.571629", "exception": false, "start_time": "2020-12-03T02:45:25.506056", "status": "completed"} tags=[]
 # ### Testing
 
 # %% papermill={"duration": 0.080149, "end_time": "2020-12-03T02:45:25.717547", "exception": false, "start_time": "2020-12-03T02:45:25.637398", "status": "completed"} tags=[]
-assert ensemble_stats['min'] > 1
+assert ensemble_stats["min"] > 1
 
 # %% papermill={"duration": 0.081478, "end_time": "2020-12-03T02:45:25.865672", "exception": false, "start_time": "2020-12-03T02:45:25.784194", "status": "completed"} tags=[]
-assert not ensemble['n_clusters'].isna().any()
+assert not ensemble["n_clusters"].isna().any()
 
 # %% papermill={"duration": 0.079979, "end_time": "2020-12-03T02:45:26.012481", "exception": false, "start_time": "2020-12-03T02:45:25.932502", "status": "completed"} tags=[]
 assert ensemble.shape[0] == len(CLUSTERERS)
 
 # %% papermill={"duration": 0.098273, "end_time": "2020-12-03T02:45:26.177409", "exception": false, "start_time": "2020-12-03T02:45:26.079136", "status": "completed"} tags=[]
 # all partitions have the right size
-assert np.all([
-    part['partition'].shape[0] == data.shape[0]
-    for idx, part in ensemble.iterrows()
-])
+assert np.all(
+    [part["partition"].shape[0] == data.shape[0] for idx, part in ensemble.iterrows()]
+)
 
 # %% papermill={"duration": 0.101418, "end_time": "2020-12-03T02:45:26.345005", "exception": false, "start_time": "2020-12-03T02:45:26.243587", "status": "completed"} tags=[]
 # no partition has negative clusters (noisy points)
-assert not np.any([
-    (part['partition'] < 0).any()
-    for idx, part in ensemble.iterrows()
-])
+assert not np.any([(part["partition"] < 0).any() for idx, part in ensemble.iterrows()])
 
 # %% [markdown] papermill={"duration": 0.065269, "end_time": "2020-12-03T02:45:26.477137", "exception": false, "start_time": "2020-12-03T02:45:26.411868", "status": "completed"} tags=[]
 # ## Save
 
 # %% papermill={"duration": 0.08065, "end_time": "2020-12-03T02:45:26.622922", "exception": false, "start_time": "2020-12-03T02:45:26.542272", "status": "completed"} tags=[]
-del CLUSTERING_OPTIONS['LINKAGE']
+del CLUSTERING_OPTIONS["LINKAGE"]
 
 output_filename = Path(
     RESULTS_DIR,
     generate_result_set_name(
         CLUSTERING_OPTIONS,
-        prefix=f'{clustering_method_name}-',
-        suffix='.pkl',
-    )
+        prefix=f"{clustering_method_name}-",
+        suffix=".pkl",
+    ),
 ).resolve()
 display(output_filename)
 

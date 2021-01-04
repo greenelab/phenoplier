@@ -27,7 +27,7 @@ from IPython.display import display
 
 import conf
 
-N_JOBS = conf.GENERAL['N_JOBS']
+N_JOBS = conf.GENERAL["N_JOBS"]
 display(N_JOBS)
 
 # %% papermill={"duration": 0.027466, "end_time": "2020-12-02T18:44:00.315803", "exception": false, "start_time": "2020-12-02T18:44:00.288337", "status": "completed"} tags=[]
@@ -64,16 +64,16 @@ INITIAL_RANDOM_STATE = 10000
 # ## Input data
 
 # %% papermill={"duration": 0.034585, "end_time": "2020-12-02T18:44:02.229262", "exception": false, "start_time": "2020-12-02T18:44:02.194677", "status": "completed"} tags=[]
-INPUT_SUBSET = 'pca'
+INPUT_SUBSET = "pca"
 
 # %% papermill={"duration": 0.035828, "end_time": "2020-12-02T18:44:02.286646", "exception": false, "start_time": "2020-12-02T18:44:02.250818", "status": "completed"} tags=[]
-INPUT_STEM = 'z_score_std-projection-smultixcan-efo_partial-mashr-zscores'
+INPUT_STEM = "z_score_std-projection-smultixcan-efo_partial-mashr-zscores"
 
 # %% papermill={"duration": 0.035402, "end_time": "2020-12-02T18:44:02.343836", "exception": false, "start_time": "2020-12-02T18:44:02.308434", "status": "completed"} tags=[]
 DR_OPTIONS = {
-    'n_components': 50,
-    'svd_solver': 'full',
-    'random_state': 0,
+    "n_components": 50,
+    "svd_solver": "full",
+    "random_state": 0,
 }
 
 # %% papermill={"duration": 0.037498, "end_time": "2020-12-02T18:44:02.402742", "exception": false, "start_time": "2020-12-02T18:44:02.365244", "status": "completed"} tags=[]
@@ -81,14 +81,12 @@ input_filepath = Path(
     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
     INPUT_SUBSET,
     generate_result_set_name(
-        DR_OPTIONS,
-        prefix=f'{INPUT_SUBSET}-{INPUT_STEM}-',
-        suffix='.pkl'
-    )
+        DR_OPTIONS, prefix=f"{INPUT_SUBSET}-{INPUT_STEM}-", suffix=".pkl"
+    ),
 ).resolve()
 display(input_filepath)
 
-assert input_filepath.exists(), 'Input file does not exist'
+assert input_filepath.exists(), "Input file does not exist"
 
 input_filepath_stem = input_filepath.stem
 display(input_filepath_stem)
@@ -100,15 +98,15 @@ display(input_filepath_stem)
 from sklearn.cluster import KMeans
 
 # %% papermill={"duration": 0.035489, "end_time": "2020-12-02T18:44:02.570690", "exception": false, "start_time": "2020-12-02T18:44:02.535201", "status": "completed"} tags=[]
-CLUSTERING_ATTRIBUTES_TO_SAVE = ['n_clusters']
+CLUSTERING_ATTRIBUTES_TO_SAVE = ["n_clusters"]
 
 # %% papermill={"duration": 0.036435, "end_time": "2020-12-02T18:44:02.628834", "exception": false, "start_time": "2020-12-02T18:44:02.592399", "status": "completed"} tags=[]
 CLUSTERING_OPTIONS = {}
 
-CLUSTERING_OPTIONS['K_MIN'] = 2
-CLUSTERING_OPTIONS['K_MAX'] = 60 # sqrt(3749)
-CLUSTERING_OPTIONS['N_REPS_PER_K'] = 5
-CLUSTERING_OPTIONS['KMEANS_N_INIT'] = 10
+CLUSTERING_OPTIONS["K_MIN"] = 2
+CLUSTERING_OPTIONS["K_MAX"] = 60  # sqrt(3749)
+CLUSTERING_OPTIONS["N_REPS_PER_K"] = 5
+CLUSTERING_OPTIONS["KMEANS_N_INIT"] = 10
 
 display(CLUSTERING_OPTIONS)
 
@@ -118,17 +116,17 @@ CLUSTERERS = {}
 idx = 0
 random_state = INITIAL_RANDOM_STATE
 
-for k in range(CLUSTERING_OPTIONS['K_MIN'], CLUSTERING_OPTIONS['K_MAX']+1):
-    for i in range(CLUSTERING_OPTIONS['N_REPS_PER_K']):
+for k in range(CLUSTERING_OPTIONS["K_MIN"], CLUSTERING_OPTIONS["K_MAX"] + 1):
+    for i in range(CLUSTERING_OPTIONS["N_REPS_PER_K"]):
         clus = KMeans(
-                n_clusters=k,
-                n_init=CLUSTERING_OPTIONS['KMEANS_N_INIT'],
-                random_state=random_state,
-            )
-        
+            n_clusters=k,
+            n_init=CLUSTERING_OPTIONS["KMEANS_N_INIT"],
+            random_state=random_state,
+        )
+
         method_name = type(clus).__name__
-        CLUSTERERS[f'{method_name} #{idx}'] = clus
-        
+        CLUSTERERS[f"{method_name} #{idx}"] = clus
+
         random_state = random_state + 1
         idx = idx + 1
 
@@ -151,7 +149,7 @@ display(clustering_method_name)
 # output dir for this notebook
 RESULTS_DIR = Path(
     conf.RESULTS["CLUSTERING_RUNS_DIR"],
-    f'{INPUT_SUBSET}-{INPUT_STEM}',
+    f"{INPUT_SUBSET}-{INPUT_STEM}",
 ).resolve()
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -196,37 +194,33 @@ ensemble.shape
 ensemble.head()
 
 # %% papermill={"duration": 0.087114, "end_time": "2020-12-02T18:49:56.150031", "exception": false, "start_time": "2020-12-02T18:49:56.062917", "status": "completed"} tags=[]
-ensemble['n_clusters'].value_counts().head()
+ensemble["n_clusters"].value_counts().head()
 
 # %% papermill={"duration": 0.087293, "end_time": "2020-12-02T18:49:56.307746", "exception": false, "start_time": "2020-12-02T18:49:56.220453", "status": "completed"} tags=[]
-ensemble_stats = ensemble['n_clusters'].describe()
+ensemble_stats = ensemble["n_clusters"].describe()
 display(ensemble_stats)
 
 # %% [markdown] papermill={"duration": 0.069676, "end_time": "2020-12-02T18:49:56.448660", "exception": false, "start_time": "2020-12-02T18:49:56.378984", "status": "completed"} tags=[]
 # ## Testing
 
 # %% papermill={"duration": 0.085961, "end_time": "2020-12-02T18:49:56.604792", "exception": false, "start_time": "2020-12-02T18:49:56.518831", "status": "completed"} tags=[]
-assert ensemble_stats['min'] > 1
+assert ensemble_stats["min"] > 1
 
 # %% papermill={"duration": 0.084809, "end_time": "2020-12-02T18:49:56.759997", "exception": false, "start_time": "2020-12-02T18:49:56.675188", "status": "completed"} tags=[]
-assert not ensemble['n_clusters'].isna().any()
+assert not ensemble["n_clusters"].isna().any()
 
 # %% papermill={"duration": 0.089788, "end_time": "2020-12-02T18:49:56.922118", "exception": false, "start_time": "2020-12-02T18:49:56.832330", "status": "completed"} tags=[]
 assert ensemble.shape[0] == len(CLUSTERERS)
 
 # %% papermill={"duration": 0.102423, "end_time": "2020-12-02T18:49:57.096774", "exception": false, "start_time": "2020-12-02T18:49:56.994351", "status": "completed"} tags=[]
 # all partitions have the right size
-assert np.all([
-    part['partition'].shape[0] == data.shape[0]
-    for idx, part in ensemble.iterrows()
-])
+assert np.all(
+    [part["partition"].shape[0] == data.shape[0] for idx, part in ensemble.iterrows()]
+)
 
 # %% papermill={"duration": 0.105329, "end_time": "2020-12-02T18:49:57.273648", "exception": false, "start_time": "2020-12-02T18:49:57.168319", "status": "completed"} tags=[]
 # no partition has negative clusters (noisy points)
-assert not np.any([
-    (part['partition'] < 0).any()
-    for idx, part in ensemble.iterrows()
-])
+assert not np.any([(part["partition"] < 0).any() for idx, part in ensemble.iterrows()])
 
 # %% [markdown] papermill={"duration": 0.069854, "end_time": "2020-12-02T18:49:57.414383", "exception": false, "start_time": "2020-12-02T18:49:57.344529", "status": "completed"} tags=[]
 # ## Save
@@ -236,9 +230,9 @@ output_filename = Path(
     RESULTS_DIR,
     generate_result_set_name(
         CLUSTERING_OPTIONS,
-        prefix=f'{clustering_method_name}-',
-        suffix='.pkl',
-    )
+        prefix=f"{clustering_method_name}-",
+        suffix=".pkl",
+    ),
 ).resolve()
 display(output_filename)
 
@@ -252,16 +246,20 @@ ensemble.to_pickle(output_filename)
 # ## Group ensemble by n_clusters
 
 # %% papermill={"duration": 0.102501, "end_time": "2020-12-02T18:49:58.205548", "exception": false, "start_time": "2020-12-02T18:49:58.103047", "status": "completed"} tags=[]
-parts = ensemble.groupby('n_clusters').apply(lambda x: np.concatenate(x['partition'].apply(lambda x: x.reshape(1, -1)), axis=0))
+parts = ensemble.groupby("n_clusters").apply(
+    lambda x: np.concatenate(x["partition"].apply(lambda x: x.reshape(1, -1)), axis=0)
+)
 
 # %% papermill={"duration": 0.098028, "end_time": "2020-12-02T18:49:58.375195", "exception": false, "start_time": "2020-12-02T18:49:58.277167", "status": "completed"} tags=[]
 parts.head()
 
 # %% papermill={"duration": 0.086388, "end_time": "2020-12-02T18:49:58.533513", "exception": false, "start_time": "2020-12-02T18:49:58.447125", "status": "completed"} tags=[]
-assert np.all([
-    parts.loc[k].shape == (CLUSTERING_OPTIONS['N_REPS_PER_K'], data.shape[0])
-    for k in parts.index
-])
+assert np.all(
+    [
+        parts.loc[k].shape == (CLUSTERING_OPTIONS["N_REPS_PER_K"], data.shape[0])
+        for k in parts.index
+    ]
+)
 
 # %% [markdown] papermill={"duration": 0.070928, "end_time": "2020-12-02T18:49:58.677810", "exception": false, "start_time": "2020-12-02T18:49:58.606882", "status": "completed"} tags=[]
 # ## Compute stability
@@ -272,8 +270,7 @@ from scipy.spatial.distance import squareform, pdist
 
 # %% papermill={"duration": 0.706572, "end_time": "2020-12-02T18:49:59.611460", "exception": false, "start_time": "2020-12-02T18:49:58.904888", "status": "completed"} tags=[]
 parts_ari = pd.Series(
-    {k: pdist(parts.loc[k], metric=ari) for k in parts.index},
-    name='k'
+    {k: pdist(parts.loc[k], metric=ari) for k in parts.index}, name="k"
 )
 
 # %% papermill={"duration": 0.088132, "end_time": "2020-12-02T18:49:59.770925", "exception": false, "start_time": "2020-12-02T18:49:59.682793", "status": "completed"} tags=[]
@@ -281,13 +278,21 @@ parts_ari_stability = parts_ari.apply(lambda x: x.mean())
 display(parts_ari_stability.sort_values(ascending=False).head(15))
 
 # %% papermill={"duration": 0.088741, "end_time": "2020-12-02T18:49:59.931085", "exception": false, "start_time": "2020-12-02T18:49:59.842344", "status": "completed"} tags=[]
-parts_ari_df = pd.DataFrame.from_records(parts_ari.tolist()).set_index(parts_ari.index.copy())
+parts_ari_df = pd.DataFrame.from_records(parts_ari.tolist()).set_index(
+    parts_ari.index.copy()
+)
 
 # %% papermill={"duration": 0.086709, "end_time": "2020-12-02T18:50:00.090807", "exception": false, "start_time": "2020-12-02T18:50:00.004098", "status": "completed"} tags=[]
 parts_ari_df.shape
 
 # %% papermill={"duration": 0.086538, "end_time": "2020-12-02T18:50:00.249615", "exception": false, "start_time": "2020-12-02T18:50:00.163077", "status": "completed"} tags=[]
-assert int( (CLUSTERING_OPTIONS['N_REPS_PER_K'] * (CLUSTERING_OPTIONS['N_REPS_PER_K'] - 1) ) / 2) == parts_ari_df.shape[1]
+assert (
+    int(
+        (CLUSTERING_OPTIONS["N_REPS_PER_K"] * (CLUSTERING_OPTIONS["N_REPS_PER_K"] - 1))
+        / 2
+    )
+    == parts_ari_df.shape[1]
+)
 
 # %% papermill={"duration": 0.091877, "end_time": "2020-12-02T18:50:00.412992", "exception": false, "start_time": "2020-12-02T18:50:00.321115", "status": "completed"} tags=[]
 parts_ari_df.head()
@@ -300,9 +305,9 @@ output_filename = Path(
     RESULTS_DIR,
     generate_result_set_name(
         CLUSTERING_OPTIONS,
-        prefix=f'{clustering_method_name}-stability-',
-        suffix='.pkl',
-    )
+        prefix=f"{clustering_method_name}-stability-",
+        suffix=".pkl",
+    ),
 ).resolve()
 display(output_filename)
 
@@ -313,7 +318,11 @@ parts_ari_df.to_pickle(output_filename)
 # ## Stability plot
 
 # %% papermill={"duration": 0.088727, "end_time": "2020-12-02T18:50:01.185534", "exception": false, "start_time": "2020-12-02T18:50:01.096807", "status": "completed"} tags=[]
-parts_ari_df_plot = parts_ari_df.stack().reset_index().rename(columns={'level_0': 'k', 'level_1': 'idx', 0: 'ari'})
+parts_ari_df_plot = (
+    parts_ari_df.stack()
+    .reset_index()
+    .rename(columns={"level_0": "k", "level_1": "idx", 0: "ari"})
+)
 
 # %% papermill={"duration": 0.08795, "end_time": "2020-12-02T18:50:01.346509", "exception": false, "start_time": "2020-12-02T18:50:01.258559", "status": "completed"} tags=[]
 parts_ari_df_plot.dtypes
@@ -323,14 +332,16 @@ parts_ari_df_plot.head()
 
 # %% papermill={"duration": 2.990997, "end_time": "2020-12-02T18:50:04.576103", "exception": false, "start_time": "2020-12-02T18:50:01.585106", "status": "completed"} tags=[]
 # with sns.axes_style('whitegrid', {'grid.linestyle': '--'}):
-with sns.plotting_context('talk', font_scale=0.75), sns.axes_style('whitegrid', {'grid.linestyle': '--'}):
+with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
+    "whitegrid", {"grid.linestyle": "--"}
+):
     fig = plt.figure(figsize=(12, 6))
-    ax = sns.pointplot(data=parts_ari_df_plot, x='k', y='ari')
-    ax.set_ylabel('Averange ARI')
-    ax.set_xlabel('Number of clusters ($k$)')
+    ax = sns.pointplot(data=parts_ari_df_plot, x="k", y="ari")
+    ax.set_ylabel("Averange ARI")
+    ax.set_xlabel("Number of clusters ($k$)")
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-#     ax.set_ylim(0.0, 1.0)
-#     ax.set_xlim(CLUSTERING_OPTIONS['K_MIN'], CLUSTERING_OPTIONS['K_MAX'])
+    #     ax.set_ylim(0.0, 1.0)
+    #     ax.set_xlim(CLUSTERING_OPTIONS['K_MIN'], CLUSTERING_OPTIONS['K_MAX'])
     plt.grid(True)
     plt.tight_layout()
 
