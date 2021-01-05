@@ -173,6 +173,7 @@ def download_ukb_to_efo_map_tsv(**kwargs):
         "https://upenn.box.com/shared/static/hwlpdlp3pq9buv955q5grlkxwwfxt6ul.tsv",
         output_file,
         "bfa56310d40e28f89c1f1b5d4ade0bf0",
+        logger=logger,
     )
 
 
@@ -185,6 +186,7 @@ def download_efo_ontology(**kwargs):
         "https://upenn.box.com/shared/static/nsrxx3szg4s69j84dg2oakx6mwjxoarb.obo",
         output_file,
         "2bf23581ff6365514a0b3b1b5ae4651a",
+        logger=logger,
     )
 
 

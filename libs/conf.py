@@ -60,6 +60,7 @@ GENERAL["TERM_ID_LABEL_FILE"] = Path(DATA_DIR, "term_id_labels.tsv.gz").resolve(
 
 GENERAL["TERM_ID_XREFS_FILE"] = Path(DATA_DIR, "term_id_xrefs.tsv.gz").resolve()
 
+# Experimental Factor Ontology (EFO)
 GENERAL["EFO_ONTOLOGY_OBO_FILE"] = Path(DATA_DIR, "efo.obo").resolve()
 
 #
