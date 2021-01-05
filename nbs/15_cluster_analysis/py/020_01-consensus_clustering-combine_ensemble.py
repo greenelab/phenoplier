@@ -128,11 +128,13 @@ from clustering.ensemble import (
 )
 
 # %% papermill={"duration": 0.027886, "end_time": "2020-12-06T04:09:57.988900", "exception": false, "start_time": "2020-12-06T04:09:57.961014", "status": "completed"} tags=[]
-all_consensus_methods = set((
-    eac_single_coassoc_matrix,
-    eac_complete_coassoc_matrix,
-    eac_average_coassoc_matrix,
-))
+all_consensus_methods = set(
+    (
+        eac_single_coassoc_matrix,
+        eac_complete_coassoc_matrix,
+        eac_average_coassoc_matrix,
+    )
+)
 display(all_consensus_methods)
 
 # %% papermill={"duration": 1991.770781, "end_time": "2020-12-06T04:43:09.773921", "exception": false, "start_time": "2020-12-06T04:09:58.003140", "status": "completed"} tags=[]

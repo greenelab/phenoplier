@@ -66,9 +66,7 @@ RESULTS["DATA_TRANSFORMATIONS_DIR"] = Path(
 ).resolve()
 
 RESULTS["CLUSTERING_DIR"] = Path(RESULTS["BASE_DIR"], "clustering").resolve()
-RESULTS["CLUSTERING_RUNS_DIR"] = Path(
-    RESULTS["CLUSTERING_DIR"], "runs"
-).resolve()
+RESULTS["CLUSTERING_RUNS_DIR"] = Path(RESULTS["CLUSTERING_DIR"], "runs").resolve()
 
 #
 # Manuscript
