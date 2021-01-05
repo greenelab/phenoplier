@@ -12,7 +12,11 @@ class MultiplierProjection(object):
     def __init__(self):
         pass
 
-    def transform(self, y, multiplier_compatible=True):
+    def transform(
+        self,
+        y: pd.DataFrame,
+        multiplier_compatible: bool = True,
+    ) -> pd.DataFrame:
         """Projects a gene dataset into the MultiPLIER model.
 
         This code is a reimplementation in Python of the function GetNewDataB
@@ -20,27 +24,32 @@ class MultiplierProjection(object):
         more suitable and convenient for the PhenoPLIER project (almost entirely
         written in Python).
 
-        It basically row-normalizes (z-score) the given dataset, keeps only the genes
-        in common with the MultiPLIER model, and adds the missing ones as zeros (mean).
+        It basically row-normalizes (z-score) the given dataset, keeps only the
+        genes in common with the MultiPLIER model, and adds the missing ones as
+        zeros (mean).
 
         Args:
-            y (pandas.DataFrame): the new data to be projected. Gene symbols are
-                expected in rows. The columns could be conditions/samples, but in the
-                PhenoPLIER context they could also be traits/diseases or perturbations
+            y:
+                The new data to be projected. Gene symbols are expected in rows.
+                The columns could be conditions/samples, but in the PhenoPLIER
+                context they could also be traits/diseases or perturbations
                 (Connectivity Map).
-            multiplier_compatible (bool): if True, it will try to be fully compatible
-                with the GetNewDataB function in some situations (for instance, if the
-                new data contains NaNs).
+            multiplier_compatible:
+                If True, it will try to be fully compatible with the GetNewDataB
+                function in some situations (for instance, if the new data
+                contains NaNs).
 
         Returns:
-            A pandas.DataFrame with the projection of the input data into the MultiPLIER
-            latent space. The latent variables of the MultiPLIER model are in rows,
-            and the columns are those of the input data (conditions, traits, drugs, etc).
+            A pandas.DataFrame with the projection of the input data into the
+            MultiPLIER latent space. The latent variables of the MultiPLIER
+            model are in rows, and the columns are those of the input data
+            (conditions, traits, drugs, etc).
         """
         z = self._read_model_z()
         metadata = self._read_model_metadata()
 
-        # nothing special is done if the input data contains NaNs, but it will raise
+        # nothing special is done if the input data contains NaNs, but it will
+        # raise
         # a warning for the user.
         if y.isna().any().any():
             import warnings
@@ -55,6 +64,12 @@ class MultiplierProjection(object):
                     index=z.columns.copy(),
                     columns=y.columns.copy(),
                 )
+
+        # if given data has Ensembl ID genes, then convert z genes to that
+        if y.index[0].startswith("ENSG"):
+            from entity import Gene
+
+            z = z.rename(index=Gene.GENE_NAME_TO_ID_MAP)
 
         # row-standardize the data with z-score
         y_std = y.sub(y.mean(1), axis=0).div(y.std(1), axis=0)
