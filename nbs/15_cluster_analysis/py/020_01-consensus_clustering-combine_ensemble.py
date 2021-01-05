@@ -48,13 +48,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-# from sklearn.cluster import SpectralClustering
-# import umap
-import matplotlib.pyplot as plt
-import seaborn as sns
-
 import conf
-from utils import generate_result_set_name
 
 # %% [markdown] papermill={"duration": 0.013523, "end_time": "2020-12-06T04:09:57.079973", "exception": false, "start_time": "2020-12-06T04:09:57.066450", "status": "completed"} tags=[]
 # # Settings
@@ -100,10 +94,7 @@ display(output_file)
 full_ensemble = np.load(output_file)
 
 # %% papermill={"duration": 0.027393, "end_time": "2020-12-06T04:09:57.430809", "exception": false, "start_time": "2020-12-06T04:09:57.403416", "status": "completed"} tags=[]
-full_ensemble.shape
-
-# %% papermill={"duration": 0.024231, "end_time": "2020-12-06T04:09:57.467681", "exception": false, "start_time": "2020-12-06T04:09:57.443450", "status": "completed"} tags=[]
-full_ensemble.shape
+display(full_ensemble.shape)
 
 # %% [markdown] papermill={"duration": 0.012373, "end_time": "2020-12-06T04:09:57.492676", "exception": false, "start_time": "2020-12-06T04:09:57.480303", "status": "completed"} tags=[]
 # # Get ensemble coassociation distance matrix
@@ -116,10 +107,10 @@ display(output_file)
 ensemble_coassoc_matrix = np.load(output_file)
 
 # %% papermill={"duration": 0.027492, "end_time": "2020-12-06T04:09:57.633231", "exception": false, "start_time": "2020-12-06T04:09:57.605739", "status": "completed"} tags=[]
-ensemble_coassoc_matrix.shape
+display(ensemble_coassoc_matrix.shape)
 
 # %% papermill={"duration": 0.026987, "end_time": "2020-12-06T04:09:57.675038", "exception": false, "start_time": "2020-12-06T04:09:57.648051", "status": "completed"} tags=[]
-ensemble_coassoc_matrix
+display(ensemble_coassoc_matrix)
 
 # %% [markdown] papermill={"duration": 0.012931, "end_time": "2020-12-06T04:09:57.701961", "exception": false, "start_time": "2020-12-06T04:09:57.689030", "status": "completed"} tags=[]
 # # Consensus clustering
@@ -130,33 +121,18 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from tqdm import tqdm
 
 from clustering.ensemble import (
-    supraconsensus,
-    sc_consensus,
     eac_single_coassoc_matrix,
     eac_complete_coassoc_matrix,
     eac_average_coassoc_matrix,
-    cspa,
-    hgpa,
-    mcla,
-    aami,
     run_method_and_compute_agreement,
 )
 
-# %% papermill={"duration": 0.025944, "end_time": "2020-12-06T04:09:57.906791", "exception": false, "start_time": "2020-12-06T04:09:57.880847", "status": "completed"} tags=[]
-consensus_graph_methods = (cspa, hgpa, mcla)
-
-# %% papermill={"duration": 0.026116, "end_time": "2020-12-06T04:09:57.946877", "exception": false, "start_time": "2020-12-06T04:09:57.920761", "status": "completed"} tags=[]
-consensus_other_methods = (
+# %% papermill={"duration": 0.027886, "end_time": "2020-12-06T04:09:57.988900", "exception": false, "start_time": "2020-12-06T04:09:57.961014", "status": "completed"} tags=[]
+all_consensus_methods = set((
     eac_single_coassoc_matrix,
     eac_complete_coassoc_matrix,
     eac_average_coassoc_matrix,
-    sc_consensus,
-)
-
-# %% papermill={"duration": 0.027886, "end_time": "2020-12-06T04:09:57.988900", "exception": false, "start_time": "2020-12-06T04:09:57.961014", "status": "completed"} tags=[]
-all_consensus_methods = set()
-# all_consensus_methods.update(consensus_graph_methods)
-all_consensus_methods.update(consensus_other_methods)
+))
 display(all_consensus_methods)
 
 # %% papermill={"duration": 1991.770781, "end_time": "2020-12-06T04:43:09.773921", "exception": false, "start_time": "2020-12-06T04:09:58.003140", "status": "completed"} tags=[]
@@ -167,7 +143,7 @@ with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
         executor.submit(
             run_method_and_compute_agreement,
             m,
-            ensemble_coassoc_matrix if m in consensus_other_methods else full_ensemble,
+            ensemble_coassoc_matrix,
             full_ensemble,
             k,
         ): (m.__name__, k)
@@ -175,7 +151,7 @@ with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
         for k in range(CLUSTERING_OPTIONS["K_MIN"], CLUSTERING_OPTIONS["K_MAX"] + 1)
     }
 
-    for future in tqdm(as_completed(tasks), total=len(tasks), disable=False):
+    for future in tqdm(as_completed(tasks), total=len(tasks), disable=False, ncols=100):
         method_name, k = tasks[future]
         part, performance_values = future.result()
 
@@ -195,7 +171,7 @@ with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
 consensus_results = pd.DataFrame(consensus_results)
 
 # %% papermill={"duration": 0.052198, "end_time": "2020-12-06T04:43:10.057591", "exception": false, "start_time": "2020-12-06T04:43:10.005393", "status": "completed"} tags=[]
-consensus_results.shape
+display(consensus_results.shape)
 
 # %% papermill={"duration": 0.066466, "end_time": "2020-12-06T04:43:10.165033", "exception": false, "start_time": "2020-12-06T04:43:10.098567", "status": "completed"} tags=[]
 consensus_results.head()
