@@ -60,6 +60,9 @@ GENERAL["EFO_ONTOLOGY_OBO_FILE"] = Path(DATA_DIR, "efo.obo").resolve()
 RESULTS = {}
 RESULTS["BASE_DIR"] = RESULTS_DIR
 RESULTS["PROJECTIONS_DIR"] = Path(RESULTS["BASE_DIR"], "projections").resolve()
+RESULTS["DRUG_DISEASE_ANALYSES"] = Path(
+    RESULTS["BASE_DIR"], "drug_disease_analyses"
+).resolve()
 
 RESULTS["DATA_TRANSFORMATIONS_DIR"] = Path(
     RESULTS["BASE_DIR"], "data_transformations"
