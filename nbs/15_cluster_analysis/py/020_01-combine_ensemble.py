@@ -178,9 +178,9 @@ assert not consensus_results.isna().any().any()
 
 # %%
 # check that the number of clusters in the partitions are the expected ones
-_real_k_values = consensus_results['partition'].apply(lambda x: np.unique(x).shape[0])
+_real_k_values = consensus_results["partition"].apply(lambda x: np.unique(x).shape[0])
 display(_real_k_values)
-assert np.all(consensus_results['k'].values == _real_k_values.values)
+assert np.all(consensus_results["k"].values == _real_k_values.values)
 
 # %% [markdown] tags=[]
 # ## Save
