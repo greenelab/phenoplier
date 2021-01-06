@@ -1,6 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
+#     cell_metadata_filter: all,-execution,-papermill
 #     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
@@ -13,20 +14,20 @@
 #     name: python3
 # ---
 
-# %% [markdown] papermill={"duration": 0.044577, "end_time": "2020-12-18T22:38:21.345879", "exception": false, "start_time": "2020-12-18T22:38:21.301302", "status": "completed"} tags=[]
+# %% [markdown] tags=[]
 # # Description
 
-# %% [markdown] papermill={"duration": 0.011764, "end_time": "2020-12-18T22:38:21.398073", "exception": false, "start_time": "2020-12-18T22:38:21.386309", "status": "completed"} tags=[]
+# %% [markdown] tags=[]
 # **TODO**
 
-# %% [markdown] papermill={"duration": 0.011799, "end_time": "2020-12-18T22:38:21.422136", "exception": false, "start_time": "2020-12-18T22:38:21.410337", "status": "completed"} tags=[]
+# %% [markdown] tags=[]
 # # Modules loading
 
-# %% papermill={"duration": 0.022467, "end_time": "2020-12-18T22:38:21.456126", "exception": false, "start_time": "2020-12-18T22:38:21.433659", "status": "completed"} tags=[]
+# %% tags=[]
 # %load_ext autoreload
 # %autoreload 2
 
-# %% papermill={"duration": 0.192251, "end_time": "2020-12-18T22:38:21.659996", "exception": false, "start_time": "2020-12-18T22:38:21.467745", "status": "completed"} tags=[]
+# %% tags=[]
 from pathlib import Path
 
 import numpy as np
@@ -35,7 +36,7 @@ from tqdm import tqdm
 
 import conf
 
-# %% [markdown] papermill={"duration": 0.011416, "end_time": "2020-12-18T22:38:21.683356", "exception": false, "start_time": "2020-12-18T22:38:21.671940", "status": "completed"} tags=[]
+# %% [markdown] tags=[]
 # # Settings
 
 # %%
