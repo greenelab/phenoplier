@@ -13,16 +13,16 @@
 #     name: python3
 # ---
 
-# %% [markdown] papermill={"duration": 0.027958, "end_time": "2020-12-02T16:52:23.816602", "exception": false, "start_time": "2020-12-02T16:52:23.788644", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.05798, "end_time": "2021-01-06T12:27:55.465174", "exception": false, "start_time": "2021-01-06T12:27:55.407194", "status": "completed"} tags=[]
 # # Description
 
-# %% [markdown] papermill={"duration": 0.017652, "end_time": "2020-12-02T16:52:23.852232", "exception": false, "start_time": "2020-12-02T16:52:23.834580", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.020689, "end_time": "2021-01-06T12:27:55.507526", "exception": false, "start_time": "2021-01-06T12:27:55.486837", "status": "completed"} tags=[]
 # Runs gaussian mixture model on the umap version of the data.
 
-# %% [markdown] papermill={"duration": 0.017282, "end_time": "2020-12-02T16:52:23.887127", "exception": false, "start_time": "2020-12-02T16:52:23.869845", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.020778, "end_time": "2021-01-06T12:27:55.548982", "exception": false, "start_time": "2021-01-06T12:27:55.528204", "status": "completed"} tags=[]
 # # Environment variables
 
-# %% papermill={"duration": 0.031233, "end_time": "2020-12-02T16:52:23.935889", "exception": false, "start_time": "2020-12-02T16:52:23.904656", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.035654, "end_time": "2021-01-06T12:27:55.605689", "exception": false, "start_time": "2021-01-06T12:27:55.570035", "status": "completed"} tags=[]
 from IPython.display import display
 
 import conf
@@ -30,20 +30,20 @@ import conf
 N_JOBS = conf.GENERAL["N_JOBS"]
 display(N_JOBS)
 
-# %% papermill={"duration": 0.02484, "end_time": "2020-12-02T16:52:23.979365", "exception": false, "start_time": "2020-12-02T16:52:23.954525", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.02808, "end_time": "2021-01-06T12:27:55.655841", "exception": false, "start_time": "2021-01-06T12:27:55.627761", "status": "completed"} tags=[]
 # %env MKL_NUM_THREADS=$N_JOBS
 # %env OPEN_BLAS_NUM_THREADS=$N_JOBS
 # %env NUMEXPR_NUM_THREADS=$N_JOBS
 # %env OMP_NUM_THREADS=$N_JOBS
 
-# %% [markdown] papermill={"duration": 0.018246, "end_time": "2020-12-02T16:52:24.016462", "exception": false, "start_time": "2020-12-02T16:52:23.998216", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.021188, "end_time": "2021-01-06T12:27:55.698979", "exception": false, "start_time": "2021-01-06T12:27:55.677791", "status": "completed"} tags=[]
 # # Modules loading
 
-# %% papermill={"duration": 0.028318, "end_time": "2020-12-02T16:52:24.062849", "exception": false, "start_time": "2020-12-02T16:52:24.034531", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.031905, "end_time": "2021-01-06T12:27:55.752265", "exception": false, "start_time": "2021-01-06T12:27:55.720360", "status": "completed"} tags=[]
 # %load_ext autoreload
 # %autoreload 2
 
-# %% papermill={"duration": 1.608536, "end_time": "2020-12-02T16:52:25.690085", "exception": false, "start_time": "2020-12-02T16:52:24.081549", "status": "completed"} tags=[]
+# %% papermill={"duration": 1.609752, "end_time": "2021-01-06T12:27:57.383850", "exception": false, "start_time": "2021-01-06T12:27:55.774098", "status": "completed"} tags=[]
 from pathlib import Path
 
 import numpy as np
@@ -54,22 +54,22 @@ import seaborn as sns
 
 from utils import generate_result_set_name
 
-# %% [markdown] papermill={"duration": 0.018292, "end_time": "2020-12-02T16:52:25.729097", "exception": false, "start_time": "2020-12-02T16:52:25.710805", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.021295, "end_time": "2021-01-06T12:27:57.428974", "exception": false, "start_time": "2021-01-06T12:27:57.407679", "status": "completed"} tags=[]
 # # Settings
 
-# %% papermill={"duration": 0.032019, "end_time": "2020-12-02T16:52:25.778951", "exception": false, "start_time": "2020-12-02T16:52:25.746932", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.036317, "end_time": "2021-01-06T12:27:57.486713", "exception": false, "start_time": "2021-01-06T12:27:57.450396", "status": "completed"} tags=[]
 INITIAL_RANDOM_STATE = 80000
 
-# %% [markdown] papermill={"duration": 0.020386, "end_time": "2020-12-02T16:52:25.818553", "exception": false, "start_time": "2020-12-02T16:52:25.798167", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.020968, "end_time": "2021-01-06T12:27:57.529448", "exception": false, "start_time": "2021-01-06T12:27:57.508480", "status": "completed"} tags=[]
 # ## Input data
 
-# %% papermill={"duration": 0.032183, "end_time": "2020-12-02T16:52:25.869240", "exception": false, "start_time": "2020-12-02T16:52:25.837057", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.035299, "end_time": "2021-01-06T12:27:57.586034", "exception": false, "start_time": "2021-01-06T12:27:57.550735", "status": "completed"} tags=[]
 INPUT_SUBSET = "umap"
 
-# %% papermill={"duration": 0.032292, "end_time": "2020-12-02T16:52:25.920249", "exception": false, "start_time": "2020-12-02T16:52:25.887957", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.035357, "end_time": "2021-01-06T12:27:57.643367", "exception": false, "start_time": "2021-01-06T12:27:57.608010", "status": "completed"} tags=[]
 INPUT_STEM = "z_score_std-projection-smultixcan-efo_partial-mashr-zscores"
 
-# %% papermill={"duration": 0.03286, "end_time": "2020-12-02T16:52:25.972536", "exception": false, "start_time": "2020-12-02T16:52:25.939676", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.035295, "end_time": "2021-01-06T12:27:57.700342", "exception": false, "start_time": "2021-01-06T12:27:57.665047", "status": "completed"} tags=[]
 DR_OPTIONS = {
     "n_components": 50,
     "metric": "euclidean",
@@ -77,7 +77,7 @@ DR_OPTIONS = {
     "random_state": 0,
 }
 
-# %% papermill={"duration": 0.03511, "end_time": "2020-12-02T16:52:26.027199", "exception": false, "start_time": "2020-12-02T16:52:25.992089", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.037576, "end_time": "2021-01-06T12:27:57.759617", "exception": false, "start_time": "2021-01-06T12:27:57.722041", "status": "completed"} tags=[]
 input_filepath = Path(
     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
     INPUT_SUBSET,
@@ -92,16 +92,16 @@ assert input_filepath.exists(), "Input file does not exist"
 input_filepath_stem = input_filepath.stem
 display(input_filepath_stem)
 
-# %% [markdown] papermill={"duration": 0.018877, "end_time": "2020-12-02T16:52:26.065859", "exception": false, "start_time": "2020-12-02T16:52:26.046982", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.023053, "end_time": "2021-01-06T12:27:57.805804", "exception": false, "start_time": "2021-01-06T12:27:57.782751", "status": "completed"} tags=[]
 # ## Clustering
 
-# %% papermill={"duration": 0.040341, "end_time": "2020-12-02T16:52:26.124952", "exception": false, "start_time": "2020-12-02T16:52:26.084611", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.044309, "end_time": "2021-01-06T12:27:57.874267", "exception": false, "start_time": "2021-01-06T12:27:57.829958", "status": "completed"} tags=[]
 from sklearn.mixture import GaussianMixture
 
-# %% papermill={"duration": 0.033843, "end_time": "2020-12-02T16:52:26.178892", "exception": false, "start_time": "2020-12-02T16:52:26.145049", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.036168, "end_time": "2021-01-06T12:27:57.933807", "exception": false, "start_time": "2021-01-06T12:27:57.897639", "status": "completed"} tags=[]
 CLUSTERING_ATTRIBUTES_TO_SAVE = ["n_clusters"]
 
-# %% papermill={"duration": 0.034859, "end_time": "2020-12-02T16:52:26.234445", "exception": false, "start_time": "2020-12-02T16:52:26.199586", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.037358, "end_time": "2021-01-06T12:27:57.993358", "exception": false, "start_time": "2021-01-06T12:27:57.956000", "status": "completed"} tags=[]
 CLUSTERING_OPTIONS = {}
 
 CLUSTERING_OPTIONS["K_MIN"] = 2
@@ -112,7 +112,7 @@ CLUSTERING_OPTIONS["COVARIANCE_TYPE"] = "full"
 
 display(CLUSTERING_OPTIONS)
 
-# %% papermill={"duration": 0.035585, "end_time": "2020-12-02T16:52:26.290357", "exception": false, "start_time": "2020-12-02T16:52:26.254772", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.03831, "end_time": "2021-01-06T12:27:58.054730", "exception": false, "start_time": "2021-01-06T12:27:58.016420", "status": "completed"} tags=[]
 CLUSTERERS = {}
 
 idx = 0
@@ -133,22 +133,22 @@ for k in range(CLUSTERING_OPTIONS["K_MIN"], CLUSTERING_OPTIONS["K_MAX"] + 1):
         random_state = random_state + 1
         idx = idx + 1
 
-# %% papermill={"duration": 0.034584, "end_time": "2020-12-02T16:52:26.344796", "exception": false, "start_time": "2020-12-02T16:52:26.310212", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.037862, "end_time": "2021-01-06T12:27:58.114865", "exception": false, "start_time": "2021-01-06T12:27:58.077003", "status": "completed"} tags=[]
 display(len(CLUSTERERS))
 
-# %% papermill={"duration": 0.037027, "end_time": "2020-12-02T16:52:26.402302", "exception": false, "start_time": "2020-12-02T16:52:26.365275", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.0388, "end_time": "2021-01-06T12:27:58.177345", "exception": false, "start_time": "2021-01-06T12:27:58.138545", "status": "completed"} tags=[]
 _iter = iter(CLUSTERERS.items())
 display(next(_iter))
 display(next(_iter))
 
-# %% papermill={"duration": 0.036233, "end_time": "2020-12-02T16:52:26.460010", "exception": false, "start_time": "2020-12-02T16:52:26.423777", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.037268, "end_time": "2021-01-06T12:27:58.237725", "exception": false, "start_time": "2021-01-06T12:27:58.200457", "status": "completed"} tags=[]
 clustering_method_name = method_name
 display(clustering_method_name)
 
-# %% [markdown] papermill={"duration": 0.020877, "end_time": "2020-12-02T16:52:26.502904", "exception": false, "start_time": "2020-12-02T16:52:26.482027", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.023472, "end_time": "2021-01-06T12:27:58.285222", "exception": false, "start_time": "2021-01-06T12:27:58.261750", "status": "completed"} tags=[]
 # ## Output directory
 
-# %% papermill={"duration": 0.035691, "end_time": "2020-12-02T16:52:26.559241", "exception": false, "start_time": "2020-12-02T16:52:26.523550", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.038444, "end_time": "2021-01-06T12:27:58.346687", "exception": false, "start_time": "2021-01-06T12:27:58.308243", "status": "completed"} tags=[]
 # output dir for this notebook
 RESULTS_DIR = Path(
     conf.RESULTS["CLUSTERING_RUNS_DIR"],
@@ -158,77 +158,77 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 display(RESULTS_DIR)
 
-# %% [markdown] papermill={"duration": 0.020811, "end_time": "2020-12-02T16:52:26.601012", "exception": false, "start_time": "2020-12-02T16:52:26.580201", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.023206, "end_time": "2021-01-06T12:27:58.393182", "exception": false, "start_time": "2021-01-06T12:27:58.369976", "status": "completed"} tags=[]
 # # Load input file
 
-# %% papermill={"duration": 0.036953, "end_time": "2020-12-02T16:52:26.658392", "exception": false, "start_time": "2020-12-02T16:52:26.621439", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.038744, "end_time": "2021-01-06T12:27:58.455059", "exception": false, "start_time": "2021-01-06T12:27:58.416315", "status": "completed"} tags=[]
 data = pd.read_pickle(input_filepath)
 
-# %% papermill={"duration": 0.035818, "end_time": "2020-12-02T16:52:26.715333", "exception": false, "start_time": "2020-12-02T16:52:26.679515", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.038511, "end_time": "2021-01-06T12:27:58.517404", "exception": false, "start_time": "2021-01-06T12:27:58.478893", "status": "completed"} tags=[]
 data.shape
 
-# %% papermill={"duration": 0.048714, "end_time": "2020-12-02T16:52:26.785464", "exception": false, "start_time": "2020-12-02T16:52:26.736750", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.050419, "end_time": "2021-01-06T12:27:58.591917", "exception": false, "start_time": "2021-01-06T12:27:58.541498", "status": "completed"} tags=[]
 data.head()
 
-# %% papermill={"duration": 0.038357, "end_time": "2020-12-02T16:52:26.846029", "exception": false, "start_time": "2020-12-02T16:52:26.807672", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.038261, "end_time": "2021-01-06T12:27:58.654795", "exception": false, "start_time": "2021-01-06T12:27:58.616534", "status": "completed"} tags=[]
 assert not data.isna().any().any()
 
-# %% [markdown] papermill={"duration": 0.021142, "end_time": "2020-12-02T16:52:26.890492", "exception": false, "start_time": "2020-12-02T16:52:26.869350", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.023956, "end_time": "2021-01-06T12:27:58.702960", "exception": false, "start_time": "2021-01-06T12:27:58.679004", "status": "completed"} tags=[]
 # # Clustering
 
-# %% [markdown] papermill={"duration": 0.021082, "end_time": "2020-12-02T16:52:26.933180", "exception": false, "start_time": "2020-12-02T16:52:26.912098", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.023423, "end_time": "2021-01-06T12:27:58.749696", "exception": false, "start_time": "2021-01-06T12:27:58.726273", "status": "completed"} tags=[]
 # ## Generate ensemble
 
-# %% papermill={"duration": 0.037908, "end_time": "2020-12-02T16:52:26.992298", "exception": false, "start_time": "2020-12-02T16:52:26.954390", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.041483, "end_time": "2021-01-06T12:27:58.814686", "exception": false, "start_time": "2021-01-06T12:27:58.773203", "status": "completed"} tags=[]
 from clustering.ensemble import generate_ensemble
 
-# %% papermill={"duration": 3018.004788, "end_time": "2020-12-02T17:42:45.018829", "exception": false, "start_time": "2020-12-02T16:52:27.014041", "status": "completed"} tags=[]
+# %% papermill={"duration": 3023.561491, "end_time": "2021-01-06T13:18:22.401749", "exception": false, "start_time": "2021-01-06T12:27:58.840258", "status": "completed"} tags=[]
 ensemble = generate_ensemble(
     data,
     CLUSTERERS,
     attributes=CLUSTERING_ATTRIBUTES_TO_SAVE,
 )
 
-# %% papermill={"duration": 0.083356, "end_time": "2020-12-02T17:42:45.169989", "exception": false, "start_time": "2020-12-02T17:42:45.086633", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.085931, "end_time": "2021-01-06T13:18:22.566547", "exception": false, "start_time": "2021-01-06T13:18:22.480616", "status": "completed"} tags=[]
 # the number should be close to 295 (the number of partitions generated by k-means/spectral clustering)
 ensemble.shape
 
-# %% papermill={"duration": 0.09153, "end_time": "2020-12-02T17:42:45.330754", "exception": false, "start_time": "2020-12-02T17:42:45.239224", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.093077, "end_time": "2021-01-06T13:18:22.730990", "exception": false, "start_time": "2021-01-06T13:18:22.637913", "status": "completed"} tags=[]
 ensemble.head()
 
-# %% papermill={"duration": 0.083812, "end_time": "2020-12-02T17:42:45.483765", "exception": false, "start_time": "2020-12-02T17:42:45.399953", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.08756, "end_time": "2021-01-06T13:18:22.891782", "exception": false, "start_time": "2021-01-06T13:18:22.804222", "status": "completed"} tags=[]
 ensemble["n_clusters"].value_counts().head()
 
-# %% papermill={"duration": 0.085768, "end_time": "2020-12-02T17:42:45.637586", "exception": false, "start_time": "2020-12-02T17:42:45.551818", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.088715, "end_time": "2021-01-06T13:18:23.055347", "exception": false, "start_time": "2021-01-06T13:18:22.966632", "status": "completed"} tags=[]
 ensemble_stats = ensemble["n_clusters"].describe()
 display(ensemble_stats)
 
-# %% [markdown] papermill={"duration": 0.068029, "end_time": "2020-12-02T17:42:45.774931", "exception": false, "start_time": "2020-12-02T17:42:45.706902", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.072326, "end_time": "2021-01-06T13:18:23.200013", "exception": false, "start_time": "2021-01-06T13:18:23.127687", "status": "completed"} tags=[]
 # ## Testing
 
-# %% papermill={"duration": 0.090963, "end_time": "2020-12-02T17:42:45.953899", "exception": false, "start_time": "2020-12-02T17:42:45.862936", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.086219, "end_time": "2021-01-06T13:18:23.357732", "exception": false, "start_time": "2021-01-06T13:18:23.271513", "status": "completed"} tags=[]
 assert ensemble_stats["min"] > 1
 
-# %% papermill={"duration": 0.083582, "end_time": "2020-12-02T17:42:46.107074", "exception": false, "start_time": "2020-12-02T17:42:46.023492", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.086922, "end_time": "2021-01-06T13:18:23.516766", "exception": false, "start_time": "2021-01-06T13:18:23.429844", "status": "completed"} tags=[]
 assert not ensemble["n_clusters"].isna().any()
 
-# %% papermill={"duration": 0.083859, "end_time": "2020-12-02T17:42:46.262551", "exception": false, "start_time": "2020-12-02T17:42:46.178692", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.086172, "end_time": "2021-01-06T13:18:23.677297", "exception": false, "start_time": "2021-01-06T13:18:23.591125", "status": "completed"} tags=[]
 assert ensemble.shape[0] == len(CLUSTERERS)
 
-# %% papermill={"duration": 0.100831, "end_time": "2020-12-02T17:42:46.434113", "exception": false, "start_time": "2020-12-02T17:42:46.333282", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.103686, "end_time": "2021-01-06T13:18:23.853747", "exception": false, "start_time": "2021-01-06T13:18:23.750061", "status": "completed"} tags=[]
 # all partitions have the right size
 assert np.all(
     [part["partition"].shape[0] == data.shape[0] for idx, part in ensemble.iterrows()]
 )
 
-# %% papermill={"duration": 0.104514, "end_time": "2020-12-02T17:42:46.609152", "exception": false, "start_time": "2020-12-02T17:42:46.504638", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.110053, "end_time": "2021-01-06T13:18:24.036628", "exception": false, "start_time": "2021-01-06T13:18:23.926575", "status": "completed"} tags=[]
 # no partition has negative clusters (noisy points)
 assert not np.any([(part["partition"] < 0).any() for idx, part in ensemble.iterrows()])
 
-# %% [markdown] papermill={"duration": 0.068169, "end_time": "2020-12-02T17:42:46.747387", "exception": false, "start_time": "2020-12-02T17:42:46.679218", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.071948, "end_time": "2021-01-06T13:18:24.180324", "exception": false, "start_time": "2021-01-06T13:18:24.108376", "status": "completed"} tags=[]
 # ## Save
 
-# %% papermill={"duration": 0.088373, "end_time": "2020-12-02T17:42:46.904862", "exception": false, "start_time": "2020-12-02T17:42:46.816489", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.087097, "end_time": "2021-01-06T13:18:24.339326", "exception": false, "start_time": "2021-01-06T13:18:24.252229", "status": "completed"} tags=[]
 output_filename = Path(
     RESULTS_DIR,
     generate_result_set_name(
@@ -239,24 +239,24 @@ output_filename = Path(
 ).resolve()
 display(output_filename)
 
-# %% papermill={"duration": 0.095494, "end_time": "2020-12-02T17:42:47.071275", "exception": false, "start_time": "2020-12-02T17:42:46.975781", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.096482, "end_time": "2021-01-06T13:18:24.508669", "exception": false, "start_time": "2021-01-06T13:18:24.412187", "status": "completed"} tags=[]
 ensemble.to_pickle(output_filename)
 
-# %% [markdown] papermill={"duration": 0.069206, "end_time": "2020-12-02T17:42:47.212244", "exception": false, "start_time": "2020-12-02T17:42:47.143038", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.071556, "end_time": "2021-01-06T13:18:24.653671", "exception": false, "start_time": "2021-01-06T13:18:24.582115", "status": "completed"} tags=[]
 # # Stability
 
-# %% [markdown] papermill={"duration": 0.070092, "end_time": "2020-12-02T17:42:47.352054", "exception": false, "start_time": "2020-12-02T17:42:47.281962", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.071251, "end_time": "2021-01-06T13:18:24.796576", "exception": false, "start_time": "2021-01-06T13:18:24.725325", "status": "completed"} tags=[]
 # ## Group ensemble by n_clusters
 
-# %% papermill={"duration": 0.102152, "end_time": "2020-12-02T17:42:47.525423", "exception": false, "start_time": "2020-12-02T17:42:47.423271", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.105288, "end_time": "2021-01-06T13:18:24.973337", "exception": false, "start_time": "2021-01-06T13:18:24.868049", "status": "completed"} tags=[]
 parts = ensemble.groupby("n_clusters").apply(
     lambda x: np.concatenate(x["partition"].apply(lambda x: x.reshape(1, -1)), axis=0)
 )
 
-# %% papermill={"duration": 0.096042, "end_time": "2020-12-02T17:42:47.691975", "exception": false, "start_time": "2020-12-02T17:42:47.595933", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.097534, "end_time": "2021-01-06T13:18:25.143611", "exception": false, "start_time": "2021-01-06T13:18:25.046077", "status": "completed"} tags=[]
 parts.head()
 
-# %% papermill={"duration": 0.085423, "end_time": "2020-12-02T17:42:47.847347", "exception": false, "start_time": "2020-12-02T17:42:47.761924", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.088903, "end_time": "2021-01-06T13:18:25.305854", "exception": false, "start_time": "2021-01-06T13:18:25.216951", "status": "completed"} tags=[]
 assert np.all(
     [
         parts.loc[k].shape == (CLUSTERING_OPTIONS["N_REPS_PER_K"], data.shape[0])
@@ -264,31 +264,31 @@ assert np.all(
     ]
 )
 
-# %% [markdown] papermill={"duration": 0.070475, "end_time": "2020-12-02T17:42:47.991924", "exception": false, "start_time": "2020-12-02T17:42:47.921449", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.072054, "end_time": "2021-01-06T13:18:25.450766", "exception": false, "start_time": "2021-01-06T13:18:25.378712", "status": "completed"} tags=[]
 # ## Compute stability
 
-# %% papermill={"duration": 0.084984, "end_time": "2020-12-02T17:42:48.147709", "exception": false, "start_time": "2020-12-02T17:42:48.062725", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.08819, "end_time": "2021-01-06T13:18:25.611546", "exception": false, "start_time": "2021-01-06T13:18:25.523356", "status": "completed"} tags=[]
 from sklearn.metrics import adjusted_rand_score as ari
 from scipy.spatial.distance import squareform, pdist
 
-# %% papermill={"duration": 0.776181, "end_time": "2020-12-02T17:42:48.995236", "exception": false, "start_time": "2020-12-02T17:42:48.219055", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.777478, "end_time": "2021-01-06T13:18:26.462326", "exception": false, "start_time": "2021-01-06T13:18:25.684848", "status": "completed"} tags=[]
 parts_ari = pd.Series(
     {k: pdist(parts.loc[k], metric=ari) for k in parts.index}, name="k"
 )
 
-# %% papermill={"duration": 0.087149, "end_time": "2020-12-02T17:42:49.153545", "exception": false, "start_time": "2020-12-02T17:42:49.066396", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.089363, "end_time": "2021-01-06T13:18:26.623873", "exception": false, "start_time": "2021-01-06T13:18:26.534510", "status": "completed"} tags=[]
 parts_ari_stability = parts_ari.apply(lambda x: x.mean())
 display(parts_ari_stability.sort_values(ascending=False).head(15))
 
-# %% papermill={"duration": 0.086713, "end_time": "2020-12-02T17:42:49.310884", "exception": false, "start_time": "2020-12-02T17:42:49.224171", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.088936, "end_time": "2021-01-06T13:18:26.785782", "exception": false, "start_time": "2021-01-06T13:18:26.696846", "status": "completed"} tags=[]
 parts_ari_df = pd.DataFrame.from_records(parts_ari.tolist()).set_index(
     parts_ari.index.copy()
 )
 
-# %% papermill={"duration": 0.085308, "end_time": "2020-12-02T17:42:49.469567", "exception": false, "start_time": "2020-12-02T17:42:49.384259", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.089016, "end_time": "2021-01-06T13:18:26.949109", "exception": false, "start_time": "2021-01-06T13:18:26.860093", "status": "completed"} tags=[]
 parts_ari_df.shape
 
-# %% papermill={"duration": 0.086193, "end_time": "2020-12-02T17:42:49.629172", "exception": false, "start_time": "2020-12-02T17:42:49.542979", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.087394, "end_time": "2021-01-06T13:18:27.112386", "exception": false, "start_time": "2021-01-06T13:18:27.024992", "status": "completed"} tags=[]
 assert (
     int(
         (CLUSTERING_OPTIONS["N_REPS_PER_K"] * (CLUSTERING_OPTIONS["N_REPS_PER_K"] - 1))
@@ -297,13 +297,13 @@ assert (
     == parts_ari_df.shape[1]
 )
 
-# %% papermill={"duration": 0.091127, "end_time": "2020-12-02T17:42:49.793252", "exception": false, "start_time": "2020-12-02T17:42:49.702125", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.093408, "end_time": "2021-01-06T13:18:27.278597", "exception": false, "start_time": "2021-01-06T13:18:27.185189", "status": "completed"} tags=[]
 parts_ari_df.head()
 
-# %% [markdown] papermill={"duration": 0.074565, "end_time": "2020-12-02T17:42:49.940325", "exception": false, "start_time": "2020-12-02T17:42:49.865760", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.073016, "end_time": "2021-01-06T13:18:27.425974", "exception": false, "start_time": "2021-01-06T13:18:27.352958", "status": "completed"} tags=[]
 # ## Save
 
-# %% papermill={"duration": 0.087322, "end_time": "2020-12-02T17:42:50.099052", "exception": false, "start_time": "2020-12-02T17:42:50.011730", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.091261, "end_time": "2021-01-06T13:18:27.590845", "exception": false, "start_time": "2021-01-06T13:18:27.499584", "status": "completed"} tags=[]
 output_filename = Path(
     RESULTS_DIR,
     generate_result_set_name(
@@ -314,26 +314,26 @@ output_filename = Path(
 ).resolve()
 display(output_filename)
 
-# %% papermill={"duration": 0.085821, "end_time": "2020-12-02T17:42:50.256271", "exception": false, "start_time": "2020-12-02T17:42:50.170450", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.090156, "end_time": "2021-01-06T13:18:27.756894", "exception": false, "start_time": "2021-01-06T13:18:27.666738", "status": "completed"} tags=[]
 parts_ari_df.to_pickle(output_filename)
 
-# %% [markdown] papermill={"duration": 0.071862, "end_time": "2020-12-02T17:42:50.400311", "exception": false, "start_time": "2020-12-02T17:42:50.328449", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.073719, "end_time": "2021-01-06T13:18:27.905531", "exception": false, "start_time": "2021-01-06T13:18:27.831812", "status": "completed"} tags=[]
 # ## Stability plot
 
-# %% papermill={"duration": 0.087971, "end_time": "2020-12-02T17:42:50.560200", "exception": false, "start_time": "2020-12-02T17:42:50.472229", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.090629, "end_time": "2021-01-06T13:18:28.072530", "exception": false, "start_time": "2021-01-06T13:18:27.981901", "status": "completed"} tags=[]
 parts_ari_df_plot = (
     parts_ari_df.stack()
     .reset_index()
     .rename(columns={"level_0": "k", "level_1": "idx", 0: "ari"})
 )
 
-# %% papermill={"duration": 0.087384, "end_time": "2020-12-02T17:42:50.719239", "exception": false, "start_time": "2020-12-02T17:42:50.631855", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.090449, "end_time": "2021-01-06T13:18:28.238587", "exception": false, "start_time": "2021-01-06T13:18:28.148138", "status": "completed"} tags=[]
 parts_ari_df_plot.dtypes
 
-# %% papermill={"duration": 0.091015, "end_time": "2020-12-02T17:42:50.882560", "exception": false, "start_time": "2020-12-02T17:42:50.791545", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.091456, "end_time": "2021-01-06T13:18:28.405291", "exception": false, "start_time": "2021-01-06T13:18:28.313835", "status": "completed"} tags=[]
 parts_ari_df_plot.head()
 
-# %% papermill={"duration": 2.974325, "end_time": "2020-12-02T17:42:53.932062", "exception": false, "start_time": "2020-12-02T17:42:50.957737", "status": "completed"} tags=[]
+# %% papermill={"duration": 2.946716, "end_time": "2021-01-06T13:18:31.425972", "exception": false, "start_time": "2021-01-06T13:18:28.479256", "status": "completed"} tags=[]
 # with sns.axes_style('whitegrid', {'grid.linestyle': '--'}):
 with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     "whitegrid", {"grid.linestyle": "--"}
@@ -348,4 +348,4 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.grid(True)
     plt.tight_layout()
 
-# %% papermill={"duration": 0.073868, "end_time": "2020-12-02T17:42:54.081639", "exception": false, "start_time": "2020-12-02T17:42:54.007771", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.076358, "end_time": "2021-01-06T13:18:31.577809", "exception": false, "start_time": "2021-01-06T13:18:31.501451", "status": "completed"} tags=[]
