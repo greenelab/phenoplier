@@ -58,15 +58,6 @@ import conf
 RANDOM_GENERATOR = np.random.default_rng(12345)
 
 # %% [markdown] tags=[]
-# ## Ensemble size
-
-# %% tags=[]
-EXPECTED_ENSEMBLE_SIZE = 295
-
-MIN_ENSEMBLE_SIZE = 290
-MAX_ENSEMBLE_SIZE = 300
-
-# %% [markdown] tags=[]
 # ## Consensus clustering
 
 # %% tags=[]
@@ -85,7 +76,7 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 display(RESULTS_DIR)
 
 # %% [markdown] tags=[]
-# # Get ensemble
+# # Load ensemble
 
 # %% tags=[]
 output_file = Path(RESULTS_DIR, "ensemble.npy").resolve()
@@ -98,7 +89,7 @@ full_ensemble = np.load(output_file)
 display(full_ensemble.shape)
 
 # %% [markdown] tags=[]
-# # Get ensemble coassociation distance matrix
+# # Load ensemble coassociation distance matrix
 
 # %% tags=[]
 output_file = Path(RESULTS_DIR, "ensemble_coassoc_matrix.npy").resolve()
@@ -178,6 +169,18 @@ display(consensus_results.shape)
 
 # %% tags=[]
 consensus_results.head()
+
+# %% [markdown]
+# ## Testing
+
+# %%
+assert not consensus_results.isna().any().any()
+
+# %%
+# check that the number of clusters in the partitions are the expected ones
+_real_k_values = consensus_results['partition'].apply(lambda x: np.unique(x).shape[0])
+display(_real_k_values)
+assert np.all(consensus_results['k'].values == _real_k_values.values)
 
 # %% [markdown] tags=[]
 # ## Save
