@@ -1,6 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
+#     cell_metadata_filter: all,-execution,-papermill
 #     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
@@ -13,20 +14,20 @@
 #     name: python3
 # ---
 
-# %% [markdown] papermill={"duration": 0.010137, "end_time": "2020-11-30T18:31:33.121838", "exception": false, "start_time": "2020-11-30T18:31:33.111701", "status": "completed"} tags=[]
+# %% [markdown] tags=[]
 # # Description
 
-# %% [markdown] papermill={"duration": 0.006066, "end_time": "2020-11-30T18:31:33.134218", "exception": false, "start_time": "2020-11-30T18:31:33.128152", "status": "completed"} tags=[]
+# %% [markdown] tags=[]
 # It projects input data into a UMAP representation.
 
-# %% [markdown] papermill={"duration": 0.006102, "end_time": "2020-11-30T18:31:33.146515", "exception": false, "start_time": "2020-11-30T18:31:33.140413", "status": "completed"} tags=[]
+# %% [markdown] tags=[]
 # # Modules loading
 
-# %% papermill={"duration": 0.017413, "end_time": "2020-11-30T18:31:33.170086", "exception": false, "start_time": "2020-11-30T18:31:33.152673", "status": "completed"} tags=[]
+# %% tags=[]
 # %load_ext autoreload
 # %autoreload 2
 
-# %% papermill={"duration": 0.57397, "end_time": "2020-11-30T18:31:33.750950", "exception": false, "start_time": "2020-11-30T18:31:33.176980", "status": "completed"} tags=[]
+# %% tags=[]
 from pathlib import Path
 from IPython.display import display
 
@@ -35,16 +36,16 @@ import pandas as pd
 import conf
 from utils import generate_result_set_name
 
-# %% [markdown] papermill={"duration": 0.008085, "end_time": "2020-11-30T18:31:33.767559", "exception": false, "start_time": "2020-11-30T18:31:33.759474", "status": "completed"} tags=[]
+# %% [markdown] tags=[]
 # # Settings
 
-# %% [markdown] papermill={"duration": 0.007456, "end_time": "2020-11-30T18:31:33.783918", "exception": false, "start_time": "2020-11-30T18:31:33.776462", "status": "completed"} tags=[]
+# %% [markdown] tags=[]
 # ## Input data
 
-# %% papermill={"duration": 0.019311, "end_time": "2020-11-30T18:31:33.810267", "exception": false, "start_time": "2020-11-30T18:31:33.790956", "status": "completed"} tags=[]
+# %% tags=[]
 INPUT_FILEPATH_STEM = "projection-smultixcan-efo_partial-mashr-zscores"
 
-# %% papermill={"duration": 0.022739, "end_time": "2020-11-30T18:31:33.840220", "exception": false, "start_time": "2020-11-30T18:31:33.817481", "status": "completed"} tags=[]
+# %% tags=[]
 INPUT_FILEPATH = Path(
     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
     "z_score_std",
@@ -55,20 +56,20 @@ display(INPUT_FILEPATH)
 input_filepath_stem = INPUT_FILEPATH.stem
 display(input_filepath_stem)
 
-# %% [markdown] papermill={"duration": 0.008102, "end_time": "2020-11-30T18:31:33.856013", "exception": false, "start_time": "2020-11-30T18:31:33.847911", "status": "completed"} tags=[]
+# %% [markdown] tags=[]
 # ## Output folder
 
-# %% papermill={"duration": 0.02057, "end_time": "2020-11-30T18:31:33.884349", "exception": false, "start_time": "2020-11-30T18:31:33.863779", "status": "completed"} tags=[]
+# %% tags=[]
 # output dir for this notebook
 RESULTS_DIR = Path(conf.RESULTS["DATA_TRANSFORMATIONS_DIR"], "umap").resolve()
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 display(RESULTS_DIR)
 
-# %% [markdown] papermill={"duration": 0.007595, "end_time": "2020-11-30T18:31:33.899752", "exception": false, "start_time": "2020-11-30T18:31:33.892157", "status": "completed"} tags=[]
+# %% [markdown] tags=[]
 # ## UMAP options
 
-# %% papermill={"duration": 0.020365, "end_time": "2020-11-30T18:31:33.927880", "exception": false, "start_time": "2020-11-30T18:31:33.907515", "status": "completed"} tags=[]
+# %% tags=[]
 # parameters of the dimentionality reduction steps
 # note that these are the default parameters of UMAP (metric and n_neighbors)
 DR_OPTIONS = {
@@ -78,34 +79,34 @@ DR_OPTIONS = {
     "random_state": 0,
 }
 
-# %% papermill={"duration": 0.020501, "end_time": "2020-11-30T18:31:33.956090", "exception": false, "start_time": "2020-11-30T18:31:33.935589", "status": "completed"} tags=[]
+# %% tags=[]
 # dictionary containing all options/settings (used to generate filenames)
 ALL_OPTIONS = DR_OPTIONS.copy()
 
 display(ALL_OPTIONS)
 
-# %% [markdown] papermill={"duration": 0.007431, "end_time": "2020-11-30T18:31:33.971366", "exception": false, "start_time": "2020-11-30T18:31:33.963935", "status": "completed"} tags=[]
+# %% [markdown] tags=[]
 # # Load input file
 
-# %% papermill={"duration": 0.032456, "end_time": "2020-11-30T18:31:34.011262", "exception": false, "start_time": "2020-11-30T18:31:33.978806", "status": "completed"} tags=[]
+# %% tags=[]
 data = pd.read_pickle(INPUT_FILEPATH)
 
-# %% papermill={"duration": 0.021387, "end_time": "2020-11-30T18:31:34.041193", "exception": false, "start_time": "2020-11-30T18:31:34.019806", "status": "completed"} tags=[]
+# %% tags=[]
 display(data.shape)
 
-# %% papermill={"duration": 0.035424, "end_time": "2020-11-30T18:31:34.085538", "exception": false, "start_time": "2020-11-30T18:31:34.050114", "status": "completed"} tags=[]
+# %% tags=[]
 display(data.head())
 
-# %% [markdown] papermill={"duration": 0.009136, "end_time": "2020-11-30T18:31:34.104038", "exception": false, "start_time": "2020-11-30T18:31:34.094902", "status": "completed"} tags=[]
+# %% [markdown] tags=[]
 # # UMAP
 
-# %% [markdown] papermill={"duration": 0.008271, "end_time": "2020-11-30T18:31:34.121574", "exception": false, "start_time": "2020-11-30T18:31:34.113303", "status": "completed"} tags=[]
+# %% [markdown] tags=[]
 # **Reproducibility problem**: there seems to be a bug with UMAP in which it produces different results in different operating systems or machines: https://github.com/lmcinnes/umap/issues/153
 
-# %% papermill={"duration": 0.020807, "end_time": "2020-11-30T18:31:34.150762", "exception": false, "start_time": "2020-11-30T18:31:34.129955", "status": "completed"} tags=[]
+# %% tags=[]
 from data.dimreduction import get_umap_proj
 
-# %% papermill={"duration": 116.453553, "end_time": "2020-11-30T18:33:30.613431", "exception": false, "start_time": "2020-11-30T18:31:34.159878", "status": "completed"} tags=[]
+# %% tags=[]
 # Get a UMAP representation for all n_components configurations
 for n_comp in DR_OPTIONS["n_components"]:
     print(f"# components: {n_comp}")
