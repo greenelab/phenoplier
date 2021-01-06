@@ -122,7 +122,7 @@ ensembles_list = []
 # %% tags=[]
 for ens_file in included_pkl_files:
     ens = pd.read_pickle(ens_file)
-    
+
     short_file_path = Path(*ens_file.parts[-2:])
 
     if ens.shape[0] < MIN_ENSEMBLE_SIZE:
