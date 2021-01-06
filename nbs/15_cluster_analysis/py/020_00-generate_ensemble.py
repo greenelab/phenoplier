@@ -59,7 +59,7 @@ RANDOM_GENERATOR = np.random.default_rng(12345)
 # %% [markdown] tags=[]
 # ## Ensemble size
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # For some clustering algorithms it is easy to control the number of final partitions to generate: for instance, for k-means, you can generate partitions from k=2 to k=20 (19 partitions with different number of clusters). However, with algorithms such as DBSCAN this is not very easy to achieve, since for some parameter combinations (`eps` and `min_samples`) it generates partitions with one cluster (which is not an actual partition of the data) that are not included here.
 #
 # The parameters below specify the expected number of partitions for each clustering algorithm, and a range of allowed sizes. Then, the code below checks that each algorithm has the same representation in the ensemble. For example, if `EXPECTED_ENSEMBLE_SIZE=50`, `MIN_ENSEMBLE_SIZE=45` and `MIN_ENSEMBLE_SIZE=55`, the code below will check that k-means, spectral clustering, DBSCAN, etc, generated between 45 and 55 partitions. If not, it resamples the generated partitions to get 50 (the value specified by `EXPECTED_ENSEMBLE_SIZE`), so each algorithm has approximately the same representation in the complete ensemble.
@@ -189,7 +189,7 @@ np.save(output_file, full_ensemble)
 # %% [markdown] tags=[]
 # # Get coassociation matrix from ensemble
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # The coassociation matrix is a distance matrix derived from the ensemble, where each cell represents the percentage of times a pair of objects (traits and diseases in this case) were not clustered together. It serves as an input for any consensus function (basically, another clustering algorithm) to derive a consensus partition.
 
 # %% tags=[]

@@ -170,13 +170,13 @@ display(consensus_results.shape)
 # %% tags=[]
 consensus_results.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Testing
 
-# %%
+# %% tags=[]
 assert not consensus_results.isna().any().any()
 
-# %%
+# %% tags=[]
 # check that the number of clusters in the partitions are the expected ones
 _real_k_values = consensus_results["partition"].apply(lambda x: np.unique(x).shape[0])
 display(_real_k_values)
