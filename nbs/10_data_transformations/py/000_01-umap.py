@@ -137,4 +137,50 @@ for n_comp in DR_OPTIONS["n_components"]:
 
     print("\n")
 
-# %% papermill={"duration": 0.015327, "end_time": "2020-11-30T18:33:30.644774", "exception": false, "start_time": "2020-11-30T18:33:30.629447", "status": "completed"} tags=[]
+# %% [markdown] tags=[] papermill={"duration": 0.010926, "end_time": "2020-11-30T18:31:25.610594", "exception": false, "start_time": "2020-11-30T18:31:25.599668", "status": "completed"}
+# ## Plots
+
+# %%
+import seaborn as sns
+
+# %% [markdown]
+# Plot the data from the UMAP version with 5 components.
+
+# %%
+# prepare options of 5 components
+options = ALL_OPTIONS.copy()
+options["n_components"] = 5
+options = {k: v for k, v in options.items() if k in DR_OPTIONS}
+
+# load
+input_file = Path(
+    RESULTS_DIR,
+    generate_result_set_name(
+        options, prefix=f"umap-{input_filepath_stem}-", suffix=".pkl"
+    ),
+).resolve()
+
+dr_data = pd.read_pickle(input_file)
+
+# %% [markdown]
+# ## Full plot
+
+# %% tags=[] papermill={"duration": 5.586547, "end_time": "2020-11-30T18:31:31.208070", "exception": false, "start_time": "2020-11-30T18:31:25.621523", "status": "completed"}
+g = sns.pairplot(data=dr_data)
+
+# %% [markdown]
+# ## Plot without "outliers"
+
+# %%
+# remove "outliers" just to take a look at the big cluster
+dr_data_thin = dr_data[
+    (dr_data['UMAP1'] < -1)
+]
+
+# %%
+g = sns.PairGrid(data=dr_data_thin)
+g.map_upper(sns.histplot)
+g.map_lower(sns.kdeplot, fill=False)
+g.map_diag(sns.histplot, kde=True)
+
+# %% tags=[] papermill={"duration": 0.015327, "end_time": "2020-11-30T18:33:30.644774", "exception": false, "start_time": "2020-11-30T18:33:30.629447", "status": "completed"}
