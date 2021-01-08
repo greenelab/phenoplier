@@ -109,7 +109,7 @@ CLUSTERING_OPTIONS["K_MAX"] = 60  # sqrt(3749)
 CLUSTERING_OPTIONS["N_REPS_PER_K"] = 5
 CLUSTERING_OPTIONS["KMEANS_N_INIT"] = 10
 CLUSTERING_OPTIONS["N_NEIGHBORS"] = 10
-CLUSTERING_OPTIONS["AFFINITY"] = "nearest_neighbors"
+CLUSTERING_OPTIONS["AFFINITY"] = "nearest_neighbors" # rbf kernel (the default) does not work well with this data
 
 display(CLUSTERING_OPTIONS)
 
