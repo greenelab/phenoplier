@@ -138,7 +138,7 @@ for n_comp in DR_OPTIONS["n_components"]:
 
     print("\n")
 
-# %% [markdown] tags=[] papermill={"duration": 0.010926, "end_time": "2020-11-30T18:31:25.610594", "exception": false, "start_time": "2020-11-30T18:31:25.599668", "status": "completed"}
+# %% [markdown] tags=[]
 # ## Plots
 
 # %%
@@ -166,7 +166,7 @@ dr_data = pd.read_pickle(input_file)
 # %% [markdown]
 # ## Full plot
 
-# %% tags=[] papermill={"duration": 5.586547, "end_time": "2020-11-30T18:31:31.208070", "exception": false, "start_time": "2020-11-30T18:31:25.621523", "status": "completed"}
+# %% tags=[]
 g = sns.pairplot(data=dr_data)
 
 # %% [markdown]
@@ -182,4 +182,4 @@ g.map_upper(sns.histplot)
 g.map_lower(sns.kdeplot, fill=False)
 g.map_diag(sns.histplot, kde=True)
 
-# %% tags=[] papermill={"duration": 0.015327, "end_time": "2020-11-30T18:33:30.644774", "exception": false, "start_time": "2020-11-30T18:33:30.629447", "status": "completed"}
+# %% tags=[]
