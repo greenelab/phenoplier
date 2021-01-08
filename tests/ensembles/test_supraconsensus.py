@@ -9,7 +9,7 @@ from clustering.ensemble import (
     eac_average,
 )
 from clustering.ensemble import supraconsensus
-from clustering.ensemble import anmi
+from clustering.ensemble import anmi, aari
 
 
 def test_iris():
@@ -73,21 +73,25 @@ def test_circles():
         assert ari(ref_part, consensus_part) > ari(ref_part, ensemble_member)
 
 
-def test_anmi_max_eac():
+def test_anmi_criterion():
     # Prepare
     np.random.seed(1)
 
-    data, ref_part = datasets.make_circles(n_samples=150, factor=0.3, noise=0.05)
+    data, ref_part = datasets.make_circles(
+        n_samples=150, factor=0.3, noise=0.05, random_state=2
+    )
 
     ensemble = np.array(
         [
-            KMeans(n_clusters=k, init="random", n_init=1).fit_predict(data)
+            KMeans(n_clusters=k, init="random", n_init=1, random_state=0).fit_predict(
+                data
+            )
             for k in range(2, 10)
         ]
     )
 
     # Run
-    consensus_part = supraconsensus(ensemble, 2)[0]
+    consensus_part = supraconsensus(ensemble, 2, selection_criterion=anmi)[0]
 
     eac_single_part = eac_single(ensemble, 2)
     eac_complete_part = eac_complete(ensemble, 2)
@@ -101,9 +105,48 @@ def test_anmi_max_eac():
     )
 
     # ANMI should be greater or equal for the supraconsensus
-    assert anmi(ensemble, consensus_part) >= anmi(ensemble, eac_single_part)
-    assert anmi(ensemble, consensus_part) >= anmi(ensemble, eac_complete_part)
-    assert anmi(ensemble, consensus_part) >= anmi(ensemble, eac_average_part)
+    consensus_anmi = anmi(ensemble, consensus_part)
+    assert consensus_anmi >= anmi(ensemble, eac_single_part)
+    assert consensus_anmi >= anmi(ensemble, eac_complete_part)
+    assert consensus_anmi >= anmi(ensemble, eac_average_part)
+
+
+def test_aari_criterion():
+    # Prepare
+    np.random.seed(1)
+
+    data, ref_part = datasets.make_circles(
+        n_samples=150, factor=0.3, noise=0.05, random_state=2
+    )
+
+    ensemble = np.array(
+        [
+            KMeans(n_clusters=k, init="random", n_init=1, random_state=0).fit_predict(
+                data
+            )
+            for k in range(2, 10)
+        ]
+    )
+
+    # Run
+    consensus_part = supraconsensus(ensemble, 2, selection_criterion=aari)[0]
+
+    eac_single_part = eac_single(ensemble, 2)
+    eac_complete_part = eac_complete(ensemble, 2)
+    eac_average_part = eac_average(ensemble, 2)
+
+    # supraconsensus partition should be one of the others
+    assert (
+        ari(consensus_part, eac_single_part) == 1.0
+        or ari(consensus_part, eac_complete_part) == 1.0
+        or ari(consensus_part, eac_average_part) == 1.0
+    )
+
+    # AARI should be greater or equal for the supraconsensus
+    consensus_anmi = aari(ensemble, consensus_part)
+    assert consensus_anmi >= aari(ensemble, eac_single_part)
+    assert consensus_anmi >= aari(ensemble, eac_complete_part)
+    assert consensus_anmi >= aari(ensemble, eac_average_part)
 
 
 def test_supraconsensus_returns_stats():
@@ -151,5 +194,4 @@ def test_supraconsensus_returns_stats():
 
     # check that the max method is correct
     real_max_part = eval(f"{max_method}(ensemble, 3)")
-    # real_max_part = eval(f'hgpa(ensemble, 3)')
     assert ari(real_max_part, consensus_part) == 1.0
