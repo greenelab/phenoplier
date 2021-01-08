@@ -54,9 +54,7 @@ import pandas as pd
 from sklearn.neighbors import NearestNeighbors
 from sklearn.metrics import pairwise_distances
 from sklearn.cluster import DBSCAN
-import umap
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 from utils import generate_result_set_name
 from clustering.ensemble import generate_ensemble

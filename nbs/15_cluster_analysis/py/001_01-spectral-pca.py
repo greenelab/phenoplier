@@ -49,7 +49,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import umap
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -273,7 +272,7 @@ assert np.all(
 
 # %% tags=[]
 from sklearn.metrics import adjusted_rand_score as ari
-from scipy.spatial.distance import squareform, pdist
+from scipy.spatial.distance import pdist
 
 # %% tags=[]
 parts_ari = pd.Series(

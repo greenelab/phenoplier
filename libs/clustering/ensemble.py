@@ -7,7 +7,7 @@ from sklearn.metrics import pairwise_distances
 from sklearn.metrics import adjusted_rand_score as ari
 from sklearn.metrics import adjusted_mutual_info_score as ami
 from sklearn.metrics import normalized_mutual_info_score as nmi
-from sklearn.cluster import AgglomerativeClustering, SpectralClustering
+from sklearn.cluster import AgglomerativeClustering
 from tqdm import tqdm
 
 
