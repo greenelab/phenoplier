@@ -173,9 +173,7 @@ g = sns.pairplot(data=dr_data)
 
 # %%
 # remove "outliers" just to take a look at the big cluster
-dr_data_thin = dr_data[
-    (dr_data['UMAP1'] < -1)
-]
+dr_data_thin = dr_data[(dr_data["UMAP1"] < -1)]
 
 # %%
 g = sns.PairGrid(data=dr_data_thin)
