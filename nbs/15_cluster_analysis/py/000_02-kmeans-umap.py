@@ -337,7 +337,7 @@ parts_ari_df_plot.head()
 with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     "whitegrid", {"grid.linestyle": "--"}
 ):
-    fig = plt.figure(figsize=(12, 6))
+    fig = plt.figure(figsize=(14, 6))
     ax = sns.pointplot(data=parts_ari_df_plot, x="k", y="ari")
     ax.set_ylabel("Averange ARI")
     ax.set_xlabel("Number of clusters ($k$)")
