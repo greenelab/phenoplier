@@ -99,9 +99,17 @@ def generate_result_set_name(
 
         return s
 
+    def simplify_option_value(s) -> str:
+        if isinstance(s, str):
+            return simplify_option_name(s)
+        elif isinstance(s, (list, tuple, set)):
+            return "_".join(simplify_option_name(str(x)) for x in s)
+        else:
+            return simplify_option_name(str(s))
+
     output_file_suffix = options_sep.join(
         [
-            f"{simplify_option_name(k)}_{v}"
+            f"{simplify_option_name(k)}_{simplify_option_value(v)}"
             for k, v in sorted(method_options.items(), reverse=False)
         ]
     )
