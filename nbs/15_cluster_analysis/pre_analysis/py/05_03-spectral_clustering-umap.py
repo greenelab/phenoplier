@@ -160,7 +160,7 @@ with warnings.catch_warnings():
 
     clus = SpectralClustering(
         eigen_solver="arpack",
-#         eigen_tol=1e-4,
+        #         eigen_tol=1e-4,
         n_clusters=2,
         n_init=1,
         affinity="rbf",
