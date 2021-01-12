@@ -17,7 +17,7 @@
 # %% [markdown] tags=[]
 # # Description
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # It projects the PhenomeXcan results into the MultiPLIER latent space.
 
 # %% [markdown] tags=[]
