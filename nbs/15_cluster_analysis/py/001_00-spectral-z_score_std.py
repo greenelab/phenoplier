@@ -221,7 +221,7 @@ assert not np.any([(part["partition"] < 0).any() for idx, part in ensemble.iterr
 # %% [markdown] tags=[]
 # ## Add clustering quality measures
 
-# %%
+# %% tags=[]
 from sklearn.metrics import calinski_harabasz_score
 
 # %% tags=[]
@@ -381,4 +381,4 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
 # %% [markdown] tags=[]
 # **FIX THIS CONCLUSINO** As discussed in [this comment](https://github.com/greenelab/phenoplier/pull/19#discussion_r553403416), these results are a bit weird: partitions are highly stable for most of the k values, which seems suspicious. The reason might be the `affinity` parameter used for this data version and PCA (set to `nearest_neighbors`). Note that for UMAP we used the default value for `affinity` (`rbf`), and results seem to be more normal.
 
-# %%
+# %% tags=[]
