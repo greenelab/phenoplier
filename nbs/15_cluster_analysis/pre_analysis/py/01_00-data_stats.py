@@ -23,7 +23,7 @@
 # %% [markdown] tags=[]
 # # Environment variables
 
-# %% tags=[] trusted=true
+# %% tags=[]
 from IPython.display import display
 
 import conf
@@ -31,7 +31,7 @@ import conf
 N_JOBS = conf.GENERAL["N_JOBS"]
 display(N_JOBS)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 # %env MKL_NUM_THREADS=$N_JOBS
 # %env OPEN_BLAS_NUM_THREADS=$N_JOBS
 # %env NUMEXPR_NUM_THREADS=$N_JOBS
@@ -40,11 +40,11 @@ display(N_JOBS)
 # %% [markdown] tags=[]
 # # Modules loading
 
-# %% tags=[] trusted=true
+# %% tags=[]
 # %load_ext autoreload
 # %autoreload 2
 
-# %% tags=[] trusted=true
+# %% tags=[]
 from pathlib import Path
 import warnings
 
@@ -59,13 +59,13 @@ from utils import generate_result_set_name
 # %% [markdown] tags=[]
 # # Settings
 
-# %% tags=[] trusted=true
+# %% tags=[]
 INITIAL_RANDOM_STATE = 12345
 
 # %% [markdown] tags=[]
 # ## Output directory
 
-# %% tags=[] trusted=true
+# %% tags=[]
 # # output dir for this notebook
 # RESULTS_DIR = Path(
 #     conf.RESULTS["CLUSTERING_RUNS_DIR"],
@@ -78,13 +78,13 @@ INITIAL_RANDOM_STATE = 12345
 # %% [markdown] tags=[]
 # # Z-score standardized data
 
-# %% tags=[] trusted=true
+# %% tags=[]
 INPUT_SUBSET = "z_score_std"
 
-# %% tags=[] trusted=true
+# %% tags=[]
 INPUT_STEM = "projection-smultixcan-efo_partial-mashr-zscores"
 
-# %% tags=[] trusted=true
+# %% tags=[]
 input_filepath = Path(
     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
     INPUT_SUBSET,
@@ -97,72 +97,72 @@ assert input_filepath.exists(), "Input file does not exist"
 input_filepath_stem = input_filepath.stem
 display(input_filepath_stem)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data = pd.read_pickle(input_filepath)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data.shape
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Data stats
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data.min().min(), data.max().max()
 
-# %% tags=[] trusted=true
+# %% tags=[]
 assert not np.isinf(data).any().any()
 
-# %% tags=[] trusted=true
+# %% tags=[]
 assert not data.isna().any().any()
 
-# %% trusted=true
+# %% tags=[]
 data_stats = data.describe()
 
-# %% trusted=true
+# %% tags=[]
 data_stats.T
 
-# %% trusted=true
+# %% tags=[]
 assert not np.isinf(data_stats).any().any()
 
-# %% trusted=true
+# %% tags=[]
 assert not data_stats.isna().any().any()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Check duplicated values
 
-# %% trusted=true
+# %% tags=[]
 data_dups = data.duplicated()
 
-# %% trusted=true
+# %% tags=[]
 data_dups.any()
 
-# %% trusted=true
+# %% tags=[]
 data_dups.value_counts()
 
-# %% trusted=true
+# %% tags=[]
 data_dups_labels = data.index[data_dups]
 display(data_dups_labels)
 
 # %% [markdown] tags=[]
 # # PCA
 
-# %% tags=[] trusted=true
+# %% tags=[]
 INPUT_SUBSET = "pca"
 
-# %% tags=[] trusted=true
+# %% tags=[]
 INPUT_STEM = "z_score_std-projection-smultixcan-efo_partial-mashr-zscores"
 
-# %% tags=[] trusted=true
+# %% tags=[]
 DR_OPTIONS = {
     "n_components": 50,
     "svd_solver": "full",
     "random_state": 0,
 }
 
-# %% tags=[] trusted=true
+# %% tags=[]
 input_filepath = Path(
     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
     INPUT_SUBSET,
@@ -177,67 +177,67 @@ assert input_filepath.exists(), "Input file does not exist"
 input_filepath_stem = input_filepath.stem
 display(input_filepath_stem)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data = pd.read_pickle(input_filepath)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data.shape
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Data stats
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data.min().min(), data.max().max()
 
-# %% tags=[] trusted=true
+# %% tags=[]
 assert not np.isinf(data).any().any()
 
-# %% tags=[] trusted=true
+# %% tags=[]
 assert not data.isna().any().any()
 
-# %% trusted=true
+# %% tags=[]
 data_stats = data.describe()
 
-# %% trusted=true
+# %% tags=[]
 data_stats.T
 
-# %% trusted=true
+# %% tags=[]
 assert not np.isinf(data_stats).any().any()
 
-# %% trusted=true
+# %% tags=[]
 assert not data_stats.isna().any().any()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Check duplicated values
 
-# %% trusted=true
+# %% tags=[]
 data_dups = data.duplicated()
 
-# %% trusted=true
+# %% tags=[]
 data_dups.any()
 
-# %% trusted=true
+# %% tags=[]
 data_dups.value_counts()
 
-# %% trusted=true
+# %% tags=[]
 data.index[data_dups]
 
-# %% trusted=true
+# %% tags=[]
 assert data.index[data_dups].equals(data_dups_labels)
 
 # %% [markdown] tags=[]
 # # UMAP
 
-# %% tags=[] trusted=true
+# %% tags=[]
 INPUT_SUBSET = "umap"
 
-# %% tags=[] trusted=true
+# %% tags=[]
 INPUT_STEM = "z_score_std-projection-smultixcan-efo_partial-mashr-zscores"
 
-# %% tags=[] trusted=true
+# %% tags=[]
 DR_OPTIONS = {
     "n_components": 50,
     "metric": "euclidean",
@@ -245,7 +245,7 @@ DR_OPTIONS = {
     "random_state": 0,
 }
 
-# %% tags=[] trusted=true
+# %% tags=[]
 input_filepath = Path(
     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
     INPUT_SUBSET,
@@ -260,55 +260,55 @@ assert input_filepath.exists(), "Input file does not exist"
 input_filepath_stem = input_filepath.stem
 display(input_filepath_stem)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data = pd.read_pickle(input_filepath)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data.shape
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Data stats
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data.min().min(), data.max().max()
 
-# %% tags=[] trusted=true
+# %% tags=[]
 assert not np.isinf(data).any().any()
 
-# %% tags=[] trusted=true
+# %% tags=[]
 assert not data.isna().any().any()
 
-# %% trusted=true
+# %% tags=[]
 data_stats = data.describe()
 
-# %% trusted=true
+# %% tags=[]
 data_stats.T
 
-# %% trusted=true
+# %% tags=[]
 assert not np.isinf(data_stats).any().any()
 
-# %% trusted=true
+# %% tags=[]
 assert not data_stats.isna().any().any()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Check duplicated values
 
-# %% trusted=true
+# %% tags=[]
 data_dups = data.duplicated()
 
-# %% trusted=true
+# %% tags=[]
 data_dups.any()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # There are no duplicates with UMAP data, but the duplicates in `z_score_std` and `pca` are very close by in the UMAP representation.
 
-# %% trusted=true
+# %% tags=[]
 data_dups_labels
 
-# %% trusted=true
+# %% tags=[]
 data.loc[data_dups_labels]
 
 # %% tags=[]
