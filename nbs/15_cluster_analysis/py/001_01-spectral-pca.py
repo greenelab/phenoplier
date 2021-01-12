@@ -230,7 +230,7 @@ assert not np.any([(part["partition"] < 0).any() for idx, part in ensemble.iterr
 # %% [markdown] tags=[]
 # ## Add clustering quality measures
 
-# %%
+# %% tags=[]
 from sklearn.metrics import calinski_harabasz_score
 
 # %% tags=[]
@@ -390,4 +390,4 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
 # %% [markdown] tags=[]
 # **FIX THIS CONCLUSION** See comment in the `z_score_std` version of this notebook (`001_00-spectral-z_score_std.ipynb`) for an interpretation of these results.
 
-# %%
+# %% tags=[]
