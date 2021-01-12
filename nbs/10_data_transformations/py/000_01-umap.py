@@ -141,13 +141,13 @@ for n_comp in DR_OPTIONS["n_components"]:
 # %% [markdown] tags=[]
 # ## Plots
 
-# %%
+# %% tags=[]
 import seaborn as sns
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Plot the data from the UMAP version with 5 components.
 
-# %%
+# %% tags=[]
 # prepare options of 5 components
 options = ALL_OPTIONS.copy()
 options["n_components"] = 5
@@ -163,20 +163,20 @@ input_file = Path(
 
 dr_data = pd.read_pickle(input_file)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Full plot
 
 # %% tags=[]
 g = sns.pairplot(data=dr_data)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Plot without "outliers"
 
-# %%
+# %% tags=[]
 # remove "outliers" just to take a look at the big cluster
 dr_data_thin = dr_data[(dr_data["UMAP1"] < -1)]
 
-# %%
+# %% tags=[]
 g = sns.PairGrid(data=dr_data_thin)
 g.map_upper(sns.histplot)
 g.map_lower(sns.kdeplot, fill=False)
