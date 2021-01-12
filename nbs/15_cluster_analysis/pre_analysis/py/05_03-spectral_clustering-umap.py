@@ -23,7 +23,7 @@
 # %% [markdown] tags=[]
 # # Environment variables
 
-# %% tags=[]
+# %% tags=[] trusted=true
 from IPython.display import display
 
 import conf
@@ -31,7 +31,7 @@ import conf
 N_JOBS = conf.GENERAL["N_JOBS"]
 display(N_JOBS)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # %env MKL_NUM_THREADS=$N_JOBS
 # %env OPEN_BLAS_NUM_THREADS=$N_JOBS
 # %env NUMEXPR_NUM_THREADS=$N_JOBS
@@ -40,11 +40,11 @@ display(N_JOBS)
 # %% [markdown] tags=[]
 # # Modules loading
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # %load_ext autoreload
 # %autoreload 2
 
-# %% tags=[]
+# %% tags=[] trusted=true
 from pathlib import Path
 import warnings
 
@@ -59,19 +59,19 @@ from utils import generate_result_set_name
 # %% [markdown] tags=[]
 # # Settings
 
-# %% tags=[]
+# %% tags=[] trusted=true
 INITIAL_RANDOM_STATE = 50000
 
 # %% [markdown] tags=[]
 # # UMAP
 
-# %% tags=[]
+# %% tags=[] trusted=true
 INPUT_SUBSET = "umap"
 
-# %% tags=[]
+# %% tags=[] trusted=true
 INPUT_STEM = "z_score_std-projection-smultixcan-efo_partial-mashr-zscores"
 
-# %% tags=[]
+# %% tags=[] trusted=true
 DR_OPTIONS = {
     "n_components": 50,
     "metric": "euclidean",
@@ -79,7 +79,7 @@ DR_OPTIONS = {
     "random_state": 0,
 }
 
-# %% tags=[]
+# %% tags=[] trusted=true
 input_filepath = Path(
     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
     INPUT_SUBSET,
@@ -94,19 +94,19 @@ assert input_filepath.exists(), "Input file does not exist"
 input_filepath_stem = input_filepath.stem
 display(input_filepath_stem)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 data = pd.read_pickle(input_filepath)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 data.shape
 
-# %% tags=[]
+# %% tags=[] trusted=true
 data.head()
 
 # %% [markdown] tags=[]
 # # Clustering
 
-# %% tags=[]
+# %% tags=[] trusted=true
 from sklearn.cluster import SpectralClustering
 from sklearn.metrics import silhouette_score, calinski_harabasz_score
 
@@ -116,7 +116,7 @@ from sklearn.metrics import silhouette_score, calinski_harabasz_score
 # %% [markdown] tags=[]
 # ### Using default value (`gamma=1.0`)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 with warnings.catch_warnings():
     warnings.filterwarnings("always")
 
@@ -132,18 +132,18 @@ with warnings.catch_warnings():
 
     part = clus.fit_predict(data)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # show number of clusters and their size
 pd.Series(part).value_counts()
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # From sklearn website:
 # The best value is 1 and the worst value is -1. Values near 0 indicate overlapping clusters.
 # Negative values generally indicate that a sample has been assigned to the wrong cluster,
 # as a different cluster is more similar
 silhouette_score(data, part)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # From sklearn website:
 # The score is defined as ratio between the within-cluster dispersion and the between-cluster dispersion
 calinski_harabasz_score(data, part)
@@ -154,34 +154,34 @@ calinski_harabasz_score(data, part)
 # %% [markdown] tags=[]
 # ### Using `gamma>1.0` (larger than default value)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 with warnings.catch_warnings():
     warnings.filterwarnings("always")
 
     clus = SpectralClustering(
         eigen_solver="arpack",
-        #         eigen_tol=1e-3,
+#         eigen_tol=1e-4,
         n_clusters=2,
         n_init=1,
         affinity="rbf",
-        gamma=2.00,
+        gamma=2.50,
         random_state=INITIAL_RANDOM_STATE,
     )
 
     part = clus.fit_predict(data)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # show number of clusters and their size
 pd.Series(part).value_counts()
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # From sklearn website:
 # The best value is 1 and the worst value is -1. Values near 0 indicate overlapping clusters.
 # Negative values generally indicate that a sample has been assigned to the wrong cluster,
 # as a different cluster is more similar
 silhouette_score(data, part)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # From sklearn website:
 # The score is defined as ratio between the within-cluster dispersion and the between-cluster dispersion
 calinski_harabasz_score(data, part)
@@ -192,7 +192,7 @@ calinski_harabasz_score(data, part)
 # %% [markdown] tags=[]
 # ### Using `gamma<1.0` (smaller than default value)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 with warnings.catch_warnings():
     warnings.filterwarnings("always")
 
@@ -208,29 +208,29 @@ with warnings.catch_warnings():
 
     part = clus.fit_predict(data)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # show number of clusters and their size
 pd.Series(part).value_counts()
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # From sklearn website:
 # The best value is 1 and the worst value is -1. Values near 0 indicate overlapping clusters.
 # Negative values generally indicate that a sample has been assigned to the wrong cluster,
 # as a different cluster is more similar
 silhouette_score(data, part)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # From sklearn website:
 # The score is defined as ratio between the within-cluster dispersion and the between-cluster dispersion
 calinski_harabasz_score(data, part)
 
 # %% [markdown] tags=[]
-# For `gamma` values around `0.01`, clustering quality measures change (CH improves and silhouette diminishes a little bit. I will explore more around these values.
+# For `gamma` values around `0.01`, clustering quality measures improve. I will explore more around these values.
 
 # %% [markdown] tags=[]
 # ## Extended test
 
-# %% tags=[]
+# %% tags=[] trusted=true
 CLUSTERING_OPTIONS = {}
 
 CLUSTERING_OPTIONS["K_RANGE"] = [2, 4, 6, 8, 10, 20, 30, 40, 50, 60]
@@ -262,7 +262,7 @@ CLUSTERING_OPTIONS["AFFINITY"] = "rbf"
 
 display(CLUSTERING_OPTIONS)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 CLUSTERERS = {}
 
 idx = 0
@@ -286,26 +286,26 @@ for k in CLUSTERING_OPTIONS["K_RANGE"]:
             random_state = random_state + 1
             idx = idx + 1
 
-# %% tags=[]
+# %% tags=[] trusted=true
 display(len(CLUSTERERS))
 
-# %% tags=[]
+# %% tags=[] trusted=true
 _iter = iter(CLUSTERERS.items())
 display(next(_iter))
 display(next(_iter))
 
-# %% tags=[]
+# %% tags=[] trusted=true
 clustering_method_name = method_name
 display(clustering_method_name)
 
 # %% [markdown] tags=[]
 # ## Generate ensemble
 
-# %% tags=[]
+# %% tags=[] trusted=true
 import tempfile
 from clustering.ensemble import generate_ensemble
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # generate a temporary folder where to store the ensemble and avoid computing it again
 ensemble_folder = Path(
     tempfile.gettempdir(),
@@ -314,7 +314,7 @@ ensemble_folder = Path(
 ).resolve()
 ensemble_folder.mkdir(parents=True, exist_ok=True)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 ensemble_file = Path(
     ensemble_folder,
     generate_result_set_name(
@@ -323,7 +323,7 @@ ensemble_file = Path(
 )
 display(ensemble_file)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 if ensemble_file.exists():
     display(f"Ensemble file exists")
     ensemble = pd.read_pickle(ensemble_file)
@@ -336,52 +336,52 @@ else:
 
     ensemble.to_pickle(ensemble_file)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 ensemble.shape
 
-# %% tags=[]
+# %% tags=[] trusted=true
 ensemble.head()
 
-# %% tags=[]
+# %% tags=[] trusted=true
 ensemble["gamma"] = ensemble["gamma"].apply(lambda x: f"{x:.1e}")
 
-# %% tags=[]
+# %% tags=[] trusted=true
 ensemble["n_clusters"].value_counts()
 
-# %% tags=[]
+# %% tags=[] trusted=true
 _tmp = ensemble["n_clusters"].value_counts().unique()
 assert _tmp.shape[0] == 1
 assert _tmp[0] == int(
     CLUSTERING_OPTIONS["N_REPS_PER_K"] * len(CLUSTERING_OPTIONS["GAMMAS"])
 )
 
-# %% tags=[]
+# %% tags=[] trusted=true
 ensemble_stats = ensemble["n_clusters"].describe()
 display(ensemble_stats)
 
 # %% [markdown] tags=[]
 # ### Testing
 
-# %% tags=[]
+# %% tags=[] trusted=true
 assert ensemble_stats["min"] > 1
 
-# %% tags=[]
+# %% tags=[] trusted=true
 assert not ensemble["n_clusters"].isna().any()
 
-# %% tags=[]
+# %% tags=[] trusted=true
 assert ensemble.shape[0] == len(CLUSTERERS)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # all partitions have the right size
 assert np.all(
     [part["partition"].shape[0] == data.shape[0] for idx, part in ensemble.iterrows()]
 )
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # no partition has negative clusters (noisy points)
 assert not np.any([(part["partition"] < 0).any() for idx, part in ensemble.iterrows()])
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # check that the number of clusters in the partitions are the expected ones
 _real_k_values = ensemble["partition"].apply(lambda x: np.unique(x).shape[0])
 display(_real_k_values)
@@ -390,26 +390,26 @@ assert np.all(ensemble["n_clusters"].values == _real_k_values.values)
 # %% [markdown] tags=[]
 # ### Add clustering quality measures
 
-# %% tags=[]
+# %% tags=[] trusted=true
 ensemble = ensemble.assign(
     ch_score=ensemble["partition"].apply(lambda x: calinski_harabasz_score(data, x))
 )
 
-# %% tags=[]
+# %% tags=[] trusted=true
 ensemble.shape
 
-# %% tags=[]
+# %% tags=[] trusted=true
 ensemble.head()
 
 # %% [markdown] tags=[]
 # # Cluster quality
 
-# %% tags=[]
+# %% tags=[] trusted=true
 with pd.option_context("display.max_rows", None, "display.max_columns", None):
     _df = ensemble.groupby(["n_clusters", "gamma"]).mean()
     display(_df)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # with sns.axes_style('whitegrid', {'grid.linestyle': '--'}):
 with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     "whitegrid", {"grid.linestyle": "--"}
@@ -430,21 +430,21 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
 # %% [markdown] tags=[]
 # ## Group ensemble by n_clusters
 
-# %% tags=[]
+# %% tags=[] trusted=true
 parts = ensemble.groupby(["gamma", "n_clusters"]).apply(
     lambda x: np.concatenate(x["partition"].apply(lambda x: x.reshape(1, -1)), axis=0)
 )
 
-# %% tags=[]
+# %% tags=[] trusted=true
 parts.shape
 
-# %% tags=[]
+# %% tags=[] trusted=true
 parts.head()
 
-# %% tags=[]
+# %% tags=[] trusted=true
 parts.iloc[0].shape
 
-# %% tags=[]
+# %% tags=[] trusted=true
 assert np.all(
     [
         parts.loc[k].shape == (int(CLUSTERING_OPTIONS["N_REPS_PER_K"]), data.shape[0])
@@ -455,58 +455,58 @@ assert np.all(
 # %% [markdown] tags=[]
 # ## Compute stability
 
-# %% tags=[]
+# %% tags=[] trusted=true
 from sklearn.metrics import adjusted_rand_score as ari
 from scipy.spatial.distance import squareform, pdist
 
-# %% tags=[]
+# %% tags=[] trusted=true
 parts_ari = pd.Series(
     {k: pdist(parts.loc[k], metric=ari) for k in parts.index}, name="n_clusters"
 )
 
-# %% tags=[]
+# %% tags=[] trusted=true
 parts_ari_stability = parts_ari.apply(lambda x: x.mean())
 display(parts_ari_stability.sort_values(ascending=False).head(15))
 
-# %% tags=[]
+# %% tags=[] trusted=true
 parts_ari_df = pd.DataFrame.from_records(parts_ari.tolist()).set_index(
     parts_ari.index.copy()
 )
 parts_ari_df.index.rename(["gamma", "n_clusters"], inplace=True)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 parts_ari_df.shape
 
-# %% tags=[]
+# %% tags=[] trusted=true
 _n_total_parts = int(
     CLUSTERING_OPTIONS["N_REPS_PER_K"]
 )  # * len(CLUSTERING_OPTIONS["GAMMAS"]))
 
 assert int(_n_total_parts * (_n_total_parts - 1) / 2) == parts_ari_df.shape[1]
 
-# %% tags=[]
+# %% tags=[] trusted=true
 parts_ari_df.head()
 
 # %% [markdown] tags=[]
 # ## Stability plot
 
-# %% tags=[]
+# %% tags=[] trusted=true
 parts_ari_df_plot = (
     parts_ari_df.stack().reset_index().rename(columns={"level_2": "idx", 0: "ari"})
 )
 
-# %% tags=[]
+# %% tags=[] trusted=true
 parts_ari_df_plot.dtypes
 
-# %% tags=[]
+# %% tags=[] trusted=true
 parts_ari_df_plot.head()
 
-# %% tags=[]
+# %% tags=[] trusted=true
 with pd.option_context("display.max_rows", None, "display.max_columns", None):
     _df = parts_ari_df_plot.groupby(["n_clusters", "gamma"]).mean()
     display(_df)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     "whitegrid", {"grid.linestyle": "--"}
 ):
@@ -517,5 +517,8 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
     plt.grid(True)
     plt.tight_layout()
+
+# %% [markdown] tags=[]
+# **CONCLUSION:** We choose `1e-10` as the `gamma` parameter for this data version.
 
 # %% tags=[]
