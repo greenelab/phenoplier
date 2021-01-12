@@ -108,7 +108,7 @@ CLUSTERING_OPTIONS["K_MIN"] = 2
 CLUSTERING_OPTIONS["K_MAX"] = 60  # sqrt(3749)
 CLUSTERING_OPTIONS["N_REPS_PER_K"] = 5
 CLUSTERING_OPTIONS["KMEANS_N_INIT"] = 10
-CLUSTERING_OPTIONS["N_NEIGHBORS"] = None
+CLUSTERING_OPTIONS["GAMMA"] = 1.0e-10
 CLUSTERING_OPTIONS["AFFINITY"] = "rbf"
 
 display(CLUSTERING_OPTIONS)
@@ -122,10 +122,11 @@ random_state = INITIAL_RANDOM_STATE
 for k in range(CLUSTERING_OPTIONS["K_MIN"], CLUSTERING_OPTIONS["K_MAX"] + 1):
     for i in range(CLUSTERING_OPTIONS["N_REPS_PER_K"]):
         clus = SpectralClustering(
+            eigen_solver="arpack",
             n_clusters=k,
             n_init=CLUSTERING_OPTIONS["KMEANS_N_INIT"],
             affinity=CLUSTERING_OPTIONS["AFFINITY"],
-            n_neighbors=CLUSTERING_OPTIONS["N_NEIGHBORS"],
+            gamma=CLUSTERING_OPTIONS["GAMMA"],
             random_state=random_state,
         )
 
