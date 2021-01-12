@@ -228,6 +228,23 @@ assert np.all(
 assert not np.any([(part["partition"] < 0).any() for idx, part in ensemble.iterrows()])
 
 # %% [markdown] tags=[]
+# ## Add clustering quality measures
+
+# %%
+from sklearn.metrics import calinski_harabasz_score
+
+# %% tags=[]
+ensemble = ensemble.assign(
+    ch_score=ensemble["partition"].apply(lambda x: calinski_harabasz_score(data, x))
+)
+
+# %% tags=[]
+ensemble.shape
+
+# %% tags=[]
+ensemble.head()
+
+# %% [markdown] tags=[]
 # ## Save
 
 # %% tags=[]
@@ -243,6 +260,26 @@ display(output_filename)
 
 # %% tags=[]
 ensemble.to_pickle(output_filename)
+
+# %% [markdown] tags=[]
+# # Cluster quality
+
+# %% tags=[]
+with pd.option_context("display.max_rows", None, "display.max_columns", None):
+    _df = ensemble.groupby(["n_clusters"]).mean()
+    display(_df)
+
+# %% tags=[]
+with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
+    "whitegrid", {"grid.linestyle": "--"}
+):
+    fig = plt.figure(figsize=(14, 6))
+    ax = sns.pointplot(data=ensemble, x="n_clusters", y="ch_score")
+    ax.set_ylabel("Calinski-Harabasz index")
+    ax.set_xlabel("Number of clusters ($k$)")
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+    plt.grid(True)
+    plt.tight_layout()
 
 # %% [markdown] tags=[]
 # # Stability
@@ -351,6 +388,6 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.tight_layout()
 
 # %% [markdown] tags=[]
-# See comment in the `z_score_std` version of this notebook (`001_00-spectral-z_score_std.ipynb`) for an interpretation of these results.
+# **FIX THIS CONCLUSION** See comment in the `z_score_std` version of this notebook (`001_00-spectral-z_score_std.ipynb`) for an interpretation of these results.
 
 # %%
