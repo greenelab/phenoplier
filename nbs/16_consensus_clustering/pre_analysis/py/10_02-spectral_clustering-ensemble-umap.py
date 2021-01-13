@@ -60,10 +60,10 @@ from utils import generate_result_set_name
 # %% tags=[]
 INITIAL_RANDOM_STATE = 100000
 
-# %%
+# %% tags=[]
 CLUSTERING_METHOD_NAME = "DeltaSpectralClustering"
 
-# %%
+# %% tags=[]
 # output dir for this notebook
 CONSENSUS_CLUSTERING_DIR = Path(
     conf.RESULTS["CLUSTERING_DIR"], "consensus_clustering"
@@ -71,7 +71,7 @@ CONSENSUS_CLUSTERING_DIR = Path(
 
 display(CONSENSUS_CLUSTERING_DIR)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Load data
 
 # %% tags=[]
@@ -112,36 +112,36 @@ data.shape
 # %% tags=[]
 data.head()
 
-# %%
+# %% tags=[]
 traits = data.index.tolist()
 
-# %%
+# %% tags=[]
 len(traits)
 
 # %% [markdown] tags=[]
 # # Ensemble (coassociation matrix)
 
-# %%
+# %% tags=[]
 input_file = Path(CONSENSUS_CLUSTERING_DIR, "ensemble_coassoc_matrix.npy").resolve()
 display(input_file)
 
-# %%
+# %% tags=[]
 coassoc_matrix = np.load(input_file)
 
-# %%
+# %% tags=[]
 coassoc_matrix = pd.DataFrame(
     data=coassoc_matrix,
     index=traits,
     columns=traits,
 )
 
-# %%
+# %% tags=[]
 coassoc_matrix.shape
 
-# %%
+# %% tags=[]
 coassoc_matrix.head()
 
-# %%
+# %% tags=[]
 dist_matrix = coassoc_matrix
 
 # %% [markdown] tags=[]
@@ -198,7 +198,7 @@ ensemble_file = Path(
 )
 display(ensemble_file)
 
-# %%
+# %% tags=[]
 assert ensemble_file.exists(), "Ensemble file does not exists"
 
 # %% tags=[]
