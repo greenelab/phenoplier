@@ -23,14 +23,14 @@
 # %% [markdown] tags=[]
 # # Environment variables
 
-# %% tags=[] trusted=true
+# %% tags=[]
 from IPython.display import display
 
 # set numpy n_jobs to 1, since I'll be using n_jobs later
 NUMPY_N_JOBS = 1
 display(NUMPY_N_JOBS)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 # %env MKL_NUM_THREADS=$NUMPY_N_JOBS
 # %env OPEN_BLAS_NUM_THREADS=$NUMPY_N_JOBS
 # %env NUMEXPR_NUM_THREADS=$NUMPY_N_JOBS
@@ -39,11 +39,11 @@ display(NUMPY_N_JOBS)
 # %% [markdown] tags=[]
 # # Modules loading
 
-# %% tags=[] trusted=true
+# %% tags=[]
 # %load_ext autoreload
 # %autoreload 2
 
-# %% tags=[] trusted=true
+# %% tags=[]
 from pathlib import Path
 
 import numpy as np
@@ -54,13 +54,13 @@ import conf
 # %% [markdown] tags=[]
 # # Settings
 
-# %% tags=[] trusted=true
+# %% tags=[]
 RANDOM_GENERATOR = np.random.default_rng(12345)
 
 # %% [markdown] tags=[]
 # ## Consensus clustering
 
-# %% tags=[] trusted=true
+# %% tags=[]
 CLUSTERING_OPTIONS = {}
 
 CLUSTERING_OPTIONS["K_MIN"] = 2
@@ -68,7 +68,7 @@ CLUSTERING_OPTIONS["K_MAX"] = 40
 
 display(CLUSTERING_OPTIONS)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 # output dir for this notebook
 RESULTS_DIR = Path(conf.RESULTS["CLUSTERING_DIR"], "consensus_clustering").resolve()
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -78,36 +78,36 @@ display(RESULTS_DIR)
 # %% [markdown] tags=[]
 # # Load ensemble
 
-# %% tags=[] trusted=true
+# %% tags=[]
 output_file = Path(RESULTS_DIR, "ensemble.npy").resolve()
 display(output_file)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 full_ensemble = np.load(output_file)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 display(full_ensemble.shape)
 
 # %% [markdown] tags=[]
 # # Load ensemble coassociation distance matrix
 
-# %% tags=[] trusted=true
+# %% tags=[]
 output_file = Path(RESULTS_DIR, "ensemble_coassoc_matrix.npy").resolve()
 display(output_file)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 ensemble_coassoc_matrix = np.load(output_file)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 display(ensemble_coassoc_matrix.shape)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 display(ensemble_coassoc_matrix)
 
 # %% [markdown] tags=[]
 # # Consensus clustering
 
-# %% tags=[] trusted=true
+# %% tags=[]
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from tqdm import tqdm
@@ -123,10 +123,10 @@ from clustering.ensembles.eac import (
 from clustering.ensembles.spectral import scc
 
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Define spectral consensus clustering methods with delta values found in pre-analysis:
 
-# %% trusted=true
+# %% tags=[]
 def scc_020(coassoc_distance_matrix, k):
     return scc(coassoc_distance_matrix, k, delta=0.20, ensemble_is_coassoc_matrix=True)
 
@@ -143,7 +143,7 @@ def scc_050(coassoc_distance_matrix, k):
     return scc(coassoc_distance_matrix, k, delta=0.50, ensemble_is_coassoc_matrix=True)
 
 
-# %% tags=[] trusted=true
+# %% tags=[]
 all_consensus_methods = set(
     (
         eac_single_coassoc_matrix,
@@ -157,7 +157,7 @@ all_consensus_methods = set(
 )
 display(all_consensus_methods)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 consensus_results = []
 
 with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
@@ -186,22 +186,22 @@ with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
 
         consensus_results.append(method_results)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 consensus_results = pd.DataFrame(consensus_results)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 display(consensus_results.shape)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 consensus_results.head()
 
 # %% [markdown] tags=[]
 # ## Testing
 
-# %% tags=[] trusted=true
+# %% tags=[]
 assert not consensus_results.isna().any().any()
 
-# %% tags=[] trusted=true
+# %% tags=[]
 # check that the number of clusters in the partitions are the expected ones
 _real_k_values = consensus_results["partition"].apply(lambda x: np.unique(x).shape[0])
 display(_real_k_values)
@@ -210,11 +210,11 @@ assert np.all(consensus_results["k"].values == _real_k_values.values)
 # %% [markdown] tags=[]
 # ## Save
 
-# %% tags=[] trusted=true
+# %% tags=[]
 output_file = Path(RESULTS_DIR, "consensus_clustering_runs.pkl").resolve()
 display(output_file)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 consensus_results.to_pickle(output_file)
 
-# %% tags=[] trusted=true
+# %% tags=[]
