@@ -40,11 +40,11 @@ display(N_JOBS)
 # %% [markdown] tags=[]
 # # Modules loading
 
-# %% tags=[] trusted=true
+# %% tags=[]
 # %load_ext autoreload
 # %autoreload 2
 
-# %% tags=[] trusted=true
+# %% tags=[]
 from pathlib import Path
 
 import numpy as np
@@ -53,7 +53,7 @@ import pandas as pd
 # %% [markdown] tags=[]
 # # Settings
 
-# %% tags=[] trusted=true
+# %% tags=[]
 RANDOM_GENERATOR = np.random.default_rng(12345)
 
 # %% [markdown] tags=[]
@@ -64,7 +64,7 @@ RANDOM_GENERATOR = np.random.default_rng(12345)
 #
 # The parameters below specify the expected number of partitions for each clustering algorithm, and a range of allowed sizes. Then, the code below checks that each algorithm has the same representation in the ensemble. For example, if `EXPECTED_ENSEMBLE_SIZE=50`, `MIN_ENSEMBLE_SIZE=45` and `MAX_ENSEMBLE_SIZE=55`, the code below will check that k-means, spectral clustering, DBSCAN, etc, generated between 45 and 55 partitions. If not, it resamples the generated partitions to get 50 (the value specified by `EXPECTED_ENSEMBLE_SIZE`), so each algorithm has approximately the same representation in the full ensemble.
 
-# %% tags=[] trusted=true
+# %% tags=[]
 EXPECTED_ENSEMBLE_SIZE = 295
 
 MIN_ENSEMBLE_SIZE = 290
@@ -92,7 +92,7 @@ input_dir = Path(
 ).resolve()
 display(input_dir)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 included_pkl_files = []
 
 for pkl_file in input_dir.rglob("*.pkl"):
@@ -113,10 +113,10 @@ assert len(included_pkl_files) == 5 * 3
 # %% [markdown] tags=[]
 # ## Combine partition files to get final ensemble
 
-# %% tags=[] trusted=true
+# %% tags=[]
 n_partitions = 0
 
-# %% tags=[] trusted=true
+# %% tags=[]
 ensembles_list = []
 
 # %% tags=[]
@@ -164,7 +164,7 @@ display(n_data_objects)
 # %% tags=[]
 display(n_partitions)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 full_ensemble = ensembles_list[0]
 for ens in ensembles_list[1:]:
     full_ensemble = np.concatenate((full_ensemble, ens), axis=0)
@@ -183,7 +183,7 @@ display(output_file)
 # %% tags=[]
 full_ensemble
 
-# %% tags=[] trusted=true
+# %% tags=[]
 np.save(output_file, full_ensemble)
 
 # %% [markdown] tags=[]
@@ -192,10 +192,10 @@ np.save(output_file, full_ensemble)
 # %% [markdown] tags=[]
 # The coassociation matrix is a distance matrix derived from the ensemble, where each cell represents the percentage of times a pair of objects (traits and diseases in this case) were not clustered together. It serves as an input for any consensus function (basically, another clustering algorithm) to derive a consensus partition.
 
-# %% tags=[] trusted=true
+# %% tags=[]
 from clustering.ensembles.utils import get_ensemble_distance_matrix
 
-# %% tags=[] trusted=true
+# %% tags=[]
 ensemble_coassoc_matrix = get_ensemble_distance_matrix(
     full_ensemble,
     n_jobs=conf.GENERAL["N_JOBS"],
@@ -214,7 +214,7 @@ ensemble_coassoc_matrix
 output_file = Path(RESULTS_DIR, "ensemble_coassoc_matrix.npy").resolve()
 display(output_file)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 np.save(output_file, ensemble_coassoc_matrix)
 
-# %% tags=[] trusted=true
+# %% tags=[]
