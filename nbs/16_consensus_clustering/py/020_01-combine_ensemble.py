@@ -39,11 +39,11 @@ display(NUMPY_N_JOBS)
 # %% [markdown] tags=[]
 # # Modules loading
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # %load_ext autoreload
 # %autoreload 2
 
-# %% tags=[]
+# %% tags=[] trusted=true
 from pathlib import Path
 
 import numpy as np
@@ -54,7 +54,7 @@ import conf
 # %% [markdown] tags=[]
 # # Settings
 
-# %% tags=[]
+# %% tags=[] trusted=true
 RANDOM_GENERATOR = np.random.default_rng(12345)
 
 # %% [markdown] tags=[]
@@ -82,7 +82,7 @@ display(RESULTS_DIR)
 output_file = Path(RESULTS_DIR, "ensemble.npy").resolve()
 display(output_file)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 full_ensemble = np.load(output_file)
 
 # %% tags=[]
@@ -95,7 +95,7 @@ display(full_ensemble.shape)
 output_file = Path(RESULTS_DIR, "ensemble_coassoc_matrix.npy").resolve()
 display(output_file)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 ensemble_coassoc_matrix = np.load(output_file)
 
 # %% tags=[]
@@ -107,7 +107,7 @@ display(ensemble_coassoc_matrix)
 # %% [markdown] tags=[]
 # # Consensus clustering
 
-# %% tags=[]
+# %% tags=[] trusted=true
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from tqdm import tqdm
@@ -158,10 +158,10 @@ with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
 
         consensus_results.append(method_results)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 # TODO: check if each partition is really generating k clusters
 
-# %% tags=[]
+# %% tags=[] trusted=true
 consensus_results = pd.DataFrame(consensus_results)
 
 # %% tags=[]
@@ -173,7 +173,7 @@ consensus_results.head()
 # %% [markdown] tags=[]
 # ## Testing
 
-# %% tags=[]
+# %% tags=[] trusted=true
 assert not consensus_results.isna().any().any()
 
 # %% tags=[]
@@ -189,7 +189,7 @@ assert np.all(consensus_results["k"].values == _real_k_values.values)
 output_file = Path(RESULTS_DIR, "consensus_clustering_runs.pkl").resolve()
 display(output_file)
 
-# %% tags=[]
+# %% tags=[] trusted=true
 consensus_results.to_pickle(output_file)
 
-# %% tags=[]
+# %% tags=[] trusted=true
