@@ -34,15 +34,15 @@ def eac(
     """
 
     if ensemble_is_coassoc_matrix:
-        y = ensemble
+        data = ensemble
     else:
-        y = get_ensemble_distance_matrix(ensemble)
+        data = get_ensemble_distance_matrix(ensemble)
 
     return AgglomerativeClustering(
         n_clusters=k,
         affinity="precomputed",
         linkage=linkage_method,
-    ).fit_predict(y)
+    ).fit_predict(data)
 
 
 def eac_single(ensemble, k):
