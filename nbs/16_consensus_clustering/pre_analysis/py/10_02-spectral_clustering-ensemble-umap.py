@@ -148,7 +148,11 @@ dist_matrix = coassoc_matrix
 # # Clustering
 
 # %% tags=[] trusted=true
-from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
+from sklearn.metrics import (
+    silhouette_score,
+    calinski_harabasz_score,
+    davies_bouldin_score,
+)
 
 # %% [markdown] tags=[]
 # ## Extended test
@@ -190,9 +194,7 @@ ensemble_folder.mkdir(parents=True, exist_ok=True)
 # %% tags=[] trusted=true
 ensemble_file = Path(
     ensemble_folder,
-    generate_result_set_name(
-        CLUSTERING_OPTIONS, prefix=f"ensemble-", suffix=".pkl"
-    ),
+    generate_result_set_name(CLUSTERING_OPTIONS, prefix=f"ensemble-", suffix=".pkl"),
 )
 display(ensemble_file)
 
@@ -213,7 +215,7 @@ ensemble.head()
 
 # %% tags=[] trusted=true
 ensemble = ensemble.assign(
-#     si_score=ensemble["partition"].apply(lambda x: silhouette_score(dist_matrix, x, metric="precomputed")),
+    #     si_score=ensemble["partition"].apply(lambda x: silhouette_score(dist_matrix, x, metric="precomputed")),
     ch_score=ensemble["partition"].apply(lambda x: calinski_harabasz_score(data, x)),
     db_score=ensemble["partition"].apply(lambda x: davies_bouldin_score(data, x)),
 )
