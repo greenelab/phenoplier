@@ -1,6 +1,6 @@
 import numpy as np
 
-from clustering.ensemble import compare_arrays
+from clustering.utils import compare_arrays
 
 
 def test_compare_arrays_simple():

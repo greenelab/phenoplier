@@ -178,7 +178,7 @@ assert not data.isna().any().any()
 # ## Generate ensemble
 
 # %% tags=[]
-from clustering.ensemble import generate_ensemble
+from clustering.ensembles.utils import generate_ensemble
 
 # %% tags=[]
 ensemble = generate_ensemble(

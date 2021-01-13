@@ -57,7 +57,7 @@ from sklearn.cluster import DBSCAN
 import matplotlib.pyplot as plt
 
 from utils import generate_result_set_name
-from clustering.ensemble import generate_ensemble
+from clustering.ensembles.utils import generate_ensemble
 
 # %% [markdown] tags=[]
 # # Global settings

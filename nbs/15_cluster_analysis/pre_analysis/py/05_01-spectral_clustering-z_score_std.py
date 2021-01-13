@@ -50,7 +50,6 @@ import warnings
 
 import numpy as np
 import pandas as pd
-import umap
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -271,7 +270,7 @@ display(clustering_method_name)
 
 # %% tags=[]
 import tempfile
-from clustering.ensemble import generate_ensemble
+from clustering.ensembles.utils import generate_ensemble
 
 # %% tags=[]
 # generate a temporary folder where to store the ensemble and avoid computing it again
@@ -425,7 +424,7 @@ assert np.all(
 
 # %% tags=[]
 from sklearn.metrics import adjusted_rand_score as ari
-from scipy.spatial.distance import squareform, pdist
+from scipy.spatial.distance import pdist
 
 # %% tags=[]
 parts_ari = pd.Series(

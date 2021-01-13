@@ -3,13 +3,9 @@ import sklearn.datasets as datasets
 from sklearn.metrics import adjusted_rand_score as ari
 from sklearn.cluster import KMeans
 
-from clustering.ensemble import (
-    eac_single,
-    eac_complete,
-    eac_average,
-)
-from clustering.ensemble import supraconsensus
-from clustering.ensemble import anmi, aari
+from clustering.ensembles.eac import eac_single, eac_complete, eac_average
+from clustering.ensembles.utils import supraconsensus
+from clustering.ensembles.measures import anmi, aari
 
 
 def test_iris():
@@ -27,7 +23,12 @@ def test_iris():
     )
 
     # Run
-    consensus_results = supraconsensus(ensemble, 3)
+    consensus_results = supraconsensus(
+        ensemble,
+        3,
+        methods=(eac_single, eac_complete, eac_average),
+        selection_criterion=aari,
+    )
     consensus_part = consensus_results[0]
     consensus_best_method = consensus_results[1]
 
@@ -59,7 +60,12 @@ def test_circles():
     )
 
     # Run
-    consensus_part = supraconsensus(ensemble, 2)[0]
+    consensus_part = supraconsensus(
+        ensemble,
+        2,
+        methods=(eac_single, eac_complete, eac_average),
+        selection_criterion=aari,
+    )[0]
 
     # Validate
     assert consensus_part is not None
@@ -91,7 +97,12 @@ def test_anmi_criterion():
     )
 
     # Run
-    consensus_part = supraconsensus(ensemble, 2, selection_criterion=anmi)[0]
+    consensus_part = supraconsensus(
+        ensemble,
+        2,
+        methods=(eac_single, eac_complete, eac_average),
+        selection_criterion=anmi,
+    )[0]
 
     eac_single_part = eac_single(ensemble, 2)
     eac_complete_part = eac_complete(ensemble, 2)
@@ -129,7 +140,12 @@ def test_aari_criterion():
     )
 
     # Run
-    consensus_part = supraconsensus(ensemble, 2, selection_criterion=aari)[0]
+    consensus_part = supraconsensus(
+        ensemble,
+        2,
+        methods=(eac_single, eac_complete, eac_average),
+        selection_criterion=aari,
+    )[0]
 
     eac_single_part = eac_single(ensemble, 2)
     eac_complete_part = eac_complete(ensemble, 2)
@@ -172,7 +188,7 @@ def test_supraconsensus_returns_stats():
 
     # Run
     consensus_part, max_method, max_value = supraconsensus(
-        ensemble, 3, methods=consensus_methods
+        ensemble, 3, methods=consensus_methods, selection_criterion=aari
     )
 
     # Validate

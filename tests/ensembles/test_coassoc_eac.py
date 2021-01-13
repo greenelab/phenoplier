@@ -3,7 +3,8 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import adjusted_rand_score as ari
 import numpy as np
 
-from clustering.ensemble import eac, get_ensemble_distance_matrix
+from clustering.ensembles.utils import get_ensemble_distance_matrix
+from clustering.ensembles.eac import eac
 
 iris_data = datasets.load_iris().data
 iris_ref = datasets.load_iris().target

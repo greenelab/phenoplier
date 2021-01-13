@@ -193,7 +193,7 @@ np.save(output_file, full_ensemble)
 # The coassociation matrix is a distance matrix derived from the ensemble, where each cell represents the percentage of times a pair of objects (traits and diseases in this case) were not clustered together. It serves as an input for any consensus function (basically, another clustering algorithm) to derive a consensus partition.
 
 # %% tags=[] trusted=true
-from clustering.ensemble import get_ensemble_distance_matrix
+from clustering.ensembles.utils import get_ensemble_distance_matrix
 
 # %% tags=[] trusted=true
 ensemble_coassoc_matrix = get_ensemble_distance_matrix(

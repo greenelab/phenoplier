@@ -112,11 +112,13 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from tqdm import tqdm
 
-from clustering.ensemble import (
+from clustering.ensembles.utils import (
+    run_method_and_compute_agreement,
+)
+from clustering.ensembles.eac import (
     eac_single_coassoc_matrix,
     eac_complete_coassoc_matrix,
     eac_average_coassoc_matrix,
-    run_method_and_compute_agreement,
 )
 
 # %% tags=[]

@@ -1,3 +1,4 @@
+import numpy as np
 from IPython.display import display
 from sklearn.metrics import (
     silhouette_score,
@@ -43,3 +44,45 @@ def compute_performance(data, labels, data_distance_matrix=None):
     # better clustering.
     db_score = davies_bouldin_score(data, labels)
     display(f"Davies-Bouldin (lower is better): {db_score:.3f}")
+
+
+def reset_estimator(estimator_obj):
+    """
+    Resets an sklearn estimator by removing all attributes generated during
+    fitting.
+
+    Args:
+        estimator_obj: an sklearn estimator
+
+    Returns:
+        It doesn't return anything (always None).
+    """
+    for attr in dir(estimator_obj):
+        if attr.startswith("_") or not attr.endswith("_"):
+            continue
+
+        delattr(estimator_obj, attr)
+
+
+def compare_arrays(x, y, comp_func):
+    """
+    It compares non-nan values from two numpy arrays using a specified
+    function that returns a numerical value.
+
+    In this module, these two arrays are always data partitions (generated
+    from a clustering algorithm, and specifying the cluster each object
+    belongs to), and the return value is a similarity measure between them.
+
+    Args:
+        x: a 1D numpy array.
+        y: a 1D numpy array.
+        comp_func: any function that accepts two arguments (numpy arrays) and
+            returns a numerical value.
+
+    Returns:
+        Any numerical value representing, for instance, the similarity between
+        the two arrays.
+    """
+    xy = np.array([x, y]).T
+    xy = xy[~np.isnan(xy).any(axis=1)]
+    return comp_func(xy[:, 0], xy[:, 1])

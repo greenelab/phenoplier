@@ -167,7 +167,7 @@ assert not data.isna().any().any()
 
 # %% tags=[]
 from sklearn.metrics import pairwise_distances
-from clustering.ensemble import generate_ensemble
+from clustering.ensembles.utils import generate_ensemble
 
 # %% tags=[]
 data_dist = pairwise_distances(data, metric=CLUSTERING_OPTIONS["AFFINITY"])
