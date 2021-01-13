@@ -140,7 +140,11 @@ dist_matrix = coassoc_matrix
 
 # %% tags=[] trusted=true
 from sklearn.cluster import SpectralClustering
-from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score
+from sklearn.metrics import (
+    silhouette_score,
+    calinski_harabasz_score,
+    davies_bouldin_score,
+)
 
 from clustering.utils import compute_performance
 
@@ -156,8 +160,8 @@ delta = 1.0
 # %% tags=[] trusted=true
 with warnings.catch_warnings():
     warnings.filterwarnings("always")
-    
-    sim_matrix = np.exp(- dist_matrix ** 2 / (2. * delta ** 2))
+
+    sim_matrix = np.exp(-(dist_matrix ** 2) / (2.0 * delta ** 2))
 
     clus = SpectralClustering(
         eigen_solver="arpack",
@@ -189,8 +193,8 @@ delta = 10.0
 # %% tags=[] trusted=true
 with warnings.catch_warnings():
     warnings.filterwarnings("always")
-    
-    sim_matrix = np.exp(- dist_matrix ** 2 / (2. * delta ** 2))
+
+    sim_matrix = np.exp(-(dist_matrix ** 2) / (2.0 * delta ** 2))
 
     clus = SpectralClustering(
         eigen_solver="arpack",
@@ -222,12 +226,12 @@ delta = 0.20
 # %% tags=[] trusted=true
 with warnings.catch_warnings():
     warnings.filterwarnings("always")
-    
-    sim_matrix = np.exp(- dist_matrix ** 2 / (2. * delta ** 2))
+
+    sim_matrix = np.exp(-(dist_matrix ** 2) / (2.0 * delta ** 2))
 
     clus = SpectralClustering(
         eigen_solver="arpack",
-#         eigen_tol=1e-3,
+        #         eigen_tol=1e-3,
         n_clusters=2,
         n_init=10,
         affinity="precomputed",
@@ -255,8 +259,8 @@ delta = 0.10
 # %% tags=[] trusted=true
 with warnings.catch_warnings():
     warnings.filterwarnings("always")
-    
-    sim_matrix = np.exp(- dist_matrix ** 2 / (2. * delta ** 2))
+
+    sim_matrix = np.exp(-(dist_matrix ** 2) / (2.0 * delta ** 2))
 
     clus = SpectralClustering(
         eigen_solver="arpack",
@@ -362,9 +366,7 @@ ensemble_folder.mkdir(parents=True, exist_ok=True)
 # %% tags=[] trusted=true
 ensemble_file = Path(
     ensemble_folder,
-    generate_result_set_name(
-        CLUSTERING_OPTIONS, prefix=f"ensemble-", suffix=".pkl"
-    ),
+    generate_result_set_name(CLUSTERING_OPTIONS, prefix=f"ensemble-", suffix=".pkl"),
 )
 display(ensemble_file)
 
@@ -435,7 +437,9 @@ assert np.all(ensemble["n_clusters"].values == _real_k_values.values)
 
 # %% tags=[] trusted=true
 ensemble = ensemble.assign(
-    si_score=ensemble["partition"].apply(lambda x: silhouette_score(dist_matrix, x, metric="precomputed")),
+    si_score=ensemble["partition"].apply(
+        lambda x: silhouette_score(dist_matrix, x, metric="precomputed")
+    ),
     ch_score=ensemble["partition"].apply(lambda x: calinski_harabasz_score(data, x)),
     db_score=ensemble["partition"].apply(lambda x: davies_bouldin_score(data, x)),
 )
