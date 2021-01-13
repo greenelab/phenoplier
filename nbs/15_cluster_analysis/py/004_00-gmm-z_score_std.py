@@ -218,7 +218,7 @@ assert not np.any([(part["partition"] < 0).any() for idx, part in ensemble.iterr
 # %% [markdown] tags=[]
 # ## Add clustering quality measures
 
-# %%
+# %% tags=[]
 from sklearn.metrics import calinski_harabasz_score
 
 # %% tags=[]
