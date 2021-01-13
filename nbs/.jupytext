@@ -1,1 +1,1 @@
-default_cell_metadata_filter = "all,-execution,-papermill"
+default_cell_metadata_filter = "all,-execution,-papermill,-trusted"

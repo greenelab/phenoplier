@@ -23,7 +23,7 @@
 # %% [markdown] tags=[]
 # # Environment variables
 
-# %% tags=[] trusted=true
+# %% tags=[]
 from IPython.display import display
 
 import conf
@@ -31,7 +31,7 @@ import conf
 N_JOBS = conf.GENERAL["N_JOBS"]
 display(N_JOBS)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 # %env MKL_NUM_THREADS=$N_JOBS
 # %env OPEN_BLAS_NUM_THREADS=$N_JOBS
 # %env NUMEXPR_NUM_THREADS=$N_JOBS
@@ -40,11 +40,11 @@ display(N_JOBS)
 # %% [markdown] tags=[]
 # # Modules loading
 
-# %% tags=[] trusted=true
+# %% tags=[]
 # %load_ext autoreload
 # %autoreload 2
 
-# %% tags=[] trusted=true
+# %% tags=[]
 from pathlib import Path
 
 import numpy as np
@@ -57,13 +57,13 @@ from utils import generate_result_set_name
 # %% [markdown] tags=[]
 # # Settings
 
-# %% tags=[] trusted=true
+# %% tags=[]
 INITIAL_RANDOM_STATE = 100000
 
-# %% trusted=true
+# %%
 CLUSTERING_METHOD_NAME = "DeltaSpectralClustering"
 
-# %% trusted=true
+# %%
 # output dir for this notebook
 CONSENSUS_CLUSTERING_DIR = Path(
     conf.RESULTS["CLUSTERING_DIR"], "consensus_clustering"
@@ -74,20 +74,20 @@ display(CONSENSUS_CLUSTERING_DIR)
 # %% [markdown]
 # # Load data
 
-# %% tags=[] trusted=true
+# %% tags=[]
 INPUT_SUBSET = "pca"
 
-# %% tags=[] trusted=true
+# %% tags=[]
 INPUT_STEM = "z_score_std-projection-smultixcan-efo_partial-mashr-zscores"
 
-# %% tags=[] trusted=true
+# %% tags=[]
 DR_OPTIONS = {
     "n_components": 50,
     "svd_solver": "full",
     "random_state": 0,
 }
 
-# %% tags=[] trusted=true
+# %% tags=[]
 input_filepath = Path(
     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
     INPUT_SUBSET,
@@ -102,51 +102,51 @@ assert input_filepath.exists(), "Input file does not exist"
 input_filepath_stem = input_filepath.stem
 display(input_filepath_stem)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data = pd.read_pickle(input_filepath)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data.shape
 
-# %% tags=[] trusted=true
+# %% tags=[]
 data.head()
 
-# %% trusted=true
+# %%
 traits = data.index.tolist()
 
-# %% trusted=true
+# %%
 len(traits)
 
 # %% [markdown] tags=[]
 # # Ensemble (coassociation matrix)
 
-# %% trusted=true
+# %%
 input_file = Path(CONSENSUS_CLUSTERING_DIR, "ensemble_coassoc_matrix.npy").resolve()
 display(input_file)
 
-# %% trusted=true
+# %%
 coassoc_matrix = np.load(input_file)
 
-# %% trusted=true
+# %%
 coassoc_matrix = pd.DataFrame(
     data=coassoc_matrix,
     index=traits,
     columns=traits,
 )
 
-# %% trusted=true
+# %%
 coassoc_matrix.shape
 
-# %% trusted=true
+# %%
 coassoc_matrix.head()
 
-# %% trusted=true
+# %%
 dist_matrix = coassoc_matrix
 
 # %% [markdown] tags=[]
 # # Clustering
 
-# %% tags=[] trusted=true
+# %% tags=[]
 from sklearn.metrics import (
     silhouette_score,
     calinski_harabasz_score,
@@ -156,7 +156,7 @@ from sklearn.metrics import (
 # %% [markdown] tags=[]
 # ## Extended test
 
-# %% tags=[] trusted=true
+# %% tags=[]
 CLUSTERING_OPTIONS = {}
 
 CLUSTERING_OPTIONS["K_RANGE"] = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 25, 30, 35, 40]
@@ -179,10 +179,10 @@ display(CLUSTERING_OPTIONS)
 # %% [markdown] tags=[]
 # ## Generate ensemble
 
-# %% tags=[] trusted=true
+# %% tags=[]
 import tempfile
 
-# %% tags=[] trusted=true
+# %% tags=[]
 ensemble_folder = Path(
     tempfile.gettempdir(),
     f"pre_cluster_analysis",
@@ -190,50 +190,50 @@ ensemble_folder = Path(
 ).resolve()
 ensemble_folder.mkdir(parents=True, exist_ok=True)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 ensemble_file = Path(
     ensemble_folder,
     generate_result_set_name(CLUSTERING_OPTIONS, prefix=f"ensemble-", suffix=".pkl"),
 )
 display(ensemble_file)
 
-# %% trusted=true
+# %%
 assert ensemble_file.exists(), "Ensemble file does not exists"
 
-# %% tags=[] trusted=true
+# %% tags=[]
 ensemble = pd.read_pickle(ensemble_file)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 ensemble.shape
 
-# %% tags=[] trusted=true
+# %% tags=[]
 ensemble.head()
 
 # %% [markdown] tags=[]
 # ### Add clustering quality measures
 
-# %% tags=[] trusted=true
+# %% tags=[]
 ensemble = ensemble.assign(
     #     si_score=ensemble["partition"].apply(lambda x: silhouette_score(dist_matrix, x, metric="precomputed")),
     ch_score=ensemble["partition"].apply(lambda x: calinski_harabasz_score(data, x)),
     db_score=ensemble["partition"].apply(lambda x: davies_bouldin_score(data, x)),
 )
 
-# %% tags=[] trusted=true
+# %% tags=[]
 ensemble.shape
 
-# %% tags=[] trusted=true
+# %% tags=[]
 ensemble.head()
 
 # %% [markdown] tags=[]
 # # Cluster quality
 
-# %% tags=[] trusted=true
+# %% tags=[]
 with pd.option_context("display.max_rows", None, "display.max_columns", None):
     _df = ensemble.groupby(["n_clusters", "delta"]).mean()
     display(_df)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     "whitegrid", {"grid.linestyle": "--"}
 ):
@@ -245,7 +245,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.grid(True)
     plt.tight_layout()
 
-# %% tags=[] trusted=true
+# %% tags=[]
 with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     "whitegrid", {"grid.linestyle": "--"}
 ):
@@ -257,7 +257,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.grid(True)
     plt.tight_layout()
 
-# %% tags=[] trusted=true
+# %% tags=[]
 with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     "whitegrid", {"grid.linestyle": "--"}
 ):
@@ -269,4 +269,4 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.grid(True)
     plt.tight_layout()
 
-# %% tags=[] trusted=true
+# %% tags=[]
