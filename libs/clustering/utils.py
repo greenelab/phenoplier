@@ -35,9 +35,7 @@ def compute_performance(data, labels, data_distance_matrix=None):
     # Otherwise, the data is used and the score is computed using the default
     # parameters.
     if data_distance_matrix is not None:
-        si_score = silhouette_score(
-            data_distance_matrix, labels, metric="precomputed"
-        )
+        si_score = silhouette_score(data_distance_matrix, labels, metric="precomputed")
     else:
         si_score = silhouette_score(data, labels)
 
