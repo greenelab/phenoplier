@@ -194,4 +194,38 @@ display(output_file)
 # %% tags=[]
 best_parts.to_pickle(output_file)
 
+# %% [markdown]
+# # Plot of selected best partitions
+
+# %%
+plot_data = best_parts.reset_index()
+
+# %%
+plot_data.head()
+
+# %%
+plot_data_stats = plot_data[_measure_col].describe()
+display(plot_data_stats)
+
+# %%
+plot_data = plot_data.assign(greater_than_median=plot_data[_measure_col].apply(lambda x: x > plot_data_stats['50%']))
+
+# %%
+with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
+    "whitegrid", {"grid.linestyle": "--"}
+), sns.color_palette("muted"):
+    current_palette = iter(sns.color_palette())
+    
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax = sns.pointplot(data=plot_data, x="k", y=_measure_col, color=next(current_palette))
+    ax.axhline(plot_data_stats["50%"], ls="--", color=next(current_palette))
+    ax.set_ylabel("Agreement with ensemble\n(Average AMI)")
+    ax.set_xlabel("Number of clusters ($k$)")
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+    plt.grid(True)
+    plt.tight_layout()
+
+# %%
+plot_data[plot_data["greater_than_median"]].sort_values("k")
+
 # %%
