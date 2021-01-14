@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# TODO
+# It analyzes the properties of the different data versions used (`z_score_std`, `pca` and `umap`) to cluster traits, and performs some checks.
 
 # %% [markdown] tags=[]
 # # Environment variables
@@ -46,13 +46,9 @@ display(N_JOBS)
 
 # %% tags=[]
 from pathlib import Path
-import warnings
 
 import numpy as np
 import pandas as pd
-import umap
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 from utils import generate_result_set_name
 
@@ -61,19 +57,6 @@ from utils import generate_result_set_name
 
 # %% tags=[]
 INITIAL_RANDOM_STATE = 12345
-
-# %% [markdown] tags=[]
-# ## Output directory
-
-# %% tags=[]
-# # output dir for this notebook
-# RESULTS_DIR = Path(
-#     conf.RESULTS["CLUSTERING_RUNS_DIR"],
-#     f"{INPUT_SUBSET}-{INPUT_STEM}",
-# ).resolve()
-# RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-
-# display(RESULTS_DIR)
 
 # %% [markdown] tags=[]
 # # Z-score standardized data
@@ -145,6 +128,9 @@ data_dups.value_counts()
 # %% tags=[]
 data_dups_labels = data.index[data_dups]
 display(data_dups_labels)
+
+# %% [markdown]
+# This duplicated traits should be taken into account when interpreting any results derived from the data (such as cluster analysis).
 
 # %% [markdown] tags=[]
 # # PCA
@@ -226,6 +212,7 @@ data_dups.value_counts()
 data.index[data_dups]
 
 # %% tags=[]
+# same duplicates in `z_score_std`
 assert data.index[data_dups].equals(data_dups_labels)
 
 # %% [markdown] tags=[]
