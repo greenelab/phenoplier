@@ -118,7 +118,7 @@ traits = data.index.tolist()
 len(traits)
 
 # %% [markdown] tags=[]
-# # Ensemble (coassociation matrix)
+# # Load coassociation matrix (ensemble)
 
 # %% tags=[]
 input_file = Path(CONSENSUS_CLUSTERING_DIR, "ensemble_coassoc_matrix.npy").resolve()
@@ -154,7 +154,10 @@ from sklearn.metrics import (
 )
 
 # %% [markdown] tags=[]
-# ## Extended test
+# ## More exhaustive test
+
+# %% [markdown]
+# Here I run some test across several `k` and `delta` values; then I check how results perform with different clustering quality measures.
 
 # %% tags=[]
 CLUSTERING_OPTIONS = {}
@@ -177,7 +180,7 @@ CLUSTERING_OPTIONS["DELTAS"] = [
 display(CLUSTERING_OPTIONS)
 
 # %% [markdown] tags=[]
-# ## Generate ensemble
+# ### Generate ensemble
 
 # %% tags=[]
 import tempfile

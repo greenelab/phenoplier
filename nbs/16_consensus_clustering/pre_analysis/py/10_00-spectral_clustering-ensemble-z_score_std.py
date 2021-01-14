@@ -20,7 +20,7 @@
 # %% [markdown] tags=[]
 # This notebook evaluates how a spectral clustering method performs as a consensus function. It takes the coassociation matrix, applies several `delta` values to transform it, and computes different clustering quality measures to assess performance. An optimal `delta` value is chosen, and will be used to perform the full analysis later.
 #
-# This notebook loads the `z_score_std` data version to compute two of the clustering quality measures (Calinski-Harabasz and Davies-Bouldin). The Silhouette score is computed on the ensemble distance matrix, so it is not affected by the data loaded. There are other two notebooks that perform exactly the same steps here but loading the `pca` and `umap` data versions.
+# This notebook loads the `z_score_std` data version to compute two of the clustering quality measures (Calinski-Harabasz and Davies-Bouldin). The Silhouette score is computed on the ensemble distance matrix (coassociation matrix), so it is not affected by the data loaded. There are other two notebooks that perform exactly the same steps here but using the `pca` and `umap` data versions to compute the quality measures.
 
 # %% [markdown] tags=[]
 # # Environment variables
@@ -109,7 +109,7 @@ traits = data.index.tolist()
 len(traits)
 
 # %% [markdown] tags=[]
-# # Ensemble (coassociation matrix)
+# # Load coassociation matrix (ensemble)
 
 # %% tags=[]
 input_file = Path(CONSENSUS_CLUSTERING_DIR, "ensemble_coassoc_matrix.npy").resolve()
@@ -150,6 +150,9 @@ from clustering.utils import compute_performance
 # %% [markdown] tags=[]
 # ## `delta` parameter (gaussian kernel)
 
+# %% [markdown]
+# Here I perform some quick tests using different `delta` values for the width of the Gaussian kernel applied to the ensemble distance matrix in (`dist_matrix`).
+
 # %% [markdown] tags=[]
 # ### `delta=1.0`
 
@@ -158,8 +161,12 @@ delta = 1.0
 
 # %% tags=[]
 with warnings.catch_warnings():
+    # make sure all warnings are shown to debug the fitting process
     warnings.filterwarnings("always")
 
+    # Transform the distance matrix (from the ensemble) into a similarity matrix
+    # by applying a Gaussian kernel (the suggestion is taken from the Notes in
+    # https://scikit-learn.org/0.23/modules/generated/sklearn.cluster.SpectralClustering.html
     sim_matrix = np.exp(-(dist_matrix ** 2) / (2.0 * delta ** 2))
 
     clus = SpectralClustering(
@@ -178,10 +185,11 @@ with warnings.catch_warnings():
 pd.Series(part).value_counts()
 
 # %% tags=[]
+# show some clustering performance measures to assess the quality of the partition
 compute_performance(data, part, data_distance_matrix=dist_matrix)
 
 # %% [markdown] tags=[]
-# For `delta=1.0`, the algorithm works/converges fine with this data version.
+# For `delta=1.0`, the algorithm works fine with this data version.
 
 # %% [markdown] tags=[]
 # ### `delta>1.0`
@@ -285,7 +293,10 @@ compute_performance(data, part, data_distance_matrix=dist_matrix)
 # Quality measures in general go down.
 
 # %% [markdown] tags=[]
-# ## Extended test
+# ## More exhaustive test
+
+# %% [markdown]
+# Here I run some test across several `k` and `delta` values; then I check how results perform with different clustering quality measures.
 
 # %% tags=[]
 from clustering.methods import DeltaSpectralClustering
@@ -347,7 +358,7 @@ clustering_method_name = method_name
 display(clustering_method_name)
 
 # %% [markdown] tags=[]
-# ## Generate ensemble
+# ### Generate ensemble
 
 # %% tags=[]
 import tempfile
