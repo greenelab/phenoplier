@@ -196,7 +196,7 @@ silhouette_score(data, part)
 
 # %% tags=[]
 # From sklearn website:
-# The score is defined as ratio between the within-cluster dispersion and the between-cluster dispersion
+# The score is defined as ratio between the within-cluster dispersion and the between-cluster dispersion. Higher is better.
 calinski_harabasz_score(data, part)
 
 # %% [markdown] tags=[]
@@ -204,6 +204,9 @@ calinski_harabasz_score(data, part)
 
 # %% [markdown] tags=[]
 # ## Extended test
+
+# %% [markdown]
+# Here I run some test across several `k` and `gamma` values; then I check how results perform with different clustering quality measures.
 
 # %% tags=[]
 CLUSTERING_OPTIONS = {}
