@@ -8,7 +8,10 @@ from sklearn.cluster import SpectralClustering
 class DeltaSpectralClustering(SpectralClustering):
     """
     It extends SpectralClustering by accepting a distance matrix as input and
-    applying a Gaussian kernel before fitting.
+    applying a Gaussian kernel before fitting (this is suggested in the
+    sklearn documentation of :obj:`sklearn.cluster.SpectralClustering` to
+    convert a distance matrix to a similarity matrix suitable for this
+    clustering algorithm).
     """
 
     def __init__(self, delta=1.0, **kwargs):
