@@ -598,7 +598,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
 ):
     fig = plt.figure(figsize=(14, 6))
     ax = sns.pointplot(data=parts_ari_df_plot, x="n_clusters", y="ari", hue="gamma")
-    ax.set_ylabel("Averange ARI")
+    ax.set_ylabel("Average ARI")
     ax.set_xlabel("Number of clusters ($k$)")
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
     plt.grid(True)
