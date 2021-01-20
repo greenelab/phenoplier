@@ -558,15 +558,13 @@ display(parts_ari_stability.sort_values(ascending=False).head(15))
 parts_ari_df = pd.DataFrame.from_records(parts_ari.tolist()).set_index(
     parts_ari.index.copy()
 )
-parts_ari_df.index.rename(["gamma", "n_clusters"], inplace=True)
+parts_ari_df.index.rename(["delta", "n_clusters"], inplace=True)
 
 # %% tags=[]
 parts_ari_df.shape
 
 # %% tags=[]
-_n_total_parts = int(
-    CLUSTERING_OPTIONS["N_REPS_PER_K"]
-)  # * len(CLUSTERING_OPTIONS["GAMMAS"]))
+_n_total_parts = int(CLUSTERING_OPTIONS["N_REPS_PER_K"])
 
 assert int(_n_total_parts * (_n_total_parts - 1) / 2) == parts_ari_df.shape[1]
 
@@ -589,7 +587,7 @@ parts_ari_df_plot.head()
 
 # %% tags=[]
 with pd.option_context("display.max_rows", None, "display.max_columns", None):
-    _df = parts_ari_df_plot.groupby(["n_clusters", "gamma"]).mean()
+    _df = parts_ari_df_plot.groupby(["n_clusters", "delta"]).mean()
     display(_df)
 
 # %% tags=[]
@@ -597,7 +595,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     "whitegrid", {"grid.linestyle": "--"}
 ):
     fig = plt.figure(figsize=(14, 6))
-    ax = sns.pointplot(data=parts_ari_df_plot, x="n_clusters", y="ari", hue="gamma")
+    ax = sns.pointplot(data=parts_ari_df_plot, x="n_clusters", y="ari", hue="delta")
     ax.set_ylabel("Average ARI")
     ax.set_xlabel("Number of clusters ($k$)")
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
