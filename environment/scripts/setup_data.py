@@ -144,12 +144,32 @@ def download_phenomexcan_smultixcan_mashr_pvalues(**kwargs):
     )
 
 
+def download_multiplier_model_summary_pkl(**kwargs):
+    output_file = conf.MULTIPLIER["MODEL_SUMMARY_FILE"]
+    curl(
+        "https://upenn.box.com/shared/static/xfaez2u5wr258qb58lpexllyrvc7jolr.pkl",
+        output_file,
+        "1fdcd5dbee984b617dddb44937910710",
+        logger=logger,
+    )
+
+
 def download_multiplier_model_z_pkl(**kwargs):
     output_file = conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]
     curl(
         "https://upenn.box.com/shared/static/pz07jiy99f8yx0fx2grle8i5cstpn7fz.pkl",
         output_file,
         "c3c84d70250ab34d06625eedc3d5ff29",
+        logger=logger,
+    )
+
+
+def download_multiplier_model_b_pkl(**kwargs):
+    output_file = conf.MULTIPLIER["MODEL_B_MATRIX_FILE"]
+    curl(
+        "https://upenn.box.com/shared/static/26n3l20t3755fjaihx9os783tk5hh2sa.pkl",
+        output_file,
+        "ef67e80b282781ec08beeb39f1bce07f",
         logger=logger,
     )
 
