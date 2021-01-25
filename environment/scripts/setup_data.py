@@ -283,22 +283,22 @@ def download_multiplier_recount2_model(**kwargs):
     )
 
 
-def download_multiplier_recount2_data(**kwargs):
-    """
-    This method downloads the recount2 data used in MultiPLIER.
-    """
-    _get_file_from_zip(
-        zip_file_url="https://ndownloader.figshare.com/files/10881866",
-        zip_file_path=Path(
-            conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent, "recount2_PLIER_data.zip"
-        ).resolve(),
-        zip_file_md5="f084992c5d91817820a2782c9441b9f6",
-        zip_internal_filename=Path(
-            "recount2_PLIER_data", "recount_data_prep_PLIER.RDS"
-        ),
-        output_file=conf.RECOUNT2["PREPROCESSED_GENE_EXPRESSION_FILE"],
-        output_file_md5="4f806e06069fd339f8fcff7c98cecff0",
-    )
+# def download_multiplier_recount2_data(**kwargs):
+#     """
+#     This method downloads the recount2 data used in MultiPLIER.
+#     """
+#     _get_file_from_zip(
+#         zip_file_url="https://ndownloader.figshare.com/files/10881866",
+#         zip_file_path=Path(
+#             conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent, "recount2_PLIER_data.zip"
+#         ).resolve(),
+#         zip_file_md5="f084992c5d91817820a2782c9441b9f6",
+#         zip_internal_filename=Path(
+#             "recount2_PLIER_data", "recount_data_prep_PLIER.RDS"
+#         ),
+#         output_file=conf.RECOUNT2["PREPROCESSED_GENE_EXPRESSION_FILE"],
+#         output_file_md5="4f806e06069fd339f8fcff7c98cecff0",
+#     )
 
 
 if __name__ == "__main__":
