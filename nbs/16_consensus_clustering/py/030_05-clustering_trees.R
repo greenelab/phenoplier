@@ -18,27 +18,35 @@
 # # Description
 
 # %% [markdown]
-# TODO
+# It uses the `clustree` package to generate clustering tree visualizations.
+
+# %% [markdown]
+# # Modules loading
 
 # %%
 library(clustree)
 library(tidyverse)
 
-# %%
-# FIXME: hardcoded
-orig_data <- read_tsv(
-    '/media/miltondp/Elements1/projects/phenoplier/results/clustering/consensus_clustering/clustering_tree_data.tsv',
-)
+# %% [markdown]
+# # Settings
 
 # %%
-dim(orig_data)
+CLUSTERING_DIR <- Sys.getenv("PHENOPLIER_RESULTS_CLUSTERING_DIR")
 
 # %%
-head(orig_data)
+CLUSTERING_DIR
 
 # %%
-# data = select(orig_data, c(labels, PCA1, PCA2, UMAP1, UMAP2, k2, k3, k4, k5, k6, k7, k8, k9, k10, k11, k12, k13, k14, k15, k16, k17, k18, k19, k20))
-data = orig_data
+CONSENSUS_CLUSTERING_DIR = file.path(CLUSTERING_DIR, "consensus_clustering")
+
+# %%
+CONSENSUS_CLUSTERING_DIR
+
+# %% [markdown]
+# # Load data
+
+# %%
+data <- read_tsv(file.path(CONSENSUS_CLUSTERING_DIR, "clustering_tree_data.tsv"))
 
 # %%
 dim(data)
@@ -46,23 +54,18 @@ dim(data)
 # %%
 head(data)
 
+# %% [markdown]
+# # Plot clustering tree
+
+# %% [markdown]
+# ## Plain
+
 # %%
 options(repr.plot.width = 20, repr.plot.height = 15)
 clustree(data, prefix = "k")
 
-# %%
-# data = select(
-#     orig_data,
-#     c(
-#         labels, PCA1, PCA2, UMAP1, UMAP2,
-#         k2, k3, k4, k5, k6, k7, k8, k9, k10, k11, k12, k13, k14, k15, k16, k17, k18, k19, k20, k21, k22, k23, k24, k25, k26, k27,
-#         k28, k29, k30, k31, k32, k33, k34, k35, k36, k37, k38, k39, k40
-#      )
-# )
-
-# %%
-# options(repr.plot.width = 20, repr.plot.height = 15)
-# clustree(data, prefix = "k")
+# %% [markdown]
+# ## With labels
 
 # %%
 label_position <- function(labels) {
@@ -77,9 +80,18 @@ label_position <- function(labels) {
 options(repr.plot.width = 25, repr.plot.height = 15)
 clustree(data, prefix = "k", node_label="labels", node_label_aggr = "label_position")
 
+# %% [markdown]
+# # Plot overlay
+
+# %% [markdown]
+# ## With PCA
+
 # %%
 options(repr.plot.width = 15, repr.plot.height = 11)
 clustree_overlay(data, prefix = "k", x_value = "PCA1", y_value = "PCA2")
+
+# %% [markdown]
+# ## With UMAP
 
 # %%
 options(repr.plot.width = 15, repr.plot.height = 11)
