@@ -149,7 +149,6 @@ dist_matrix = coassoc_matrix
 
 # %% tags=[]
 from sklearn.metrics import (
-    silhouette_score,
     calinski_harabasz_score,
     davies_bouldin_score,
 )
@@ -189,7 +188,7 @@ import tempfile
 # %% tags=[]
 ensemble_folder = Path(
     tempfile.gettempdir(),
-    f"pre_cluster_analysis",
+    "pre_cluster_analysis",
     CLUSTERING_METHOD_NAME,
 ).resolve()
 ensemble_folder.mkdir(parents=True, exist_ok=True)
@@ -197,7 +196,7 @@ ensemble_folder.mkdir(parents=True, exist_ok=True)
 # %% tags=[]
 ensemble_file = Path(
     ensemble_folder,
-    generate_result_set_name(CLUSTERING_OPTIONS, prefix=f"ensemble-", suffix=".pkl"),
+    generate_result_set_name(CLUSTERING_OPTIONS, prefix="ensemble-", suffix=".pkl"),
 )
 display(ensemble_file)
 

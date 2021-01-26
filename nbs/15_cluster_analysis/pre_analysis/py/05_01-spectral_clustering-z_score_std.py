@@ -276,7 +276,7 @@ from clustering.ensembles.utils import generate_ensemble
 # generate a temporary folder where to store the ensemble and avoid computing it again
 ensemble_folder = Path(
     tempfile.gettempdir(),
-    f"pre_cluster_analysis",
+    "pre_cluster_analysis",
     clustering_method_name,
 ).resolve()
 ensemble_folder.mkdir(parents=True, exist_ok=True)
@@ -292,7 +292,7 @@ display(ensemble_file)
 
 # %% tags=[]
 if ensemble_file.exists():
-    display(f"Ensemble file exists")
+    display("Ensemble file exists")
     ensemble = pd.read_pickle(ensemble_file)
 else:
     ensemble = generate_ensemble(
