@@ -41,7 +41,6 @@ import conf
 # # Load consensus clustering results
 
 # %%
-# output dir for this notebook
 CONSENSUS_CLUSTERING_DIR = Path(
     conf.RESULTS["CLUSTERING_DIR"], "consensus_clustering"
 ).resolve()
@@ -180,11 +179,14 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.grid(True)
     plt.tight_layout()
 
+# %% [markdown]
+# The horizontal line in the plot is the median of the average AMI; partitions above that line are marked as selected for downstream analysis
+
 # %%
 # this list shows the selected final partitions, and which methods achieved the highest agreement
 plot_data[plot_data["selected"]].sort_values("k")
 
 # %% [markdown]
-# Hierarchical clustering picks the best partitions for lower `k` values, whereas spectral clustering does it better for all the rest.
+# Evidence accumulation approaches (EAC) based on hierarchical clustering (such as `eac_average_coassoc_matrix` and `eac_single_coassoc_matrix`) pick the best partitions for lower `k` values, whereas spectral clustering does it better for all the rest.
 
 # %%

@@ -18,7 +18,10 @@
 # # Description
 
 # %% [markdown]
-# **TODO:** This section of the notebook will be updated when I start actively writing the manuscript. Here I left some code to see the percentage of times a group of traits was clustered togethern across the entire ensemble.
+# It analyzes how clusters of traits were grouped across the ensemble partitions. For example, a stable cluster (obtained from consensus partitions) of cardiovascular diseases can show that all traits were always grouped together across all partitions of the ensemble; another cluster might show that some traits were clustered more often than other, representing a less stable group of traits.
+
+# %% [markdown]
+# **TODO:** This section of the notebook will be updated again when I start actively writing the results section of the manuscript. Here I left some code as example for some clusters.
 
 # %% [markdown]
 # # Modules loading
@@ -42,42 +45,11 @@ import conf
 # # Settings
 
 # %%
-# output dir for this notebook
 CONSENSUS_CLUSTERING_DIR = Path(
     conf.RESULTS["CLUSTERING_DIR"], "consensus_clustering"
 ).resolve()
 
 display(CONSENSUS_CLUSTERING_DIR)
-
-# %% [markdown]
-# ## Functions
-
-# %%
-from IPython.display import HTML
-
-
-# %%
-def plot_cluster(data, partition, cluster_number, figsize=None):
-    k = np.unique(partition).shape[0]
-
-    display(HTML(f"<h3>Cluster {k}.{cluster_number}</h3>"))
-
-    k_traits = data.loc[partition == cluster_number].index
-
-    with sns.plotting_context("paper"):
-        f, ax = plt.subplots(figsize=figsize)  # (figsize=(8, 8))
-
-        display(
-            sns.heatmap(
-                data=coassoc_matrix.loc[k_traits, k_traits],
-                vmin=coassoc_matrix_stats["50%"],
-                vmax=1.0,
-                annot=True,
-                fmt=".2f",
-                square=True,
-            )
-        )
-
 
 # %% [markdown]
 # ## Load data
@@ -160,23 +132,60 @@ coassoc_matrix.shape
 coassoc_matrix.head()
 
 # %% [markdown]
+# The coassociation matrix shows the percentage of times a pair of traits was clustered together across the ensemble partitions.
+
+# %% [markdown]
 # ## Stats
+
+# %% [markdown]
+# Here I show some general stats of the coassociation matrix, useful to compare results below. For instance, if a pair of traits got clustered together 61% of the times, how strong is that?
 
 # %%
 df = coassoc_matrix.where(np.triu(np.ones(coassoc_matrix.shape)).astype(np.bool))
 df = df.stack().reset_index()
 
-coassoc_matrix_stats = df[0].describe()
+coassoc_matrix_stats = df[0].describe(
+    percentiles=[0.25, 0.50, 0.75, 0.80, 0.90, 0.95, 0.99]
+)
 
 # %%
-coassoc_matrix_stats
-
-# %%
-# show the general stats for the coassociation matrix, useful to compare results of clusters
 coassoc_matrix_stats.apply(str)
 
 # %% [markdown]
-# # Plot coassociation of clusters
+# On average, a pair of clusters appear together in 45% of the clusters in the ensemble (the median is 48%). That makes sense, since for some partitions the resolution (number of clusters) might not be enough to get smaller clusters.
+
+# %% [markdown]
+# # Plot coassociation values
+
+# %% [markdown]
+# ## Functions
+
+# %%
+from IPython.display import HTML
+
+
+# %%
+def plot_cluster(data, partition, cluster_number, figsize=None):
+    k = np.unique(partition).shape[0]
+
+    display(HTML(f"<h3>Cluster {k}.{cluster_number}</h3>"))
+
+    k_traits = data.loc[partition == cluster_number].index
+
+    with sns.plotting_context("paper"):
+        f, ax = plt.subplots(figsize=figsize)  # (figsize=(8, 8))
+
+        display(
+            sns.heatmap(
+                data=coassoc_matrix.loc[k_traits, k_traits],
+                vmin=coassoc_matrix_stats["50%"],
+                vmax=1.0,
+                annot=True,
+                fmt=".2f",
+                square=True,
+            )
+        )
+
 
 # %%
 k = 5
@@ -190,7 +199,13 @@ display(part_stats)
 # %%
 plot_cluster(data_umap, part, 4)
 
+# %% [markdown]
+# The plot above shows that these 8 keratometry measurements (such as 3mm weak meridian left) were always clustered together in all partitions of the ensemble, representing a very strong/stable grouping.
+
 # %%
 plot_cluster(data_umap, part, 2, figsize=(10, 10))
+
+# %% [markdown]
+# The "heel bone mineral density" cluster is not as strong as the keratometry one, since some trait pairs have a coassociation value of 0.75. However, 0.75 is quite higher than the 99 percentile of the coassociation values (which is 0.63).
 
 # %%
