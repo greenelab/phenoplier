@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown]
-# TODO
+# It analyzes the content of all clusters across all selected "best partitions", listing the traits/diseases that belong to them.
 
 # %% [markdown]
 # # Modules loading
@@ -42,7 +42,6 @@ import conf
 # # Settings
 
 # %%
-# output dir for this notebook
 CONSENSUS_CLUSTERING_DIR = Path(
     conf.RESULTS["CLUSTERING_DIR"], "consensus_clustering"
 ).resolve()

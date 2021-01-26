@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown]
-# TODO
+# It prepares the data to create a clustering tree visualization (using the R package `clustree`).
 
 # %% [markdown]
 # # Modules loading
@@ -42,7 +42,6 @@ import conf
 # # Settings
 
 # %%
-# output dir for this notebook
 CONSENSUS_CLUSTERING_DIR = Path(
     conf.RESULTS["CLUSTERING_DIR"], "consensus_clustering"
 ).resolve()
