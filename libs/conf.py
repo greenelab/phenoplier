@@ -176,3 +176,25 @@ PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"] = Path(
 PHENOMEXCAN["GTEX_GWAS_PHENO_INFO_FILE"] = Path(
     PHENOMEXCAN["BASE_DIR"], "gtex_gwas_phenotypes_metadata.tsv"
 ).resolve()
+
+
+if __name__ == "__main__":
+    # if this script is run, then it exports the configuration as environment
+    # variables (for bash/R, etc)
+    from pathlib import PurePath
+
+    def print_conf(conf_dict):
+        for var_name, var_value in conf_dict.items():
+            if isinstance(var_value, (str, int, PurePath)):
+                print(f'export PHENOPLIER_{var_name}="{str(var_value)}"')
+            elif isinstance(var_value, dict):
+                new_dict = {f"{var_name}_{k}": v for k, v in var_value.items()}
+                print_conf(new_dict)
+            else:
+                raise ValueError(f"Configuration type not understood: {var_name}")
+
+    local_variables = {
+        k: v for k, v in locals().items() if not k.startswith("__") and k == k.upper()
+    }
+
+    print_conf(local_variables)
