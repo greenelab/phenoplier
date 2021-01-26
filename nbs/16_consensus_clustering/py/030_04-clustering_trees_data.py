@@ -221,10 +221,8 @@ trait_labels.head()
 trait_labels.loc["3143_raw-Ankle_spacing_width"] = "Anthropometry"
 
 trait_labels.loc[
-    "20153_raw-Forced_expiratory_volume_in_1second_FEV1_predicted"
-] = "Spirometry"
-trait_labels.loc[
     [
+        "20153_raw-Forced_expiratory_volume_in_1second_FEV1_predicted",
         "20150_raw-Forced_expiratory_volume_in_1second_FEV1_Best_measure",
         "20151_raw-Forced_vital_capacity_FVC_Best_measure",
         "3062_raw-Forced_vital_capacity_FVC",
