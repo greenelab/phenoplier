@@ -28,12 +28,10 @@
 # %autoreload 2
 
 # %%
+from IPython.display import display
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 from utils import generate_result_set_name
 import conf
