@@ -31,6 +31,7 @@
 # %autoreload 2
 
 # %%
+from IPython.display import display
 from pathlib import Path
 
 import numpy as np
