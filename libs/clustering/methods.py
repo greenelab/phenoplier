@@ -1,8 +1,112 @@
 import warnings
 
 import numpy as np
+import pandas as pd
 
 from sklearn.cluster import SpectralClustering
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+
+
+class ClusterInterpreter(object):
+    """
+    Args:
+        cluster_name:
+        threshold: threshold to be used to select nodes (default: 0). For this
+            case, it makes sense to use always a positive value here (since LVs
+            with negative values are meaningless).
+        decision_tree_args: arguments given to the DecisionTreeClassifier
+        max_features: maximum features to be selected
+        max_features_to_explore: maximum number of top features to explore
+    """
+
+    def __init__(
+        self,
+        threshold: float = 0,
+        max_features: int = 10,
+        max_features_to_explore: int = 50,
+        decision_tree_args: dict = None,
+    ):
+        self.threshold = threshold
+        self.max_features = max_features
+        self.max_features_to_explore = max_features_to_explore
+
+        self.decision_tree_args = {
+            "criterion": "gini",
+            "splitter": "best",
+            "max_depth": 1,
+            "max_features": None,
+            "random_state": None,
+        }
+        if decision_tree_args is not None:
+            self.decision_tree_args.update(decision_tree_args)
+
+        self.features_ = None
+
+    def fit(self, data: pd.DataFrame, partition: np.ndarray, cluster_id: int):
+        assert partition.shape[0] == data.shape[0], (
+            f"Partition shape does not match number of rows in data "
+            f"({partition.shape[0]} != {data.shape[0]})"
+        )
+
+        assert cluster_id in np.unique(
+            partition
+        ), f"Cluster id does not exist in partition ({cluster_id})"
+
+        # create binary partition to compare cluster members with the rest
+        part = np.zeros_like(partition)
+        part[partition == cluster_id] = 1
+
+        i = 0
+        _features_selected = []
+        _new_data = data
+        _next_feature_drop = []
+        while (
+            _new_data.shape[1] > 0
+            and i < self.max_features_to_explore
+            and len(_features_selected) < self.max_features
+        ):
+            # remove the root node from the previous tree
+            _new_data = _new_data.drop(columns=_next_feature_drop)
+
+            # TODO: it would probably be much better/efficient to use the
+            # feature splitter that the decision tree is using internally
+            # instead of training a new classifier every time
+            clf = DecisionTreeClassifier(**self.decision_tree_args)
+            clf.fit(_new_data, part)
+
+            root_node_feature = {}
+            feature_idx = clf.tree_.feature[0]
+            root_node_feature["name"] = _new_data.columns[feature_idx]
+            root_node_feature["idx"] = int(root_node_feature["name"][2:])
+            root_node_feature["threshold"] = clf.tree_.threshold[0]
+
+            _next_feature_drop = [root_node_feature["name"]]
+
+            # do not continue if feature value is less than specified threshold
+            if root_node_feature["threshold"] < self.threshold:
+                continue
+
+            _features_selected.append(pd.Series(root_node_feature))
+
+            i = i + 1
+
+        self.features_ = (
+            pd.DataFrame(_features_selected)
+            .set_index("idx")
+            .sort_values("threshold", ascending=False)
+        )
+
+    # def plot_tree(self):
+    #     plot_tree(
+    #         clf,
+    #         max_depth=4,
+    #         feature_names=data.columns.tolist(),
+    #         class_names=[f"C{c}" if c == 1 else "Other" for c in
+    #                      np.unique(part)],
+    #         fontsize=fontsize,
+    #         rounded=True,
+    #         filled=True,
+    #     )
 
 
 class DeltaSpectralClustering(SpectralClustering):
