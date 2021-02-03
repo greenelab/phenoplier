@@ -103,7 +103,7 @@ class ExperimentDataReader(object):
         Returns:
             None
         """
-        if self.srp_data_file.exists():
+        if self.srp_data_file.exists() and self.srp_data_file.stat().st_size > 0:
             return
 
         self.srp_dir.mkdir(exist_ok=True)
@@ -114,7 +114,9 @@ class ExperimentDataReader(object):
             f"http://duffel.rail.bio/recount/{self.srp_code}/{self.srp_code}.tsv"
         )
         urllib.request.urlretrieve(download_link, self.srp_data_file)
-        assert self.srp_data_file.exists(), "File could not be downloaded"
+        assert (
+            self.srp_data_file.exists() and self.srp_data_file.stat().st_size > 0
+        ), "File could not be downloaded"
 
 
 class LVAnalysis(object):
