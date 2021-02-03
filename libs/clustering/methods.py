@@ -79,6 +79,9 @@ class ClusterInterpreter(object):
             root_node_feature["name"] = _new_data.columns[feature_idx]
             root_node_feature["idx"] = int(root_node_feature["name"][2:])
             root_node_feature["threshold"] = clf.tree_.threshold[0]
+            root_node_feature["impurity"] = clf.tree_.impurity[0]
+            root_node_feature["value"] = clf.tree_.value[0]
+            root_node_feature["n_samples"] = clf.tree_.n_node_samples[0]
 
             _next_feature_drop = [root_node_feature["name"]]
 
