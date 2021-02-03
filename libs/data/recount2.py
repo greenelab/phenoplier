@@ -251,12 +251,14 @@ class LVAnalysis(object):
 
         return top_projects.index
 
+    @lru_cache(maxsize=None)
     def get_experiments_data(self, quantile=0.99):
-        if (
-            self._experiments_data_quantile == quantile
-            and self._experiments_data_cached is not None
-        ):
-            return self._experiments_data_cached
+        # # FIXME: use python caching tools instead of this
+        # if (
+        #     self._experiments_data_quantile == quantile
+        #     and self._experiments_data_cached is not None
+        # ):
+        #     return self._experiments_data_cached
 
         experiments_df_list = []
         dfs_lengths = 0
@@ -399,6 +401,21 @@ class LVAnalysis(object):
         quantile=0.99,
         ax=None,
     ):
+        """
+        TODO: this function is intended for exploratory use, not for final figure production
+
+        Args:
+            imp_f:
+            linewidth:
+            hue:
+            study_id:
+            top_x_values:
+            quantile:
+            ax:
+
+        Returns:
+
+        """
         import matplotlib.pyplot as plt
         import seaborn as sns
 
@@ -416,7 +433,12 @@ class LVAnalysis(object):
 
         data = data[features].dropna()
 
-        cat_order = data.groupby(imp_f).median().squeeze().sort_values(ascending=False)
+        cat_order = data.groupby(imp_f).median().squeeze()
+        if isinstance(cat_order, float):
+            print(f"WARNING: Single value for {imp_f}: {cat_order}")
+            return
+
+        cat_order = cat_order.sort_values(ascending=False)
         if top_x_values is not None:
             cat_order = cat_order.head(top_x_values)
 
