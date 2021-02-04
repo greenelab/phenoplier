@@ -6,6 +6,7 @@ from enum import Enum, auto
 import re
 from collections import namedtuple
 from pathlib import Path
+from functools import lru_cache
 
 import pandas as pd
 
@@ -125,6 +126,7 @@ class Trait(object, metaclass=ABCMeta):
         return self.EFO_INFO(id=efo_code, label=label)
 
     @staticmethod
+    @lru_cache(maxsize=None)
     def get_traits_to_efo_map_data():
         return pd.read_csv(
             Trait.UKB_TO_EFO_MAP_FILE, sep="\t", index_col="ukb_fullcode"
@@ -149,6 +151,51 @@ class Trait(object, metaclass=ABCMeta):
             code = "-".join(pheno_split[:2])
 
         return code
+
+    @staticmethod
+    def is_efo_label(trait_label: str):
+        """
+        Given a string, it returns true if it is an EFO label
+
+        Args:
+            trait_label: any string representing a trait code.
+
+        Returns:
+            True if trait_label is an EFO label. False otherwise.
+        """
+        efo_labels = set(
+            Trait.get_traits_to_efo_map_data()["current_term_label"].values
+        )
+        return trait_label in efo_labels
+
+    @staticmethod
+    def get_traits_from_efo(efo_label: str):
+        """
+        It returns a map from an EFO label to a list of PhenomeXcan traits.
+
+        Args:
+            efo_label: an EFO label.
+
+        Returns:
+            A list of Trait instances that map to efo_label.
+        """
+        if efo_label is None:
+            return None
+
+        efo_map_data = (
+            Trait.get_traits_to_efo_map_data()
+            .reset_index()
+            .set_index("current_term_label")
+        )
+
+        if efo_label not in efo_map_data.index:
+            return None
+
+        map_info = efo_map_data.loc[[efo_label]]
+
+        label = map_info["ukb_fullcode"].values
+
+        return [Trait.get_trait(full_code=fc) for fc in label]
 
     @staticmethod
     def get_trait(code=None, full_code=None):
