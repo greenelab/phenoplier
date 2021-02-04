@@ -189,6 +189,21 @@ def test_trait_get_trait_using_full_code_is_gtex_gwas():
     assert trait.get_plain_name() == "UKB_1160_Sleep_duration"
 
 
+def test_trait_get_trait_from_efo():
+    trait_efo = "asthma"
+
+    traits = Trait.get_traits_from_efo(trait_efo)
+    assert traits is not None
+    assert isinstance(traits, list)
+    assert len(traits) == 3
+
+    traits_codes = set([t.code for t in traits])
+    assert len(traits_codes) == len(traits)
+    assert "20002_1111" in traits_codes
+    assert "22127" in traits_codes
+    assert "J45" in traits_codes
+
+
 @pytest.mark.parametrize(
     "trait_code,efo_code,efo_name",
     [
