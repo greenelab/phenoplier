@@ -144,6 +144,16 @@ def download_phenomexcan_smultixcan_mashr_pvalues(**kwargs):
     )
 
 
+def download_phenomexcan_fastenloc_rcp(**kwargs):
+    output_file = conf.PHENOMEXCAN["FASTENLOC_TORUS_RCP_FILE"]
+    curl(
+        "https://upenn.box.com/shared/static/qgghpf4nyuj45su5a184e8geg4egjd20.pkl",
+        output_file,
+        "a1b12c552c0b41db3f3b0131910aa974",
+        logger=logger,
+    )
+
+
 def download_multiplier_model_summary_pkl(**kwargs):
     output_file = conf.MULTIPLIER["MODEL_SUMMARY_FILE"]
     curl(
