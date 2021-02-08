@@ -173,6 +173,19 @@ assert not smultixcan_zscores_combined.isna().any().any()
 # ## Testing
 
 # %% [markdown] tags=[]
+# ### Stats
+
+# %% tags=[]
+_stats = smultixcan_zscores_combined.stack().describe()
+display(_stats.apply(str))
+
+# %% tags=[]
+assert _stats["min"] >= 0.0
+
+# %% tags=[]
+assert _stats["max"] < 55.0
+
+# %% [markdown] tags=[]
 # ### EFO label (asthma) which combined three PhenomeXcan traits.
 
 # %% tags=[]
