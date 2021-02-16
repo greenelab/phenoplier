@@ -185,7 +185,7 @@ def supraconsensus(ensemble, k, methods, selection_criterion, n_jobs=1, use_tqdm
     )
 
 
-def run_method_and_compute_agreement(method_func, ensemble_data, ensemble, k):
+def run_method_and_compute_agreement(method_func, ensemble_data, ensemble, k, **kwargs):
     """
     Runs a consensus clustering method on the ensemble data, obtains the
     consolidated partition with the desired number of clusters, and computes
@@ -206,13 +206,15 @@ def run_method_and_compute_agreement(method_func, ensemble_data, ensemble, k):
         k:
             The number of clusters to obtain from the ensemble data using the
             specified method.
+        kwargs:
+            Other parameters passed to `method_func`.
 
     Returns:
         It returns a tuple with the data partition derived from the ensemble
         data using the specified method, and some performance measures of this
         partition.
     """
-    part = method_func(ensemble_data, k)
+    part = method_func(ensemble_data, k, **kwargs)
 
     nmi_values = np.array(
         [compare_arrays(ensemble_member, part, nmi) for ensemble_member in ensemble]

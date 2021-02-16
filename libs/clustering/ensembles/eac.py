@@ -45,14 +45,14 @@ def eac(
     ).fit_predict(data)
 
 
-def eac_single(ensemble, k):
+def eac_single(ensemble, k, **kwargs):
     """
     Shortcut to run EAC using the single linkage method on the ensemble.
     """
     return eac(ensemble, k, linkage_method="single")
 
 
-def eac_single_coassoc_matrix(coassoc_matrix, k):
+def eac_single_coassoc_matrix(coassoc_matrix, k, **kwargs):
     """
     Shortcut to run EAC using the single linkage method on the coassociation
     matrix.
@@ -62,14 +62,14 @@ def eac_single_coassoc_matrix(coassoc_matrix, k):
     )
 
 
-def eac_complete(ensemble, k):
+def eac_complete(ensemble, k, **kwargs):
     """
     Shortcut to run EAC using the complete linkage method on the ensemble.
     """
     return eac(ensemble, k, linkage_method="complete")
 
 
-def eac_complete_coassoc_matrix(coassoc_matrix, k):
+def eac_complete_coassoc_matrix(coassoc_matrix, k, **kwargs):
     """
     Shortcut to run EAC using the complete linkage method on the coassociation
     matrix.
@@ -79,14 +79,14 @@ def eac_complete_coassoc_matrix(coassoc_matrix, k):
     )
 
 
-def eac_average(ensemble, k):
+def eac_average(ensemble, k, **kwargs):
     """
     Shortcut to run EAC using the average linkage method on the ensemble.
     """
     return eac(ensemble, k, linkage_method="average")
 
 
-def eac_average_coassoc_matrix(coassoc_matrix, k):
+def eac_average_coassoc_matrix(coassoc_matrix, k, **kwargs):
     """
     Shortcut to run EAC using the average linkage method on the coassociation
     matrix.
