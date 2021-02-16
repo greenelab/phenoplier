@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: all,-execution,-papermill
+#     cell_metadata_filter: all,-execution,-papermill,-trusted
 #     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
@@ -55,7 +55,7 @@ import conf
 # # Settings
 
 # %% tags=[]
-RANDOM_GENERATOR = np.random.default_rng(12345)
+RANDOM_STATES_ITER = iter(range(0, 10000000))
 
 # %% [markdown] tags=[]
 # ## Consensus clustering
@@ -127,20 +127,44 @@ from clustering.ensembles.spectral import scc
 # Define spectral consensus clustering methods with delta values found in pre-analysis:
 
 # %% tags=[]
-def scc_020(coassoc_distance_matrix, k):
-    return scc(coassoc_distance_matrix, k, delta=0.20, ensemble_is_coassoc_matrix=True)
+def scc_020(coassoc_distance_matrix, k, **kwargs):
+    return scc(
+        coassoc_distance_matrix,
+        k,
+        delta=0.20,
+        ensemble_is_coassoc_matrix=True,
+        **kwargs
+    )
 
 
-def scc_025(coassoc_distance_matrix, k):
-    return scc(coassoc_distance_matrix, k, delta=0.25, ensemble_is_coassoc_matrix=True)
+def scc_025(coassoc_distance_matrix, k, **kwargs):
+    return scc(
+        coassoc_distance_matrix,
+        k,
+        delta=0.25,
+        ensemble_is_coassoc_matrix=True,
+        **kwargs
+    )
 
 
-def scc_030(coassoc_distance_matrix, k):
-    return scc(coassoc_distance_matrix, k, delta=0.30, ensemble_is_coassoc_matrix=True)
+def scc_030(coassoc_distance_matrix, k, **kwargs):
+    return scc(
+        coassoc_distance_matrix,
+        k,
+        delta=0.30,
+        ensemble_is_coassoc_matrix=True,
+        **kwargs
+    )
 
 
-def scc_050(coassoc_distance_matrix, k):
-    return scc(coassoc_distance_matrix, k, delta=0.50, ensemble_is_coassoc_matrix=True)
+def scc_050(coassoc_distance_matrix, k, **kwargs):
+    return scc(
+        coassoc_distance_matrix,
+        k,
+        delta=0.50,
+        ensemble_is_coassoc_matrix=True,
+        **kwargs
+    )
 
 
 # %% tags=[]
@@ -168,6 +192,7 @@ with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
             ensemble_coassoc_matrix,
             full_ensemble,
             k,
+            random_state=next(RANDOM_STATES_ITER),
         ): (m.__name__, k)
         for m in all_consensus_methods
         for k in range(CLUSTERING_OPTIONS["K_MIN"], CLUSTERING_OPTIONS["K_MAX"] + 1)
