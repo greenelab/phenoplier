@@ -14,20 +14,20 @@
 #     name: python3
 # ---
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Description
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # It prepares the data to create a clustering tree visualization (using the R package `clustree`).
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Modules loading
 
-# %%
+# %% tags=[]
 # %load_ext autoreload
 # %autoreload 2
 
-# %%
+# %% tags=[]
 from IPython.display import display
 from pathlib import Path
 
@@ -37,20 +37,20 @@ import pandas as pd
 from utils import generate_result_set_name
 import conf
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Settings
 
-# %%
+# %% tags=[]
 CONSENSUS_CLUSTERING_DIR = Path(
     conf.RESULTS["CLUSTERING_DIR"], "consensus_clustering"
 ).resolve()
 
 display(CONSENSUS_CLUSTERING_DIR)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Load data
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## PCA
 
 # %% tags=[]
@@ -81,16 +81,16 @@ assert input_filepath.exists(), "Input file does not exist"
 input_filepath_stem = input_filepath.stem
 display(input_filepath_stem)
 
-# %%
+# %% tags=[]
 data_pca = pd.read_pickle(input_filepath).iloc[:, :5]
 
-# %%
+# %% tags=[]
 data_pca.shape
 
-# %%
+# %% tags=[]
 data_pca.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## UMAP
 
 # %% tags=[]
@@ -122,48 +122,48 @@ assert input_filepath.exists(), "Input file does not exist"
 input_filepath_stem = input_filepath.stem
 display(input_filepath_stem)
 
-# %%
+# %% tags=[]
 data_umap = pd.read_pickle(input_filepath)
 
-# %%
+# %% tags=[]
 data_umap.shape
 
-# %%
+# %% tags=[]
 data_umap.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Load selected best partitions
 
-# %%
+# %% tags=[]
 input_file = Path(CONSENSUS_CLUSTERING_DIR, "best_partitions_by_k.pkl").resolve()
 display(input_file)
 
-# %%
+# %% tags=[]
 best_partitions = pd.read_pickle(input_file)
 
-# %%
+# %% tags=[]
 best_partitions.shape
 
-# %%
+# %% tags=[]
 best_partitions.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Prepare data for clustrees
 
-# %%
+# %% tags=[]
 clustrees_df = pd.concat((data_pca, data_umap), join="inner", axis=1)
 
-# %%
+# %% tags=[]
 display(clustrees_df.shape)
 assert clustrees_df.shape == (data_pca.shape[0], data_pca.shape[1] + data_umap.shape[1])
 
-# %%
+# %% tags=[]
 clustrees_df.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Add partitions
 
-# %%
+# %% tags=[]
 _tmp = np.unique(
     [best_partitions.loc[k, "partition"].shape for k in best_partitions.index]
 )
@@ -171,10 +171,10 @@ display(_tmp)
 assert _tmp.shape[0] == 1
 assert _tmp[0] == data_umap.shape[0] == data_pca.shape[0]
 
-# %%
+# %% tags=[]
 assert not best_partitions.isna().any().any()
 
-# %%
+# %% tags=[]
 # df = df.assign(**{f'k{k}': partitions.loc[k, 'partition'] for k in selected_k_values})
 clustrees_df = clustrees_df.assign(
     **{
@@ -184,16 +184,16 @@ clustrees_df = clustrees_df.assign(
     }
 )
 
-# %%
+# %% tags=[]
 clustrees_df.index.rename("trait", inplace=True)
 
-# %%
+# %% tags=[]
 clustrees_df.shape
 
-# %%
+# %% tags=[]
 clustrees_df.head()
 
-# %%
+# %% tags=[]
 # make sure partitions were assigned correctly
 assert (
     np.unique(
@@ -207,16 +207,16 @@ assert (
     == data_pca.shape[0]
 )
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Assign labels
 
-# %%
+# %% tags=[]
 trait_labels = pd.Series({t: None for t in clustrees_df.index})
 
-# %%
+# %% tags=[]
 trait_labels.head()
 
-# %%
+# %% tags=[]
 trait_labels.loc["3143_raw-Ankle_spacing_width"] = "Anthropometry"
 
 trait_labels.loc[
@@ -462,20 +462,20 @@ trait_labels.loc[
     ]
 ] = "Skin/hair"
 
-# %%
+# %% tags=[]
 trait_labels
 
-# %%
+# %% tags=[]
 clustrees_df = clustrees_df.assign(labels=trait_labels)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Save
 
-# %%
+# %% tags=[]
 output_file = Path(CONSENSUS_CLUSTERING_DIR, "clustering_tree_data.tsv").resolve()
 display(output_file)
 
-# %%
+# %% tags=[]
 clustrees_df.to_csv(output_file, sep="\t")
 
-# %%
+# %% tags=[]
