@@ -14,20 +14,20 @@
 #     name: python3
 # ---
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Description
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # The goal of this notebook is very simple: it just lists the content (traits/diseases) that belong to each cluster across all selected "best partitions". Although one would take a look at them here to check whether clusters of traits make sense, that analysis is carried out first by looking at the clustering trees (which are generated later). Then, this notebooks serves as a simple list with the content of the clusters.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Modules loading
 
-# %%
+# %% tags=[]
 # %load_ext autoreload
 # %autoreload 2
 
-# %%
+# %% tags=[]
 from IPython.display import display
 from pathlib import Path
 
@@ -36,17 +36,17 @@ import pandas as pd
 from utils import generate_result_set_name
 import conf
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Settings
 
-# %%
+# %% tags=[]
 CONSENSUS_CLUSTERING_DIR = Path(
     conf.RESULTS["CLUSTERING_DIR"], "consensus_clustering"
 ).resolve()
 
 display(CONSENSUS_CLUSTERING_DIR)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Load data
 
 # %% tags=[]
@@ -78,51 +78,51 @@ assert input_filepath.exists(), "Input file does not exist"
 input_filepath_stem = input_filepath.stem
 display(input_filepath_stem)
 
-# %%
+# %% tags=[]
 data_umap = pd.read_pickle(input_filepath)
 
-# %%
+# %% tags=[]
 data_umap.shape
 
-# %%
+# %% tags=[]
 data_umap.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Load best partitions
 
-# %%
+# %% tags=[]
 input_file = Path(CONSENSUS_CLUSTERING_DIR, "best_partitions_by_k.pkl").resolve()
 display(input_file)
 
-# %%
+# %% tags=[]
 best_partitions = pd.read_pickle(input_file)
 
-# %%
+# %% tags=[]
 best_partitions.shape
 
-# %%
+# %% tags=[]
 best_partitions.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Analysis of clusterings
 
-# %%
+# %% tags=[]
 from IPython.display import HTML
 
 
-# %%
+# %% tags=[]
 def show_cluster_stats(clustering_data, selected_partition, selected_cluster):
     traits = [t for t in clustering_data[selected_partition == selected_cluster].index]
     display(len(traits))
     display(traits)
 
 
-# %%
+# %% tags=[]
 selected_k_values = best_partitions[best_partitions["selected"]].index.tolist()
 selected_k_values.sort()
 display(selected_k_values)
 
-# %%
+# %% tags=[]
 for k in selected_k_values:
     display(HTML(f"<h2>Partition with k={k}</h2>"))
     display(best_partitions.loc[k])
@@ -140,4 +140,4 @@ for k in selected_k_values:
         display(len(cluster_traits))
         display(cluster_traits)
 
-# %%
+# %% tags=[]

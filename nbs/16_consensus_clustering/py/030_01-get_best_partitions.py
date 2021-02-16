@@ -14,20 +14,20 @@
 #     name: python3
 # ---
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Description
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # It analyzes how consensus partitions generated before agree with the ensemble, and selects the best ones for downstream analyses.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Modules loading
 
-# %%
+# %% tags=[]
 # %load_ext autoreload
 # %autoreload 2
 
-# %%
+# %% tags=[]
 from pathlib import Path
 from IPython.display import display
 
@@ -37,33 +37,33 @@ import seaborn as sns
 
 import conf
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Load consensus clustering results
 
-# %%
+# %% tags=[]
 CONSENSUS_CLUSTERING_DIR = Path(
     conf.RESULTS["CLUSTERING_DIR"], "consensus_clustering"
 ).resolve()
 
 display(CONSENSUS_CLUSTERING_DIR)
 
-# %%
+# %% tags=[]
 input_file = Path(CONSENSUS_CLUSTERING_DIR, "consensus_clustering_runs.pkl").resolve()
 display(input_file)
 
-# %%
+# %% tags=[]
 consensus_clustering_results = pd.read_pickle(input_file)
 
-# %%
+# %% tags=[]
 consensus_clustering_results.shape
 
-# %%
+# %% tags=[]
 consensus_clustering_results.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Explore best partition per k
 
-# %%
+# %% tags=[]
 _col0, _col1 = "ami_mean", "ami_median"
 _tmp = (
     consensus_clustering_results.groupby("k")
@@ -72,7 +72,7 @@ _tmp = (
 )
 display(_tmp.head(10))
 
-# %%
+# %% tags=[]
 with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     "whitegrid", {"grid.linestyle": "--"}
 ):
@@ -88,10 +88,10 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.grid(True)
     plt.tight_layout()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Select best partition per k
 
-# %%
+# %% tags=[]
 _measure_col = "ami_mean"
 best_parts = (
     consensus_clustering_results.groupby("k")
@@ -101,30 +101,30 @@ best_parts = (
     ]
 )
 
-# %%
+# %% tags=[]
 best_parts = best_parts.set_index("k")
 
-# %%
+# %% tags=[]
 best_parts.shape
 
-# %%
+# %% tags=[]
 # show partitions with top ARI
 best_parts.head(10)
 
-# %%
+# %% tags=[]
 best_parts.sort_values("k")
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Select partitions with highest agreement
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # We do not expect all partitions with different `k` to be good ones. Thus, here I select the partitions with an ensemble agreement that pass a specified threshold (median).
 
-# %%
+# %% tags=[]
 best_parts_stats = best_parts[_measure_col].describe()
 display(best_parts_stats)
 
-# %%
+# %% tags=[]
 best_threshold = best_parts_stats["50%"]
 best_threshold_description = "Median"
 display(best_threshold)
@@ -133,13 +133,13 @@ best_parts = best_parts.assign(
     selected=best_parts[_measure_col].apply(lambda x: x > best_threshold)
 )
 
-# %%
+# %% tags=[]
 best_parts.shape
 
-# %%
+# %% tags=[]
 best_parts.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Save best partitions per k
 
 # %% tags=[]
@@ -149,14 +149,14 @@ display(output_file)
 # %% tags=[]
 best_parts.to_pickle(output_file)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Plot of selected best partitions
 
-# %%
+# %% tags=[]
 plot_data = best_parts.reset_index()
 display(plot_data.head(5))
 
-# %%
+# %% tags=[]
 with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     "whitegrid", {"grid.linestyle": "--"}
 ), sns.color_palette("muted"):
@@ -179,14 +179,14 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.grid(True)
     plt.tight_layout()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # The horizontal line in the plot is the median of the average AMI; partitions above that line are marked as selected for downstream analysis
 
-# %%
+# %% tags=[]
 # this list shows the selected final partitions, and which methods achieved the highest agreement
 plot_data[plot_data["selected"]].sort_values("k")
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Evidence accumulation approaches (EAC) based on hierarchical clustering (such as `eac_average_coassoc_matrix` and `eac_single_coassoc_matrix`) pick the best partitions for lower `k` values, whereas spectral clustering does it better for all the rest.
 
-# %%
+# %% tags=[]
