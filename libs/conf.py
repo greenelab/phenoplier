@@ -235,6 +235,17 @@ LINCS["CONSENSUS_SIGNATURES_FILE"] = Path(
 ).resolve()
 
 
+#
+# eMERGE
+#
+EMERGE = {}
+EMERGE["BASE_DIR"] = Path(DATA_DIR, "emerge").resolve()
+EMERGE["GENE_ASSOC_DIR"] = Path(EMERGE["BASE_DIR"], "gene_assoc").resolve()
+EMERGE["SMULTIXCAN_MASHR_ZSCORES_FILE"] = Path(
+    EMERGE["GENE_ASSOC_DIR"], "emerge-smultixcan-mashr-zscores.pkl"
+).resolve()
+
+
 if __name__ == "__main__":
     # if this script is run, then it exports the configuration as environment
     # variables (for bash/R, etc)
