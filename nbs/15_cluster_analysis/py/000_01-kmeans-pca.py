@@ -58,6 +58,9 @@ from utils import generate_result_set_name
 # # Settings
 
 # %% tags=[]
+np.random.seed(0)
+
+# %% tags=[]
 INITIAL_RANDOM_STATE = 10000
 
 # %% [markdown] tags=[]
