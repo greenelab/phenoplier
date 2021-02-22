@@ -55,6 +55,9 @@ from utils import generate_result_set_name
 # %% [markdown] tags=[]
 # # Settings
 
+# %% tags=[]
+np.random.seed(0)
+
 # %% [markdown] tags=[]
 # ## Input data
 

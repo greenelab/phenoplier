@@ -63,6 +63,9 @@ from clustering.ensembles.utils import generate_ensemble
 # # Global settings
 
 # %% tags=[]
+np.random.seed(0)
+
+# %% tags=[]
 CLUSTERING_ATTRIBUTES_TO_SAVE = ["n_clusters"]
 
 # %% [markdown] tags=[]
