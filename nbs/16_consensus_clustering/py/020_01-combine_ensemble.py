@@ -55,7 +55,10 @@ import conf
 # # Settings
 
 # %% tags=[]
-RANDOM_STATES_ITER = iter(range(0, 10000000))
+np.random.seed(0)
+
+# %% tags=[]
+RANDOM_STATES_ITER = iter(np.random.randint(0, np.iinfo(np.int32).max, size=100000))
 
 # %% [markdown] tags=[]
 # ## Consensus clustering
