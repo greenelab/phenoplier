@@ -40,6 +40,9 @@ import conf
 # %% [markdown] tags=[]
 # # Settings
 
+# %% tags=[]
+np.random.seed(0)
+
 # %% [markdown] tags=[]
 # ## Input data
 
