@@ -31,6 +31,7 @@
 from pathlib import Path
 from IPython.display import display
 
+import numpy as np
 import pandas as pd
 import seaborn as sns
 
@@ -39,6 +40,9 @@ from utils import generate_result_set_name
 
 # %% [markdown] tags=[]
 # # Settings
+
+# %% tags=[]
+np.random.seed(0)
 
 # %% [markdown] tags=[]
 # ## Input data
