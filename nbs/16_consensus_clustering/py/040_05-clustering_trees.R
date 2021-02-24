@@ -64,21 +64,28 @@ head(data)
 options(repr.plot.width = 20, repr.plot.height = 15)
 clustree(data, prefix = "k")
 
+ggsave(
+    "/tmp/clustering_tree.pdf",
+    height=15,
+    width=20,
+    scale=1,
+)
+
 # %% [markdown]
 # ## With labels
 
 # %%
-label_position <- function(labels) {
-    if (length(unique(labels)) == 1) {
-        position <- as.character(unique(labels))
-    } else {
-        position <- NA
-    }
-    return(position)
-}
+# label_position <- function(labels) {
+#     if (length(unique(labels)) == 1) {
+#         position <- as.character(unique(labels))
+#     } else {
+#         position <- NA
+#     }
+#     return(position)
+# }
 
-options(repr.plot.width = 25, repr.plot.height = 15)
-clustree(data, prefix = "k", node_label="labels", node_label_aggr = "label_position")
+# options(repr.plot.width = 25, repr.plot.height = 15)
+# clustree(data, prefix = "k", node_label="labels", node_label_aggr = "label_position")
 
 # %% [markdown]
 # # Plot overlay
@@ -87,14 +94,14 @@ clustree(data, prefix = "k", node_label="labels", node_label_aggr = "label_posit
 # ## With PCA
 
 # %%
-options(repr.plot.width = 15, repr.plot.height = 11)
-clustree_overlay(data, prefix = "k", x_value = "PCA1", y_value = "PCA2")
+# options(repr.plot.width = 15, repr.plot.height = 11)
+# clustree_overlay(data, prefix = "k", x_value = "PCA1", y_value = "PCA2")
 
 # %% [markdown]
 # ## With UMAP
 
 # %%
-options(repr.plot.width = 15, repr.plot.height = 11)
-clustree_overlay(data, prefix = "k", x_value = "UMAP1", y_value = "UMAP2")
+# options(repr.plot.width = 15, repr.plot.height = 11)
+# clustree_overlay(data, prefix = "k", x_value = "UMAP1", y_value = "UMAP2")
 
 # %%
