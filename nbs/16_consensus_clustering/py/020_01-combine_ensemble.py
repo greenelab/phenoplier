@@ -60,6 +60,11 @@ np.random.seed(0)
 # %% tags=[]
 RANDOM_STATES_ITER = iter(np.random.randint(0, np.iinfo(np.int32).max, size=100000))
 
+# %% tags=[]
+# n_init parameter for DeltaSpectralClustering
+# a high number should produce more stable final solutions
+SC_N_INIT = 50
+
 # %% [markdown] tags=[]
 # ## Consensus clustering
 
@@ -195,6 +200,7 @@ with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
             ensemble_coassoc_matrix,
             full_ensemble,
             k,
+            n_init=SC_N_INIT,
             random_state=next(RANDOM_STATES_ITER),
         ): (m.__name__, k)
         for m in all_consensus_methods
