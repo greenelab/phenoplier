@@ -65,6 +65,7 @@ consensus_clustering_results.head()
 
 # %% tags=[]
 _col0, _col1 = "ami_mean", "ami_median"
+
 _tmp = (
     consensus_clustering_results.groupby("k")
     .apply(lambda x: x.sort_values(_col0, ascending=False).head(1))
@@ -93,6 +94,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
 
 # %% tags=[]
 _measure_col = "ami_mean"
+
 best_parts = (
     consensus_clustering_results.groupby("k")
     .apply(lambda x: x.sort_values(_measure_col, ascending=False).head(1))
@@ -118,15 +120,15 @@ best_parts.sort_values("k")
 # ## Select partitions with highest agreement
 
 # %% [markdown] tags=[]
-# We do not expect all partitions with different `k` to be good ones. Thus, here I select the partitions with an ensemble agreement that pass a specified threshold (median).
+# We do not expect all partitions with different `k` to be good ones. Thus, here I select the partitions with an ensemble agreement that pass a specified threshold (75th percentile).
 
 # %% tags=[]
 best_parts_stats = best_parts[_measure_col].describe()
 display(best_parts_stats)
 
 # %% tags=[]
-best_threshold = best_parts_stats["50%"]
-best_threshold_description = "Median"
+best_threshold = best_parts_stats["75%"]
+best_threshold_description = "75th percentile"
 display(best_threshold)
 
 best_parts = best_parts.assign(
