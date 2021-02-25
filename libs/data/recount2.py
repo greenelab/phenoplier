@@ -1,7 +1,7 @@
+import warnings
 import ast
 from functools import lru_cache
 from pathlib import Path
-import numpy as np
 import pandas as pd
 
 from entity import Gene
@@ -22,7 +22,7 @@ class ExperimentDataReader(object):
     Args:
         srp_code: an SRP code.
         srp_dir: a directory where data is downloaded to.
-        compact: if True, only three columns are kept for each tsf file
+        compact: if True, only three columns are kept for each tsv file
             downloaded: "project", "run", and "characteristics".
     """
 
@@ -45,8 +45,8 @@ class ExperimentDataReader(object):
             the metadata in the columns. The "characteristics" column (which
             contains values such as "c('key': 'value', 'key2': 'value2')",
             although quoting and other format parameters sometimes differ) is
-            split into more columns (including "key" and "key2" from the
-            previous example, and the corresponding values).
+            split into more columns (such as "key" and "key2" and the
+            corresponding values).
         """
 
         self._download_srp_file()
@@ -70,7 +70,7 @@ class ExperimentDataReader(object):
     def _process_characteristics(row: pd.Series) -> pd.Series:
         """
         This method is intended to be run for each row of a dataframe. It reads
-        the 'characteristics' column, taking each key/value pair, and storing it
+        the 'characteristics' column, taking each key/value pair, and stores it
         as a new column.
 
         Args:
@@ -98,11 +98,13 @@ class ExperimentDataReader(object):
         """
         It downloads the metadata for an SRP accession from recount2. This is
         equivalent to clicking on the "link" button/link (under the "phenotype"
-        column) for a particular SRP accession. The file is stored in a folder.
+        column) for a particular SRP accession in the recount2 shinyapp
+        (https://jhubiostatistics.shinyapps.io/recount/).
 
         Returns:
             None
         """
+        # if the file was already downloaded, quit
         if self.srp_data_file.exists() and self.srp_data_file.stat().st_size > 0:
             return
 
@@ -110,10 +112,13 @@ class ExperimentDataReader(object):
 
         import urllib.request
 
+        # download the file
         download_link = (
             f"http://duffel.rail.bio/recount/{self.srp_code}/{self.srp_code}.tsv"
         )
         urllib.request.urlretrieve(download_link, self.srp_data_file)
+
+        # make sure the file was successfully downloaded and has some content
         assert (
             self.srp_data_file.exists() and self.srp_data_file.stat().st_size > 0
         ), "File could not be downloaded"
@@ -130,7 +135,7 @@ class LVAnalysis(object):
             format "LV{number}".
 
         lvs_traits_data: a dataframe with the projection of S-MultiXcan results
-            into the recount2 latent space (MultiPLIER). It should have traits in
+            into the recount2 latent space (MultiPLIER). It must have traits in
             the index (rows) and LVs in the columns.
     """
 
@@ -149,12 +154,19 @@ class LVAnalysis(object):
         self._init_conditions(multiplier_model_b)
         self._init_traits(lvs_traits_data)
 
-        self._experiments_data_quantile = None
-        self._experiments_data_cached = None
         self._experiment_attrs_sim = {}
 
     @staticmethod
-    def _assign_gene_band(gene_name):
+    def _assign_gene_band(gene_name: str):
+        """
+        Given a gene symbol, it gets its cytoband.
+
+        Args:
+            gene_name: a gene symbol.
+
+        Returns:
+            The gene's cytoband.
+        """
         if gene_name in Gene.GENE_NAME_TO_ID_MAP:
             return Gene(name=gene_name).band
 
@@ -162,7 +174,7 @@ class LVAnalysis(object):
 
     def _init_genes(self, multiplier_model_z: pd.DataFrame):
         """
-        It initializes a series with genes (and metadata) for this LV.
+        It initializes a dataframe with genes (and metadata) for this LV.
 
         Args:
             multiplier_model_z: the gene loadings from MultiPLIER (matrix z).
@@ -176,7 +188,7 @@ class LVAnalysis(object):
         )
         self.lv_genes = self.lv_genes.assign(
             gene_band=self.lv_genes["gene_name"]
-            .apply(lambda x: self._assign_gene_band(x))
+            .apply(self._assign_gene_band)
             .astype("category")
         )
 
@@ -205,14 +217,14 @@ class LVAnalysis(object):
         # (SRP), the experiment (SRR), the full id given by both, and the LV
         # value.
         lv_conds = multiplier_model_b.loc[lv_name_on_b].sort_values(ascending=False)
-        conds_df = lv_conds.to_frame(self.lv_name).reset_index()
-        conds_df = conds_df.assign(
-            project=conds_df["index"].apply(lambda x: x.split(".")[0])
+        lv_conds = lv_conds.to_frame(self.lv_name).reset_index()
+        lv_conds = lv_conds.assign(
+            project=lv_conds["index"].apply(lambda x: x.split(".")[0])
         )
-        conds_df = conds_df.assign(
-            experiment=conds_df["index"].apply(lambda x: x.split(".")[1])
+        lv_conds = lv_conds.assign(
+            experiment=lv_conds["index"].apply(lambda x: x.split(".")[1])
         )
-        self.lv_conds = conds_df.rename(columns={"index": "experiment_id"})
+        self.lv_conds = lv_conds.rename(columns={"index": "experiment_id"})
 
     def _init_traits(self, lvs_traits_data):
         """
@@ -228,18 +240,26 @@ class LVAnalysis(object):
         """
         self.lv_traits = lvs_traits_data[self.lv_name].sort_values(ascending=False)
 
-    def get_top_projects(self, quantile):
+    @lru_cache(maxsize=None)
+    def get_top_projects(self, quantile: float):
         """
-        TODO: finish
-        this returns a list of the top SRP codes
-        :param quantile:
-        :return:
+        For each project (SRP), it takes the maximum LV value across all experiments
+        and sorts SRP by that. Then it returns a list of those having a value greater
+        than the specified quantile.
+
+        Args:
+            quantile: a quantile that will be obtained from the list of maximum
+            values across all experiments of each SRP
+
+        Returns:
+            A list of top SRP codes associated with the LV.
         """
         df_lv_maxs = self.lv_conds.set_index("project")[self.lv_name].sort_values(
             ascending=False
         )
 
         quantile_value = self.lv_conds[self.lv_name].quantile(quantile)
+
         top_projects = (
             df_lv_maxs.reset_index()
             .groupby("project")
@@ -253,13 +273,16 @@ class LVAnalysis(object):
 
     @lru_cache(maxsize=None)
     def get_experiments_data(self, quantile=0.99):
-        # # FIXME: use python caching tools instead of this
-        # if (
-        #     self._experiments_data_quantile == quantile
-        #     and self._experiments_data_cached is not None
-        # ):
-        #     return self._experiments_data_cached
+        """
+        For each top SRP code associated with this LV (see method get_top_projects),
+        it obtains all experiments and concatenates everything into one dataframe.
 
+        Args:
+            quantile: quantile parameter of method get_top_projects
+
+        Returns:
+
+        """
         experiments_df_list = []
         dfs_lengths = 0
         new_chars_columns = set()
@@ -272,26 +295,30 @@ class LVAnalysis(object):
                 srp_code, srp_dir=LVAnalysis.RECOUNT2_SRP_DIR, compact=True
             )
 
-            try:
-                dfs_lengths += edr.data.shape[0]
-            except:
-                continue
+            # try:
+            dfs_lengths += edr.data.shape[0]
+            # except:
+            #     continue
 
             new_chars_columns.update(edr.characteristics_column_names)
 
             experiments_df_list.append(edr.data)
 
+        # print()
+
         if len(experiments_df_list) != top_projects.shape[0]:
-            print(
-                f"WARNING: not all experiments data could be loaded "
+            warnings.warn(
+                f"Not all experiments data could be loaded "
                 f"({len(experiments_df_list)} != {top_projects.shape[0]})"
             )
 
         df = pd.concat(experiments_df_list, ignore_index=True)
+
+        # some testing
         assert df.shape[0] == dfs_lengths
         assert all([c in df.columns for c in new_chars_columns])
 
-        # Add LV value
+        # add LV value
         df = (
             df.set_index(["project", "run"])
             .assign(
@@ -305,121 +332,76 @@ class LVAnalysis(object):
             .drop("characteristics", axis=1)
         )
 
-        self._experiments_data_quantile = quantile
-        self._experiments_data_cached = df
+        return df
 
-        return self._experiments_data_cached
-
-    def get_attributes_variation_score(self, func="var"):
+    def get_attributes_variation_score(self, func: str = "var") -> pd.Series:
         """
-        func can be any statistical function present in a dataframe
-        :param func:
-        :return:
+        For each column in the experiments dataframe (see method
+        get_experiments_data), it computes a statistic (such as the variance)
+        and returns a list column:statistic_value.
+
+        This method is used to rank the attributes present across different
+        experiments (examples of attributes are "cell type", "tissue",
+        "disease", etc).
+
+        Args:
+            func: a statistic to be computed on each column of the data. It can
+                be any function present in a pandas.DataFrame. By default, it is
+                "var" (variance).
+
+        Returns:
+            A sorted series with column names (attributes of data) in index and
+                their statistics values.
         """
         data = self.get_experiments_data()
 
         values = {}
         for col in data.columns.drop(self.lv_name):
-            # values[col] = data[[col, self.lv_name]].dropna().var()[self.lv_name]
-
             _tmp = data[[col, self.lv_name]].dropna()
             _tmp = getattr(_tmp, func)()
             values[col] = _tmp[self.lv_name]
 
         return pd.Series(values).sort_values(ascending=False)
 
-    def get_top_attributes(
-        self, method="cm", threshold=0.0, force_include=None, n_jobs=2
-    ):
-        """
-        force_include is a regular expression and includes all attributes names that matches it, no matter other filters
-        :param method:
-        :param force_include:
-        :param n_jobs:
-        :return:
-        """
-        data = self.get_experiments_data()
-
-        if method not in self._experiment_attrs_sim:
-            if method == "ppscore":
-                import warnings
-
-                warnings.warn("ppscore not fully implemented")
-
-                import ppscore as pps
-
-                data_similarity = pps.predictors(data, self.lv_name)
-
-                self._experiment_attrs_sim[method] = (
-                    data_similarity[data_similarity["ppscore"] > threshold][
-                        ["x", "ppscore"]
-                    ]
-                    .set_index("x")
-                    .squeeze()
-                )
-
-            elif method == "cm":
-                import re
-                from clustermatch.cluster import calculate_simmatrix
-
-                data_similarity = calculate_simmatrix(data.T, n_jobs=n_jobs)
-                tmp = (
-                    data_similarity.loc[self.lv_name]
-                    .drop(self.lv_name)
-                    .sort_values(ascending=False)
-                )
-
-                all_conds = []
-                if force_include is not None:
-                    attr_name_cond = pd.Series(tmp.index)
-                    attr_name_cond = attr_name_cond.str.contains(
-                        force_include, regex=True, flags=re.IGNORECASE
-                    )
-
-                    all_conds.append(attr_name_cond)
-
-                all_conds.append(tmp > threshold)
-
-                conds = np.ones(tmp.shape[0], dtype=bool)
-                for c in all_conds:
-                    conds = conds & c
-
-                self._experiment_attrs_sim[method] = tmp[conds].rename(method)
-
-            else:
-                raise ValueError("Invalid method")
-
-        return self._experiment_attrs_sim[method]
-
     def plot_attribute(
         self,
-        imp_f,
-        linewidth=1,
-        hue=None,
-        study_id=None,
-        top_x_values=None,
-        quantile=0.99,
+        imp_f: str,
+        linewidth: float = 1,
+        hue: str = None,
+        study_id: str = None,
+        top_x_values: int = None,
         ax=None,
     ):
         """
-        TODO: this function is intended for exploratory use, not for final figure production
+        It creates a boxplot with the LV values for all the categories for a one
+        attribute of the data (such as "cell type"). For instance, if imp_f is
+        "tissue", this plot would have values such as "Heart", "Lung", etc in
+        the x-axis, and the LV value in the y-axis. Values in the x-axis are
+        sorted by their median.
+
+        This function is not used for final figure production, but just as a
+        quick way to explore relationships. For example, LV's genes could be
+        related to cardiovascular traits, and all experiments performed in
+        cardiomyocytes (one value of the x-axis) might have a higher value than
+        the rest on average.
 
         Args:
-            imp_f:
-            linewidth:
-            hue:
-            study_id:
-            top_x_values:
-            quantile:
-            ax:
+            imp_f: attribute to plot, such as "cell type" or "tissue"
+            linewidth: same as in seaborn.boxplot function.
+            hue: same as in seaborn.boxplot function.
+            study_id: SRP code to include (all the rest will be ignored). It is
+                useful when you want to explore patterns in a single project.
+            top_x_values: top attribute categories to include. By default all
+                are included.
+            ax: matplotlib Axes, same as in seaborn.boxplot function.
 
         Returns:
-
+            A matplotlib Axes instance.
         """
         import matplotlib.pyplot as plt
         import seaborn as sns
 
-        data = self.get_experiments_data(quantile)
+        data = self.get_experiments_data()
 
         title = ""
 
@@ -435,7 +417,7 @@ class LVAnalysis(object):
 
         cat_order = data.groupby(imp_f).median().squeeze()
         if isinstance(cat_order, float):
-            print(f"WARNING: Single value for {imp_f}: {cat_order}")
+            warnings.warn(f"Single value for {imp_f}: {cat_order}")
             return
 
         cat_order = cat_order.sort_values(ascending=False)
