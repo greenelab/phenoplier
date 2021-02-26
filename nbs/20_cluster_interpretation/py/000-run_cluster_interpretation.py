@@ -37,6 +37,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 # import numpy as np
 import pandas as pd
 import papermill as pm
+
 # import matplotlib.pyplot as plt
 # import seaborn as sns
 # from IPython.display import HTML
@@ -86,9 +87,9 @@ best_partitions.head()
 
 # %%
 # I take the top 4 partitions (according to their number of clusters)
-selected_partition_ks = best_partitions[
-    best_partitions["selected"]
-].index.sort_values(ascending=False)[:4]
+selected_partition_ks = best_partitions[best_partitions["selected"]].index.sort_values(
+    ascending=False
+)[:4]
 display(selected_partition_ks)
 
 # %% [markdown]
@@ -113,7 +114,8 @@ def run_notebook(input_nb, output_nb, parameters):
         progress_bar=False,
         parameters=parameters,
     )
-    
+
+
 #     subprocess.run(
 #         [
 #             "jupyter",
@@ -123,32 +125,34 @@ def run_notebook(input_nb, output_nb, parameters):
 #         ],
 #         check=True,
 #     )
-    
+
 #     output_nb.unlink()
 
 
 # %%
 for part_k in selected_partition_ks:
     print(f"Partition k:{part_k}", flush=True)
-    
-    output_folder = Path(
-        CLUSTER_ANALYSIS_OUTPUT_DIR,
-        f"part{part_k}"
-    ).resolve()
+
+    output_folder = Path(CLUSTER_ANALYSIS_OUTPUT_DIR, f"part{part_k}").resolve()
     shutil.rmtree(output_folder, ignore_errors=True)
     output_folder.mkdir()
-    
+
     part = best_partitions.loc[part_k, "partition"]
     part_clusters = pd.Series(part).value_counts()
-    
+
     # always skip the biggest cluster in each partition
     for c_size_idx, c in enumerate(part_clusters.index[1:]):
         print(f"  Cluster: {c}", flush=True)
-        
-        input_nb = Path(conf.RESULTS["CLUSTERING_INTERPRETATION_OUTPUT_DIR"], "interpret_cluster.out.ipynb").resolve()
-        output_nb = Path(output_folder, f"{c_size_idx:02}-part{part_k}_k{c}.ipynb").resolve()
+
+        input_nb = Path(
+            conf.RESULTS["CLUSTERING_INTERPRETATION_OUTPUT_DIR"],
+            "interpret_cluster.out.ipynb",
+        ).resolve()
+        output_nb = Path(
+            output_folder, f"{c_size_idx:02}-part{part_k}_k{c}.ipynb"
+        ).resolve()
         parameters = dict(PARTITION_K=part_k, PARTITION_CLUSTER_ID=c)
-        
+
         run_notebook(input_nb, output_nb, parameters)
 
 # %%
