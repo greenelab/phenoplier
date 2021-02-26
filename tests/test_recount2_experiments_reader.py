@@ -171,7 +171,9 @@ def test_read_characteristics_non_r_array_4():
     # make sure none of these three columns have null values
     assert (
         edr.data.shape
-        == edr.data.dropna(subset=["sample type", "who histotype", "final gtf2i mutation status"]).shape
+        == edr.data.dropna(
+            subset=["sample type", "who histotype", "final gtf2i mutation status"]
+        ).shape
     )
 
     assert edr.data.iloc[0]["sample type"] == "Frozen"

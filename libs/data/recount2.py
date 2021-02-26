@@ -90,7 +90,9 @@ class ExperimentDataReader(object):
             if row.characteristics.count(":") == 1:
                 chars = (row.characteristics,)
             else:
-                chars = (f"{ExperimentDataReader.UNKNOWN_ATTRIBUTE_COLUMN_NAME}:{row.characteristics}",)
+                chars = (
+                    f"{ExperimentDataReader.UNKNOWN_ATTRIBUTE_COLUMN_NAME}:{row.characteristics}",
+                )
 
         for c in chars:
             key, value = c.split(":", 1)
