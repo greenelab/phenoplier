@@ -9,14 +9,23 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
 
 class ClusterInterpreter(object):
     """
+    It helps to interpret clustering results by finding the top latent variables (LV)
+    that discriminate members of a cluster.
+
+    Given the original data, a partition of its traits, and a cluster id, it
+    trains a Decision Tree classifier with two classes: the traits that belong
+    to cluster id and all the rest. The idea is to get the features/LVs that
+    discriminate the cluster members from all the other traits.
+
     Args:
-        cluster_name:
-        threshold: threshold to be used to select nodes (default: 0). For this
-            case, it makes sense to use always a positive value here (since LVs
-            with negative values are meaningless).
-        decision_tree_args: arguments given to the DecisionTreeClassifier
+        threshold: threshold to be used to select features/LVs from the root
+            node of a tree (default: 0). For this case, it makes sense to use always
+            a greater-or-equeal to zero value here (since LVs with negative values
+            are meaningless).
         max_features: maximum features to be selected
-        max_features_to_explore: maximum number of top features to explore
+        max_features_to_explore: maximum number of features to explore
+        decision_tree_args: arguments given to the DecisionTreeClassifier
+            instance.
     """
 
     def __init__(
@@ -43,6 +52,30 @@ class ClusterInterpreter(object):
         self.features_ = None
 
     def fit(self, data: pd.DataFrame, partition: np.ndarray, cluster_id: int):
+        """
+        Fits the cluster interpreter with the given data, a partition of it, and
+        a cluster label (which must be present in the partition). It repeatedly
+        trains a Decision Tree classifier on the data and an "artificial" set of
+        labels containing the traits with cluster_id as positive cases and the
+        rest as negative ones. Then, it picks the feature from the root node
+        (provided the threshold is greater than self.threshold), and starts all
+        over again by removing the previously selected feature from the data. It
+        stops when the maximum number of features is reached, or when the
+        maximum number of features to explored is reached, whatever happens
+        first.
+
+        When it finishes, the attribute self.features_ is created with a list
+        of selected features.
+
+        Args:
+            data: a dataframe with traits in rows and features/LVs in columns.
+            partition: a partition of the data (the result of a clustering
+                algorithm applied on data).
+            cluster_id: a cluster id present in partition.
+
+        Returns:
+            self
+        """
         assert partition.shape[0] == data.shape[0], (
             f"Partition shape does not match number of rows in data "
             f"({partition.shape[0]} != {data.shape[0]})"
@@ -65,7 +98,7 @@ class ClusterInterpreter(object):
             and i < self.max_features_to_explore
             and len(_features_selected) < self.max_features
         ):
-            # remove the root node from the previous tree
+            # remove the root node from the previously trained tree
             _new_data = _new_data.drop(columns=_next_feature_drop)
 
             # TODO: it would probably be much better/efficient to use the
@@ -99,17 +132,7 @@ class ClusterInterpreter(object):
             .sort_values("threshold", ascending=False)
         )
 
-    # def plot_tree(self):
-    #     plot_tree(
-    #         clf,
-    #         max_depth=4,
-    #         feature_names=data.columns.tolist(),
-    #         class_names=[f"C{c}" if c == 1 else "Other" for c in
-    #                      np.unique(part)],
-    #         fontsize=fontsize,
-    #         rounded=True,
-    #         filled=True,
-    #     )
+        return self
 
 
 class DeltaSpectralClustering(SpectralClustering):
