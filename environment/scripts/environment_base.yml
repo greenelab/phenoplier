@@ -15,6 +15,7 @@ dependencies:
   - pytest
   - python=3.8.*
   - pyyaml
+  - requests
   - r-base=3.6.*
   - r-devtools
   - r-essentials
