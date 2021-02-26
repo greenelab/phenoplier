@@ -80,7 +80,8 @@ def test_read_characteristics_standard():
 
 def test_read_characteristics_non_r_array():
     """
-    'characteristics' column has a non-standard format, such as: tissue: Breast Cancer Cell Line
+    'characteristics' column has a non-standard format, such as:
+        tissue: Breast Cancer Cell Line
     """
     srp_code = "SRP042620"
     edr = ExperimentDataReader(srp_code, srp_dir=SRP_DIR)
@@ -98,6 +99,88 @@ def test_read_characteristics_non_r_array():
     assert edr.data.iloc[0]["tissue"] == "Breast Cancer Cell Line"
 
     assert edr.data.iloc[28]["tissue"] == "ER+ Breast Cancer Primary Tumor"
+
+
+def test_read_characteristics_non_r_array_2():
+    """
+    'characteristics' column has another non-standard format, such as:
+        cell type: MCF10a human breast cancer cells
+    """
+    srp_code = "SRP055569"
+    edr = ExperimentDataReader(srp_code, srp_dir=SRP_DIR)
+
+    assert "cell type" in edr.data.columns
+
+    assert hasattr(edr, "characteristics_column_names")
+    assert edr.characteristics_column_names is not None
+    assert len(edr.characteristics_column_names) == 1
+    assert "cell type" in edr.characteristics_column_names
+
+    # make sure none of these three columns have null values
+    assert edr.data.shape == edr.data.dropna(subset=["cell type"]).shape
+
+    assert edr.data.iloc[0]["cell type"] == "MCF10a human breast cancer cells"
+
+    assert edr.data.iloc[636]["cell type"] == "U87 human glioma cells"
+
+
+def test_read_characteristics_non_r_array_3():
+    """
+    'characteristics' column has another non-standard format, such as:
+        cervix cc cell line
+    """
+    srp_code = "SRP000599"
+    edr = ExperimentDataReader(srp_code, srp_dir=SRP_DIR)
+
+    unknown_col = ExperimentDataReader.UNKNOWN_ATTRIBUTE_COLUMN_NAME
+
+    assert unknown_col in edr.data.columns
+
+    assert hasattr(edr, "characteristics_column_names")
+    assert edr.characteristics_column_names is not None
+    assert len(edr.characteristics_column_names) == 1
+    assert unknown_col in edr.characteristics_column_names
+
+    # make sure none of these three columns have null values
+    assert edr.data.shape == edr.data.dropna(subset=[unknown_col]).shape
+
+    assert edr.data.iloc[0][unknown_col] == "cervix cc cell line"
+
+    assert edr.data.iloc[23][unknown_col] == "liver carcinoma cell line"
+
+
+def test_read_characteristics_non_r_array_4():
+    """
+    'characteristics' column has another non-standard format, such as:
+        c(..., "who histotype: TC:SCC", ...)
+
+    Note that the "value" has an ":" character
+    """
+    srp_code = "SRP042184"
+    edr = ExperimentDataReader(srp_code, srp_dir=SRP_DIR)
+
+    assert "who histotype" in edr.data.columns
+
+    assert hasattr(edr, "characteristics_column_names")
+    assert edr.characteristics_column_names is not None
+    assert len(edr.characteristics_column_names) == 6
+    assert "sample type" in edr.characteristics_column_names
+    assert "who histotype" in edr.characteristics_column_names
+    assert "final gtf2i mutation status" in edr.characteristics_column_names
+
+    # make sure none of these three columns have null values
+    assert (
+        edr.data.shape
+        == edr.data.dropna(subset=["sample type", "who histotype", "final gtf2i mutation status"]).shape
+    )
+
+    assert edr.data.iloc[0]["sample type"] == "Frozen"
+    assert edr.data.iloc[0]["who histotype"] == "B3"
+    assert edr.data.iloc[0]["final gtf2i mutation status"] == "WT"
+
+    assert edr.data.iloc[3]["sample type"] == "Frozen"
+    assert edr.data.iloc[3]["who histotype"] == "TC:SCC"
+    assert edr.data.iloc[3]["final gtf2i mutation status"] == "WT"
 
 
 def test_non_existent_srp_file():

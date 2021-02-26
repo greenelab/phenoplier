@@ -26,6 +26,8 @@ class ExperimentDataReader(object):
             downloaded: "project", "run", and "characteristics".
     """
 
+    UNKNOWN_ATTRIBUTE_COLUMN_NAME = "[PHENOPLIER] Unknown attribute"
+
     def __init__(self, srp_code: str, srp_dir: str, compact: bool = False):
         self.srp_code = srp_code
         self.srp_dir = Path(srp_dir).resolve()
@@ -80,16 +82,18 @@ class ExperimentDataReader(object):
             A new series object with new columns from the 'characteristics'
             original column.
         """
-        if row.characteristics[0] == "c":
+        # deal with different formats in the "characteristics" column
+        if row.characteristics.startswith("c("):
+            # R vectors style
             chars = ast.literal_eval(row.characteristics[1:])
         else:
             if row.characteristics.count(":") == 1:
                 chars = (row.characteristics,)
             else:
-                raise ValueError(f"Format not supported: {row.characteristics}")
+                chars = (f"{ExperimentDataReader.UNKNOWN_ATTRIBUTE_COLUMN_NAME}:{row.characteristics}",)
 
         for c in chars:
-            key, value = c.split(":")
+            key, value = c.split(":", 1)
             row[key.strip()] = value.strip()
 
         return row
@@ -110,13 +114,15 @@ class ExperimentDataReader(object):
 
         self.srp_dir.mkdir(exist_ok=True)
 
-        import urllib.request
+        import requests
 
         # download the file
         download_link = (
             f"http://duffel.rail.bio/recount/{self.srp_code}/{self.srp_code}.tsv"
         )
-        urllib.request.urlretrieve(download_link, self.srp_data_file)
+        file_content = requests.get(download_link, allow_redirects=True)
+        with open(self.srp_data_file, "wb") as fh:
+            fh.write(file_content.content)
 
         # make sure the file was successfully downloaded and has some content
         assert (
@@ -295,10 +301,12 @@ class LVAnalysis(object):
                 srp_code, srp_dir=LVAnalysis.RECOUNT2_SRP_DIR, compact=True
             )
 
-            # try:
-            dfs_lengths += edr.data.shape[0]
-            # except:
-            #     continue
+            try:
+                dfs_lengths += edr.data.shape[0]
+            except SyntaxError:
+                # ignore syntax errors (raised by ast because of malformed
+                # values in the "characteristics" column)
+                continue
 
             new_chars_columns.update(edr.characteristics_column_names)
 
