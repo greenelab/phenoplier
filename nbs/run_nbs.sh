@@ -13,6 +13,15 @@ if [ -z "${1}" ]; then
   exit 1
 fi
 
+# If the notebook is an output of another notebook (filename matches
+# *.out.ipynb), then do not run it
+pattern="*.out.ipynb"
+
+if [[ $1 == $pattern ]]; then
+  echo "Not running output notebook"
+  exit 0
+fi
+
 filename="${1%.*}.run.ipynb"
 
 papermill \
