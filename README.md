@@ -32,6 +32,12 @@ the necessary data.
 
 ## From command-line
 
+First of all, export your settings to environmental variables, so non-Python scripts
+can access them:
+```bash
+eval `python libs/conf.py`
+```
+
 The code to preprocess data and generate results is in the `nbs/` folder. All
 notebooks are organized by directories, such as `01_preprocessing`, with file
 names that indicate the order in which they should be run (if they share the prefix, then it
@@ -44,7 +50,7 @@ cd nbs/
 parallel -k --lb --halt 2 -j1 'bash run_nbs.sh {}' ::: 01_preprocessing/*.ipynb
 ```
 
-Or if you want to run all the analysis, you can use:
+Or if you want to run all the analysis at once, you can use:
 
 ```bash
 parallel -k --lb --halt 2 -j1 'bash run_nbs.sh {}' ::: nbs/**/*.ipynb
