@@ -120,7 +120,7 @@ best_parts.sort_values("k")
 # ## Select partitions with highest agreement
 
 # %% [markdown] tags=[]
-# We do not expect all partitions with different `k` to be good ones. Thus, here I select the partitions with an ensemble agreement that pass a specified threshold (75th percentile).
+# We do not expect all partitions with different `k` to be good ones. Thus, here I select the partitions with an ensemble agreement that pass a relative high threshold (75th percentile).
 
 # %% tags=[]
 best_parts_stats = best_parts[_measure_col].describe()
