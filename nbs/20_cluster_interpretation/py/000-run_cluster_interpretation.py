@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.10.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -18,7 +18,9 @@
 # # Description
 
 # %% [markdown] tags=[]
-# TODO: this notebook analyze all clusters from the selected partitions
+# This notebook reads clustering results taking the top 4 partitions with more clusters, and analyzes each cluster providing a list of latent variables (LV) that are driving that cluster. For example, for the hypertension traits, it might find an LV with genes expressed in cardiomyocytes or other potentially related cell types.
+#
+# It uses the `papermill` API to run the notebook `interpret_cluster.run.ipynb` (which serves as a template) for each cluster. Results are saved in folder `cluster_analyses`.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -28,38 +30,20 @@
 # %autoreload 2
 
 # %% tags=[]
-# import re
 import shutil
 import subprocess
 from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-# import numpy as np
 import pandas as pd
 import papermill as pm
 
-# import matplotlib.pyplot as plt
-# import seaborn as sns
-# from IPython.display import HTML
-
-# from clustering.methods import ClusterInterpreter
-# from data.recount2 import LVAnalysis
-# from data.cache import read_data
-# from utils import generate_result_set_name
 import conf
-
-# %% [markdown] tags=[]
-# # Settings
-
-# %% tags=["parameters"]
-# select which partitions' clusters will be analyzed
-PARTITION_Ks = [45, 41, 38, 28]
 
 # %% [markdown] tags=[]
 # # Load best partitions
 
 # %% tags=[]
-# output dir for this notebook
 CONSENSUS_CLUSTERING_DIR = Path(
     conf.RESULTS["CLUSTERING_DIR"], "consensus_clustering"
 ).resolve()
@@ -86,7 +70,8 @@ best_partitions.head()
 # # Select top k partitions
 
 # %% tags=[]
-# I take the top 4 partitions (according to their number of clusters)
+# I take the top 4 partitions (according to their number of clusters).
+# These are the partitions that will be analyzed in the manuscript.
 selected_partition_ks = best_partitions[best_partitions["selected"]].index.sort_values(
     ascending=False
 )[:4]
