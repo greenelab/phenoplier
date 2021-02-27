@@ -20,7 +20,7 @@
 # %% [markdown]
 # This notebook contains the interpretation of a cluster (which features/latent variables in the original data are useful to distinguish traits in the cluster).
 #
-# TODO: ADD MORE SECTIONS AND EXPLAIN WHERE TO FIND THINGS.
+# See section [LV analysis](#lv_analysis) below
 
 # %% [markdown]
 # # Modules loading
@@ -33,7 +33,6 @@
 import re
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -42,7 +41,6 @@ from IPython.display import HTML
 from clustering.methods import ClusterInterpreter
 from data.recount2 import LVAnalysis
 from data.cache import read_data
-from utils import generate_result_set_name
 import conf
 
 # %% [markdown]
@@ -99,7 +97,7 @@ data.shape
 data.head()
 
 # %% [markdown]
-# # Load best partitions
+# ## Clustering partitions
 
 # %%
 CONSENSUS_CLUSTERING_DIR = Path(
@@ -134,6 +132,10 @@ def show_cluster_stats(data, partition, cluster):
 
 # %% [markdown]
 # # LV analysis
+# <a id="lv_analysis"></a>
+
+# %% [markdown]
+# ## Associated traits
 
 # %%
 display(best_partitions.loc[PARTITION_K])
@@ -141,6 +143,9 @@ part = best_partitions.loc[PARTITION_K, "partition"]
 
 # %%
 show_cluster_stats(data, part, PARTITION_CLUSTER_ID)
+
+# %% [markdown]
+# ## Associated latent variables
 
 # %%
 ci = ClusterInterpreter()
@@ -151,31 +156,37 @@ ci.fit(data, part, PARTITION_CLUSTER_ID)
 # %%
 ci.features_
 
+# %% [markdown]
+# ## Top attributes
+
+# %% [markdown]
+# Here we go through the list of associated latent variables and, for each, we show associated pathways (prior knowledge), top traits, top genes and the top tissues/cell types where those genes are expressed.
+
 # %%
-for lv_idx, lv_data in ci.features_.iterrows():
+for lv_idx, lv_info in ci.features_.iterrows():
     display(HTML(f"<h2>LV{lv_idx}</h2>"))
 
-    _lv = lv_data["name"]
-    _lv_obj = lv_exp = LVAnalysis(_lv, data)
+    lv_name = lv_info["name"]
+    lv_obj = lv_exp = LVAnalysis(lv_name, data)
 
-    # show lv prior knowledge match
-    _lv_gene_sets = multiplier_model_summary[
-        multiplier_model_summary["LV index"].isin((_lv[2:],))
+    # show lv prior knowledge match (pathways)
+    lv_pathways = multiplier_model_summary[
+        multiplier_model_summary["LV index"].isin((lv_name[2:],))
         & (
             (multiplier_model_summary["FDR"] < 0.05)
             | (multiplier_model_summary["AUC"] >= 0.75)
         )
     ]
-    display(_lv_gene_sets)
+    display(lv_pathways)
 
-    _lv_data = _lv_obj.get_experiments_data()
+    lv_data = lv_obj.get_experiments_data()
 
     display("")
-    display(_lv_obj.lv_traits.head(20))
+    display(lv_obj.lv_traits.head(20))
     display("")
-    display(_lv_obj.lv_genes.head(10))
+    display(lv_obj.lv_genes.head(10))
 
-    lv_attrs = _lv_obj.get_attributes_variation_score()
+    lv_attrs = lv_obj.get_attributes_variation_score()
     _tmp = pd.Series(lv_attrs.index)
     lv_attrs = lv_attrs[
         _tmp.str.match(
@@ -188,11 +199,11 @@ for lv_idx, lv_data in ci.features_.iterrows():
 
     for _lva in lv_attrs.index:
         display(HTML(f"<h3>{_lva}</h3>"))
-        display(_lv_data[_lva].dropna().reset_index()["project"].unique())
+        display(lv_data[_lva].dropna().reset_index()["project"].unique())
 
         with sns.plotting_context("paper", font_scale=1.0), sns.axes_style("whitegrid"):
             fig, ax = plt.subplots(figsize=(14, 8))
-            ax = _lv_obj.plot_attribute(_lva, top_x_values=20)
+            ax = lv_obj.plot_attribute(_lva, top_x_values=20)
             if ax is None:
                 plt.close(fig)
                 continue
