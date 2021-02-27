@@ -14,20 +14,20 @@
 #     name: python3
 # ---
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Description
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # TODO: this notebook analyze all clusters from the selected partitions
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Modules loading
 
-# %%
+# %% tags=[]
 # %load_ext autoreload
 # %autoreload 2
 
-# %%
+# %% tags=[]
 # import re
 import shutil
 import subprocess
@@ -48,17 +48,17 @@ import papermill as pm
 # from utils import generate_result_set_name
 import conf
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Settings
 
 # %% tags=["parameters"]
 # select which partitions' clusters will be analyzed
 PARTITION_Ks = [45, 41, 38, 28]
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Load best partitions
 
-# %%
+# %% tags=[]
 # output dir for this notebook
 CONSENSUS_CLUSTERING_DIR = Path(
     conf.RESULTS["CLUSTERING_DIR"], "consensus_clustering"
@@ -66,47 +66,47 @@ CONSENSUS_CLUSTERING_DIR = Path(
 
 display(CONSENSUS_CLUSTERING_DIR)
 
-# %%
+# %% tags=[]
 input_file = Path(CONSENSUS_CLUSTERING_DIR, "best_partitions_by_k.pkl").resolve()
 display(input_file)
 
-# %%
+# %% tags=[]
 best_partitions = pd.read_pickle(input_file)
 
-# %%
+# %% tags=[]
 assert best_partitions.index.is_unique
 
-# %%
+# %% tags=[]
 best_partitions.shape
 
-# %%
+# %% tags=[]
 best_partitions.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Select top k partitions
 
-# %%
+# %% tags=[]
 # I take the top 4 partitions (according to their number of clusters)
 selected_partition_ks = best_partitions[best_partitions["selected"]].index.sort_values(
     ascending=False
 )[:4]
 display(selected_partition_ks)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Run interpretation
 
-# %%
+# %% tags=[]
 CLUSTER_ANALYSIS_OUTPUT_DIR = Path(
     conf.RESULTS["CLUSTERING_INTERPRETATION_OUTPUT_DIR"],
     "cluster_analyses",
 ).resolve()
 display(CLUSTER_ANALYSIS_OUTPUT_DIR)
 
-# %%
+# %% tags=[]
 CLUSTER_ANALYSIS_OUTPUT_DIR.mkdir(exist_ok=True)
 
 
-# %%
+# %% tags=[]
 def run_notebook(input_nb, output_nb, parameters):
     pm.execute_notebook(
         input_nb,
@@ -116,20 +116,7 @@ def run_notebook(input_nb, output_nb, parameters):
     )
 
 
-#     subprocess.run(
-#         [
-#             "jupyter",
-#             "nbconvert",
-#             output_nb,
-#             "--to=html",
-#         ],
-#         check=True,
-#     )
-
-#     output_nb.unlink()
-
-
-# %%
+# %% tags=[]
 for part_k in selected_partition_ks:
     print(f"Partition k:{part_k}", flush=True)
 
@@ -146,13 +133,15 @@ for part_k in selected_partition_ks:
 
         input_nb = Path(
             conf.RESULTS["CLUSTERING_INTERPRETATION_OUTPUT_DIR"],
-            "interpret_cluster.out.ipynb",
+            "interpret_cluster.run.ipynb",
         ).resolve()
+
         output_nb = Path(
             output_folder, f"{c_size_idx:02}-part{part_k}_k{c}.ipynb"
         ).resolve()
+
         parameters = dict(PARTITION_K=part_k, PARTITION_CLUSTER_ID=c)
 
         run_notebook(input_nb, output_nb, parameters)
 
-# %%
+# %% tags=[]
