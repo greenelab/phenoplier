@@ -5,6 +5,7 @@ dependencies:
   - ipython=7.*
   - ipywidgets
   - jupyterlab=2.2.*
+  - jupytext=1.7.*
   - matplotlib=3.3.*
   - nodejs=14.*
   - numpy=1.19.*
