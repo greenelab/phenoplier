@@ -48,6 +48,9 @@ smultixcan_zscores.shape
 # %% tags=[]
 smultixcan_zscores.head()
 
+# %%
+pd.Series(smultixcan_zscores.values.flatten()).describe().apply(str)
+
 # %% [markdown] tags=[]
 # # Get PhenomeXcan traits
 
@@ -93,14 +96,14 @@ def get_weights(traits_fullcodes):
     from GWASs. In the case of binary traits (i.e. diseases) the formula is:
         (n_cases / n_controls) * sqrt(n)
     where n=n_cases+n_controls
-    In case of continuous traits (such as height) it is just n
+    In case of continuous traits (such as height) it is sqrt(n)
     """
     return np.array(
         [
             (t.n_cases / t.n_controls) * np.sqrt(t.n)
             if not pd.isnull((t := phenomexcan_fullcode_to_traits[trait_name]).n_cases)
             and not pd.isnull(t.n_controls)
-            else t.n
+            else np.sqrt(t.n)
             for trait_name in traits_fullcodes
         ]
     )
