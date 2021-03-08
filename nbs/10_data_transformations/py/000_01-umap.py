@@ -174,11 +174,20 @@ dr_data = pd.read_pickle(input_file)
 g = sns.pairplot(data=dr_data)
 
 # %% [markdown] tags=[]
-# ## Plot without "outliers"
+# ## Full plot (density)
+
+# %% tags=[]
+g = sns.PairGrid(data=dr_data)
+g.map_upper(sns.histplot)
+g.map_lower(sns.kdeplot, fill=False)
+g.map_diag(sns.histplot, kde=True)
+
+# %% [markdown] tags=[]
+# ## Density plot without "outliers"
 
 # %% tags=[]
 # remove "outliers" just to take a look at the big cluster
-dr_data_thin = dr_data[(dr_data["UMAP1"] < -1)]
+dr_data_thin = dr_data[(dr_data["UMAP1"] < 10) & (dr_data["UMAP2"] < 5)]
 
 # %% tags=[]
 g = sns.PairGrid(data=dr_data_thin)
