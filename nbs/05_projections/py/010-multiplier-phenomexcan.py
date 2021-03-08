@@ -140,7 +140,7 @@ smultixcan_into_multiplier.head()
 # %% [markdown] tags=[]
 # # Save
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # We are not using this data version, so saving is commented out here.
 
 # %% tags=[]

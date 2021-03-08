@@ -123,7 +123,7 @@ smultixcan_into_multiplier.head()
 # %% [markdown] tags=[]
 # ## Quick analysis
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # List top traits associated to some LVs when the original data is projected.
 
 # %% tags=[]
@@ -135,16 +135,16 @@ smultixcan_into_multiplier.loc["LV136"].sort_values(ascending=False).head(20)
 # %% tags=[]
 smultixcan_into_multiplier.loc["LV844"].sort_values(ascending=False).head(20)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Select traits
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Get sample size for all traits
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Since some PhenomeXcan traits were previously combined into EFO terms, here I need to compute the sample size for meta-analyzed traits (cases were several PhenomeXcan's traits mapped to the same EFO term).
 
-# %%
+# %% tags=[]
 df_dicts = []
 
 for trait_name in smultixcan_results.columns:
@@ -174,24 +174,24 @@ for trait_name in smultixcan_results.columns:
 
     df_dicts.append(trait_info)
 
-# %%
+# %% tags=[]
 _tmp = len(df_dicts)
 display(_tmp)
 assert _tmp == smultixcan_results.shape[1]
 
-# %%
+# %% tags=[]
 traits_sample_size_df = pd.DataFrame(df_dicts).set_index("trait")
 
-# %%
+# %% tags=[]
 assert traits_sample_size_df.index.is_unique
 
-# %%
+# %% tags=[]
 traits_sample_size_df.shape
 
-# %%
+# %% tags=[]
 traits_sample_size_df.head()
 
-# %%
+# %% tags=[]
 # some testing
 _tmp = traits_sample_size_df.loc["100001_raw-Food_weight"]
 assert _tmp.n == 51453
@@ -218,19 +218,19 @@ assert _tmp.n == 814122
 assert _tmp.n_cases == 55344
 assert _tmp.n_controls == 758778
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Select representative traits
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Here I select some representative traits for downstream analyses in this notebook. The idea is to pick some traits with different sample sizes, and then see what happens before and after a standardization approach.
 
-# %%
+# %% tags=[]
 traits_sample_size_df.sort_values("n").dropna()
 
-# %%
+# %% tags=[]
 traits_sample_size_df.sort_values("n_cases").dropna()
 
-# %%
+# %% tags=[]
 traits_list = [
     "body height",  # continuous, large n
     "asthma",  # binary, large n and n_cases (meta-analyzed)
@@ -239,7 +239,7 @@ traits_list = [
 ]
 
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Functions
 
 # %% tags=[]
@@ -258,7 +258,7 @@ def get_n(trait_name, simple=True):
         return np.sqrt(t.n)
 
 
-# %%
+# %% tags=[]
 def show_hist(trait_names, data):
     """
     Shows a density plot (KDE) for a trait given a data version.
@@ -272,22 +272,22 @@ def show_hist(trait_names, data):
     return sns.displot(_df, x="z-score", hue="trait", rug=False, kind="kde")
 
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Approach \#1: Standardize by GWAS sample size
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # For each trait (column), divide by $sqrt(n)$, where $n$ is the sample size in the GWAS for the trait.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Standardize
 
 # %% tags=[]
 _tmp = smultixcan_results.apply(lambda x: x / get_n(x.name, simple=True))
 
-# %%
+# %% tags=[]
 _tmp.shape
 
-# %%
+# %% tags=[]
 assert _tmp.shape == smultixcan_results.shape
 
 # %% tags=[]
@@ -305,37 +305,37 @@ assert _tmp.loc[_gene, _trait] == smultixcan_results.loc[_gene, _trait] / np.sqr
     814122
 )
 
-# %%
+# %% tags=[]
 smultixcan_results_std = _tmp
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Analyze distributions
 
-# %%
+# %% tags=[]
 fg = show_hist(traits_list, data=smultixcan_results)
 ax = fg.axes[0, 0]
 ax.set_xlim(-1, 10)
 ax.set_title("Original distribution")
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # In the original distribution, `body height` has a very long tail, and it has larger values on average than the rest.
 # `asthma` is behind `body height`, and the other two traits (with very low sample size) are, as expected, closer to zero.
 
-# %%
+# %% tags=[]
 fg = show_hist(traits_list, data=smultixcan_results_std)
 ax = fg.axes[0, 0]
 ax.set_xlim(-0.001, 0.025)
 ax.set_title("Standardized by $sqrt(n)$")
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # This standardization approach make `asthma` closer to one of the low-sample-sized traits, height is still "highly polygenic", and the weirdest thing is that very low sample size trait `recent medication...` has now very large values compared with the others.
 #
 # This won't work.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Projection
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Here I use the standardized data and project it into the latent space, and I see what happens with well-known LVs: LV603 (related to neutrophils and white blood cells) and LV136 (cardiovascular traits and keratometry measurements).
 
 # %% tags=[]
@@ -354,35 +354,35 @@ smultixcan_into_multiplier.head()
 _tmp = smultixcan_into_multiplier.loc["LV603"].sort_values(ascending=False).head(20)
 display(_tmp)
 
-# %%
+# %% tags=[]
 traits_sample_size_df.loc[_tmp.index[0]]
 
 # %% tags=[]
 _tmp = smultixcan_into_multiplier.loc["LV136"].sort_values(ascending=False).head(20)
 display(_tmp)
 
-# %%
+# %% tags=[]
 traits_sample_size_df.loc[_tmp.index[0]]
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # **Conclusion:** as anticipated, this standardization approach breaks expected relationships, and makes low sample size traits to be at the top, presenting random associations.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Approach \#2: Standardize by GWAS sample size considering n_cases and n_controls
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Here I take into account the ratio `n_cases / n_controls` (in binary traits) in the standardization, by doing: `(n_cases / n_controls) * sqrt(n)`
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Standardize
 
 # %% tags=[]
 _tmp = smultixcan_results.apply(lambda x: x / get_n(x.name, simple=False))
 
-# %%
+# %% tags=[]
 _tmp.shape
 
-# %%
+# %% tags=[]
 assert _tmp.shape == smultixcan_results.shape
 
 # %% tags=[]
@@ -406,29 +406,29 @@ assert _tmp.loc[_gene, _trait] == smultixcan_results.loc[_gene, _trait] / (
     (55344 / 758778) * np.sqrt(814122)
 )
 
-# %%
+# %% tags=[]
 smultixcan_results_std = _tmp
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Analyze distributions
 
-# %%
+# %% tags=[]
 fg = show_hist(traits_list, data=smultixcan_results)
 ax = fg.axes[0, 0]
 ax.set_xlim(-1, 10)
 ax.set_title("Original distribution")
 
-# %%
+# %% tags=[]
 fg = show_hist(traits_list, data=smultixcan_results_std)
 ax = fg.axes[0, 0]
 ax.set_xlim(-0.01, 0.10)
 ax.set_ylim(0, 9)
 ax.set_title("Standardized by $(n\_cases / n\_controls) * sqrt(n)$")
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Here `asthma` is now more to the right compared with `height`, but the low sample size traits have now too large values.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Projection
 
 # %% tags=[]
@@ -447,35 +447,35 @@ smultixcan_into_multiplier.head()
 _tmp = smultixcan_into_multiplier.loc["LV603"].sort_values(ascending=False).head(20)
 display(_tmp)
 
-# %%
+# %% tags=[]
 traits_sample_size_df.loc[_tmp.index[0]]
 
 # %% tags=[]
 _tmp = smultixcan_into_multiplier.loc["LV136"].sort_values(ascending=False).head(20)
 display(_tmp)
 
-# %%
+# %% tags=[]
 traits_sample_size_df.loc[_tmp.index[0]]
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # **Conclusion:** this approach doesn't work either.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Approach \#3: Standardize by sum of z-scores
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Here I divide all z-scores for a trait by `sum(z)` (sum of z-scores). The idea is that highly polygenic traits would be more penalized, which is what we want.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Standardize
 
 # %% tags=[]
 _tmp = smultixcan_results.apply(lambda x: x / x.sum())
 
-# %%
+# %% tags=[]
 _tmp.shape
 
-# %%
+# %% tags=[]
 assert _tmp.shape == smultixcan_results.shape
 
 # %% tags=[]
@@ -490,28 +490,28 @@ assert (
     == smultixcan_results.loc[_gene, _trait] / smultixcan_results[_trait].sum()
 )
 
-# %%
+# %% tags=[]
 smultixcan_results_std = _tmp
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Analyze distributions
 
-# %%
+# %% tags=[]
 fg = show_hist(traits_list, data=smultixcan_results)
 ax = fg.axes[0, 0]
 ax.set_xlim(-1, 10)
 ax.set_title("Original distribution")
 
-# %%
+# %% tags=[]
 fg = show_hist(traits_list, data=smultixcan_results_std)
 ax = fg.axes[0, 0]
 ax.set_xlim(-0.00005, 0.0003)
 ax.set_title("Standardized by $sum(zscores)$")
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Now the distribution makes more sense to me: `asthma` is slightly more towards the right than `height`, and the low sample size traits are at the leftmost.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Projection
 
 # %% tags=[]
@@ -530,30 +530,30 @@ smultixcan_into_multiplier.head()
 _tmp = smultixcan_into_multiplier.loc["LV603"].sort_values(ascending=False).head(20)
 display(_tmp)
 
-# %%
+# %% tags=[]
 traits_sample_size_df.loc[_tmp.index[0]]
 
 # %% tags=[]
 _tmp = smultixcan_into_multiplier.loc["LV136"].sort_values(ascending=False).head(20)
 display(_tmp)
 
-# %%
+# %% tags=[]
 traits_sample_size_df.loc[_tmp.index[0]]
 
 # %% tags=[]
 _tmp = smultixcan_into_multiplier.loc["LV844"].sort_values(ascending=False).head(20)
 display(_tmp)
 
-# %%
+# %% tags=[]
 traits_sample_size_df.loc[_tmp.index[0]]
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # **Conclusion:** trait associations with known LVs are preserved with this approach.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Conclusion
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # We select the last approach (Approach \#3) for downstream analyses.
 
-# %%
+# %% tags=[]

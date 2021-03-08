@@ -103,19 +103,19 @@ smultixcan_results.shape
 # the data should have no NaN values
 assert smultixcan_results.shape == smultixcan_results.dropna(how="any").shape
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Standardize S-MultiXcan results
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Here we adjust for highly polygenic traits (see notebook `005_00-data_analysis.ipynb`): we penalize those traits that have large effect sizes across several genes, such as antropometric traits.
 
 # %% tags=[]
 _tmp = smultixcan_results.apply(lambda x: x / x.sum())
 
-# %%
+# %% tags=[]
 _tmp.shape
 
-# %%
+# %% tags=[]
 assert _tmp.shape == smultixcan_results.shape
 
 # %% tags=[]
@@ -148,7 +148,7 @@ assert (
     == smultixcan_results.loc[_gene, _trait] / smultixcan_results[_trait].sum()
 )
 
-# %%
+# %% tags=[]
 smultixcan_results = _tmp
 
 # %% tags=[]
