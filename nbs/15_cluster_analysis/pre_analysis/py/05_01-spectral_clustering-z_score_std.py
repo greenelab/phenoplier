@@ -485,7 +485,10 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.grid(True)
     plt.tight_layout()
 
+# %% [markdown]
+# # Conclusions
+
 # %% [markdown] tags=[]
-# **CONCLUSION:** We choose `1e-10` as the `gamma` parameter for this data version.
+# We choose `1e-10` as the `gamma` parameter for this data version.
 
 # %% tags=[]
