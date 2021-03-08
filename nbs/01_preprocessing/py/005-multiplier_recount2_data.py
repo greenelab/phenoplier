@@ -108,7 +108,7 @@ assert recount2_rpkl_cm.iloc[9, 16].round(7) == -0.4938852
 # %% [markdown] tags=[]
 # ## Save
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ### Pickle format (binary)
 
 # %% tags=[]
@@ -121,10 +121,10 @@ display(output_filename)
 # %% tags=[]
 recount2_rpkl_cm.to_pickle(output_filename)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ### HDF5 format (binary)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # This code is now commented out, but it might be helpful in the future if we wanted to save this data in HDF5 for more efficient access.
 
 # %% tags=[]

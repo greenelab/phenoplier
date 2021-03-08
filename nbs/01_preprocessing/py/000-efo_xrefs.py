@@ -17,7 +17,7 @@
 # %% [markdown] tags=[]
 # # Description
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # It extracts from the EFO ontology all the xrefs from efo labels to other ontologies/datasets (such as Disease Ontology, ICD9, etc).
 
 # %% [markdown] tags=[]
