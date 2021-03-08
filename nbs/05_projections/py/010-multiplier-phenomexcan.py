@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: all,-execution,-papermill
+#     cell_metadata_filter: all,-execution,-papermill,-trusted
 #     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
@@ -140,14 +140,17 @@ smultixcan_into_multiplier.head()
 # %% [markdown] tags=[]
 # # Save
 
-# %% tags=[]
-output_file = Path(
-    RESULTS_PROJ_OUTPUT_DIR, f"projection-{results_filename_stem}.pkl"
-).resolve()
-
-display(output_file)
+# %% [markdown]
+# We are not using this data version, so saving is commented out here.
 
 # %% tags=[]
-smultixcan_into_multiplier.to_pickle(output_file)
+# output_file = Path(
+#     RESULTS_PROJ_OUTPUT_DIR, f"projection-{results_filename_stem}.pkl"
+# ).resolve()
+
+# display(output_file)
+
+# %% tags=[]
+# smultixcan_into_multiplier.to_pickle(output_file)
 
 # %% tags=[]
