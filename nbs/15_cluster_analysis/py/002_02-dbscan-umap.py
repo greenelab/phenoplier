@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: all,-execution,-papermill
+#     cell_metadata_filter: all,-execution,-papermill,-trusted
 #     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
@@ -145,8 +145,6 @@ for k in k_values_to_explore:
     results[k] = (distances, indices)
 
 # %% tags=[]
-# min_max_range = (1.0, 3)
-
 eps_range_per_k = {
     k: (0.75, 1.25)
     if k == 10
