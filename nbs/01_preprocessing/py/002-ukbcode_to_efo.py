@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: all,-execution,-papermill
+#     cell_metadata_filter: all,-execution,-papermill,-trusted
 #     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
@@ -167,6 +167,21 @@ ukb_to_efo.loc[idx, "term_codes"] = "EFO_1000650"
 idx = ukb_to_efo[ukb_to_efo["ukb_code"] == "CARDIoGRAM_C4D_CAD_ADDITIVE"].index
 ukb_to_efo.loc[idx, "term_codes"] = "EFO_0001645"
 
+idx = ukb_to_efo[
+    ukb_to_efo["ukb_code"] == "Astle_et_al_2016_Sum_basophil_neutrophil_counts"
+].index
+ukb_to_efo.loc[idx, "term_codes"] = "EFO_0009388"
+
+idx = ukb_to_efo[
+    ukb_to_efo["ukb_code"] == "Astle_et_al_2016_Sum_eosinophil_basophil_counts"
+].index
+ukb_to_efo.loc[idx, "term_codes"] = "EFO_0009389"
+
+idx = ukb_to_efo[
+    ukb_to_efo["ukb_code"] == "Astle_et_al_2016_Sum_neutrophil_eosinophil_counts"
+].index
+ukb_to_efo.loc[idx, "term_codes"] = "EFO_0009390"
+
 # %% tags=[]
 # ukb_to_efo_maps = ukb_to_efo_maps.dropna(subset=['efo_code'])
 
@@ -182,13 +197,9 @@ assert _tmp[0] == _old_shape[0] + 42
 ukb_to_efo = ukb_to_efo.replace(
     {
         "term_codes": {
-            #             '\|\|': ', ',
             "_": ":",
             "HP0011106": "HP:0011106",
         },
-        #         'efo_name': {
-        #             '\|\|': ', ',
-        #         }
     },
     regex=True,
 )
@@ -491,3 +502,5 @@ copyfile(
     outfile,
     Trait.UKB_TO_EFO_MAP_FILE,
 )
+
+# %%

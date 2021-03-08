@@ -1052,7 +1052,7 @@ A08	intestinal disease||viral disease	EFO:0009431||EFO:0000763	Broad	A08-Diagnos
 A63	bacterial sexually transmitted disease	EFO:0003955	Narrow	A63-Diagnoses_main_ICD10_A63_Other_predominantly_sexually_transmitted_diseases_not_elsewhere_classified	bacterial sexually transmitted disease	disease
 E27	adrenal gland disease	EFO:0005539	Exact	E27-Diagnoses_main_ICD10_E27_Other_disorders_of_adrenal_gland	adrenal gland disease	disease
 BCAC_Overall_BreastCancer_EUR		EFO:0005606		BCAC_Overall_BreastCancer_EUR	family history of breast cancer	disease
-Astle_et_al_2016_Sum_neutrophil_eosinophil_counts		EFO:0004842		Astle_et_al_2016_Sum_neutrophil_eosinophil_counts	eosinophil count	
+Astle_et_al_2016_Sum_neutrophil_eosinophil_counts		EFO:0009390		Astle_et_al_2016_Sum_neutrophil_eosinophil_counts	sum of neutrophil and eosinophil counts	
 BCAC_ER_negative_BreastCancer_EUR		EFO:1000650		BCAC_ER_negative_BreastCancer_EUR	estrogen-receptor negative breast cancer	disease
 Astle_et_al_2016_Eosinophil_counts		EFO:0004842		Astle_et_al_2016_Eosinophil_counts	eosinophil count	
 Astle_et_al_2016_Reticulocyte_count		EFO:0007986		Astle_et_al_2016_Reticulocyte_count	reticulocyte count	
@@ -1072,11 +1072,11 @@ Astle_et_al_2016_Granulocyte_count		EFO:0007987		Astle_et_al_2016_Granulocyte_co
 IGAP_Alzheimer		EFO:0000249		IGAP_Alzheimer	alzheimer's disease	disease
 Astle_et_al_2016_Platelet_count		EFO:0004309		Astle_et_al_2016_Platelet_count	platelet count	
 Jones_et_al_2016_SleepDuration		EFO:0005271		Jones_et_al_2016_SleepDuration	sleep duration	
-Astle_et_al_2016_Sum_eosinophil_basophil_counts		EFO:0004842		Astle_et_al_2016_Sum_eosinophil_basophil_counts	eosinophil count	
+Astle_et_al_2016_Sum_eosinophil_basophil_counts		EFO:0009389		Astle_et_al_2016_Sum_eosinophil_basophil_counts	sum of eosinophil and basophil counts	
 ENIGMA_Intracraneal_Volume		EFO:0004886		ENIGMA_Intracraneal_Volume	intracranial volume measurement	
 GIANT_HEIGHT		EFO:0004339		GIANT_HEIGHT	body height	
 EGG_BW3_EUR		EFO:0004344		EGG_BW3_EUR	birth weight	
-Astle_et_al_2016_Sum_basophil_neutrophil_counts		EFO:0004833		Astle_et_al_2016_Sum_basophil_neutrophil_counts	neutrophil count	
+Astle_et_al_2016_Sum_basophil_neutrophil_counts		EFO:0009388		Astle_et_al_2016_Sum_basophil_neutrophil_counts	sum of basophil and neutrophil counts	
 RA_OKADA_TRANS_ETHNIC		EFO:0000685		RA_OKADA_TRANS_ETHNIC	rheumatoid arthritis	disease
 pgc.scz2		EFO:0000692		pgc.scz2	schizophrenia	disease
 PGC_ADHD_EUR_2017		EFO:0003888		PGC_ADHD_EUR_2017	attention deficit hyperactivity disorder	disease
