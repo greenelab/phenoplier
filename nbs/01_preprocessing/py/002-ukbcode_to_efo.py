@@ -159,8 +159,13 @@ ukb_to_efo = ukb_to_efo.append(
     ignore_index=True,
 )
 
+# %% [markdown]
+# ## Fix wrong EFO codes in some traits
+
+# %% [markdown]
+# Some traits in PhenomeXcan (those from the GTEx GWAS paper), have wrong EFO mappings. For instance, there is an EFO for `sum of eosinophil and basophil counts` (`EFO:0009389`), however, in the original paper this trait was assigned to `eosinophil count` (`EFO:0004842`).
+
 # %% tags=[]
-# Fix wrong EFO codes
 idx = ukb_to_efo[ukb_to_efo["ukb_code"] == "BCAC_ER_negative_BreastCancer_EUR"].index
 ukb_to_efo.loc[idx, "term_codes"] = "EFO_1000650"
 
