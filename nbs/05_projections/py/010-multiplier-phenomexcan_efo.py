@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: all,-execution,-papermill
+#     cell_metadata_filter: all,-execution,-papermill,-trusted
 #     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
@@ -34,6 +34,7 @@ from IPython.display import display
 import pandas as pd
 
 import conf
+from entity import Gene
 from data.cache import read_data
 from multiplier import MultiplierProjection
 
@@ -41,24 +42,10 @@ from multiplier import MultiplierProjection
 # # Settings
 
 # %% tags=[]
-# The percentile name indicates the top percentage of genes retained
-PERCENTILE_NAME = "pALL"
-
-display(PERCENTILE_NAME)
-
-# %% tags=[]
 RESULTS_PROJ_OUTPUT_DIR = Path(conf.RESULTS["PROJECTIONS_DIR"])
-
 RESULTS_PROJ_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 display(RESULTS_PROJ_OUTPUT_DIR)
-
-# %% [markdown] tags=[]
-# # Read gene mappings
-
-# %% tags=[]
-GENE_ID_TO_NAME_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"])
-GENE_NAME_TO_ID_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"])
 
 # %% [markdown] tags=[]
 # # Load PhenomeXcan data (S-MultiXcan)
@@ -87,7 +74,7 @@ smultixcan_results.head()
 # ## Gene IDs to Gene names
 
 # %% tags=[]
-smultixcan_results = smultixcan_results.rename(index=GENE_ID_TO_NAME_MAP)
+smultixcan_results = smultixcan_results.rename(index=Gene.GENE_ID_TO_NAME_MAP)
 
 # %% tags=[]
 smultixcan_results.shape
@@ -110,16 +97,62 @@ smultixcan_results = smultixcan_results.loc[
 smultixcan_results.shape
 
 # %% [markdown] tags=[]
-# ## Remove NaN values
-
-# %% [markdown] tags=[]
-# **TODO**: it might be better to try to impute this values
+# ## Some checks
 
 # %% tags=[]
-smultixcan_results = smultixcan_results.dropna(how="any")
+# the data should have no NaN values
+assert smultixcan_results.shape == smultixcan_results.dropna(how="any").shape
+
+# %% [markdown]
+# # Standardize S-MultiXcan results
+
+# %% [markdown]
+# Here we adjust for highly polygenic traits (see notebook `005_00-data_analysis.ipynb`): we penalize those traits that have large effect sizes across several genes, such as antropometric traits.
 
 # %% tags=[]
-smultixcan_results.shape
+_tmp = smultixcan_results.apply(lambda x: x / x.sum())
+
+# %%
+_tmp.shape
+
+# %%
+assert _tmp.shape == smultixcan_results.shape
+
+# %% tags=[]
+# some testing
+_trait = "body height"
+_gene = "SCYL3"
+assert (
+    _tmp.loc[_gene, _trait]
+    == smultixcan_results.loc[_gene, _trait] / smultixcan_results[_trait].sum()
+)
+
+_trait = "100001_raw-Food_weight"
+_gene = "DPM1"
+assert (
+    _tmp.loc[_gene, _trait]
+    == smultixcan_results.loc[_gene, _trait] / smultixcan_results[_trait].sum()
+)
+
+_trait = "estrogen-receptor negative breast cancer"
+_gene = "CFH"
+assert (
+    _tmp.loc[_gene, _trait]
+    == smultixcan_results.loc[_gene, _trait] / smultixcan_results[_trait].sum()
+)
+
+_trait = "asthma"
+_gene = "C1orf112"
+assert (
+    _tmp.loc[_gene, _trait]
+    == smultixcan_results.loc[_gene, _trait] / smultixcan_results[_trait].sum()
+)
+
+# %%
+smultixcan_results = _tmp
+
+# %% tags=[]
+smultixcan_results.head()
 
 # %% [markdown] tags=[]
 # # Project S-MultiXcan data into MultiPLIER latent space
@@ -144,6 +177,9 @@ smultixcan_into_multiplier.head()
 
 # %% tags=[]
 (smultixcan_into_multiplier.loc["LV136"].sort_values(ascending=False).head(20))
+
+# %% tags=[]
+(smultixcan_into_multiplier.loc["LV844"].sort_values(ascending=False).head(20))
 
 # %% [markdown] tags=[]
 # # Save
