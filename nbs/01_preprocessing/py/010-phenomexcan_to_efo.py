@@ -17,7 +17,7 @@
 # %% [markdown] tags=[]
 # # Description
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # It uses the PhenomeXcan traits to EFO mapping files to group traits that end up having the same EFO label. Currently, this only combines the S-MultiXcan results (z-scores) using the [Stouffer method](https://en.wikipedia.org/wiki/Fisher%27s_method#Relation_to_Stouffer's_Z-score_method) (implemented in functions `get_weights` and `_combine_z_scores` below).
 
 # %% [markdown] tags=[]
@@ -48,7 +48,7 @@ smultixcan_zscores.shape
 # %% tags=[]
 smultixcan_zscores.head()
 
-# %%
+# %% tags=[]
 pd.Series(smultixcan_zscores.values.flatten()).describe().apply(str)
 
 # %% [markdown] tags=[]
