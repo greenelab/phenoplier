@@ -9,13 +9,9 @@ However, what we do here is to project TWAS (Transcriptome-wide association stud
 results into this latent space. A TWAS provides the association (p-value) and its effect
 size between a gene and a trait, so we basically have a gene x trait matrix with
 p-values (here we project the standardized effect sizes, i.e. z-scores: the effect size
-divided by the standard error of it).
+divided by the standard error of it). Before doing that, we adjust for highly polygenic
+traits (see analysis in `005_00-data_analysis.ipynb`).
 
 The main outcome is another matrix T (latent variables x traits), which can be used to
 cluster traits, see which latent variables (representing a gene module) are associated
 with a particular category of traits/disease (like respiratory traits), etc.
-
-This folder contains different notebooks to make different types of projections. For
-example, by taking just a subset of the gene loadings (for instance, those at the top
-1%). Thus, `p1` means that the top 1% of gene loadings are used, and `pALL` means that
-all non-zero gene loadings are used.
