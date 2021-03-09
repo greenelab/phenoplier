@@ -117,7 +117,11 @@ assert not data_stats.isna().any().any()
 # ## Check duplicated values
 
 # %% tags=[]
-data_dups = data.duplicated()
+data_dups = data.round(5).duplicated(keep=False)
+
+# %% tags=[]
+with pd.option_context("display.max_rows", 100, "display.max_columns", 10):
+    display(data.loc[data_dups].sort_values("LV1"))
 
 # %% tags=[]
 data_dups.any()
@@ -126,11 +130,11 @@ data_dups.any()
 data_dups.value_counts()
 
 # %% tags=[]
-data_dups_labels = data.index[data_dups]
-display(data_dups_labels)
+data_dups_labels = data.loc[data_dups].sort_values("LV1").index
+display(data_dups_labels[:10])
 
-# %% [markdown]
-# This duplicated traits should be taken into account when interpreting any results derived from the data (such as cluster analysis).
+# %% [markdown] tags=[]
+# These duplicated traits should be taken into account when interpreting any results derived from the data (such as cluster analysis).
 
 # %% [markdown] tags=[]
 # # PCA
@@ -200,7 +204,7 @@ assert not data_stats.isna().any().any()
 # ## Check duplicated values
 
 # %% tags=[]
-data_dups = data.duplicated()
+data_dups = data.round(5).duplicated(keep=False)
 
 # %% tags=[]
 data_dups.any()
@@ -209,11 +213,11 @@ data_dups.any()
 data_dups.value_counts()
 
 # %% tags=[]
-data.index[data_dups]
+data.index[data_dups][:10]
 
 # %% tags=[]
 # same duplicates in `z_score_std`
-assert data.index[data_dups].equals(data_dups_labels)
+assert set(data.index[data_dups]) == set(data_dups_labels)
 
 # %% [markdown] tags=[]
 # # UMAP
@@ -284,7 +288,7 @@ assert not data_stats.isna().any().any()
 # ## Check duplicated values
 
 # %% tags=[]
-data_dups = data.duplicated()
+data_dups = data.round(5).duplicated(keep=False)
 
 # %% tags=[]
 data_dups.any()
@@ -293,7 +297,7 @@ data_dups.any()
 # There are no duplicates with UMAP data, but the duplicates in `z_score_std` and `pca` are very close by in the UMAP representation.
 
 # %% tags=[]
-data_dups_labels
+data_dups_labels[:10]
 
 # %% tags=[]
 data.loc[data_dups_labels]
