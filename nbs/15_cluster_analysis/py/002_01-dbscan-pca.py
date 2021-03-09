@@ -68,6 +68,26 @@ np.random.seed(0)
 # %% tags=[]
 CLUSTERING_ATTRIBUTES_TO_SAVE = ["n_clusters"]
 
+# %% [markdown]
+# # Settings
+
+# %%
+# these parameter values are taken from the pre-analysis notebook for this clustering method and data version
+k_values = np.arange(2, 125 + 1, 1)
+
+eps_range_per_k = {
+    k: (10, 20)
+    if k < 5
+    else (11, 25)
+    if k < 10
+    else (12, 30)
+    if k < 15
+    else (13, 35)
+    if k < 20
+    else (14, 40)
+    for k in k_values
+}
+
 # %% [markdown] tags=[]
 # # Data version: pca
 
@@ -127,45 +147,6 @@ data.head()
 
 # %% tags=[]
 assert not data.isna().any().any()
-
-# %% [markdown] tags=[]
-# ## Tests different k values (k-NN)
-
-# %% tags=[]
-k_values = np.arange(2, 100 + 1, 1)
-k_values_to_explore = (2, 5, 10, 15, 20, 30, 40, 50, 75, 100)
-
-# %% tags=[]
-results = {}
-
-for k in k_values_to_explore:
-    nbrs = NearestNeighbors(n_neighbors=k, n_jobs=N_JOBS).fit(data)
-    distances, indices = nbrs.kneighbors(data)
-    results[k] = (distances, indices)
-
-# %% tags=[]
-min_max_range = (15, 80)
-
-eps_range_per_k = {k: min_max_range for k in k_values}
-eps_range_per_k_to_explore = {k: min_max_range for k in k_values_to_explore}
-
-# %% tags=[]
-for k, (distances, indices) in results.items():
-    d = distances[:, 1:].mean(axis=1)
-    d = np.sort(d)
-
-    fig, ax = plt.subplots()
-    plt.plot(d)
-
-    r = eps_range_per_k_to_explore[k]
-    plt.hlines(r[0], 0, data.shape[0], color="red")
-    plt.hlines(r[1], 0, data.shape[0], color="red")
-
-    plt.xlim((3000, data.shape[0]))
-    plt.title(f"k={k}")
-    display(fig)
-
-    plt.close(fig)
 
 # %% [markdown] tags=[]
 # ## Clustering
