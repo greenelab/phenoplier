@@ -17,6 +17,9 @@ BiocManager::install(version = "3.10", update=TRUE, ask=FALSE)
 # clustree
 BiocManager::install("clustree", update=FALSE, ask=FALSE)
 
+# clustree
+BiocManager::install("fgsea", update=FALSE, ask=FALSE)
+
 # PLIER
 #library(devtools)
 #install_github("wgmao/PLIER", ref="v0.1.4")
