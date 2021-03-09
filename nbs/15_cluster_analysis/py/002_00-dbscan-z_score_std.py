@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: all,-execution,-papermill
+#     cell_metadata_filter: all,-execution,-papermill,-trusted
 #     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
@@ -72,13 +72,14 @@ CLUSTERING_ATTRIBUTES_TO_SAVE = ["n_clusters"]
 # # Settings
 
 # %%
-# these values are taken from the pre-analysis notebook for this clustering method and data version
+# these parameter values are taken from the pre-analysis notebook for this clustering method and data version
 k_values = np.arange(2, 125 + 1, 1)
+
 eps_range_per_k = {
     k: (34, 50)
     if k < 5
     else (35, 50)
-    if k <= 10
+    if k < 15
     else (37, 58)
     if k < 75
     else (38, 58)
