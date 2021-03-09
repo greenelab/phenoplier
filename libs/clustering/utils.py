@@ -21,7 +21,8 @@ def compute_performance(data, labels, data_distance_matrix=None):
             different distance measures are used.
 
     Returns:
-        None
+        A dictionary with the name of the quality measure as key, and its score
+        as value.
     """
 
     # Compute the Silhouette score
@@ -61,6 +62,8 @@ def compute_performance(data, labels, data_distance_matrix=None):
     # better clustering.
     db_score = davies_bouldin_score(data, labels)
     display(f"Davies-Bouldin (lower is better): {db_score:.3f}")
+
+    return {"si": si_score, "ch": ch_score, "db": db_score}
 
 
 def reset_estimator(estimator_obj):
