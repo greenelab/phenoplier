@@ -97,7 +97,8 @@ data.head()
 
 # %% tags=[]
 from sklearn.cluster import SpectralClustering
-from sklearn.metrics import silhouette_score, calinski_harabasz_score
+
+from clustering.utils import compute_performance
 
 # %% [markdown] tags=[]
 # ## `gamma` parameter
@@ -123,10 +124,40 @@ with warnings.catch_warnings():
 
 # %% tags=[]
 # show number of clusters and their size
-pd.Series(part).value_counts()
+_tmp = pd.Series(part).value_counts()
+display(_tmp)
+assert _tmp.shape[0] == 1
 
 # %% [markdown] tags=[]
 # The algorithm does not work with the default `gamma=1.0`. Other values for this parameter should be explored.
+
+# %% [markdown] tags=[]
+# ### Using `gamma=5.00`
+
+# %% tags=[]
+with warnings.catch_warnings():
+    warnings.filterwarnings("always")
+
+    clus = SpectralClustering(
+        eigen_solver="arpack",
+        #         eigen_tol=1e-2,
+        n_clusters=2,
+        n_init=1,
+        affinity="rbf",
+        gamma=5.00,
+        random_state=INITIAL_RANDOM_STATE,
+    )
+
+    part = clus.fit_predict(data)
+
+# %% tags=[]
+# show number of clusters and their size
+_tmp = pd.Series(part).value_counts()
+display(_tmp)
+assert _tmp.shape[0] == 1
+
+# %% [markdown] tags=[]
+# The algorithm does not work either with `gamma>1.0`.
 
 # %% [markdown] tags=[]
 # ### Using `gamma=0.01`
@@ -149,7 +180,17 @@ with warnings.catch_warnings():
 
 # %% tags=[]
 # show number of clusters and their size
-pd.Series(part).value_counts()
+_tmp = pd.Series(part).value_counts()
+display(_tmp)
+assert _tmp.shape[0] == 2
+assert 3 < _tmp.loc[1] < 10
+
+# %% tags=[]
+# show some clustering performance measures to assess the quality of the partition
+_tmp = compute_performance(data, part)
+assert 0.30 < _tmp["si"] < 0.31
+assert 10.0 < _tmp["ch"] < 11.00
+assert 1.30 < _tmp["db"] < 1.50
 
 # %% [markdown] tags=[]
 # For values around `gamma=0.01` the algorithm takes a lot of time to converge (here I used `eigen_tol=1e-03` to force convergence).
@@ -175,27 +216,25 @@ with warnings.catch_warnings():
 
 # %% tags=[]
 # show number of clusters and their size
-pd.Series(part).value_counts()
+_tmp = pd.Series(part).value_counts()
+display(_tmp)
+assert _tmp.shape[0] == 2
+assert 80 < _tmp.loc[1] < 90
 
 # %% tags=[]
-# From sklearn website:
-# The best value is 1 and the worst value is -1. Values near 0 indicate overlapping clusters.
-# Negative values generally indicate that a sample has been assigned to the wrong cluster,
-# as a different cluster is more similar
-silhouette_score(data, part)
-
-# %% tags=[]
-# From sklearn website:
-# The score is defined as ratio between the within-cluster dispersion and the between-cluster dispersion. Higher is better.
-calinski_harabasz_score(data, part)
+# show some clustering performance measures to assess the quality of the partition
+_tmp = compute_performance(data, part)
+assert 0.10 < _tmp["si"] < 0.16
+assert 40.0 < _tmp["ch"] < 42.00
+assert 3.00 < _tmp["db"] < 4.00
 
 # %% [markdown] tags=[]
-# For values around `gamma=0.001` now the algorithm converges. This suggests smaller values should be explored for this parameter.
+# For values around `gamma=0.001` now the algorithm converges, although most of the performance measures are worse. This suggests smaller values should be explored for this parameter.
 
 # %% [markdown] tags=[]
 # ## Extended test
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Here I run some test across several `k` and `gamma` values; then I check how results perform with different clustering quality measures.
 
 # %% tags=[]
@@ -273,35 +312,11 @@ import tempfile
 from clustering.ensembles.utils import generate_ensemble
 
 # %% tags=[]
-# generate a temporary folder where to store the ensemble and avoid computing it again
-ensemble_folder = Path(
-    tempfile.gettempdir(),
-    "pre_cluster_analysis",
-    clustering_method_name,
-).resolve()
-ensemble_folder.mkdir(parents=True, exist_ok=True)
-
-# %% tags=[]
-ensemble_file = Path(
-    ensemble_folder,
-    generate_result_set_name(
-        CLUSTERING_OPTIONS, prefix=f"ensemble-{INPUT_SUBSET}-", suffix=".pkl"
-    ),
+ensemble = generate_ensemble(
+    data,
+    CLUSTERERS,
+    attributes=["n_clusters", "gamma"],
 )
-display(ensemble_file)
-
-# %% tags=[]
-if ensemble_file.exists():
-    display("Ensemble file exists")
-    ensemble = pd.read_pickle(ensemble_file)
-else:
-    ensemble = generate_ensemble(
-        data,
-        CLUSTERERS,
-        attributes=["n_clusters", "gamma"],
-    )
-
-    ensemble.to_pickle(ensemble_file)
 
 # %% tags=[]
 ensemble.shape
@@ -327,7 +342,7 @@ ensemble_stats = ensemble["n_clusters"].describe()
 display(ensemble_stats)
 
 # %% [markdown] tags=[]
-# ### Testing
+# ## Testing
 
 # %% tags=[]
 assert ensemble_stats["min"] > 1
@@ -347,6 +362,9 @@ assert np.all(
 # %% tags=[]
 # no partition has negative clusters (noisy points)
 assert not np.any([(part["partition"] < 0).any() for idx, part in ensemble.iterrows()])
+assert not np.any(
+    [pd.Series(part["partition"]).isna().any() for idx, part in ensemble.iterrows()]
+)
 
 # %% tags=[]
 # check that the number of clusters in the partitions are the expected ones
@@ -355,11 +373,20 @@ display(_real_k_values)
 assert np.all(ensemble["n_clusters"].values == _real_k_values.values)
 
 # %% [markdown] tags=[]
-# ### Add clustering quality measures
+# ## Add clustering quality measures
+
+# %% tags=[]
+from sklearn.metrics import (
+    silhouette_score,
+    calinski_harabasz_score,
+    davies_bouldin_score,
+)
 
 # %% tags=[]
 ensemble = ensemble.assign(
-    ch_score=ensemble["partition"].apply(lambda x: calinski_harabasz_score(data, x))
+    si_score=ensemble["partition"].apply(lambda x: silhouette_score(data, x)),
+    ch_score=ensemble["partition"].apply(lambda x: calinski_harabasz_score(data, x)),
+    db_score=ensemble["partition"].apply(lambda x: davies_bouldin_score(data, x)),
 )
 
 # %% tags=[]
@@ -377,17 +404,38 @@ with pd.option_context("display.max_rows", None, "display.max_columns", None):
     display(_df)
 
 # %% tags=[]
-# with sns.axes_style('whitegrid', {'grid.linestyle': '--'}):
+with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
+    "whitegrid", {"grid.linestyle": "--"}
+):
+    fig = plt.figure(figsize=(14, 6))
+    ax = sns.pointplot(data=ensemble, x="n_clusters", y="si_score", hue="gamma")
+    ax.set_ylabel("Silhouette index\n(higher is better)")
+    ax.set_xlabel("Number of clusters ($k$)")
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+    plt.grid(True)
+    plt.tight_layout()
+
+# %% tags=[]
 with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     "whitegrid", {"grid.linestyle": "--"}
 ):
     fig = plt.figure(figsize=(14, 6))
     ax = sns.pointplot(data=ensemble, x="n_clusters", y="ch_score", hue="gamma")
-    ax.set_ylabel("Calinski-Harabasz index")
+    ax.set_ylabel("Calinski-Harabasz index\n(higher is better)")
     ax.set_xlabel("Number of clusters ($k$)")
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-    #     ax.set_ylim(0.0, 1.0)
-    #     ax.set_xlim(CLUSTERING_OPTIONS['K_MIN'], CLUSTERING_OPTIONS['K_MAX'])
+    plt.grid(True)
+    plt.tight_layout()
+
+# %% tags=[]
+with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
+    "whitegrid", {"grid.linestyle": "--"}
+):
+    fig = plt.figure(figsize=(14, 6))
+    ax = sns.pointplot(data=ensemble, x="n_clusters", y="db_score", hue="gamma")
+    ax.set_ylabel("Davies-Bouldin index\n(lower is better)")
+    ax.set_xlabel("Number of clusters ($k$)")
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
     plt.grid(True)
     plt.tight_layout()
 
@@ -485,10 +533,10 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.grid(True)
     plt.tight_layout()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Conclusions
 
 # %% [markdown] tags=[]
-# We choose `1e-10` as the `gamma` parameter for this data version.
+# **UPDATE** We choose `1e-10` as the `gamma` parameter for this data version.
 
 # %% tags=[]
