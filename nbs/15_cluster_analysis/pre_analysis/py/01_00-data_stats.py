@@ -119,7 +119,7 @@ assert not data_stats.isna().any().any()
 # %% tags=[]
 data_dups = data.round(5).duplicated(keep=False)
 
-# %%
+# %% tags=[]
 with pd.option_context("display.max_rows", 100, "display.max_columns", 10):
     display(data.loc[data_dups].sort_values("LV1"))
 
@@ -133,7 +133,7 @@ data_dups.value_counts()
 data_dups_labels = data.loc[data_dups].sort_values("LV1").index
 display(data_dups_labels[:10])
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # These duplicated traits should be taken into account when interpreting any results derived from the data (such as cluster analysis).
 
 # %% [markdown] tags=[]
