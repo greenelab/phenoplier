@@ -233,12 +233,12 @@ assert _tmp.loc[2] == 27
 ensemble_stats = ensemble["n_clusters"].describe()
 display(ensemble_stats)
 
-# %%
+# %% tags=[]
 # number of noisy points
 _tmp = ensemble.copy()
 _tmp = _tmp.assign(n_noisy=ensemble["partition"].apply(lambda x: np.isnan(x).sum()))
 
-# %%
+# %% tags=[]
 _tmp_stats = _tmp["n_noisy"].describe()
 display(_tmp_stats)
 assert _tmp_stats["max"] < 520
@@ -263,7 +263,7 @@ assert np.all(
 # %% [markdown] tags=[]
 # ## Add clustering quality measures
 
-# %%
+# %% tags=[]
 def _remove_nans(data, part):
     not_nan_idx = ~np.isnan(part)
     return data.iloc[not_nan_idx], part[not_nan_idx]
@@ -337,10 +337,10 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.grid(True)
     plt.tight_layout()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Conclusions
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # The values explored above for `k_values` and `eps_range_per_k` are the one that will be used for DBSCAN in this data version.
 
-# %%
+# %% tags=[]
