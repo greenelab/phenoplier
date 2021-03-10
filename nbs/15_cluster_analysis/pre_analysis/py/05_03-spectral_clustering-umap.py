@@ -183,7 +183,7 @@ assert 10.0 < _tmp["ch"] < 13.00
 assert 1.00 < _tmp["db"] < 1.10
 
 # %% [markdown] tags=[]
-# For default values of `gamma` (`1.0`), the algorithm takes a lot of time to converge (here I used `eigen_tol=1e-03` to force convergence).
+# For larger values of `gamma` (`2.5` here), the algorithm takes a lot of time to converge (here I used `eigen_tol=1e-03` to force convergence).
 #
 # Also, all quality measures go down.
 
@@ -568,6 +568,6 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
 # # Conclusions
 
 # %% [markdown] tags=[]
-# **UPDATE** We choose `1e-10` as the `gamma` parameter for this data version.
+# We choose `1.0e-02` as the `gamma` parameter for this data version.
 
 # %% tags=[]
