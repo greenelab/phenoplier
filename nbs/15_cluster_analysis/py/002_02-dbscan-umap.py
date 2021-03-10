@@ -68,10 +68,10 @@ np.random.seed(0)
 # %% tags=[]
 CLUSTERING_ATTRIBUTES_TO_SAVE = ["n_clusters"]
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Settings
 
-# %%
+# %% tags=[]
 # these parameter values are taken from the pre-analysis notebook for this clustering method and data version
 k_values = np.arange(2, 125 + 1, 1)
 
