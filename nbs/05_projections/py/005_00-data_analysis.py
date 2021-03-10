@@ -243,7 +243,7 @@ traits_list = [
 # # Functions
 
 # %% tags=[]
-def get_n(trait_name, simple=True):
+def get_sqrt_n(trait_name, simple=True):
     """
     Given a trait name, it returns either the `sqrt(n)`, that is the total sample size (when simple=True),
     or `(t.n_cases / t.n_controls) * np.sqrt(t.n)` (when simple=False).
@@ -282,7 +282,7 @@ def show_hist(trait_names, data):
 # ## Standardize
 
 # %% tags=[]
-_tmp = smultixcan_results.apply(lambda x: x / get_n(x.name, simple=True))
+_tmp = smultixcan_results.apply(lambda x: x / get_sqrt_n(x.name, simple=True))
 
 # %% tags=[]
 _tmp.shape
@@ -377,7 +377,7 @@ traits_sample_size_df.loc[_tmp.index[0]]
 # ## Standardize
 
 # %% tags=[]
-_tmp = smultixcan_results.apply(lambda x: x / get_n(x.name, simple=False))
+_tmp = smultixcan_results.apply(lambda x: x / get_sqrt_n(x.name, simple=False))
 
 # %% tags=[]
 _tmp.shape
