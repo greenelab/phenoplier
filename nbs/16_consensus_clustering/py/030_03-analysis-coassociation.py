@@ -198,15 +198,15 @@ part_stats = pd.Series(part).value_counts()
 display(part_stats)
 
 # %% tags=[]
-plot_cluster(data_umap, part, 4)
+plot_cluster(data_umap, part, 1)
 
 # %% [markdown] tags=[]
 # The plot above shows that these 8 keratometry measurements (such as 3mm weak meridian left) were always clustered together in all partitions of the ensemble, representing a very strong/stable grouping.
 
 # %% tags=[]
-plot_cluster(data_umap, part, 2, figsize=(10, 10))
+plot_cluster(data_umap, part, 3, figsize=(10, 10))
 
 # %% [markdown] tags=[]
-# The "heel bone mineral density" cluster is not as strong as the keratometry one, since some trait pairs have a coassociation value of 0.75. However, 0.75 is quite higher than the 99 percentile of the coassociation values (which is 0.63).
+# The "heel bone mineral density" cluster is not as strong as the keratometry one, since some trait pairs have a coassociation value of 0.89. However, 0.89 is quite higher than the 99 percentile of the coassociation values (which is 0.69).
 
 # %% tags=[]
