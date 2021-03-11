@@ -63,7 +63,7 @@ consensus_clustering_results.head()
 # %% [markdown] tags=[]
 # # Explore best partition per k
 
-# %%
+# %% tags=[]
 _selected_measure = "ARI"
 _mean_column, _median_column = "ari_mean", "ari_median"
 
@@ -96,7 +96,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
 # %% [markdown] tags=[]
 # # Select best partition per k
 
-# %%
+# %% tags=[]
 _selected_stat = "Median"
 _measure_col = _median_column
 
