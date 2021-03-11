@@ -68,7 +68,13 @@ RESULTS["DATA_TRANSFORMATIONS_DIR"] = Path(
 RESULTS["CLUSTERING_DIR"] = Path(RESULTS["BASE_DIR"], "clustering").resolve()
 RESULTS["CLUSTERING_TESTS_DIR"] = Path(RESULTS["CLUSTERING_DIR"], "tests").resolve()
 RESULTS["CLUSTERING_RUNS_DIR"] = Path(RESULTS["CLUSTERING_DIR"], "runs").resolve()
-RESULTS["CLUSTERING_INTERPRETATION_OUTPUT_DIR"] = Path(
+
+RESULTS["CLUSTERING_INTERPRETATION"] = {}
+RESULTS["CLUSTERING_INTERPRETATION"]["BASE_DIR"] = Path(
+    RESULTS["CLUSTERING_DIR"],
+    "interpretation",
+).resolve()
+RESULTS["CLUSTERING_INTERPRETATION"]["CLUSTERS_STATS"] = Path(
     Path(__file__).parent.parent,
     "nbs",
     "20_cluster_interpretation",
