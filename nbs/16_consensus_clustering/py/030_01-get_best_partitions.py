@@ -82,7 +82,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     ax = sns.pointplot(
         data=_tmp, x="k", y=_col1, ci=None, color="red", label="Two", ax=ax
     )
-    ax.set_ylabel("Agreement with ensemble (AMI)")
+    ax.set_ylabel("Agreement with ensemble (ARI)")
     ax.set_xlabel("Number of clusters ($k$)")
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
     plt.legend(labels=["Mean", "Median"])
@@ -174,7 +174,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
         color=next(current_palette),
         label=best_threshold_description,
     )
-    ax.set_ylabel("Agreement with ensemble\n(Average AMI)")
+    ax.set_ylabel("Agreement with ensemble\n(Average ARI)")
     ax.set_xlabel("Number of clusters ($k$)")
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
     plt.legend()
@@ -182,7 +182,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.tight_layout()
 
 # %% [markdown] tags=[]
-# The horizontal line in the plot is the median of the average AMI; partitions above that line are marked as selected for downstream analysis
+# The horizontal line in the plot is the median of the average ARI; partitions above that line are marked as selected for downstream analysis
 
 # %% tags=[]
 # this list shows the selected final partitions, and which methods achieved the highest agreement
