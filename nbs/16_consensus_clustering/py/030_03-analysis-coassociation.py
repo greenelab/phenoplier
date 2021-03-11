@@ -21,9 +21,6 @@
 # It analyzes how clusters of traits were grouped across the ensemble partitions. For example, a stable cluster (obtained from consensus partitions) of cardiovascular diseases can show that all traits were always grouped together across all partitions of the ensemble; another cluster might show that some traits were clustered more often than others, representing a less stable group of traits.
 
 # %% [markdown] tags=[]
-# **TODO:** This section of the notebook will be updated again when I start actively writing the results section of the manuscript. Here I left some code as example for some clusters.
-
-# %% [markdown] tags=[]
 # # Modules loading
 
 # %% tags=[]
@@ -189,7 +186,7 @@ def plot_cluster(data, partition, cluster_number, figsize=None):
 
 
 # %% tags=[]
-k = 5
+k = 26
 display(HTML(f"<h2>k: {k}</h2>"))
 display(best_partitions.loc[k])
 
@@ -198,13 +195,13 @@ part_stats = pd.Series(part).value_counts()
 display(part_stats)
 
 # %% tags=[]
-plot_cluster(data_umap, part, 1)
+plot_cluster(data_umap, part, 10)
 
 # %% [markdown] tags=[]
 # The plot above shows that these 8 keratometry measurements (such as 3mm weak meridian left) were always clustered together in all partitions of the ensemble, representing a very strong/stable grouping.
 
 # %% tags=[]
-plot_cluster(data_umap, part, 3, figsize=(10, 10))
+plot_cluster(data_umap, part, 12, figsize=(10, 10))
 
 # %% [markdown] tags=[]
 # The "heel bone mineral density" cluster is not as strong as the keratometry one, since some trait pairs have a coassociation value of 0.89. However, 0.89 is quite higher than the 99 percentile of the coassociation values (which is 0.69).
