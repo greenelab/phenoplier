@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: all,-execution,-papermill
+#     cell_metadata_filter: all,-execution,-papermill,-trusted
 #     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
@@ -156,13 +156,30 @@ from sklearn.metrics import (
 # %% [markdown] tags=[]
 # ## More exhaustive test
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Here I run some test across several `k` and `delta` values; then I check how results perform with different clustering quality measures.
 
 # %% tags=[]
 CLUSTERING_OPTIONS = {}
 
-CLUSTERING_OPTIONS["K_RANGE"] = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 25, 30, 35, 40]
+CLUSTERING_OPTIONS["K_RANGE"] = [
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    18,
+    20,
+    25,
+    30,
+    35,
+    40,
+    50,
+    60,
+]
 CLUSTERING_OPTIONS["N_REPS_PER_K"] = 5
 CLUSTERING_OPTIONS["KMEANS_N_INIT"] = 10
 CLUSTERING_OPTIONS["DELTAS"] = [
