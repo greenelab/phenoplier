@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: all,-execution,-papermill
+#     cell_metadata_filter: all,-execution,-papermill,-trusted
 #     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
@@ -150,7 +150,7 @@ from clustering.utils import compute_performance
 # %% [markdown] tags=[]
 # ## `delta` parameter (gaussian kernel)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Here I perform some quick tests using different `delta` values for the width of the Gaussian kernel applied to the ensemble distance matrix in (`dist_matrix`).
 
 # %% [markdown] tags=[]
@@ -195,7 +195,7 @@ compute_performance(data, part, data_distance_matrix=dist_matrix)
 # ### `delta>1.0`
 
 # %% tags=[]
-delta = 10.0
+delta = 5.0
 
 # %% tags=[]
 with warnings.catch_warnings():
@@ -222,7 +222,7 @@ pd.Series(part).value_counts()
 compute_performance(data, part, data_distance_matrix=dist_matrix)
 
 # %% [markdown] tags=[]
-# For `delta` values larger than `1.0`, quality measures go slightly down.
+# For `delta` values larger than `1.0`, all quality measures go slightly down.
 
 # %% [markdown] tags=[]
 # ### `delta<1.0`
@@ -255,7 +255,7 @@ pd.Series(part).value_counts()
 compute_performance(data, part, data_distance_matrix=dist_matrix)
 
 # %% [markdown] tags=[]
-# For `delta` values smaller than `1.0`, quality measures improve.
+# For `delta` values smaller than `1.0`, most quality measures improve.
 
 # %% [markdown] tags=[]
 # ### `delta<<<1.0`
@@ -295,7 +295,7 @@ compute_performance(data, part, data_distance_matrix=dist_matrix)
 # %% [markdown] tags=[]
 # ## More exhaustive test
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Here I run some test across several `k` and `delta` values; then I check how results perform with different clustering quality measures.
 
 # %% tags=[]
@@ -304,7 +304,24 @@ from clustering.methods import DeltaSpectralClustering
 # %% tags=[]
 CLUSTERING_OPTIONS = {}
 
-CLUSTERING_OPTIONS["K_RANGE"] = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 25, 30, 35, 40]
+CLUSTERING_OPTIONS["K_RANGE"] = [
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    18,
+    20,
+    25,
+    30,
+    35,
+    40,
+    50,
+    60,
+]
 CLUSTERING_OPTIONS["N_REPS_PER_K"] = 5
 CLUSTERING_OPTIONS["KMEANS_N_INIT"] = 10
 CLUSTERING_OPTIONS["DELTAS"] = [
@@ -334,7 +351,6 @@ for k in CLUSTERING_OPTIONS["K_RANGE"]:
                 eigen_solver="arpack",
                 n_clusters=k,
                 n_init=CLUSTERING_OPTIONS["KMEANS_N_INIT"],
-                affinity="precomputed",
                 delta=delta_value,
                 random_state=random_state,
             )
@@ -603,6 +619,6 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.tight_layout()
 
 # %% [markdown] tags=[]
-# **CONCLUSION:** the best values for the `delta` parameter seem to be `0.20`, `0.25` and `0.30`. I will also consider `0.50`, since seem to yield potentially good results when `n_clusters` is high (see `umap` results).
+# **CONCLUSION:** the best values for the `delta` parameter seem to be `0.20`, `0.25`, `0.30`, and `0.50`. `0.50` seems to yield potentially good results when `n_clusters` is high (see `umap` results).
 
 # %% tags=[]
