@@ -190,6 +190,9 @@ if __name__ == "__main__":
 
     def print_conf(conf_dict):
         for var_name, var_value in conf_dict.items():
+            if var_value is None:
+                continue
+
             if isinstance(var_value, (str, int, PurePath)):
                 print(f'export PHENOPLIER_{var_name}="{str(var_value)}"')
             elif isinstance(var_value, dict):
