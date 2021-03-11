@@ -63,9 +63,11 @@ consensus_clustering_results.head()
 # %% [markdown] tags=[]
 # # Explore best partition per k
 
-# %% tags=[]
+# %%
+_selected_measure = "ARI"
 _col0, _col1 = "ari_mean", "ari_median"
 
+# %% tags=[]
 _tmp = (
     consensus_clustering_results.groupby("k")
     .apply(lambda x: x.sort_values(_col0, ascending=False).head(1))
@@ -82,7 +84,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     ax = sns.pointplot(
         data=_tmp, x="k", y=_col1, ci=None, color="red", label="Two", ax=ax
     )
-    ax.set_ylabel("Agreement with ensemble (ARI)")
+    ax.set_ylabel(f"Agreement with ensemble ({_selected_measure})")
     ax.set_xlabel("Number of clusters ($k$)")
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
     plt.legend(labels=["Mean", "Median"])
@@ -93,7 +95,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
 # # Select best partition per k
 
 # %% tags=[]
-_measure_col = "ari_mean"
+_measure_col = _col0
 
 best_parts = (
     consensus_clustering_results.groupby("k")
@@ -110,7 +112,7 @@ best_parts = best_parts.set_index("k")
 best_parts.shape
 
 # %% tags=[]
-# show partitions with top ARI
+# show partitions with top values
 best_parts.head(10)
 
 # %% tags=[]
@@ -174,7 +176,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
         color=next(current_palette),
         label=best_threshold_description,
     )
-    ax.set_ylabel("Agreement with ensemble\n(Average ARI)")
+    ax.set_ylabel(f"Agreement with ensemble\n(Average {_selected_measure})")
     ax.set_xlabel("Number of clusters ($k$)")
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
     plt.legend()
@@ -182,13 +184,13 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.tight_layout()
 
 # %% [markdown] tags=[]
-# The horizontal line in the plot is the median of the average ARI; partitions above that line are marked as selected for downstream analysis
+# The horizontal line in the plot is the median of the average agreement value; partitions above that line are marked as selected for downstream analysis
 
 # %% tags=[]
 # this list shows the selected final partitions, and which methods achieved the highest agreement
 plot_data[plot_data["selected"]].sort_values("k")
 
 # %% [markdown] tags=[]
-# Evidence accumulation approaches (EAC) based on hierarchical clustering (such as `eac_average_coassoc_matrix` and `eac_single_coassoc_matrix`) pick the best partitions for lower `k` values, whereas spectral clustering does it better for all the rest.
+# From the two evidence accumulation approaches (EAC) we are using, the spectral clustering based one seems to do it better for almost all `k` values (except for `k==13`).
 
 # %% tags=[]
