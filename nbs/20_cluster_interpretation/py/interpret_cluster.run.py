@@ -30,6 +30,7 @@
 # %autoreload 2
 
 # %%
+import pickle
 import re
 from pathlib import Path
 
@@ -155,6 +156,24 @@ ci.fit(data, part, PARTITION_CLUSTER_ID)
 
 # %%
 ci.features_
+
+# %%
+# save interpreter instance
+output_dir = Path(
+    conf.RESULTS["CLUSTERING_INTERPRETATION"]["BASE_DIR"],
+    "cluster_lvs",
+    f"part{PARTITION_K}",
+)
+output_dir.mkdir(exist_ok=True, parents=True)
+
+# %%
+output_file = Path(
+    output_dir, f"cluster_interpreter-part{PARTITION_K}_k{PARTITION_CLUSTER_ID}.pkl"
+)
+display(output_file)
+
+# %%
+ci.features_.to_pickle(output_file)
 
 # %% [markdown]
 # ## Top attributes
