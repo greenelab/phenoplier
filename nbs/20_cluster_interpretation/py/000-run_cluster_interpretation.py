@@ -30,7 +30,9 @@
 # %autoreload 2
 
 # %% tags=[]
+import os
 import shutil
+from multiprocessing import Pool
 import subprocess
 from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -82,7 +84,7 @@ display(selected_partition_ks)
 
 # %% tags=[]
 CLUSTER_ANALYSIS_OUTPUT_DIR = Path(
-    conf.RESULTS["CLUSTERING_INTERPRETATION_OUTPUT_DIR"],
+    conf.RESULTS["CLUSTERING_INTERPRETATION"]["CLUSTERS_STATS"],
     "cluster_analyses",
 ).resolve()
 display(CLUSTER_ANALYSIS_OUTPUT_DIR)
@@ -92,41 +94,87 @@ CLUSTER_ANALYSIS_OUTPUT_DIR.mkdir(exist_ok=True)
 
 
 # %% tags=[]
-def run_notebook(input_nb, output_nb, parameters):
-    pm.execute_notebook(
-        input_nb,
-        output_nb,
-        progress_bar=False,
-        parameters=parameters,
+def run_notebook(input_nb, output_nb, parameters, environment):
+    options = []
+    for k, v in parameters.items():
+        options.append("-p")
+        options.append(str(k))
+        options.append(str(v))
+
+    cmdlist = (
+        ["papermill"]
+        + [
+            f"'{input_nb}'",
+            f"'{output_nb}'",
+        ]
+        + options
     )
+    cmdlist = " ".join(cmdlist)
+
+    res = subprocess.run(
+        cmdlist,
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        env=environment,
+        text=True,
+    )
+    return cmdlist, res
 
 
 # %% tags=[]
-for part_k in selected_partition_ks:
-    print(f"Partition k:{part_k}", flush=True)
+tasks = {}
 
-    output_folder = Path(CLUSTER_ANALYSIS_OUTPUT_DIR, f"part{part_k}").resolve()
-    shutil.rmtree(output_folder, ignore_errors=True)
-    output_folder.mkdir()
+with Pool(conf.GENERAL["N_JOBS"]) as pool:
+    for part_k in selected_partition_ks:
+        print(f"Partition k:{part_k}", flush=True)
 
-    part = best_partitions.loc[part_k, "partition"]
-    part_clusters = pd.Series(part).value_counts()
+        output_folder = Path(CLUSTER_ANALYSIS_OUTPUT_DIR, f"part{part_k}").resolve()
+        shutil.rmtree(output_folder, ignore_errors=True)
+        output_folder.mkdir()
 
-    # always skip the biggest cluster in each partition
-    for c_size_idx, c in enumerate(part_clusters.index[1:]):
-        print(f"  Cluster: {c}", flush=True)
+        part = best_partitions.loc[part_k, "partition"]
+        part_clusters = pd.Series(part).value_counts()
 
-        input_nb = Path(
-            conf.RESULTS["CLUSTERING_INTERPRETATION_OUTPUT_DIR"],
-            "interpret_cluster.run.ipynb",
-        ).resolve()
+        # always skip the biggest cluster in each partition
+        for c_size_idx, c in enumerate(part_clusters.index[1:]):
+            print(f"  Cluster: {c}", flush=True)
 
-        output_nb = Path(
-            output_folder, f"{c_size_idx:02}-part{part_k}_k{c}.ipynb"
-        ).resolve()
+            input_nb = Path(
+                conf.RESULTS["CLUSTERING_INTERPRETATION"]["CLUSTERS_STATS"],
+                "interpret_cluster.run.ipynb",
+            ).resolve()
 
-        parameters = dict(PARTITION_K=part_k, PARTITION_CLUSTER_ID=c)
+            output_nb = Path(
+                output_folder, f"{c_size_idx:02}-part{part_k}_k{c}.ipynb"
+            ).resolve()
 
-        run_notebook(input_nb, output_nb, parameters)
+            parameters = dict(PARTITION_K=part_k, PARTITION_CLUSTER_ID=c)
 
-# %% tags=[]
+            res = pool.apply_async(
+                run_notebook,
+                (
+                    input_nb,
+                    output_nb,
+                    parameters,
+                    {k: v for k, v in os.environ.items()},
+                ),
+            )
+            tasks[f"{part_k}_k{c}"] = res
+
+    pool.close()
+
+    # show errors, if any
+    for k, t in tasks.items():
+        t.wait()
+
+        cmd, out = t.get()
+        if out.returncode != 0:
+            display(k)
+            print(cmd)
+            print(out.stdout)
+
+            pool.terminate()
+            break
+
+# %%
