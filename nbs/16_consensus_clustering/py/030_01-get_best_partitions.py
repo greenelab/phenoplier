@@ -64,7 +64,7 @@ consensus_clustering_results.head()
 # # Explore best partition per k
 
 # %% tags=[]
-_col0, _col1 = "ami_mean", "ami_median"
+_col0, _col1 = "ari_mean", "ari_median"
 
 _tmp = (
     consensus_clustering_results.groupby("k")
@@ -93,7 +93,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
 # # Select best partition per k
 
 # %% tags=[]
-_measure_col = "ami_mean"
+_measure_col = "ari_mean"
 
 best_parts = (
     consensus_clustering_results.groupby("k")
