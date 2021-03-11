@@ -65,13 +65,15 @@ consensus_clustering_results.head()
 
 # %%
 _selected_measure = "ARI"
-_col0, _col1 = "ari_mean", "ari_median"
+_mean_column, _median_column = "ari_mean", "ari_median"
 
 # %% tags=[]
 _tmp = (
     consensus_clustering_results.groupby("k")
-    .apply(lambda x: x.sort_values(_col0, ascending=False).head(1))
-    .sort_values(_col0, ascending=False)[["method", "k", _col0, _col1]]
+    .apply(lambda x: x.sort_values(_mean_column, ascending=False).head(1))
+    .sort_values(_mean_column, ascending=False)[
+        ["method", "k", _mean_column, _median_column]
+    ]
 )
 display(_tmp.head(10))
 
@@ -80,9 +82,9 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     "whitegrid", {"grid.linestyle": "--"}
 ):
     fig, ax = plt.subplots(figsize=(12, 6))
-    ax = sns.pointplot(data=_tmp, x="k", y=_col0, ci=None, label="One")
+    ax = sns.pointplot(data=_tmp, x="k", y=_mean_column, ci=None, label="One")
     ax = sns.pointplot(
-        data=_tmp, x="k", y=_col1, ci=None, color="red", label="Two", ax=ax
+        data=_tmp, x="k", y=_median_column, ci=None, color="red", label="Two", ax=ax
     )
     ax.set_ylabel(f"Agreement with ensemble ({_selected_measure})")
     ax.set_xlabel("Number of clusters ($k$)")
@@ -94,9 +96,11 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
 # %% [markdown] tags=[]
 # # Select best partition per k
 
-# %% tags=[]
-_measure_col = _col0
+# %%
+_selected_stat = "Median"
+_measure_col = _median_column
 
+# %% tags=[]
 best_parts = (
     consensus_clustering_results.groupby("k")
     .apply(lambda x: x.sort_values(_measure_col, ascending=False).head(1))
@@ -134,7 +138,7 @@ best_threshold_description = "75th percentile"
 display(best_threshold)
 
 best_parts = best_parts.assign(
-    selected=best_parts[_measure_col].apply(lambda x: x > best_threshold)
+    selected=best_parts[_measure_col].apply(lambda x: x >= best_threshold)
 )
 
 # %% tags=[]
@@ -176,7 +180,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
         color=next(current_palette),
         label=best_threshold_description,
     )
-    ax.set_ylabel(f"Agreement with ensemble\n(Average {_selected_measure})")
+    ax.set_ylabel(f"Agreement with ensemble\n({_selected_stat} {_selected_measure})")
     ax.set_xlabel("Number of clusters ($k$)")
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
     plt.legend()
@@ -191,6 +195,6 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
 plot_data[plot_data["selected"]].sort_values("k")
 
 # %% [markdown] tags=[]
-# From the two evidence accumulation approaches (EAC) we are using, the spectral clustering based one seems to do it better for almost all `k` values (except for `k==13`).
+# From the two evidence accumulation approaches (EAC) we are using, the spectral clustering based one does it better for almost all `k` values, whereas the hierarchical clustering based approach seems to do a little bit better for lower `k`.
 
 # %% tags=[]
