@@ -146,7 +146,7 @@ with Pool(conf.GENERAL["N_JOBS"]) as pool:
             ).resolve()
 
             output_nb = Path(
-                output_folder, f"{c_size_idx:02}-part{part_k}_k{c}.ipynb"
+                output_folder, f"{c_size_idx:02}-part{part_k}_k{c}.run.ipynb"
             ).resolve()
 
             parameters = dict(PARTITION_K=part_k, PARTITION_CLUSTER_ID=c)
