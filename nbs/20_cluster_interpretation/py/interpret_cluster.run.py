@@ -149,7 +149,11 @@ show_cluster_stats(data, part, PARTITION_CLUSTER_ID)
 # ## Associated latent variables
 
 # %%
-ci = ClusterInterpreter()
+ci = ClusterInterpreter(
+    threshold=1.0,
+    max_features=20,
+    max_features_to_explore=100,
+)
 
 # %%
 ci.fit(data, part, PARTITION_CLUSTER_ID)
