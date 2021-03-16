@@ -117,6 +117,10 @@ data.head()
 # ## Tests different k values (k-NN)
 
 # %% tags=[]
+# `k_values` is the full range of k for kNN, whereas `k_values_to_explore` is a
+# subset that will be explored in this notebook. If the analysis works, then
+# `k_values` and `eps_range_per_k` below are copied to the notebook that will
+# produce the final DBSCAN runs (`../002_[...]-dbscan-....ipynb`)
 k_values = np.arange(2, 125 + 1, 1)
 k_values_to_explore = (2, 5, 10, 15, 20, 30, 40, 50, 75, 100, 125)
 
