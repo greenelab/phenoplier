@@ -90,6 +90,8 @@ These steps are only for PhenoPLIER developers.
 
 ## Optional packages
 
+REMOVE THIS!!
+
 These optional packages might be useful for a developer, but are not necessary
 for a user.
 
