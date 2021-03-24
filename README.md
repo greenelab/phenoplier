@@ -53,7 +53,8 @@ parallel -k --lb --halt 2 -j1 'bash run_nbs.sh {}' ::: 01_preprocessing/*.ipynb
 Or if you want to run all the analysis at once, you can use:
 
 ```bash
-parallel -k --lb --halt 2 -j1 'bash run_nbs.sh {}' ::: nbs/**/*.ipynb
+shopt -s globstar
+parallel -k --lb --halt 2 -j1 'bash run_nbs.sh {}' ::: nbs/{,**/}*.ipynb
 ```
 
 ## From your browser
