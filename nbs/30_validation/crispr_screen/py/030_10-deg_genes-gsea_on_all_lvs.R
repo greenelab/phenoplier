@@ -36,6 +36,9 @@ OUTPUT_DIR <- Sys.getenv("PHENOPLIER_RESULTS_CRISPR_ANALYSES_BASE_DIR")
 # %%
 OUTPUT_DIR
 
+# %%
+dir.create(OUTPUT_DIR, recursive=TRUE)
+
 # %% [markdown]
 # # Data loading
 
@@ -217,7 +220,7 @@ display(output_file)
 write_tsv(df, output_file)
 
 # %% [markdown]
-# # Quick analyses
+# # Quick analyses/tests
 
 # %% [markdown]
 # ## See how one LV looks like
@@ -232,7 +235,10 @@ df %>% filter(lv == "LV100" & pathway == "gene_set_increase") %>% arrange(desc(p
 df_signif <- df %>% group_by(lv, pathway) %>% summarize(max_padj = max(padj)) %>% filter(max_padj < 0.05)
 
 # %%
-length(df_signif)
+nrow(df_signif)
+
+# %%
+stopifnot(nrow(df_signif) > 500)
 
 # %%
 df_signif %>% arrange(max_padj)
