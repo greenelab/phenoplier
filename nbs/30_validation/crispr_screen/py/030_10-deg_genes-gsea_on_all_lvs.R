@@ -96,7 +96,13 @@ length(deg_gene_sets)
 length(deg_gene_sets[["gene_set_increase"]])
 
 # %%
+stopifnot(length(deg_gene_sets[["gene_set_increase"]]) == 175)
+
+# %%
 length(deg_gene_sets[["gene_set_decrease"]])
+
+# %%
+stopifnot(length(deg_gene_sets[["gene_set_decrease"]]) == 96)
 
 # %%
 # test new increase set
