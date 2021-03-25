@@ -235,6 +235,14 @@ LINCS["CONSENSUS_SIGNATURES_FILE"] = Path(
 ).resolve()
 
 
+#
+# CRISPR screening
+#
+CRISPR = {}
+CRISPR["BASE_DIR"] = Path(DATA_DIR, "crispr_screen").resolve()
+CRISPR["LIPIDS_GENE_SETS_FILE"] = Path(CRISPR["BASE_DIR"], "lipid_DEG.csv").resolve()
+
+
 if __name__ == "__main__":
     # if this script is run, then it exports the configuration as environment
     # variables (for bash/R, etc)
