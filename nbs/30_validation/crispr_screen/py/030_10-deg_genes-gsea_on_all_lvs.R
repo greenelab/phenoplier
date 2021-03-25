@@ -238,7 +238,7 @@ df_signif <- df %>% group_by(lv, pathway) %>% summarize(max_padj = max(padj)) %>
 nrow(df_signif)
 
 # %%
-stopifnot(nrow(df_signif) > 500)
+stopifnot(nrow(df_signif) > 50)
 
 # %%
 df_signif %>% arrange(max_padj)
