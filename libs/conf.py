@@ -83,6 +83,11 @@ RESULTS["CLUSTERING_INTERPRETATION"]["CLUSTERS_STATS"] = Path(
     "20_cluster_interpretation",
 ).resolve()
 
+RESULTS["CRISPR_ANALYSES"] = {}
+RESULTS["CRISPR_ANALYSES"]["BASE_DIR"] = Path(
+    RESULTS["BASE_DIR"], "crispr_analyses"
+).resolve()
+
 RESULTS["GLS"] = Path(RESULTS["BASE_DIR"], "gls").resolve()
 
 #

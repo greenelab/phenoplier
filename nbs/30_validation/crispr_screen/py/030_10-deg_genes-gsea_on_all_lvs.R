@@ -31,10 +31,10 @@ pd <- import("pandas")
 # # Settings
 
 # %%
-CRISPR_DATA_DIR <- Sys.getenv("PHENOPLIER_CRISPR_BASE_DIR")
+OUTPUT_DIR <- Sys.getenv("PHENOPLIER_RESULTS_CRISPR_ANALYSES_BASE_DIR")
 
 # %%
-CRISPR_DATA_DIR
+OUTPUT_DIR
 
 # %% [markdown]
 # # Data loading
@@ -210,7 +210,7 @@ head(df)
 # ## Save
 
 # %%
-output_file <- file.path(CRISPR_DATA_DIR, "fsgea-all_lvs.tsv")
+output_file <- file.path(OUTPUT_DIR, "fgsea-all_lvs.tsv")
 display(output_file)
 
 # %%
