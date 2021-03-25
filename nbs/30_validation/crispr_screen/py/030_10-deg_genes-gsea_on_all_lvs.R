@@ -223,7 +223,7 @@ write_tsv(df, output_file)
 # ## See how one LV looks like
 
 # %%
-df %>% filter(lv == "LV100" & pathway == "gene_set_increase_2_and_3") %>% arrange(desc(padj))
+df %>% filter(lv == "LV100" & pathway == "gene_set_increase") %>% arrange(desc(padj))
 
 # %% [markdown]
 # ## Show significant LVs
