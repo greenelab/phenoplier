@@ -18,12 +18,13 @@
 library(readr)
 library(fgsea)
 library(readr)
+library(dplyr)
 
 # %%
 all_genes_ranked <- read_csv("/home/miltondp/projects/labs/greenelab/phenoplier/base/data/crispr_screen/lipid_DEG.csv")
 
 # %%
-deg_gene_sets = list()
+orig_deg_gene_sets <- list()
 
 for (r in unique(all_genes_ranked$rank)) {
     if (r == 0) {
@@ -33,8 +34,25 @@ for (r in unique(all_genes_ranked$rank)) {
     data <- all_genes_ranked[all_genes_ranked$rank == r,]
     #q <- quantile(data, 0.50, names=FALSE)
     
-    deg_gene_sets[[paste0("gene_set_", r)]] <- data$gene_name
+    orig_deg_gene_sets[[paste0("gene_set_", r)]] <- data$gene_name
 }
+
+# %%
+deg_gene_sets <- list()
+
+# %%
+# genes that increase lipids
+deg_gene_sets[["gene_set_increase_2_and_3"]] <- c(
+    orig_deg_gene_sets[["gene_set_2"]],
+    orig_deg_gene_sets[["gene_set_3"]]
+)
+
+# %%
+# genes that decrease lipids
+deg_gene_sets[["gene_set_decrease_-2_and_-3"]] <- c(
+    orig_deg_gene_sets[["gene_set_-2"]],
+    orig_deg_gene_sets[["gene_set_-3"]]
+)
 
 # %%
 # MultiPLIER LVs
@@ -53,16 +71,29 @@ for (cidx in 1:ncol(multiplier_z)) {
 # # Compute enrichment on all LVs
 
 # %%
+n_reps = 10
+
+# %%
+set.seed(0)
+
+# %%
 results = list()
 
-# %%
-set.seed(42)
-
-# %%
 for (lv in names(lvs)) {
-    res <- fgsea(pathways = deg_gene_sets, stats = lvs[[lv]], scoreType = "pos", eps = 0.0)[order(pval), ]
-    res[, "leadingEdge"] <- sapply(res$leadingEdge, paste, collapse=",")
-    res[, "lv"] <- lv
+    repetitions = list()
+    
+    for (i in 1:n_reps) {
+        rep_res <- fgsea(pathways = deg_gene_sets, stats = lvs[[lv]], scoreType = "pos", eps = 0.0)[order(pval), ]
+        rep_res[, "leadingEdge"] <- sapply(rep_res$leadingEdge, paste, collapse=",")
+        rep_res[, "lv"] <- lv
+        rep_res[, "rep_idx"] <- i
+        
+        repetitions[[i]] <- rep_res
+    }
+#     res <- fgsea(pathways = deg_gene_sets, stats = lvs[[lv]], scoreType = "pos", eps = 0.0)[order(pval), ]
+    res <- do.call(rbind, repetitions)
+#     res[, "leadingEdge"] <- sapply(res$leadingEdge, paste, collapse=",")
+#     res[, "lv"] <- lv
     results[[lv]] <- res
 }
 
@@ -85,12 +116,12 @@ write_tsv(df, "/home/miltondp/projects/labs/greenelab/phenoplier/base/data/crisp
 # # Quick analyses
 
 # %%
-df_signif <- df[df$padj < 0.05]
+df %>% filter(lv == "LV100" & pathway == "gene_set_increase_2_and_3") %>% arrange(desc(padj))
 
 # %%
-dim(df_signif)
+df_signif <- df %>% group_by(lv, pathway) %>% summarize(max_padj = max(padj)) %>% filter(max_padj < 0.05)
 
 # %%
-df_signif[order(padj),]
+df_signif %>% arrange(max_padj)
 
 # %%
