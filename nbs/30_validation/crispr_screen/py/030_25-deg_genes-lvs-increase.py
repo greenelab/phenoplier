@@ -28,25 +28,28 @@
 # %autoreload 2
 
 # %%
-import re
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 from IPython.display import HTML
 
-# from entity import Trait
-# from clustering.methods import ClusterInterpreter
-# from data.recount2 import LVAnalysis
+from entity import Trait
 from data.cache import read_data
-
-# from utils import generate_result_set_name
 import conf
 
 # %% [markdown]
 # # Settings
+
+# %%
+EXPERIMENT_NAME = "lv"
+LIPIDS_GENE_SET = "gene_set_increase"
+
+# %%
+OUTPUT_DIR = Path(
+    conf.RESULTS["CRISPR_ANALYSES"]["BASE_DIR"], f"{EXPERIMENT_NAME}-{LIPIDS_GENE_SET}"
+)
+OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
+display(OUTPUT_DIR)
 
 # %% [markdown]
 # # Data loading
@@ -75,7 +78,7 @@ phenomexcan_data.head()
 
 # %%
 deg_enrich = pd.read_csv(
-    "/home/miltondp/projects/labs/greenelab/phenoplier/base/data/crispr_screen/fsgea-all_lvs.tsv",
+    Path(conf.RESULTS["CRISPR_ANALYSES"]["BASE_DIR"], "fgsea-all_lvs.tsv").resolve(),
     sep="\t",
 )
 
@@ -110,38 +113,8 @@ multiplier_model_summary.head()
 
 # %%
 df = deg_enrich[
-    deg_enrich["pathway"].isin(
-        (
-            #             "gene_set_decrease_-2_and_-3",
-            "gene_set_increase_2_and_3",
-        )
-    )
-    & (deg_enrich["padj"] < 0.05)
-]
-
-# %%
-df.shape
-
-
-# %%
-def _get_number(x):
-    if "gene_set_decrease_" in x:
-        return -1
-    elif "gene_set_increase_" in x:
-        return 1
-    else:
-        raise ValueError("Unknown")
-
-
-# df = df.assign(pathway_number=df["pathway"].apply(lambda x: int(x.split("_set_")[1])))
-df = df.assign(pathway_number=df["pathway"].apply(_get_number))
-
-# df = df.assign(
-#     pathway_number_abs=df["pathway"].apply(lambda x: np.abs(_get_number(x)))
-# )
-
-# %%
-df = df.sort_values(["pathway_number", "padj"], ascending=[False, True])
+    deg_enrich["pathway"].isin((LIPIDS_GENE_SET,)) & (deg_enrich["padj"] < 0.05)
+].sort_values("padj", ascending=True)
 
 # %%
 df.shape
@@ -153,13 +126,14 @@ df
 important_lvs = df["lv"].unique()
 
 # %%
-important_lvs.shape
+display(important_lvs.shape)
+assert important_lvs.shape[0] == 27
 
 # %%
 important_lvs
 
 # %% [markdown]
-# # Summary
+# # Get top traits and pathways
 
 # %%
 pathways = []
@@ -181,11 +155,25 @@ for lv in important_lvs:
     #     _tmp = _tmp.head(50)
     traits.append(_tmp)
 
-# %%
-pd.Series(pathways).value_counts().head(20)
+# %% [markdown]
+# ## Pathways
 
 # %%
-_tmp = (
+pathways_df = pd.Series(pathways).value_counts()
+display(pathways_df)
+
+# %%
+output_file = Path(OUTPUT_DIR, "pathways_counts.pkl").resolve()
+display(output_file)
+
+# %%
+pathways_df.to_pickle(output_file)
+
+# %% [markdown]
+# ## Traits
+
+# %%
+traits_df = (
     pd.concat(traits)
     .reset_index()
     .groupby("index")
@@ -195,7 +183,40 @@ _tmp = (
 ).rename(columns={"index": "trait", 0: "value"})
 
 # %%
-top_traits = _tmp.head(100)
+# add trait category
+trait_code_to_trait_obj = [
+    Trait.get_trait(full_code=t)
+    if not Trait.is_efo_label(t)
+    else Trait.get_traits_from_efo(t)
+    for t in traits_df["trait"]
+]
+
+# %%
+traits_df = traits_df.assign(
+    category=[
+        t.category if not isinstance(t, list) else t[0].category
+        for t in trait_code_to_trait_obj
+    ]
+)
+
+# %%
+traits_df.shape
+
+# %%
+traits_df.head()
+
+# %%
+output_file = Path(OUTPUT_DIR, "traits.pkl").resolve()
+display(output_file)
+
+# %%
+traits_df.to_pickle(output_file)
+
+# %% [markdown]
+# # Summary
+
+# %%
+top_traits = traits_df.head(100)
 
 # %%
 with pd.option_context(
@@ -207,60 +228,7 @@ with pd.option_context(
 # # Summary using trait categories
 
 # %%
-from entity import Trait
-
-# %%
-trait_code_to_trait_obj = [
-    Trait.get_trait(full_code=t)
-    if not Trait.is_efo_label(t)
-    else Trait.get_traits_from_efo(t)
-    for t in top_traits["trait"]
-]
-
-# %%
-top_traits = top_traits.assign(
-    category=[
-        t.category
-        if not isinstance(t, list)
-        else t[0].category  # FIXME just taking the first one
-        for t in trait_code_to_trait_obj
-    ]
-)
-
-# for t in trait_code_to_trait_obj:
-#     _tmp = multiplier_model_summary[
-#         (multiplier_model_summary["LV index"] == lv[2:])
-#         & (
-#             (multiplier_model_summary["FDR"] < 0.05)
-#             | (multiplier_model_summary["AUC"] > 0.75)
-#         )
-#     ]
-#     pathways.extend(_tmp["pathway"].tolist())
-
-#     _tmp = phenomexcan_data[lv]
-#     _tmp = _tmp[_tmp > 0.0].sort_values(ascending=False)
-
-#     _tmp = _tmp.head(50)
-
-#     _tmp = _tmp.reset_index().rename(columns={lv: "lv", "index": "trait"})
-
-#     _tmp["trait_category"] = [
-#         trait_code_to_trait_obj[t].category
-#         if not isinstance(trait_code_to_trait_obj[t], list)
-#         else trait_code_to_trait_obj[t][0].category
-#         for t in _tmp["trait"]
-#     ]
-
-#     traits.append(_tmp)
-
-# %%
-top_traits.shape
-
-# %%
-top_traits.head()
-
-# %%
-_tmp = (
+top_traits_categories = (
     top_traits.groupby("category")
     .mean()
     .sort_values("value", ascending=False)
@@ -268,16 +236,16 @@ _tmp = (
 )
 
 # %%
-_tmp.head()
+top_traits_categories.head()
 
 # %%
 with pd.option_context(
     "display.max_rows", None, "display.max_columns", None, "max_colwidth", None
 ):
-    display(_tmp)
+    display(top_traits_categories)
 
 # %%
-for row_idx, row in _tmp.iterrows():
+for row_idx, row in top_traits_categories.iterrows():
     category = row["category"]
     display(HTML(f"<h2>{category}</h2>"))
 
