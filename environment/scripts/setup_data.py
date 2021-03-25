@@ -238,6 +238,16 @@ def download_multiplier_banchereau_mcp_neutrophils(**kwargs):
     )
 
 
+def download_crispr_lipids_gene_sets_file(**kwargs):
+    output_file = conf.CRISPR["LIPIDS_GENE_SETS_FILE"]
+    curl(
+        "https://upenn.box.com/shared/static/amiu6epztbuqjoad7eq9e50fpfdzdrvt.csv",
+        output_file,
+        "987eeef1987421b596988eba92e6305f",
+        logger=logger,
+    )
+
+
 def _get_file_from_zip(
     zip_file_url,
     zip_file_path,
