@@ -14,14 +14,40 @@
 #     name: ir
 # ---
 
-# %%
-library(readr)
-library(fgsea)
-library(readr)
-library(dplyr)
+# %% [markdown]
+# # Module loading
 
 # %%
-all_genes_ranked <- read_csv("/home/miltondp/projects/labs/greenelab/phenoplier/base/data/crispr_screen/lipid_DEG.csv")
+library(IRdisplay)
+library(readr)
+library(fgsea)
+library(dplyr)
+library(reticulate)
+
+# %%
+pd <- import("pandas")
+
+# %% [markdown]
+# # Settings
+
+# %%
+CRISPR_DATA_DIR <- Sys.getenv("PHENOPLIER_CRISPR_BASE_DIR")
+
+# %%
+CRISPR_DATA_DIR
+
+# %% [markdown]
+# # Data loading
+
+# %% [markdown]
+# ## Lipids gene sets
+
+# %%
+input_file <- Sys.getenv("PHENOPLIER_CRISPR_LIPIDS_GENE_SETS_FILE")
+display(input_file)
+
+# %%
+all_genes_ranked <- read_csv(input_file)
 
 # %%
 orig_deg_gene_sets <- list()
@@ -38,29 +64,101 @@ for (r in unique(all_genes_ranked$rank)) {
 }
 
 # %%
+length(orig_deg_gene_sets)
+
+# %% [markdown]
+# ### Combine gene sets into "increase lipids" and "decrease lipids"
+
+# %%
 deg_gene_sets <- list()
 
 # %%
 # genes that increase lipids
-deg_gene_sets[["gene_set_increase_2_and_3"]] <- c(
+deg_gene_sets[["gene_set_increase"]] <- c(
     orig_deg_gene_sets[["gene_set_2"]],
     orig_deg_gene_sets[["gene_set_3"]]
 )
 
 # %%
 # genes that decrease lipids
-deg_gene_sets[["gene_set_decrease_-2_and_-3"]] <- c(
+deg_gene_sets[["gene_set_decrease"]] <- c(
     orig_deg_gene_sets[["gene_set_-2"]],
     orig_deg_gene_sets[["gene_set_-3"]]
 )
 
 # %%
-# MultiPLIER LVs
-multiplier_z = readRDS("/media/miltondp/Elements1/projects/multiplier/recount2_PLIER_data/recount_PLIER_model.RDS")$Z
+length(deg_gene_sets)
 
+# %%
+length(deg_gene_sets[["gene_set_increase"]])
+
+# %%
+length(deg_gene_sets[["gene_set_decrease"]])
+
+# %%
+# test new increase set
+new_set <- deg_gene_sets[["gene_set_increase"]]
+expected_set <- union(
+    orig_deg_gene_sets[["gene_set_2"]],
+    orig_deg_gene_sets[["gene_set_3"]]
+)
+
+stopifnot(length(new_set) == length(unique(new_set)))
+
+stopifnot(
+    length(new_set) == 
+    length(
+        intersect(
+            new_set,
+            expected_set
+        )
+    )
+)
+
+# %%
+# test new decrease set
+new_set <- deg_gene_sets[["gene_set_decrease"]]
+expected_set <- union(
+    orig_deg_gene_sets[["gene_set_-2"]],
+    orig_deg_gene_sets[["gene_set_-3"]]
+)
+
+stopifnot(length(new_set) == length(unique(new_set)))
+
+stopifnot(
+    length(new_set) == 
+    length(
+        intersect(
+            new_set,
+            expected_set
+        )
+    )
+)
+
+# %% [markdown]
+# ## MultiPLIER Z
+
+# %%
+multiplier_z = pd$read_pickle(
+    Sys.getenv("PHENOPLIER_MULTIPLIER_MODEL_Z_MATRIX_FILE")
+)
+
+# %%
+dim(multiplier_z)
+
+# %%
+head(multiplier_z)
+
+# %% [markdown]
+# # Prepare LVs list
+
+# %%
 lvs = list()
+z_gene_names <- rownames(multiplier_z)
+
 for (cidx in 1:ncol(multiplier_z)) {
     data <- multiplier_z[, cidx]
+    names(data) <- z_gene_names
     # q <- quantile(data, 0.75, names=FALSE)
     q <- 0.0
     
@@ -90,10 +188,9 @@ for (lv in names(lvs)) {
         
         repetitions[[i]] <- rep_res
     }
-#     res <- fgsea(pathways = deg_gene_sets, stats = lvs[[lv]], scoreType = "pos", eps = 0.0)[order(pval), ]
+    
     res <- do.call(rbind, repetitions)
-#     res[, "leadingEdge"] <- sapply(res$leadingEdge, paste, collapse=",")
-#     res[, "lv"] <- lv
+
     results[[lv]] <- res
 }
 
@@ -109,17 +206,33 @@ dim(df)
 # %%
 head(df)
 
+# %% [markdown]
+# ## Save
+
 # %%
-write_tsv(df, "/home/miltondp/projects/labs/greenelab/phenoplier/base/data/crispr_screen/fsgea-all_lvs.tsv")
+output_file <- file.path(CRISPR_DATA_DIR, "fsgea-all_lvs.tsv")
+display(output_file)
+
+# %%
+write_tsv(df, output_file)
 
 # %% [markdown]
 # # Quick analyses
 
+# %% [markdown]
+# ## See how one LV looks like
+
 # %%
 df %>% filter(lv == "LV100" & pathway == "gene_set_increase_2_and_3") %>% arrange(desc(padj))
 
+# %% [markdown]
+# ## Show significant LVs
+
 # %%
 df_signif <- df %>% group_by(lv, pathway) %>% summarize(max_padj = max(padj)) %>% filter(max_padj < 0.05)
+
+# %%
+length(df_signif)
 
 # %%
 df_signif %>% arrange(max_padj)
