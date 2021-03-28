@@ -165,16 +165,41 @@ show_cluster_stats(data, part, PARTITION_CLUSTER_ID)
 # _tmp[_tmp["tissue"].str.contains("Muscle")]
 
 # %%
-important_lvs = ['LV707', 'LV905', 'LV915', 'LV750', 'LV341', 'LV310', 'LV48',
-       'LV509', 'LV467', 'LV64', 'LV490', 'LV550', 'LV621', 'LV775',
-       'LV415', 'LV504', 'LV507', 'LV494', 'LV399', 'LV246', 'LV120',
-       'LV122', 'LV489', 'LV515', 'LV783', 'LV768', 'LV577']
+important_lvs = [
+    "LV707",
+    "LV905",
+    "LV915",
+    "LV750",
+    "LV341",
+    "LV310",
+    "LV48",
+    "LV509",
+    "LV467",
+    "LV64",
+    "LV490",
+    "LV550",
+    "LV621",
+    "LV775",
+    "LV415",
+    "LV504",
+    "LV507",
+    "LV494",
+    "LV399",
+    "LV246",
+    "LV120",
+    "LV122",
+    "LV489",
+    "LV515",
+    "LV783",
+    "LV768",
+    "LV577",
+]
 
 # %% tags=[]
 for lv_name in important_lvs:
     display(HTML(f"<h2>{lv_name}</h2>"))
 
-#     lv_name = lv_info["name"]
+    #     lv_name = lv_info["name"]
     lv_obj = lv_exp = LVAnalysis(lv_name, data)
 
     # show lv prior knowledge match (pathways)
