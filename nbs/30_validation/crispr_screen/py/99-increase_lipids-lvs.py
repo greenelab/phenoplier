@@ -43,13 +43,13 @@ import conf
 # # Settings
 
 # %% tags=["parameters"]
-PARTITION_K = None
-PARTITION_CLUSTER_ID = None
+# PARTITION_K = None
+# PARTITION_CLUSTER_ID = None
 
 # %% tags=["injected-parameters"]
 # Parameters
-PARTITION_K = 22
-PARTITION_CLUSTER_ID = 19
+# PARTITION_K = 22
+# PARTITION_CLUSTER_ID = 19
 
 
 # %% [markdown] tags=[]
@@ -140,11 +140,11 @@ def show_cluster_stats(data, partition, cluster):
 # ## Associated traits
 
 # %% tags=[]
-display(best_partitions.loc[PARTITION_K])
-part = best_partitions.loc[PARTITION_K, "partition"]
+# display(best_partitions.loc[PARTITION_K])
+# part = best_partitions.loc[PARTITION_K, "partition"]
 
 # %% tags=[]
-show_cluster_stats(data, part, PARTITION_CLUSTER_ID)
+# show_cluster_stats(data, part, PARTITION_CLUSTER_ID)
 
 # %% [markdown] tags=[]
 # ## Top attributes
