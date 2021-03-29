@@ -163,9 +163,7 @@ data.head()
 # _tmp[_tmp["tissue"].str.contains("Muscle")]
 
 # %%
-selected_lvs = [
-    "LV131", "LV897", "LV575", "LV246", "LV22"
-]
+selected_lvs = ["LV131", "LV897", "LV575", "LV246", "LV22"]
 
 # %%
 LV_OBJS = {}
@@ -217,7 +215,7 @@ for lv_name in selected_lvs:
                 continue
             display(fig)
             plt.close(fig)
-    
+
     LV_OBJS[lv_name] = lv_obj
 
 # %% tags=[]
