@@ -108,6 +108,57 @@ smultixcan_results = smultixcan_results.dropna(how="any")
 smultixcan_results.shape
 
 # %% [markdown] tags=[]
+# # Standardize S-MultiXcan results
+
+# %% [markdown] tags=[]
+# Here we adjust for highly polygenic traits.
+
+# %% tags=[] trusted=true
+_tmp = smultixcan_results.apply(lambda x: x / x.sum())
+
+# %% tags=[] trusted=true
+_tmp.shape
+
+# %% tags=[] trusted=true
+assert _tmp.shape == smultixcan_results.shape
+
+# %% tags=[] trusted=true
+# some testing
+_trait = "513"
+_gene = "SCYL3"
+assert (
+    _tmp.loc[_gene, _trait]
+    == smultixcan_results.loc[_gene, _trait] / smultixcan_results[_trait].sum()
+)
+
+_trait = "165.1"
+_gene = "DPM1"
+assert (
+    _tmp.loc[_gene, _trait]
+    == smultixcan_results.loc[_gene, _trait] / smultixcan_results[_trait].sum()
+)
+
+_trait = "327"
+_gene = "CFH"
+assert (
+    _tmp.loc[_gene, _trait]
+    == smultixcan_results.loc[_gene, _trait] / smultixcan_results[_trait].sum()
+)
+
+_trait = "701.2"
+_gene = "C1orf112"
+assert (
+    _tmp.loc[_gene, _trait]
+    == smultixcan_results.loc[_gene, _trait] / smultixcan_results[_trait].sum()
+)
+
+# %% tags=[] trusted=true
+smultixcan_results = _tmp
+
+# %% tags=[] trusted=true
+smultixcan_results.head()
+
+# %% [markdown] tags=[]
 # # Project S-MultiXcan data into MultiPLIER latent space
 
 # %% tags=[] trusted=true
