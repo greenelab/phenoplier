@@ -40,7 +40,7 @@ import conf
 
 # %% tags=[]
 # if True, then it doesn't check if result files already exist and runs everything again
-FORCE_RUN = False
+FORCE_RUN = True
 
 # %% tags=[]
 PREDICTION_METHOD = "Module-based"
@@ -131,12 +131,12 @@ pd.read_pickle(phenomexcan_input_file_list[10]).head()
 
 # %% tags=[]
 from drug_disease import (
-    predict_dotprod,
+#     predict_dotprod,
     predict_dotprod_neg,
-    predict_pearson,
-    predict_pearson_neg,
-    predict_spearman,
-    predict_spearman_neg,
+#     predict_pearson,
+#     predict_pearson_neg,
+#     predict_spearman,
+#     predict_spearman_neg,
 )
 
 # %% tags=[]
