@@ -63,18 +63,19 @@ OUTPUT_PROJ_DATA_DIR.mkdir(parents=True, exist_ok=True)
 # # Load PhenomeXcan results
 
 # %% tags=[]
-input_file_list = [
-    conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"],
-    Path(
-        conf.PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"],
-        "most_signif",
-        "spredixcan-most_signif.pkl",
-    ),
-]
+# input_file_list = [
+#     conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"],
+#     Path(
+#         conf.PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"],
+#         "most_signif",
+#         "spredixcan-most_signif.pkl",
+#     ),
+# ]
 
 # %% tags=[]
 # add S-PrediXcan results for each tissue
-input_file_list = input_file_list + [
+# input_file_list = input_file_list + [
+input_file_list = [
     f
     for f in Path(conf.PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"], "pkl").glob(
         "*.pkl"
@@ -84,7 +85,7 @@ input_file_list = input_file_list + [
 # %% tags=[]
 _tmp = len(input_file_list)
 display(_tmp)
-assert _tmp == 51
+assert _tmp == 49
 
 # %% tags=[]
 for input_file in input_file_list:
@@ -101,8 +102,8 @@ for input_file in input_file_list:
     print(f"  shape (no NaN): {phenomexcan_data.shape}")
     assert not phenomexcan_data.isna().any().any()
 
-    print("  standardizing")
-    phenomexcan_data = phenomexcan_data.apply(lambda x: x / x.abs().sum())
+    #     print("  standardizing")
+    #     phenomexcan_data = phenomexcan_data.apply(lambda x: x / x.abs().sum())
 
     output_file = Path(OUTPUT_RAW_DATA_DIR, f"{input_file.stem}-data.pkl").resolve()
     print(f"  saving to: {str(output_file)}")
