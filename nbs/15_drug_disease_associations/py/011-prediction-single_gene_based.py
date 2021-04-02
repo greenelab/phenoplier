@@ -131,12 +131,12 @@ pd.read_pickle(phenomexcan_input_file_list[10]).head()
 
 # %% tags=[]
 from drug_disease import (
-    predict_dotprod,
+#     predict_dotprod,
     predict_dotprod_neg,
-    predict_pearson,
-    predict_pearson_neg,
-    predict_spearman,
-    predict_spearman_neg,
+#     predict_pearson,
+#     predict_pearson_neg,
+#     predict_spearman,
+#     predict_spearman_neg,
 )
 
 # %% tags=[]
@@ -153,16 +153,6 @@ for phenomexcan_input_file in phenomexcan_input_file_list:
 
     print(f"  shape: {phenomexcan_projection.shape}")
 
-    #     predict_dotprod(
-    #         lincs_projection,
-    #         phenomexcan_input_file,
-    #         phenomexcan_projection,
-    #         OUTPUT_PREDICTIONS_DIR,
-    #         PREDICTION_METHOD,
-    #         doids_in_gold_standard,
-    #         FORCE_RUN,
-    #     )
-
     predict_dotprod_neg(
         lincs_projection,
         phenomexcan_input_file,
@@ -172,6 +162,60 @@ for phenomexcan_input_file in phenomexcan_input_file_list:
         doids_in_gold_standard,
         FORCE_RUN,
     )
+
+    predict_dotprod_neg(
+        lincs_projection,
+        phenomexcan_input_file,
+        phenomexcan_projection,
+        OUTPUT_PREDICTIONS_DIR,
+        PREDICTION_METHOD,
+        doids_in_gold_standard,
+        FORCE_RUN,
+        n_top_conditions=50,
+    )
+
+    predict_dotprod_neg(
+        lincs_projection,
+        phenomexcan_input_file,
+        phenomexcan_projection,
+        OUTPUT_PREDICTIONS_DIR,
+        PREDICTION_METHOD,
+        doids_in_gold_standard,
+        FORCE_RUN,
+        n_top_conditions=100,
+    )
+
+    predict_dotprod_neg(
+        lincs_projection,
+        phenomexcan_input_file,
+        phenomexcan_projection,
+        OUTPUT_PREDICTIONS_DIR,
+        PREDICTION_METHOD,
+        doids_in_gold_standard,
+        FORCE_RUN,
+        n_top_conditions=250,
+    )
+
+    predict_dotprod_neg(
+        lincs_projection,
+        phenomexcan_input_file,
+        phenomexcan_projection,
+        OUTPUT_PREDICTIONS_DIR,
+        PREDICTION_METHOD,
+        doids_in_gold_standard,
+        FORCE_RUN,
+        n_top_conditions=500,
+    )
+
+    #     predict_dotprod(
+    #         lincs_projection,
+    #         phenomexcan_input_file,
+    #         phenomexcan_projection,
+    #         OUTPUT_PREDICTIONS_DIR,
+    #         PREDICTION_METHOD,
+    #         doids_in_gold_standard,
+    #         FORCE_RUN,
+    #     )
 
     #     predict_pearson(
     #         lincs_projection,
