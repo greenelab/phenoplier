@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: all,-execution,-papermill
+#     cell_metadata_filter: all,-execution,-papermill,-trusted
 #     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
@@ -143,15 +143,15 @@ for phenomexcan_input_file in phenomexcan_input_file_list:
     phenomexcan_projection = pd.read_pickle(phenomexcan_input_file)
     print(f"  shape: {phenomexcan_projection.shape}")
 
-    predict_dotprod(
-        lincs_projection,
-        phenomexcan_input_file,
-        phenomexcan_projection,
-        OUTPUT_PREDICTIONS_DIR,
-        PREDICTION_METHOD,
-        doids_in_gold_standard,
-        FORCE_RUN,
-    )
+#     predict_dotprod(
+#         lincs_projection,
+#         phenomexcan_input_file,
+#         phenomexcan_projection,
+#         OUTPUT_PREDICTIONS_DIR,
+#         PREDICTION_METHOD,
+#         doids_in_gold_standard,
+#         FORCE_RUN,
+#     )
 
     predict_dotprod_neg(
         lincs_projection,
@@ -163,45 +163,45 @@ for phenomexcan_input_file in phenomexcan_input_file_list:
         FORCE_RUN,
     )
 
-    predict_pearson(
-        lincs_projection,
-        phenomexcan_input_file,
-        phenomexcan_projection,
-        OUTPUT_PREDICTIONS_DIR,
-        PREDICTION_METHOD,
-        doids_in_gold_standard,
-        FORCE_RUN,
-    )
+#     predict_pearson(
+#         lincs_projection,
+#         phenomexcan_input_file,
+#         phenomexcan_projection,
+#         OUTPUT_PREDICTIONS_DIR,
+#         PREDICTION_METHOD,
+#         doids_in_gold_standard,
+#         FORCE_RUN,
+#     )
 
-    predict_pearson_neg(
-        lincs_projection,
-        phenomexcan_input_file,
-        phenomexcan_projection,
-        OUTPUT_PREDICTIONS_DIR,
-        PREDICTION_METHOD,
-        doids_in_gold_standard,
-        FORCE_RUN,
-    )
+#     predict_pearson_neg(
+#         lincs_projection,
+#         phenomexcan_input_file,
+#         phenomexcan_projection,
+#         OUTPUT_PREDICTIONS_DIR,
+#         PREDICTION_METHOD,
+#         doids_in_gold_standard,
+#         FORCE_RUN,
+#     )
 
-    predict_spearman(
-        lincs_projection,
-        phenomexcan_input_file,
-        phenomexcan_projection,
-        OUTPUT_PREDICTIONS_DIR,
-        PREDICTION_METHOD,
-        doids_in_gold_standard,
-        FORCE_RUN,
-    )
+#     predict_spearman(
+#         lincs_projection,
+#         phenomexcan_input_file,
+#         phenomexcan_projection,
+#         OUTPUT_PREDICTIONS_DIR,
+#         PREDICTION_METHOD,
+#         doids_in_gold_standard,
+#         FORCE_RUN,
+#     )
 
-    predict_spearman_neg(
-        lincs_projection,
-        phenomexcan_input_file,
-        phenomexcan_projection,
-        OUTPUT_PREDICTIONS_DIR,
-        PREDICTION_METHOD,
-        doids_in_gold_standard,
-        FORCE_RUN,
-    )
+#     predict_spearman_neg(
+#         lincs_projection,
+#         phenomexcan_input_file,
+#         phenomexcan_projection,
+#         OUTPUT_PREDICTIONS_DIR,
+#         PREDICTION_METHOD,
+#         doids_in_gold_standard,
+#         FORCE_RUN,
+#     )
 
     print("\n")
 
