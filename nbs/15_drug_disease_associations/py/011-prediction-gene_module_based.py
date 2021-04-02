@@ -117,7 +117,7 @@ phenomexcan_input_file_list = [
     f
     for f in INPUT_DATA_DIR.glob("*.pkl")
     if f.name.startswith("spredixcan-")
-#     if f.name.startswith(("smultixcan-", "spredixcan-"))
+    #     if f.name.startswith(("smultixcan-", "spredixcan-"))
 ]
 
 # %% tags=[]
