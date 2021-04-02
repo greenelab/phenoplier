@@ -7,6 +7,20 @@ from sklearn.metrics import pairwise_distances
 from entity import Trait
 
 
+def _zero_nontop_genes(trait_vector, n_top, use_abs=False):
+    if use_abs:
+        df = trait_vector.abs()
+    else:
+        df = trait_vector
+
+    trait_top_genes = df.sort_values(ascending=False).head(n_top).index
+
+    trait_vector = trait_vector.copy()
+    trait_vector[~trait_vector.index.isin(trait_top_genes)] = 0.0
+
+    return trait_vector
+
+
 def _predict(
     lincs_projection,
     phenomexcan_input_file,
@@ -16,6 +30,8 @@ def _predict(
     base_method_name,
     preferred_doid_list,
     force_run,
+    n_top_conditions=None,
+    use_abs=False,
 ):
     """
     TODO: complete
@@ -33,11 +49,16 @@ def _predict(
     Returns:
 
     """
-    print(f"  predicting...", end="")
+    output_file_suffix = "all_genes"
+    if n_top_conditions is not None:
+        output_file_suffix = f"top_{n_top_conditions}_genes"
+
+    print(f"  predicting {output_file_suffix}...", end="")
 
     output_dir.mkdir(exist_ok=True, parents=True)
     output_file = Path(
-        output_dir, f"{phenomexcan_input_file.stem}-prediction_scores.h5"
+        output_dir,
+        f"{phenomexcan_input_file.stem}-{output_file_suffix}-prediction_scores.h5",
     ).resolve()
 
     if output_file.exists() and not force_run:
@@ -45,6 +66,12 @@ def _predict(
         return
 
     print("")
+
+    if n_top_conditions is not None:
+        # FIXME: this only works with the current dotprod/dotprod_neg methods
+        phenomexcan_projection = phenomexcan_projection.apply(
+            lambda x: _zero_nontop_genes(x, n_top_conditions, use_abs)
+        )
 
     drug_disease_assocs = prediction_function(lincs_projection, phenomexcan_projection)
     print(f"    shape: {drug_disease_assocs.shape}")
@@ -71,10 +98,13 @@ def _predict(
 
     classifier_data.to_hdf(output_file, mode="w", complevel=4, key="prediction")
 
-    pd.Series(
+    # FIXME: I think another way to put this is a list with the dict, instead of
+    # a list for each value as now
+    pd.DataFrame(
         {
-            "method": base_method_name,
-            "data": phenomexcan_input_file.stem,
+            "method": [base_method_name],
+            "n_top_genes": [-1.0 if n_top_conditions is None else n_top_conditions],
+            "data": [phenomexcan_input_file.stem],
         }
     ).to_hdf(output_file, mode="r+", key="metadata")
 
@@ -128,6 +158,8 @@ def predict_dotprod_neg(
     base_method_name,
     preferred_doid_list,
     force_run,
+    n_top_conditions=None,
+    use_abs=False,
 ):
     """
     TODO: complete
@@ -142,7 +174,6 @@ def predict_dotprod_neg(
         force_run:
 
     Returns:
-
     """
     output_dir = output_dir_base / "dotprod_neg"
 
@@ -158,6 +189,8 @@ def predict_dotprod_neg(
         base_method_name,
         preferred_doid_list,
         force_run,
+        n_top_conditions,
+        use_abs,
     )
 
 
