@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# **TODO**: should probably be moved to preprocessing folder.
+# **COMPLETE**: projects S-PrediXcan results on all tissues.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -101,6 +101,9 @@ for input_file in input_file_list:
     print(f"  shape (no NaN): {phenomexcan_data.shape}")
     assert not phenomexcan_data.isna().any().any()
 
+    print("  standardizing")
+    phenomexcan_data = phenomexcan_data.apply(lambda x: x / x.abs().sum())
+    
     output_file = Path(OUTPUT_RAW_DATA_DIR, f"{input_file.stem}-data.pkl").resolve()
     print(f"  saving to: {str(output_file)}")
     phenomexcan_data.to_pickle(output_file)
