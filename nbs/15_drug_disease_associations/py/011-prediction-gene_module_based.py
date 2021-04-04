@@ -124,20 +124,23 @@ phenomexcan_input_file_list = [
 display(len(phenomexcan_input_file_list))
 
 # %%
-pd.read_pickle(phenomexcan_input_file_list[10]).head()
+pd.read_pickle(phenomexcan_input_file_list[0]).head()
 
 # %% [markdown] tags=[]
 # # Predict drug-disease associations
 
 # %% tags=[]
 from drug_disease import (
-#     predict_dotprod,
+    #     predict_dotprod,
     predict_dotprod_neg,
-#     predict_pearson,
-#     predict_pearson_neg,
-#     predict_spearman,
-#     predict_spearman_neg,
+    #     predict_pearson,
+    #     predict_pearson_neg,
+    #     predict_spearman,
+    #     predict_spearman_neg,
 )
+
+# %%
+methods_to_run = [predict_dotprod_neg]
 
 # %% tags=[]
 for phenomexcan_input_file in phenomexcan_input_file_list:
@@ -147,66 +150,20 @@ for phenomexcan_input_file in phenomexcan_input_file_list:
     phenomexcan_projection = pd.read_pickle(phenomexcan_input_file)
     print(f"  shape: {phenomexcan_projection.shape}")
 
-    #     predict_dotprod(
-    #         lincs_projection,
-    #         phenomexcan_input_file,
-    #         phenomexcan_projection,
-    #         OUTPUT_PREDICTIONS_DIR,
-    #         PREDICTION_METHOD,
-    #         doids_in_gold_standard,
-    #         FORCE_RUN,
-    #     )
+    for prediction_method in methods_to_run:
+        for ntc in (None, 5, 10, 25, 50):
+            prediction_method(
+                lincs_projection,
+                phenomexcan_input_file,
+                phenomexcan_projection,
+                OUTPUT_PREDICTIONS_DIR,
+                PREDICTION_METHOD,
+                doids_in_gold_standard,
+                FORCE_RUN,
+                n_top_conditions=ntc,
+                use_abs=True,
+            )
 
-    predict_dotprod_neg(
-        lincs_projection,
-        phenomexcan_input_file,
-        phenomexcan_projection,
-        OUTPUT_PREDICTIONS_DIR,
-        PREDICTION_METHOD,
-        doids_in_gold_standard,
-        FORCE_RUN,
-    )
-
-    #     predict_pearson(
-    #         lincs_projection,
-    #         phenomexcan_input_file,
-    #         phenomexcan_projection,
-    #         OUTPUT_PREDICTIONS_DIR,
-    #         PREDICTION_METHOD,
-    #         doids_in_gold_standard,
-    #         FORCE_RUN,
-    #     )
-
-    #     predict_pearson_neg(
-    #         lincs_projection,
-    #         phenomexcan_input_file,
-    #         phenomexcan_projection,
-    #         OUTPUT_PREDICTIONS_DIR,
-    #         PREDICTION_METHOD,
-    #         doids_in_gold_standard,
-    #         FORCE_RUN,
-    #     )
-
-    #     predict_spearman(
-    #         lincs_projection,
-    #         phenomexcan_input_file,
-    #         phenomexcan_projection,
-    #         OUTPUT_PREDICTIONS_DIR,
-    #         PREDICTION_METHOD,
-    #         doids_in_gold_standard,
-    #         FORCE_RUN,
-    #     )
-
-    #     predict_spearman_neg(
-    #         lincs_projection,
-    #         phenomexcan_input_file,
-    #         phenomexcan_projection,
-    #         OUTPUT_PREDICTIONS_DIR,
-    #         PREDICTION_METHOD,
-    #         doids_in_gold_standard,
-    #         FORCE_RUN,
-    #     )
-
-    print("\n")
+            print("\n")
 
 # %% tags=[]
