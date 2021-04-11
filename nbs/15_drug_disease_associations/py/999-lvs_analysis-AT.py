@@ -183,14 +183,16 @@ def show_cluster_stats(data, partition, cluster):
 # ## Top attributes
 
 # %%
-lvs_list = "LV116,LV931,LV744,LV697,LV885,LV536,LV550,LV220,LV272,LV739,LV678,LV470,LV66,LV189,LV517,LV840,LV246,LV502,LV525,LV85".split(",")
+lvs_list = "LV116,LV931,LV744,LV697,LV885,LV536,LV550,LV220,LV272,LV739,LV678,LV470,LV66,LV189,LV517,LV840,LV246,LV502,LV525,LV85".split(
+    ","
+)
 
 # %%
 for lv_name in lvs_list:
     display(HTML(f"<h2>{lv_name}</h2>"))
 
-#     lv_name = lv_info["name"]
-    lv_obj = lv_exp = LVAnalysis(lv_name, data)
+    #     lv_name = lv_info["name"]
+    lv_obj = LVAnalysis(lv_name, data)
 
     # show lv prior knowledge match (pathways)
     lv_pathways = multiplier_model_summary[
