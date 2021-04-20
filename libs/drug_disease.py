@@ -75,6 +75,13 @@ def _predict(
 
     drug_disease_assocs = prediction_function(lincs_projection, phenomexcan_projection)
     print(f"    shape: {drug_disease_assocs.shape}")
+
+    # save prediction across all traits
+    print(f"  saving full predictions...")
+    _save_predictions(drug_disease_assocs, output_file, "full_prediction", mode="w")
+
+    # save prediction for gold-standard comparison
+    print(f"  building classifier data...")
     drug_disease_assocs = Trait.map_to_doid(
         drug_disease_assocs, preferred_doid_list, combine="max"
     )
@@ -82,24 +89,9 @@ def _predict(
     assert drug_disease_assocs.index.is_unique
     assert drug_disease_assocs.columns.is_unique
 
-    # build classifier data
-    print(f"  building classifier data...")
-    classifier_data = (
-        drug_disease_assocs.unstack()
-        .reset_index()
-        .rename(columns={"level_0": "trait", "perturbagen": "drug", 0: "score"})
-    )
-    assert classifier_data.shape == classifier_data.dropna().shape
-    print(f"    shape: {classifier_data.shape}")
-    display(classifier_data.describe())
+    _save_predictions(drug_disease_assocs, output_file, "prediction", mode="r+")
 
-    # save
-    print(f"    saving to: {str(output_file)}")
-
-    classifier_data.to_hdf(output_file, mode="w", complevel=4, key="prediction")
-
-    # FIXME: I think another way to put this is a list with the dict, instead of
-    # a list for each value as now
+    # save metadata
     pd.DataFrame(
         {
             "method": [base_method_name],
@@ -107,6 +99,26 @@ def _predict(
             "data": [phenomexcan_input_file.stem],
         }
     ).to_hdf(output_file, mode="r+", key="metadata")
+
+
+def _save_predictions(drug_disease_assocs, output_file, key_name, mode="w"):
+    classifier_data = (
+        drug_disease_assocs.unstack()
+        .reset_index()
+        .rename(columns={"level_0": "trait", "perturbagen": "drug", 0: "score"})
+    )
+
+    classifier_data["trait"] = classifier_data["trait"].astype("category")
+    classifier_data["drug"] = classifier_data["drug"].astype("category")
+
+    assert classifier_data.shape == classifier_data.dropna().shape
+    print(f"    shape: {classifier_data.shape}")
+    display(classifier_data.describe())
+
+    # save
+    print(f"    saving to: {str(output_file)}")
+    print(f"    key: {key_name}")
+    classifier_data.to_hdf(output_file, mode=mode, complevel=4, key=key_name)
 
 
 def predict_dotprod(
