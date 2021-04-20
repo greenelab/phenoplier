@@ -118,7 +118,9 @@ def _save_predictions(drug_disease_assocs, output_file, key_name, mode="w"):
     # save
     print(f"    saving to: {str(output_file)}")
     print(f"    key: {key_name}")
-    classifier_data.to_hdf(output_file, mode=mode, complevel=4, key=key_name)
+    classifier_data.to_hdf(
+        output_file, format="table", mode=mode, complevel=4, key=key_name
+    )
 
 
 def predict_dotprod(
