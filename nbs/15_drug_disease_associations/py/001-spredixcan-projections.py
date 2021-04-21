@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# **COMPLETE**: projects S-PrediXcan results on all tissues.
+# This notebook projects S-PrediXcan results in each tissues into the MultiPLIER space. It also saves S-PrediXcan results after removing NaN rows.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -40,12 +40,7 @@ from multiplier import MultiplierProjection
 # # Settings
 
 # %% tags=[]
-OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"]
-display(OUTPUT_DIR)
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-# %% tags=[]
-OUTPUT_DATA_DIR = Path(OUTPUT_DIR, "data")
+OUTPUT_DATA_DIR = Path(conf.RESULTS["DRUG_DISEASE_ANALYSES"], "spredixcan")
 display(OUTPUT_DATA_DIR)
 OUTPUT_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -63,18 +58,6 @@ OUTPUT_PROJ_DATA_DIR.mkdir(parents=True, exist_ok=True)
 # # Load PhenomeXcan results
 
 # %% tags=[]
-# input_file_list = [
-#     conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"],
-#     Path(
-#         conf.PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"],
-#         "most_signif",
-#         "spredixcan-most_signif.pkl",
-#     ),
-# ]
-
-# %% tags=[]
-# add S-PrediXcan results for each tissue
-# input_file_list = input_file_list + [
 input_file_list = [
     f
     for f in Path(conf.PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"], "pkl").glob(
@@ -101,9 +84,6 @@ for input_file in input_file_list:
     phenomexcan_data = phenomexcan_data.dropna(how="any")
     print(f"  shape (no NaN): {phenomexcan_data.shape}")
     assert not phenomexcan_data.isna().any().any()
-
-    #     print("  standardizing")
-    #     phenomexcan_data = phenomexcan_data.apply(lambda x: x / x.abs().sum())
 
     output_file = Path(OUTPUT_RAW_DATA_DIR, f"{input_file.stem}-data.pkl").resolve()
     print(f"  saving to: {str(output_file)}")
