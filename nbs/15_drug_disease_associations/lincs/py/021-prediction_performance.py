@@ -244,7 +244,7 @@ def _reduce_max(x):
 #     x_selected = x["score"].max()
 #     if abs(x_min_score) > abs(x_max_score):
 #         x_selected = x["score"].min()
-    
+
 #     return pd.Series(
 #         {
 #             "score": x_selected,
@@ -257,7 +257,7 @@ def _reduce_max(x):
 # %%
 predictions_avg = (
     predictions.groupby(["trait", "drug", "method", "tissue"])
-#     predictions.groupby(["trait", "drug", "method"])
+    #     predictions.groupby(["trait", "drug", "method"])
     .apply(_reduce_mean)
     .dropna()
     .groupby(["trait", "drug", "method"])
