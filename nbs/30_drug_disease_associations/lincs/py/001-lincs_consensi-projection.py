@@ -177,7 +177,7 @@ lincs_projection.shape
 # %% tags=[]
 lincs_projection.head()
 
-# %%
+# %% tags=[]
 assert not lincs_projection.isna().any().any()
 
 # %% [markdown] tags=[]
