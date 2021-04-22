@@ -50,7 +50,7 @@ LINCS_DATA_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "lincs"
 display(LINCS_DATA_DIR)
 assert LINCS_DATA_DIR.exists()
 
-# %%
+# %% tags=[]
 SPREDIXCAN_DATA_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "spredixcan" / "raw"
 display(SPREDIXCAN_DATA_DIR)
 assert SPREDIXCAN_DATA_DIR.exists()
@@ -108,7 +108,7 @@ phenomexcan_input_file_list = [
 # %% tags=[]
 display(len(phenomexcan_input_file_list))
 
-# %%
+# %% tags=[]
 pd.read_pickle(phenomexcan_input_file_list[0]).head()
 
 # %% [markdown] tags=[]
@@ -117,7 +117,7 @@ pd.read_pickle(phenomexcan_input_file_list[0]).head()
 # %% tags=[]
 from drug_disease import predict_dotprod_neg
 
-# %%
+# %% tags=[]
 methods_to_run = [predict_dotprod_neg]
 
 # %% tags=[]
