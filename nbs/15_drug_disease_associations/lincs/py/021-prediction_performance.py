@@ -46,9 +46,9 @@ N_THRESHOLDS = 5
 N_PREDICTIONS = 646
 
 # %%
-OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"]
+OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "lincs"
 display(OUTPUT_DIR)
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+assert OUTPUT_DIR.exists()
 
 # %%
 OUTPUT_PREDICTIONS_DIR = Path(OUTPUT_DIR, "predictions", "dotprod_neg")
@@ -60,7 +60,7 @@ OUTPUT_PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
 
 # %%
 gold_standard = pd.read_pickle(
-    Path(OUTPUT_DIR, "gold_standard.pkl"),
+    Path(conf.RESULTS["DRUG_DISEASE_ANALYSES"], "gold_standard.pkl"),
 )
 
 # %%
@@ -74,9 +74,6 @@ gold_standard["true_class"].value_counts()
 
 # %%
 gold_standard["true_class"].value_counts(normalize=True)
-
-# %%
-# doids_in_gold_standard = set(gold_standard["trait"])
 
 # %% [markdown]
 # # Load drug-disease predictions
