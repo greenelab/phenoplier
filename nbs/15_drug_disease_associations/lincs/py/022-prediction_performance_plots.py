@@ -112,7 +112,7 @@ def plot_roc(data, method_key, fig, ax, remove_non_informative=False):
     roc_auc = roc_auc_score(data["true_class"], data["score"])
 
     fpr, tpr, thresholds = roc_curve(data["true_class"], data["score"])
-    
+
     if remove_non_informative:
         cond = (fpr < 1.0) & (tpr < 1.0)
         fpr = fpr[cond]
@@ -225,7 +225,7 @@ def plot_pr_for_methods(selected_methods, fig, ax):
     random_recall, random_precision, random_averages = get_random_classifier_pr(
         data, reps=100
     )
-    
+
     random_label = f"Random - AP: {random_averages.mean():.3f}"
     plot_pr_raw_data(
         random_recall,

@@ -114,7 +114,7 @@ for f in tqdm(current_prediction_files, ncols=100):
 
     # read metadata
     metadata = pd.read_hdf(f, key="metadata")
-    
+
     # add the "method" column
     prediction_data = prediction_data.assign(method=metadata.method.values[0])
     prediction_data["method"] = prediction_data["method"].astype("category")
@@ -137,6 +137,7 @@ predictions = pd.concat(predictions, ignore_index=True)
 
 # %% tags=[]
 # extract the tissue name from the "data" column
+
 
 def _get_tissue(x):
     if x.endswith("-projection"):
@@ -218,19 +219,13 @@ predictions.to_pickle(output_file)
 # %% tags=[]
 def _reduce_mean(x):
     return pd.Series(
-        {
-            "score": x["score"].mean(),
-            "true_class": x["true_class"].unique()[0]
-        }
+        {"score": x["score"].mean(), "true_class": x["true_class"].unique()[0]}
     )
 
 
 def _reduce_max(x):
     return pd.Series(
-        {
-            "score": x["score"].max(),
-            "true_class": x["true_class"].unique()[0]
-        }
+        {"score": x["score"].max(), "true_class": x["true_class"].unique()[0]}
     )
 
 
