@@ -248,6 +248,17 @@ def download_crispr_lipids_gene_sets_file(**kwargs):
     )
 
 
+def download_pharmacotherapydb_indications(**kwargs):
+    output_file = conf.PHARMACOTHERAPYDB["INDICATIONS_FILE"]
+    output_file.parent.mkdir(exist_ok=True, parents=True)
+    curl(
+        "https://ndownloader.figshare.com/files/4823950",
+        output_file,
+        "33585132777601dedd3bed35caf718e2",
+        logger=logger,
+    )
+
+
 def _get_file_from_zip(
     zip_file_url,
     zip_file_path,
