@@ -208,7 +208,7 @@ predictions.to_pickle(output_file)
 # %% [markdown] tags=[]
 # # Aggregate predictions
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Here I get summaries from all predictions as follows:
 #
 #   1. Group by trait, drug, method, tissue, and average all scores across all gene/LVs thresholds. This is the same as it is done in the published method referenced before (the framework for drug-repositioning).
@@ -298,7 +298,7 @@ predictions_avg.groupby(["method"]).apply(
     lambda x: roc_auc_score(x["true_class"], x["score"])
 )
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # These are the final performance measures using AUROC.
 
 # %% [markdown] tags=[]
@@ -330,7 +330,7 @@ predictions_avg.groupby(["method"]).apply(
     lambda x: average_precision_score(x["true_class"], x["score"])
 )
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # These are the final performance measures using average precision.
 
 # %% tags=[]
