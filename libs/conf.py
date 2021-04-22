@@ -294,7 +294,9 @@ PHARMACOTHERAPYDB["INDICATIONS_FILE"] = Path(PHARMACOTHERAPYDB["BASE_DIR"], "ind
 
 LINCS = {}
 LINCS["BASE_DIR"] = Path(HETIONET_BASE_DIR, "lincs-v2.0").resolve()
-LINCS["CONSENSUS_SIGNATURES_FILE"] = Path(LINCS["BASE_DIR"], "consensi-drugbank.tsv.bz2").resolve()
+LINCS["CONSENSUS_SIGNATURES_FILE"] = Path(
+    LINCS["BASE_DIR"], "consensi-drugbank.tsv.bz2"
+).resolve()
 
 
 if __name__ == "__main__":
