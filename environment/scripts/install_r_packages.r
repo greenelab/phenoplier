@@ -9,10 +9,10 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install(version = "3.10", update=TRUE, ask=FALSE)
 
 # clusterProfiler
-#BiocManager::install("clusterProfiler", update=FALSE, ask=FALSE)
+BiocManager::install("clusterProfiler", update=FALSE, ask=FALSE)
 
 # org.Hs.eg.db
-#BiocManager::install("org.Hs.eg.db", update=FALSE, ask=FALSE)
+BiocManager::install("org.Hs.eg.db", update=FALSE, ask=FALSE)
 
 # clustree
 BiocManager::install("clustree", update=FALSE, ask=FALSE)
