@@ -196,7 +196,7 @@ PHENOMEXCAN["GTEX_GWAS_PHENO_INFO_FILE"] = Path(
 
 
 #
-# PharmacotherapyDB
+# Hetionet
 #
 HETIONET_BASE_DIR = Path(DATA_DIR, "hetionet").resolve()
 
@@ -206,6 +206,12 @@ PHARMACOTHERAPYDB["BASE_DIR"] = Path(
 ).resolve()
 PHARMACOTHERAPYDB["INDICATIONS_FILE"] = Path(
     PHARMACOTHERAPYDB["BASE_DIR"], "indications.tsv"
+).resolve()
+
+LINCS = {}
+LINCS["BASE_DIR"] = Path(HETIONET_BASE_DIR, "lincs-v2.0").resolve()
+LINCS["CONSENSUS_SIGNATURES_FILE"] = Path(
+    LINCS["BASE_DIR"], "consensi-drugbank.tsv.bz2"
 ).resolve()
 
 

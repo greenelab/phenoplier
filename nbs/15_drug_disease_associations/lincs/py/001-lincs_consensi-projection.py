@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# **TODO**: should probably be moved to preprocessing folder.
+# This notebook process the LINCS data consensus signatures from [here](https://figshare.com/articles/dataset/Consensus_signatures_for_LINCS_L1000_perturbations/3085426/1).
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -44,13 +44,10 @@ display(OUTPUT_DATA_DIR)
 OUTPUT_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # %% [markdown] tags=[]
-# # Load LINCS consensi drugbank (Daniel)
+# # Load LINCS consensus signatures
 
 # %% tags=[]
-# TODO: hardcoded
-input_file = Path(
-    conf.DATA_DIR, "hetionet", "lincs-v2.0", "consensi-drugbank.tsv.bz2"
-).resolve()
+input_file = conf.LINCS["CONSENSUS_SIGNATURES_FILE"]
 
 display(input_file)
 
@@ -67,7 +64,7 @@ lincs_data.head()
 assert lincs_data.index.is_unique
 
 # %% tags=[]
-# drubback ids are consistent
+# check that DrugBank ids are consistent
 _tmp = lincs_data.columns.map(len).unique()
 assert _tmp.shape[0] == 1
 
@@ -86,18 +83,6 @@ pandas2ri.activate()
 
 # %% tags=[]
 clusterProfiler = importr("clusterProfiler")
-
-# %% tags=[]
-# lincs_data = lincs_data.rename(columns=GENE_ENTREZ_ID_TO_SYMBOL).rename(columns=GENE_SYMBOL_TO_ENSEMBL_ID).T
-
-# %% tags=[]
-# _gene_id_len = lincs_data.index.map(len)
-
-# %% tags=[]
-# _not_mapped_genes = lincs_data[_gene_id_len != 15].index.copy()
-
-# %% tags=[]
-# _not_mapped_genes
 
 # %% tags=[]
 _now_mapped_genes = clusterProfiler.bitr(
@@ -191,6 +176,9 @@ lincs_projection.shape
 
 # %% tags=[]
 lincs_projection.head()
+
+# %%
+assert not lincs_projection.isna().any().any()
 
 # %% [markdown] tags=[]
 # ## Save
