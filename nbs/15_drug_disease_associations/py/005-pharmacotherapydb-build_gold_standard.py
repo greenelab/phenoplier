@@ -20,7 +20,7 @@
 # %% [markdown] tags=[]
 # This notebook builds the gold-standard for drug-disease prediction using [PharmarcotherapyDB](https://dx.doi.org/10.7554%2FeLife.26726)
 #
-# Instead of using all drug-disease pairs in PharmarcotherapyDB, we only use disease-modifying pairs as positive cases, and non-indications as negative ones. We exclude symptomatic (SYM) because those might not exert an important effect to the disease.
+# Instead of using all drug-disease pairs in PharmarcotherapyDB, we only use disease-modifying (DM) pairs as positive cases, and non-indications (NOT) as negative ones. We exclude symptomatic (SYM) because those might not exert an important effect to the disease.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -51,10 +51,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 # ## Read data
 
 # %% tags=[]
-# FIXME: add download of this data in setup data
-input_file = Path(
-    conf.DATA_DIR, "hetionet/pharmacotherapydb-v1.0", "indications.tsv"
-).resolve()
+input_file = conf.PHARMACOTHERAPYDB["INDICATIONS_FILE"]
 display(input_file)
 
 pharmadb_gold_standard = pd.read_csv(input_file, sep="\t")
