@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# **TODO**
+# It reads the final results computed by the notebook `021-prediction_performance.ipynb` and create figures.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -112,7 +112,7 @@ def plot_roc(data, method_key, fig, ax, remove_non_informative=False):
     roc_auc = roc_auc_score(data["true_class"], data["score"])
 
     fpr, tpr, thresholds = roc_curve(data["true_class"], data["score"])
-    #     print(f'  Points for ROC curve: {len(fpr)}')
+    
     if remove_non_informative:
         cond = (fpr < 1.0) & (tpr < 1.0)
         fpr = fpr[cond]
@@ -138,17 +138,13 @@ def plot_roc_for_methods(selected_methods, fig, ax):
         data = predictions_avg[predictions_avg["method"] == method_name]
         plot_roc(data, method_name, fig, ax)
 
-    #         ax.set_title('ROC curves using PharmacotherapyDB')
     ax.plot([0.0, 1.00], [0.0, 1.00], color="gray", linewidth=1.25, linestyle="-")
     ax.set_xlabel("False Positive Rate")
     ax.set_ylabel("True Positive Rate")
     ax.set_xlim([0.0, 1.01])
     ax.set_ylim([0.0, 1.01])
-    #                 ax.legend(loc="lower right")
     ax.set_aspect("equal")
 
-
-#         ax.get_legend().remove()
 
 # %% [markdown] tags=[]
 # ## Plots
@@ -157,15 +153,6 @@ def plot_roc_for_methods(selected_methods, fig, ax):
 with sns.plotting_context("paper", font_scale=3.00):
     fig, ax = plt.subplots(figsize=(10, 10))
     plot_roc_for_methods(methods_names, fig, ax)
-
-#     output_filepath = OUTPUT_FIGURES_DIR / f"roc_curves.svg"
-#     display(output_filepath)
-
-#     plt.savefig(
-#         output_filepath,
-#         bbox_inches="tight",
-#         facecolor="white",
-#     )
 
 # %% [markdown] tags=[]
 # # Precision-Recall
@@ -235,11 +222,10 @@ def plot_pr_for_methods(selected_methods, fig, ax):
         plot_pr(data, method_name, fig, ax)
 
     # add random classifier
-    #     random_recall, random_precision = get_random_classifier_pr(predictions['multixcan_mashr'].shape[0], predictions['multixcan_mashr'])
     random_recall, random_precision, random_averages = get_random_classifier_pr(
         data, reps=100
     )
-    #         display(len(random_recall))
+    
     random_label = f"Random - AP: {random_averages.mean():.3f}"
     plot_pr_raw_data(
         random_recall,
@@ -251,17 +237,11 @@ def plot_pr_for_methods(selected_methods, fig, ax):
         color="gray",
     )
 
-    #         ax.set_title('Precision-Recall curves using PharmacotherapyDB')
-    # ax.plot([0.00, 1.00], [1.00, 0.00], color='gray', linewidth=0.50)
     ax.set_xlabel("Recall")
     ax.set_ylabel("Precision")
     ax.set_xlim([0.0, 1.01])
     ax.set_ylim([0.60, 1.02])
-    #         ax.legend(loc="upper right")
 
-
-#         ax.get_legend().remove()
-#     ax.set_aspect('equal')
 
 # %% [markdown] tags=[]
 # ## Plots
@@ -271,17 +251,8 @@ with sns.plotting_context("paper", font_scale=3.00):
     fig, ax = plt.subplots(figsize=(10, 10))
     plot_pr_for_methods(methods_names, fig, ax)
 
-#     output_filepath = OUTPUT_FIGURES_DIR / f"pr_curves.svg"
-#     display(output_filepath)
-
-#     plt.savefig(
-#         output_filepath,
-#         bbox_inches="tight",
-#         facecolor="white",
-#     )
-
 # %% [markdown] tags=[]
-# # Plots
+# # Combined plots
 
 # %% tags=[]
 with sns.plotting_context("paper", font_scale=3.00):
