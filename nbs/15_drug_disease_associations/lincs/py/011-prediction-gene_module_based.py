@@ -46,26 +46,17 @@ FORCE_RUN = True
 PREDICTION_METHOD = "Module-based"
 
 # %% tags=[]
-OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"]
-display(OUTPUT_DIR)
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+LINCS_DATA_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "lincs"
+display(LINCS_DATA_DIR)
+assert LINCS_DATA_DIR.exists()
+
+# %%
+SPREDIXCAN_DATA_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "spredixcan" / "proj"
+display(SPREDIXCAN_DATA_DIR)
+assert SPREDIXCAN_DATA_DIR.exists()
 
 # %% tags=[]
-# OUTPUT_DATA_DIR = Path(OUTPUT_DIR, "data")
-# display(OUTPUT_DATA_DIR)
-# OUTPUT_DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-# %% tags=[]
-INPUT_DATA_DIR = Path(
-    OUTPUT_DIR,
-    "data",
-    "proj",
-)
-display(INPUT_DATA_DIR)
-INPUT_DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-# %% tags=[]
-OUTPUT_PREDICTIONS_DIR = Path(OUTPUT_DIR, "predictions")
+OUTPUT_PREDICTIONS_DIR = Path(LINCS_DATA_DIR, "predictions")
 display(OUTPUT_PREDICTIONS_DIR)
 OUTPUT_PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -74,7 +65,7 @@ OUTPUT_PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
 
 # %% tags=[]
 gold_standard = pd.read_pickle(
-    Path(OUTPUT_DIR, "gold_standard.pkl"),
+    Path(conf.RESULTS["DRUG_DISEASE_ANALYSES"], "gold_standard.pkl"),
 )
 
 # %% tags=[]
@@ -93,7 +84,7 @@ doids_in_gold_standard = set(gold_standard["trait"])
 # ## Projected data
 
 # %% tags=[]
-input_file = Path(INPUT_DATA_DIR, "lincs-projection.pkl").resolve()
+input_file = Path(LINCS_DATA_DIR, "lincs-projection.pkl").resolve()
 
 display(input_file)
 
@@ -110,14 +101,8 @@ display(lincs_projection.head())
 # # Load S-PrediXcan
 
 # %% tags=[]
-from entity import Trait
-
-# %% tags=[]
 phenomexcan_input_file_list = [
-    f
-    for f in INPUT_DATA_DIR.glob("*.pkl")
-    if f.name.startswith("spredixcan-")
-    #     if f.name.startswith(("smultixcan-", "spredixcan-"))
+    f for f in SPREDIXCAN_DATA_DIR.glob("*.pkl") if f.name.startswith("spredixcan-")
 ]
 
 # %% tags=[]
@@ -130,14 +115,7 @@ pd.read_pickle(phenomexcan_input_file_list[0]).head()
 # # Predict drug-disease associations
 
 # %% tags=[]
-from drug_disease import (
-    #     predict_dotprod,
-    predict_dotprod_neg,
-    #     predict_pearson,
-    #     predict_pearson_neg,
-    #     predict_spearman,
-    #     predict_spearman_neg,
-)
+from drug_disease import predict_dotprod_neg
 
 # %%
 methods_to_run = [predict_dotprod_neg]
