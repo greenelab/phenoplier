@@ -18,7 +18,11 @@
 # # Description
 
 # %% [markdown] tags=[]
-# **TODO**
+# We predict drug-disease associations for all traits in using S-PrediXcan tissue-specific results and all drugs in LINCS consensus signatures. We use a method based on an [existing framework for drug-repositioning](https://www.nature.com/articles/nn.4618) to perform these predictions from genetic data. Instead of the Pearson/Spearman correlations, we use the dot product of disease z-scores (from S-PrediXcan) and drug z-scores from (LINCS). More details in the `drug_disease` module.
+#
+# In this notebook we use the projection of S-PrediXcan results and LINCS data into the MultiPLIER latent space.
+#
+# It saves results as HDF5 files with three keys: `full_prediction` (for all 4091 traits), `prediction` (only for traits and drugs present in the gold-standard/PharmacotheraphyDB) and `metadata`.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -129,6 +133,7 @@ for phenomexcan_input_file in phenomexcan_input_file_list:
     print(f"  shape: {phenomexcan_projection.shape}")
 
     for prediction_method in methods_to_run:
+        # here I use different thresholds to select the LVs: the top 5, 10, 25 and 50, or all (None)
         for ntc in (None, 5, 10, 25, 50):
             prediction_method(
                 lincs_projection,
