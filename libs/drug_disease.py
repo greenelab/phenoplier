@@ -77,7 +77,7 @@ def _predict(
     print(f"    shape: {drug_disease_assocs.shape}")
 
     print(f"  saving to: {str(output_file)}")
-    with pd.HDFStore(output_file, mode='w', complevel=4) as store:
+    with pd.HDFStore(output_file, mode="w", complevel=4) as store:
         # save prediction across all traits
         print(f"    saving full predictions...")
         _save_predictions(drug_disease_assocs, store, "full_prediction")
