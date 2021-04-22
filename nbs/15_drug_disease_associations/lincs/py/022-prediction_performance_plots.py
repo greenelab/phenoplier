@@ -42,9 +42,9 @@ import conf
 # # Settings
 
 # %%
-OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"]
+OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "lincs"
 display(OUTPUT_DIR)
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+assert OUTPUT_DIR.exists()
 
 # %%
 OUTPUT_FIGURES_DIR = Path(
