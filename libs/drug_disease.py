@@ -76,32 +76,35 @@ def _predict(
     drug_disease_assocs = prediction_function(lincs_projection, phenomexcan_projection)
     print(f"    shape: {drug_disease_assocs.shape}")
 
-    # save prediction across all traits
-    print(f"  saving full predictions...")
-    _save_predictions(drug_disease_assocs, output_file, "full_prediction", mode="w")
+    print(f"  saving to: {str(output_file)}")
+    with pd.HDFStore(output_file, mode='w', complevel=4) as store:
+        # save prediction across all traits
+        print(f"    saving full predictions...")
+        _save_predictions(drug_disease_assocs, store, "full_prediction")
 
-    # save prediction for gold-standard comparison
-    print(f"  building classifier data...")
-    drug_disease_assocs = Trait.map_to_doid(
-        drug_disease_assocs, preferred_doid_list, combine="max"
-    )
-    print(f"    shape (after DOID map): {drug_disease_assocs.shape}")
-    assert drug_disease_assocs.index.is_unique
-    assert drug_disease_assocs.columns.is_unique
+        # save prediction for gold-standard comparison
+        print(f"    saving classifier data...")
+        drug_disease_assocs = Trait.map_to_doid(
+            drug_disease_assocs, preferred_doid_list, combine="max"
+        )
+        print(f"      shape (after DOID map): {drug_disease_assocs.shape}")
+        assert drug_disease_assocs.index.is_unique
+        assert drug_disease_assocs.columns.is_unique
 
-    _save_predictions(drug_disease_assocs, output_file, "prediction", mode="r+")
+        _save_predictions(drug_disease_assocs, store, "prediction")
 
-    # save metadata
-    pd.DataFrame(
-        {
-            "method": [base_method_name],
-            "n_top_genes": [-1.0 if n_top_conditions is None else n_top_conditions],
-            "data": [phenomexcan_input_file.stem],
-        }
-    ).to_hdf(output_file, mode="r+", key="metadata")
+        # save metadata
+        metadata = pd.DataFrame(
+            {
+                "method": [base_method_name],
+                "n_top_genes": [-1.0 if n_top_conditions is None else n_top_conditions],
+                "data": [phenomexcan_input_file.stem],
+            }
+        )
+        store.put("metadata", metadata, format="table")
 
 
-def _save_predictions(drug_disease_assocs, output_file, key_name, mode="w"):
+def _save_predictions(drug_disease_assocs, store, key_name):
     classifier_data = (
         drug_disease_assocs.unstack()
         .reset_index()
@@ -116,11 +119,12 @@ def _save_predictions(drug_disease_assocs, output_file, key_name, mode="w"):
     display(classifier_data.describe())
 
     # save
-    print(f"    saving to: {str(output_file)}")
     print(f"    key: {key_name}")
-    classifier_data.to_hdf(
-        output_file, format="table", mode=mode, complevel=4, key=key_name
-    )
+
+    store.put(key_name, classifier_data, format="table")
+    # classifier_data.to_hdf(
+    #     output_file, format="table", mode=mode, complevel=4, key=key_name
+    # )
 
 
 def predict_dotprod(
