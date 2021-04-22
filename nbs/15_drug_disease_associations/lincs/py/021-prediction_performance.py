@@ -39,49 +39,49 @@ import conf
 # %% [markdown] tags=[]
 # # Settings
 
-# %%
+# %% tags=[]
 N_TISSUES = 49
 # N_TISSUES = 1
 N_THRESHOLDS = 5
 N_PREDICTIONS = 646
 
-# %%
+# %% tags=[]
 OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "lincs"
 display(OUTPUT_DIR)
 assert OUTPUT_DIR.exists()
 
-# %%
+# %% tags=[]
 OUTPUT_PREDICTIONS_DIR = Path(OUTPUT_DIR, "predictions", "dotprod_neg")
 display(OUTPUT_PREDICTIONS_DIR)
 OUTPUT_PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Load PharmacotherapyDB gold standard
 
-# %%
+# %% tags=[]
 gold_standard = pd.read_pickle(
     Path(conf.RESULTS["DRUG_DISEASE_ANALYSES"], "gold_standard.pkl"),
 )
 
-# %%
+# %% tags=[]
 gold_standard.shape
 
-# %%
+# %% tags=[]
 gold_standard.head()
 
-# %%
+# %% tags=[]
 gold_standard["true_class"].value_counts()
 
-# %%
+# %% tags=[]
 gold_standard["true_class"].value_counts(normalize=True)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Load drug-disease predictions
 
-# %%
+# %% tags=[]
 from collections import defaultdict
 
-# %%
+# %% tags=[]
 current_prediction_files = list(OUTPUT_PREDICTIONS_DIR.glob("*.h5"))
 display(len(current_prediction_files))
 
@@ -89,10 +89,10 @@ assert len(current_prediction_files) == 2 * (
     N_TISSUES * N_THRESHOLDS
 )  # two methods (single-gene and module-based)
 
-# %%
+# %% tags=[]
 current_prediction_files[:5]
 
-# %%
+# %% tags=[]
 predictions = []
 
 for f in tqdm(current_prediction_files, ncols=100):
@@ -123,38 +123,38 @@ for f in tqdm(current_prediction_files, ncols=100):
 
     predictions.append(prediction_data)
 
-# %%
+# %% tags=[]
 assert np.all(pred.shape[0] == N_PREDICTIONS for pred in predictions)
 
-# %%
+# %% tags=[]
 predictions = pd.concat(predictions, ignore_index=True)
 
-# %%
+# %% tags=[]
 display(predictions.shape)
 
 assert predictions.shape[0] == 2 * (N_TISSUES * N_THRESHOLDS) * N_PREDICTIONS
 
-# %%
+# %% tags=[]
 predictions.head()
 
-# %%
+# %% tags=[]
 assert not predictions.isna().any().any()
 
-# %%
+# %% tags=[]
 _tmp = predictions["method"].value_counts()
 display(_tmp)
 
 assert _tmp.loc["Gene-based"] == N_TISSUES * N_THRESHOLDS * N_PREDICTIONS
 assert _tmp.loc["Module-based"] == N_TISSUES * N_THRESHOLDS * N_PREDICTIONS
 
-# %%
+# %% tags=[]
 _tmp = predictions.groupby(["method", "n_top_genes"]).count()
 display(_tmp)
 
 assert np.all(_tmp == N_TISSUES * N_PREDICTIONS)
 
 
-# %%
+# %% tags=[]
 # FIXME: add this to the 011 notebooks... or maybe it's fine here (after submitting draft)
 def _get_tissue(x):
     if x.endswith("-projection"):
@@ -168,20 +168,20 @@ predictions = predictions.assign(tissue=predictions["data"].apply(_get_tissue))
 # # FIXME: remove or better document; here just for the most_signif version
 # predictions = predictions.assign(tissue="most_signif")
 
-# %%
+# %% tags=[]
 predictions.head()
 
-# %%
+# %% tags=[]
 _tmp = predictions.groupby(["method", "tissue"]).count()
 display(_tmp)
 
 assert np.all(_tmp.loc["Gene-based"] == (N_PREDICTIONS * N_THRESHOLDS))
 assert np.all(_tmp.loc["Module-based"] == (N_PREDICTIONS * N_THRESHOLDS))
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Testing
 
-# %%
+# %% tags=[]
 # all prediction tables should have the same shape
 predictions_shape = (
     predictions.groupby(["method", "n_top_genes", "tissue"])
@@ -193,21 +193,21 @@ display(predictions_shape)
 assert predictions_shape.shape[0] == 1
 assert predictions_shape[0][0] == N_PREDICTIONS
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Save
 
-# %%
+# %% tags=[]
 output_file = Path(OUTPUT_DIR, "predictions", "predictions_results.pkl").resolve()
 display(output_file)
 
-# %%
+# %% tags=[]
 predictions.to_pickle(output_file)
 
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Aggregate predictions
 
-# %%
+# %% tags=[]
 def _reduce_mean(x):
     return pd.Series(
         {
@@ -251,7 +251,7 @@ def _reduce_max(x):
 #         }
 #     )
 
-# %%
+# %% tags=[]
 predictions_avg = (
     predictions.groupby(["trait", "drug", "method", "tissue"])
     #     predictions.groupby(["trait", "drug", "method"])
@@ -264,88 +264,88 @@ predictions_avg = (
     .reset_index()
 )
 
-# %%
+# %% tags=[]
 # predictions_avg should have twice the number of rows in the predictions table, since has both methods
 display(predictions_avg.shape)
 assert predictions_avg.shape[0] == int(predictions_shape[0][0] * 2)
 
-# %%
+# %% tags=[]
 assert predictions_avg.dropna().shape == predictions_avg.shape
 
-# %%
+# %% tags=[]
 predictions_avg.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Save
 
-# %%
+# %% tags=[]
 output_file = Path(
     OUTPUT_DIR, "predictions", "predictions_results_aggregated.pkl"
 ).resolve()
 display(output_file)
 
-# %%
+# %% tags=[]
 predictions_avg.to_pickle(output_file)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # ROC
 
-# %%
+# %% tags=[]
 from sklearn.metrics import roc_auc_score
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Predictions
 
-# %%
+# %% tags=[]
 # by method/n_top_genes
 predictions.groupby(["method", "tissue", "n_top_genes"]).apply(
     lambda x: roc_auc_score(x["true_class"], x["score"])
 ).groupby(["method", "n_top_genes"]).describe()
 
-# %%
+# %% tags=[]
 # by method/tissue
 predictions.groupby(["method", "tissue", "n_top_genes"]).apply(
     lambda x: roc_auc_score(x["true_class"], x["score"])
 ).groupby(["method", "tissue"]).describe()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Predictions avg
 
-# %%
+# %% tags=[]
 predictions_avg.head()
 
-# %%
+# %% tags=[]
 predictions_avg.groupby(["method"]).apply(
     lambda x: roc_auc_score(x["true_class"], x["score"])
 )
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # PR
 
-# %%
+# %% tags=[]
 from sklearn.metrics import average_precision_score
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Predictions
 
-# %%
+# %% tags=[]
 # by method/n_top_genes
 predictions.groupby(["method", "tissue", "n_top_genes"]).apply(
     lambda x: average_precision_score(x["true_class"], x["score"])
 ).groupby(["method", "n_top_genes"]).describe()
 
-# %%
+# %% tags=[]
 # by method/tissue
 predictions.groupby(["method", "tissue", "n_top_genes"]).apply(
     lambda x: average_precision_score(x["true_class"], x["score"])
 ).groupby(["method", "tissue"]).describe()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Predictions avg
 
-# %%
+# %% tags=[]
 predictions_avg.groupby(["method"]).apply(
     lambda x: average_precision_score(x["true_class"], x["score"])
 )
 
-# %%
+# %% tags=[]

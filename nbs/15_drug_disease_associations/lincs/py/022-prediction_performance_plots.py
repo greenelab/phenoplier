@@ -41,73 +41,73 @@ import conf
 # %% [markdown] tags=[]
 # # Settings
 
-# %%
+# %% tags=[]
 OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "lincs"
 display(OUTPUT_DIR)
 assert OUTPUT_DIR.exists()
 
-# %%
+# %% tags=[]
 OUTPUT_FIGURES_DIR = Path(
     conf.MANUSCRIPT["FIGURES_DIR"], "drug_disease_prediction"
 ).resolve()
 display(OUTPUT_FIGURES_DIR)
 OUTPUT_FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Load predictions
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Across all tissues
 
-# %%
+# %% tags=[]
 input_file = Path(OUTPUT_DIR, "predictions", "predictions_results.pkl").resolve()
 display(input_file)
 
-# %%
+# %% tags=[]
 predictions = pd.read_pickle(input_file)
 
-# %%
+# %% tags=[]
 predictions.shape
 
-# %%
+# %% tags=[]
 predictions.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Aggregated (across all tissues)
 
-# %%
+# %% tags=[]
 input_file = Path(
     OUTPUT_DIR, "predictions", "predictions_results_aggregated.pkl"
 ).resolve()
 display(input_file)
 
-# %%
+# %% tags=[]
 predictions_avg = pd.read_pickle(input_file)
 
-# %%
+# %% tags=[]
 predictions_avg.shape
 
-# %%
+# %% tags=[]
 predictions_avg.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # ROC
 
-# %%
+# %% tags=[]
 methods_names = tuple(predictions["method"].unique())
 assert len(methods_names) == 2
 display(methods_names)
 
-# %%
+# %% tags=[]
 methods_colors = {methods_names[0]: "red", methods_names[1]: "blue"}
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Functions
 
-# %%
+# %% tags=[]
 from sklearn.metrics import roc_auc_score, roc_curve
 
-# %%
+# %% tags=[]
 def plot_roc(data, method_key, fig, ax, remove_non_informative=False):
     roc_auc = roc_auc_score(data["true_class"], data["score"])
 
@@ -132,7 +132,7 @@ def plot_roc(data, method_key, fig, ax, remove_non_informative=False):
     )
 
 
-# %%
+# %% tags=[]
 def plot_roc_for_methods(selected_methods, fig, ax):
     for method_name in selected_methods:
         data = predictions_avg[predictions_avg["method"] == method_name]
@@ -150,10 +150,10 @@ def plot_roc_for_methods(selected_methods, fig, ax):
 
 #         ax.get_legend().remove()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Plots
 
-# %%
+# %% tags=[]
 with sns.plotting_context("paper", font_scale=3.00):
     fig, ax = plt.subplots(figsize=(10, 10))
     plot_roc_for_methods(methods_names, fig, ax)
@@ -167,17 +167,17 @@ with sns.plotting_context("paper", font_scale=3.00):
 #         facecolor="white",
 #     )
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Precision-Recall
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Functions
 
-# %%
+# %% tags=[]
 from sklearn.metrics import precision_recall_curve, average_precision_score
 
 
-# %%
+# %% tags=[]
 def plot_pr_raw_data(recall, precision, label, **kwargs):
     sns.lineplot(x=recall, y=precision, label=label, **kwargs)
 
@@ -206,7 +206,7 @@ def plot_pr(data, method_key, fig, ax, estimator=None, remove_non_informative=Fa
     )
 
 
-# %%
+# %% tags=[]
 def get_random_classifier_pr(data, reps=10, min_val=0, max_val=1):
     random_precision = []
     random_recall = []
@@ -228,7 +228,7 @@ def get_random_classifier_pr(data, reps=10, min_val=0, max_val=1):
     )
 
 
-# %%
+# %% tags=[]
 def plot_pr_for_methods(selected_methods, fig, ax):
     for method_name in selected_methods:
         data = predictions_avg[predictions_avg["method"] == method_name]
@@ -263,10 +263,10 @@ def plot_pr_for_methods(selected_methods, fig, ax):
 #         ax.get_legend().remove()
 #     ax.set_aspect('equal')
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Plots
 
-# %%
+# %% tags=[]
 with sns.plotting_context("paper", font_scale=3.00):
     fig, ax = plt.subplots(figsize=(10, 10))
     plot_pr_for_methods(methods_names, fig, ax)
@@ -280,10 +280,10 @@ with sns.plotting_context("paper", font_scale=3.00):
 #         facecolor="white",
 #     )
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Plots
 
-# %%
+# %% tags=[]
 with sns.plotting_context("paper", font_scale=3.00):
     fig, ax = plt.subplots(figsize=(22, 10))
 
@@ -302,4 +302,4 @@ with sns.plotting_context("paper", font_scale=3.00):
         facecolor="white",
     )
 
-# %%
+# %% tags=[]
