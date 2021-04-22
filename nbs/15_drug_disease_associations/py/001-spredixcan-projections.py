@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# This notebook projects S-PrediXcan results in each tissues into the MultiPLIER space. It also saves S-PrediXcan results after removing NaN rows.
+# This notebook projects S-PrediXcan tissue-specific results into the MultiPLIER space. It also saves raw S-PrediXcan results after removing NaN rows. These two sets of files (projected and raw) will be used later to predict drug-disease associations by the module-based and single gene-based approaches.
 
 # %% [markdown] tags=[]
 # # Modules loading
