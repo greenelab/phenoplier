@@ -30,39 +30,18 @@
 # %% tags=[]
 from pathlib import Path
 
-# import numpy as np
 import pandas as pd
 
 import conf
-
-# from multiplier import MultiplierProjection
 from entity import Gene
-
-# from data.cache import read_data
-# from data.hdf5 import simplify_trait_fullcode, HDF5_FILE_PATTERN
 
 # %% [markdown] tags=[]
 # # Settings
 
 # %% tags=[]
-OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"]
-display(OUTPUT_DIR)
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-# %% tags=[]
-OUTPUT_DATA_DIR = Path(OUTPUT_DIR, "data")
+OUTPUT_DATA_DIR = Path(conf.RESULTS["DRUG_DISEASE_ANALYSES"], "lincs")
 display(OUTPUT_DATA_DIR)
 OUTPUT_DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-# %% tags=[]
-OUTPUT_RAW_DATA_DIR = Path(OUTPUT_DATA_DIR, "raw")
-display(OUTPUT_RAW_DATA_DIR)
-OUTPUT_RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-# %% tags=[]
-OUTPUT_PROJ_DATA_DIR = Path(OUTPUT_DATA_DIR, "proj")
-display(OUTPUT_PROJ_DATA_DIR)
-OUTPUT_PROJ_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # %% [markdown] tags=[]
 # # Load LINCS consensi drugbank (Daniel)
@@ -189,7 +168,7 @@ assert not lincs_data.isna().any().any()
 # ## Save
 
 # %% tags=[]
-output_file = Path(OUTPUT_RAW_DATA_DIR, "lincs-data.pkl").resolve()
+output_file = Path(OUTPUT_DATA_DIR, "lincs-data.pkl").resolve()
 display(output_file)
 
 # %% tags=[]
@@ -217,22 +196,10 @@ lincs_projection.head()
 # ## Save
 
 # %% tags=[]
-output_file = Path(OUTPUT_PROJ_DATA_DIR, "lincs-projection.pkl").resolve()
+output_file = Path(OUTPUT_DATA_DIR, "lincs-projection.pkl").resolve()
 display(output_file)
 
 # %% tags=[]
 lincs_projection.to_pickle(output_file)
-
-# %% [markdown] tags=[]
-# # Get reconstructed data
-
-# %% tags=[]
-# lincs_data_recon = MultiplierProjection._read_model_z().rename(index=GENE_SYMBOL_TO_ENSEMBL_ID).dot(lincs_projection)
-
-# %% tags=[]
-# lincs_data_recon.shape
-
-# %% tags=[]
-# lincs_data_recon.head()
 
 # %% tags=[]
