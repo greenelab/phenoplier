@@ -18,7 +18,9 @@
 # # Description
 
 # %% [markdown] tags=[]
-# **TODO**
+# In this notebook we predict drug-disease associations using S-PrediXcan results and LINCS expression profiles.
+#
+# See more details in notebook `011-prediction-gene_module_based.ipynb`.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -135,6 +137,7 @@ for phenomexcan_input_file in phenomexcan_input_file_list:
     print(f"  shape: {phenomexcan_projection.shape}")
 
     for prediction_method in methods_to_run:
+        # here I use different thresholds to select the genes: the top 50, 100, 250 and 500, or all (None)
         for ntc in (None, 50, 100, 250, 500):
             prediction_method(
                 lincs_projection,
