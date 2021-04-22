@@ -259,6 +259,17 @@ def download_pharmacotherapydb_indications(**kwargs):
     )
 
 
+def download_lincs_consensus_signatures(**kwargs):
+    output_file = conf.LINCS["CONSENSUS_SIGNATURES_FILE"]
+    output_file.parent.mkdir(exist_ok=True, parents=True)
+    curl(
+        "https://ndownloader.figshare.com/files/4797607",
+        output_file,
+        "891e257037adc15212405af461ffbfd6",
+        logger=logger,
+    )
+
+
 def _get_file_from_zip(
     zip_file_url,
     zip_file_path,

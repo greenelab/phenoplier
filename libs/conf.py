@@ -292,6 +292,10 @@ PHARMACOTHERAPYDB = {}
 PHARMACOTHERAPYDB["BASE_DIR"] = Path(HETIONET_BASE_DIR, "pharmacotherapydb-v1.0").resolve()
 PHARMACOTHERAPYDB["INDICATIONS_FILE"] = Path(PHARMACOTHERAPYDB["BASE_DIR"], "indications.tsv").resolve()
 
+LINCS = {}
+LINCS["BASE_DIR"] = Path(HETIONET_BASE_DIR, "lincs-v2.0").resolve()
+LINCS["CONSENSUS_SIGNATURES_FILE"] = Path(LINCS["BASE_DIR"], "consensi-drugbank.tsv.bz2").resolve()
+
 
 if __name__ == "__main__":
     # if this script is run, then it exports the configuration as environment
