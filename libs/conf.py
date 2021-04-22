@@ -201,8 +201,12 @@ PHENOMEXCAN["GTEX_GWAS_PHENO_INFO_FILE"] = Path(
 HETIONET_BASE_DIR = Path(DATA_DIR, "hetionet").resolve()
 
 PHARMACOTHERAPYDB = {}
-PHARMACOTHERAPYDB["BASE_DIR"] = Path(HETIONET_BASE_DIR, "pharmacotherapydb-v1.0").resolve()
-PHARMACOTHERAPYDB["INDICATIONS_FILE"] = Path(PHARMACOTHERAPYDB["BASE_DIR"], "indications.tsv").resolve()
+PHARMACOTHERAPYDB["BASE_DIR"] = Path(
+    HETIONET_BASE_DIR, "pharmacotherapydb-v1.0"
+).resolve()
+PHARMACOTHERAPYDB["INDICATIONS_FILE"] = Path(
+    PHARMACOTHERAPYDB["BASE_DIR"], "indications.tsv"
+).resolve()
 
 
 if __name__ == "__main__":
