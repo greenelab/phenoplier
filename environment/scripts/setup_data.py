@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 import conf
-from utils import curl
+from utils import curl, md5_matches
 from log import get_logger
 
 logger = get_logger("setup")
@@ -268,6 +268,63 @@ def download_lincs_consensus_signatures(**kwargs):
         "891e257037adc15212405af461ffbfd6",
         logger=logger,
     )
+
+
+def download_spredixcan_hdf5_results(**kwargs):
+    output_folder = conf.PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"] / "hdf5"
+    output_folder.parent.mkdir(exist_ok=True, parents=True)
+
+    output_tar_file = Path(
+        conf.PHENOMEXCAN["GENE_ASSOC_DIR"], "spredixcan-mashr-zscores.tar"
+    ).resolve()
+    output_tar_file_md5 = "502cc184948c80c16ecea130a3523ebd"
+
+    if not Path(output_tar_file).exists() or not md5_matches(
+        output_tar_file_md5, output_tar_file
+    ):
+        # download the two parts
+        part0_filename = output_tar_file.parent / (output_tar_file.name + ".part0")
+        curl(
+            "https://upenn.box.com/shared/static/hayzpeowlvgjy6ctmp1gpochagq2ob62.tar",
+            part0_filename,
+            "333ae4a9b9fc215a1aa1c0628e03d65e",
+            logger=logger,
+        )
+
+        part1_filename = output_tar_file.parent / (output_tar_file.name + ".part1")
+        curl(
+            "https://upenn.box.com/shared/static/pl7hsqq7hqqf18kf4x0185xn1x45ov4i.tar",
+            part1_filename,
+            "3d41bc3e4d511081849a102f018af1a8",
+            logger=logger,
+        )
+
+        # combine
+        logger.info("Concatenating parts")
+        with open(output_tar_file, "wb") as output_f, open(
+            part0_filename, "rb"
+        ) as part0_f, open(part1_filename, "rb") as part1_f:
+            output_f.write(part0_f.read())
+            output_f.write(part1_f.read())
+
+        assert md5_matches(output_tar_file_md5, output_tar_file), "Concatenation failed"
+
+        part0_filename.unlink()
+        part1_filename.unlink()
+
+    # uncompress file
+    import tarfile
+
+    logger.info(f"Extracting {output_tar_file}")
+    with tarfile.open(output_tar_file, "r") as f:
+        tar_members = f.getmembers()
+        members_dict = {t.name: t for t in tar_members}
+
+        assert (
+            output_folder.name in members_dict
+        ), "Output folder name not inside tar file"
+
+        f.extractall(output_folder.parent)
 
 
 def _get_file_from_zip(
