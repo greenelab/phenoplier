@@ -56,18 +56,22 @@ class Trait(object, metaclass=ABCMeta):
 
     MAP_INFO = namedtuple("EfoInfo", ["id", "label"])
 
+    # This file was downloaded from https://github.com/EBISPOT/EFO-UKB-mappings
     UKB_TO_EFO_MAP_FILE = Path(
         Path(__file__).parent,
         "data",
         conf.PHENOMEXCAN["TRAITS_FULLCODE_TO_EFO_MAP_FILE"].name,
     ).resolve()
 
+    # This file was generated from the EFO ontology, which has a map to several
+    # other ontology IDs
     EFO_XREFS_FILE = Path(
         Path(__file__).parent,
         "data",
         conf.GENERAL["TERM_ID_XREFS_FILE"].name,
     ).resolve()
 
+    # This file was obtained from https://github.com/dhimmel/disease-ontology
     DO_XREFS_FILE = Path(Path(__file__).parent, "data", "xrefs-prop-slim.tsv").resolve()
 
     def __init__(self, code=None, full_code=None):
@@ -134,25 +138,42 @@ class Trait(object, metaclass=ABCMeta):
         return self.MAP_INFO(id=efo_code, label=label)
 
     def get_do_info(self, mapping_type=None):
+        """
+        Get the Disease Ontology ID (DOID) for this Trait instance. It uses
+        several sources to map the PhenomeXcan trait to a DOID.
+
+        Args:
+            mapping_type:
+                A string that is passed to the function get_efo_info (see
+                documentation there).
+
+        Returns:
+            A MAP_INFO namedtuple with two fields: id (which could be a list of
+            IDs) and label (which here is always None).
+        """
+        # obtain the EFO data for this PhenomeXcan/UK Biobank trait
         efo_info = self.get_efo_info(mapping_type=mapping_type)
         if efo_info is None:
             return None
 
         efo_id_part = efo_info.id[4:]
 
+        # now, look for a mapping from EFO to DOID using the EFO ontology
+        # references
         efo_xrefs_data = self.get_efo_xrefs_data()
         efo_xrefs_data = efo_xrefs_data[
             (efo_xrefs_data["term_id"] == efo_info.id)
             & (efo_xrefs_data["target_id_type"] == "DOID")
         ]["target_id"].values
-        # efo_xrefs_data = set()
 
+        # now do the same but using another resource
         do_xrefs_data = self.get_do_xrefs_data()
         do_xrefs_data = do_xrefs_data[
             (do_xrefs_data["resource"] == "EFO")
             & (do_xrefs_data["resource_id"] == efo_id_part)
         ]["doid_code"].values
 
+        # merge different mappings
         doid_maps = set(efo_xrefs_data).union(set(do_xrefs_data))
 
         if len(doid_maps) == 0:
@@ -180,7 +201,6 @@ class Trait(object, metaclass=ABCMeta):
     @staticmethod
     def get_efo_xrefs_data():
         return read_data(
-            # Trait.EFO_XREFS_FILE, sep="\t", index_col="term_id"
             Trait.EFO_XREFS_FILE,
             sep="\t",
         )
@@ -323,11 +343,9 @@ class Trait(object, metaclass=ABCMeta):
     @staticmethod
     def _select_doid(doids: list, preferred_doid_list: set):
         """
-        TODO: FINISH/complete
-
         It takes a list of Disease Ontology IDs, and returns the first one that
         appears in a preferred DOID list (such as those present in the gold standard).
-        If none in the list is there, return the first one.
+        If none in the list is there, then return the first one.
         """
         for doid in doids:
             if doid in preferred_doid_list:
@@ -342,15 +360,26 @@ class Trait(object, metaclass=ABCMeta):
         combine: str = None,
     ) -> pd.DataFrame:
         """
-        TODO: complete
+        It maps traits in the columns of a pandas DataFrame to Disese Ontology
+        IDs (DOID). If several traits map to the same DOID, then it can merge
+        them using a strategy defined in `combine`.
+
+        This function is mainly used for drug-disease prediction data, where
+        drugs are in rows in traits in columns. If several traits point to the
+        same DOID, then the strategy supported to merge them is to take the
+        maximum prediction value for a particular drug.
 
         Args:
-            data: columns should have the traits list
+            data:
+                A pandas dataframe where columns are traits.
             preferred_doid_list:
+                A preferred list of DOIDs.
             combine:
+                A strategy to combine traits that map to the same DOID. Actually,
+                only "max" is supported (it takes the maximum value).
 
         Returns:
-
+            A pandas dataframe where traits in columns are mapped to DOID.
         """
         if preferred_doid_list is None:
             preferred_doid_list = set()
