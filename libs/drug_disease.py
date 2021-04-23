@@ -1,3 +1,8 @@
+"""
+Contains functions to run drug-disease predictions given gene-disease
+associations and drug-induced gene expression.
+"""
+
 from pathlib import Path
 from IPython.display import display
 
@@ -7,7 +12,23 @@ from sklearn.metrics import pairwise_distances
 from entity import Trait
 
 
-def _zero_nontop_genes(trait_vector, n_top, use_abs=False):
+def _zero_nontop_genes(trait_vector, n_top, use_abs=True):
+    """
+    It takes a pandas Series (with genes/LVs in index, and association values),
+    sorts it, and leave only the top values, putting zeros in the rest.
+
+    Args:
+        trait_vector:
+            A pandas Series with numerical data.
+        n_top:
+            Number of top genes/LVs to keep. The rest will be zeroed.
+        use_abs:
+            If True, then it uses the absolute value.
+
+    Returns:
+        A new pandas Series keeping only the top n_top values (the rest is
+        zeroed).
+    """
     if use_abs:
         df = trait_vector.abs()
     else:
@@ -22,9 +43,9 @@ def _zero_nontop_genes(trait_vector, n_top, use_abs=False):
 
 
 def _predict(
-    lincs_projection,
-    phenomexcan_input_file,
-    phenomexcan_projection,
+    drug_gene_data,
+    gene_trait_data_filename,
+    gene_trait_data,
     output_dir,
     prediction_function,
     base_method_name,
@@ -34,31 +55,73 @@ def _predict(
     use_abs=False,
 ):
     """
-    TODO: complete
+    Given gene-disease associations (standardized effect sizes) and the
+    drug-induced gene expression (z-scores), it computes a drug-disease score
+    using an approach based on a published framework for drug-repositioning
+    (https://doi.org/10.1038/nn.4618).
+
+    This function allows to specify here the prediction_function, which could
+    potentially be the Pearson or Spearman correlation, but here we use the dot
+    product only (see predict_dotprod_neg).
+
+    The function saves an HDF5 file with three keys:
+        * `full_prediction`: it has predictions for all drugs and traits given
+            as argument.
+        * `prediction`: it has predictions for all drugs, but includes traits that
+            can map to Disease Ontology ID only. This is used for comparison between
+            methods using the gold standard from PharmacotherapyDB.
+        * `metadata`: a pandas dataframe with metadata about the run.
 
     Args:
-        lincs_projection:
-        phenomexcan_input_file:
-        phenomexcan_projection:
+        drug_gene_data:
+            A pandas DataFrame containing the drug-gene associations. Genes
+            must be in rows, and drugs in columns.
+        gene_trait_data_filename:
+            The file name where the `gene_trait_data` was read from. It is used
+            to generate the output file name and save in the metadata.
+        gene_trait_data:
+            A pandas DataFrame containing the gene-trait associations. Genes
+            must be in rows, and traits in columns.
         output_dir:
+            A Path object pointing to the output directory where predictions
+            will be saved.
         prediction_function:
+            A prediction function that receives two arguments: the drug_gene_data
+            and the gene_trait_data, and returns a pandas DataFrame with the drug-disease
+            predictions (drugs in rows, traits in columns).
         base_method_name:
+            A string with the name of the method being used for prediction. Currently,
+            it is either "Gene-based" or "Module-based".
         preferred_doid_list:
+            List of Disease Ontology IDs (DOID) that are "preferred". This is needed because
+            traits in PhenomeXcan are mapped to EFO and then to DOID, and sometimes
+            one trait maps to several DOIDs. This list helps to select among those, and
+            it should contains the DOID present in the gold standard.
         force_run:
+            If results already exist, it halt the execution.
+        n_top_conditions:
+            Number of conditions (genes or modules/LVs) to use to compute
+            predictions. If None, it uses all. If it is a number then it ranks
+            conditions and takes the top only.
+        use_abs:
+            Related to `n_top_conditions`. If True, then when ranking conditions
+            (genes/LVs) it considers the absolute values.
 
     Returns:
-
+        None
     """
+    # prepare output file name suffix
     output_file_suffix = "all_genes"
     if n_top_conditions is not None:
         output_file_suffix = f"top_{n_top_conditions}_genes"
 
     print(f"  predicting {output_file_suffix}...", end="")
 
+    # create output dir
     output_dir.mkdir(exist_ok=True, parents=True)
     output_file = Path(
         output_dir,
-        f"{phenomexcan_input_file.stem}-{output_file_suffix}-prediction_scores.h5",
+        f"{gene_trait_data_filename.stem}-{output_file_suffix}-prediction_scores.h5",
     ).resolve()
 
     if output_file.exists() and not force_run:
@@ -68,12 +131,15 @@ def _predict(
     print("")
 
     if n_top_conditions is not None:
-        # FIXME: this only works with the current dotprod/dotprod_neg methods
-        phenomexcan_projection = phenomexcan_projection.apply(
+        # if n_top_conditions is given, then for each trait (columns) zero all
+        # genes/LVs that are not among the top ones. Keep in mind that this only
+        # works for dot product type of prediction.
+        gene_trait_data = gene_trait_data.apply(
             lambda x: _zero_nontop_genes(x, n_top_conditions, use_abs)
         )
 
-    drug_disease_assocs = prediction_function(lincs_projection, phenomexcan_projection)
+    # compute predictions
+    drug_disease_assocs = prediction_function(drug_gene_data, gene_trait_data)
     print(f"    shape: {drug_disease_assocs.shape}")
 
     print(f"  saving to: {str(output_file)}")
@@ -82,7 +148,7 @@ def _predict(
         print(f"    saving full predictions...")
         _save_predictions(drug_disease_assocs, store, "full_prediction")
 
-        # save prediction for gold-standard comparison
+        # save prediction for comparison with gold-standard
         print(f"    saving classifier data...")
         drug_disease_assocs = Trait.map_to_doid(
             drug_disease_assocs, preferred_doid_list, combine="max"
@@ -98,13 +164,16 @@ def _predict(
             {
                 "method": [base_method_name],
                 "n_top_genes": [-1.0 if n_top_conditions is None else n_top_conditions],
-                "data": [phenomexcan_input_file.stem],
+                "data": [gene_trait_data_filename.stem],
             }
         )
         store.put("metadata", metadata, format="table")
 
 
 def _save_predictions(drug_disease_assocs, store, key_name):
+    """
+    Saves the predictions into an HDFStore using the key_name as key.
+    """
     classifier_data = (
         drug_disease_assocs.unstack()
         .reset_index()
@@ -122,56 +191,12 @@ def _save_predictions(drug_disease_assocs, store, key_name):
     print(f"    key: {key_name}")
 
     store.put(key_name, classifier_data, format="table")
-    # classifier_data.to_hdf(
-    #     output_file, format="table", mode=mode, complevel=4, key=key_name
-    # )
-
-
-def predict_dotprod(
-    lincs_projection,
-    phenomexcan_input_file,
-    phenomexcan_projection,
-    output_dir_base,
-    base_method_name,
-    preferred_doid_list,
-    force_run,
-):
-    """
-    TODO: complete
-
-    Args:
-        lincs_projection:
-        phenomexcan_input_file:
-        phenomexcan_projection:
-        output_dir_base:
-        base_method_name:
-        preferred_doid_list:
-        force_run:
-
-    Returns:
-
-    """
-    output_dir = output_dir_base / "dotprod"
-
-    def _func(drugs_data, gene_assoc_data):
-        return drugs_data.T.dot(gene_assoc_data)
-
-    _predict(
-        lincs_projection,
-        phenomexcan_input_file,
-        phenomexcan_projection,
-        output_dir,
-        _func,
-        base_method_name,
-        preferred_doid_list,
-        force_run,
-    )
 
 
 def predict_dotprod_neg(
-    lincs_projection,
-    phenomexcan_input_file,
-    phenomexcan_projection,
+    drug_gene_data,
+    gene_trait_data_filename,
+    gene_trait_data,
     output_dir_base,
     base_method_name,
     preferred_doid_list,
@@ -180,18 +205,18 @@ def predict_dotprod_neg(
     use_abs=False,
 ):
     """
-    TODO: complete
+    Predicts drug-disease associations using the dot product between
+    drug_gene_data and gene_trait_data. The arguments and return are the same as
+    in _predict function.
 
-    Args:
-        lincs_projection:
-        phenomexcan_input_file:
-        phenomexcan_projection:
-        output_dir_base:
-        base_method_name:
-        preferred_doid_list:
-        force_run:
-
-    Returns:
+    This function computes the dot product between each trait vector and drug
+    vector, multiplying the standardized effect size of all genes (for the
+    trait) and the expression profiles of all genes (for the drug). The result
+    is multiplied by -1, since we want a higher/positive score when the signs of
+    these two types of data are different for a particular gene: if a higher
+    expression of a gene is associated with a disease, then the standardized
+    effect size is positive; a drug that decreases the expression of that gene
+    will have a negative z-score.
     """
     output_dir = output_dir_base / "dotprod_neg"
 
@@ -199,9 +224,9 @@ def predict_dotprod_neg(
         return -1.0 * drugs_data.T.dot(gene_assoc_data)
 
     _predict(
-        lincs_projection,
-        phenomexcan_input_file,
-        phenomexcan_projection,
+        drug_gene_data,
+        gene_trait_data_filename,
+        gene_trait_data,
         output_dir,
         _func,
         base_method_name,
@@ -209,190 +234,4 @@ def predict_dotprod_neg(
         force_run,
         n_top_conditions,
         use_abs,
-    )
-
-
-def _compute_pearson_distance(x, y):
-    """
-    TODO: complete
-
-    Args:
-        x:
-        y:
-
-    Returns:
-
-    """
-    return pd.DataFrame(
-        data=pairwise_distances(x.T, y.T, metric="correlation"),
-        index=x.columns.copy(),
-        columns=y.columns.copy(),
-    )
-
-
-def predict_pearson(
-    lincs_projection,
-    phenomexcan_input_file,
-    phenomexcan_projection,
-    output_dir_base,
-    base_method_name,
-    preferred_doid_list,
-    force_run,
-):
-    """
-    TODO: complete
-
-    Args:
-        lincs_projection:
-        phenomexcan_input_file:
-        phenomexcan_projection:
-        output_dir_base:
-        base_method_name:
-        preferred_doid_list:
-        force_run:
-
-    Returns:
-
-    """
-    output_dir = output_dir_base / "pearson"
-
-    def _func(drugs_data, gene_assoc_data):
-        return 1 - _compute_pearson_distance(drugs_data, gene_assoc_data)
-
-    _predict(
-        lincs_projection,
-        phenomexcan_input_file,
-        phenomexcan_projection,
-        output_dir,
-        _func,
-        base_method_name,
-        preferred_doid_list,
-        force_run,
-    )
-
-
-def predict_pearson_neg(
-    lincs_projection,
-    phenomexcan_input_file,
-    phenomexcan_projection,
-    output_dir_base,
-    base_method_name,
-    preferred_doid_list,
-    force_run,
-):
-    """
-    TODO: complete
-
-    Args:
-        lincs_projection:
-        phenomexcan_input_file:
-        phenomexcan_projection:
-        output_dir_base:
-        base_method_name:
-        preferred_doid_list:
-        force_run:
-
-    Returns:
-
-    """
-    output_dir = output_dir_base / "pearson_neg"
-
-    def _func(drugs_data, gene_assoc_data):
-        return _compute_pearson_distance(drugs_data, gene_assoc_data)
-
-    _predict(
-        lincs_projection,
-        phenomexcan_input_file,
-        phenomexcan_projection,
-        output_dir,
-        _func,
-        base_method_name,
-        preferred_doid_list,
-        force_run,
-    )
-
-
-def predict_spearman(
-    lincs_projection,
-    phenomexcan_input_file,
-    phenomexcan_projection,
-    output_dir_base,
-    base_method_name,
-    preferred_doid_list,
-    force_run,
-):
-    """
-    TODO: complete
-
-    Args:
-        lincs_projection:
-        phenomexcan_input_file:
-        phenomexcan_projection:
-        output_dir_base:
-        base_method_name:
-        preferred_doid_list:
-        force_run:
-
-    Returns:
-
-    """
-    from sklearn.metrics import pairwise_distances
-
-    output_dir = output_dir_base / "spearman"
-
-    def _func(drugs_data, gene_assoc_data):
-        return 1 - _compute_pearson_distance(drugs_data.rank(), gene_assoc_data.rank())
-
-    _predict(
-        lincs_projection,
-        phenomexcan_input_file,
-        phenomexcan_projection,
-        output_dir,
-        _func,
-        base_method_name,
-        preferred_doid_list,
-        force_run,
-    )
-
-
-def predict_spearman_neg(
-    lincs_projection,
-    phenomexcan_input_file,
-    phenomexcan_projection,
-    output_dir_base,
-    base_method_name,
-    preferred_doid_list,
-    force_run,
-):
-    """
-    TODO: complete
-
-    Args:
-        lincs_projection:
-        phenomexcan_input_file:
-        phenomexcan_projection:
-        output_dir_base:
-        base_method_name:
-        preferred_doid_list:
-        force_run:
-
-    Returns:
-
-    """
-    from sklearn.metrics import pairwise_distances
-
-    output_dir = output_dir_base / "spearman_neg"
-
-    def _func(drugs_data, gene_assoc_data):
-        return _compute_pearson_distance(drugs_data.rank(), gene_assoc_data.rank())
-
-    _predict(
-        lincs_projection,
-        phenomexcan_input_file,
-        phenomexcan_projection,
-        output_dir,
-        _func,
-        base_method_name,
-        preferred_doid_list,
-        force_run,
     )
