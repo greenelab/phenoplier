@@ -49,8 +49,7 @@ class MultiplierProjection(object):
         metadata = self._read_model_metadata()
 
         # nothing special is done if the input data contains NaNs, but it will
-        # raise
-        # a warning for the user.
+        # raise a warning for the user.
         if y.isna().any().any():
             import warnings
 
