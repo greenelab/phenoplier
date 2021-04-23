@@ -174,31 +174,6 @@ def download_efo_ontology(**kwargs):
     )
 
 
-def download_spredixcan_results(**kwargs):
-    output_folder = conf.PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"]
-    output_tar_file = Path(
-        conf.PHENOMEXCAN["GENE_ASSOC_DIR"], "spredixcan-mashr-zscores.tar"
-    ).resolve()
-
-    curl(
-        "https://zenodo.org/record/3911190/files/spredixcan-mashr-zscores.tar?download=1",
-        output_tar_file,
-        "a038f8e509b4c08678eb77e7d8dc759d",
-    )
-
-    # uncompress file
-    import tarfile
-
-    logger.info(f"Extracting {output_tar_file}")
-    with tarfile.open(output_tar_file, "r") as f:
-        tar_members = f.getmembers()
-        members_dict = {t.name: t for t in tar_members}
-
-        assert output_folder.name in members_dict
-
-        f.extractall(output_folder.parent)
-
-
 def download_multiplier_recount2_model(**kwargs):
     """
     This method downloads the MultiPLIER model on recount2. Since this file is inside
