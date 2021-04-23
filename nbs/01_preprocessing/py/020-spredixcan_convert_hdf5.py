@@ -1,6 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
+#     cell_metadata_filter: all,-execution,-trusted
 #     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
@@ -19,7 +20,7 @@
 # %% [markdown] papermill={"duration": 0.050521, "end_time": "2020-12-18T23:50:38.468335", "exception": false, "start_time": "2020-12-18T23:50:38.417814", "status": "completed"} tags=[]
 # This notebook reads .h5 files generated in PhenomeXcan by [this notebook](https://github.com/hakyimlab/phenomexcan/blob/master/scripts/100_postprocessing/05_spredixcan.ipynb), and saves one file per tissue with the results in pandas DataFrame format (genes in rows, traits in columns). It saves these in two formats: pickle and tsv.gz
 #
-# The notebook with generate two other folders in the parent of `SPREDIXCAN_H5_FOLDER`: `pkl` and `tsv`
+# The notebook will generate two other folders in the parent of `SPREDIXCAN_H5_FOLDER`: `pkl` and `tsv`
 #
 # **The idea** is to have the data in a friendly format.
 
