@@ -14,7 +14,6 @@ logger = get_logger("setup")
 # Methods names (that download files) which should not be included in light mode (see
 # below).
 AVOID_IN_TESTING_MODE = {
-    "download_spredixcan_results",
     "download_phenomexcan_smultixcan_mashr_zscores",
     "download_phenomexcan_smultixcan_mashr_pvalues",
     "download_multiplier_recount2_model",
