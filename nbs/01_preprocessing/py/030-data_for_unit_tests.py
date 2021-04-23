@@ -1,6 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
+#     cell_metadata_filter: all,-execution,-trusted
 #     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
@@ -17,7 +18,7 @@
 # # Description
 
 # %% [markdown]
-# TODO
+# This notebook takes slices of the full PhenomeXcan results and saves them for unit testing purposes.
 
 # %% [markdown] papermill={"duration": 0.031906, "end_time": "2020-12-14T21:24:39.770133", "exception": false, "start_time": "2020-12-14T21:24:39.738227", "status": "completed"} tags=[]
 # # Modules loading
@@ -29,13 +30,10 @@
 # %% papermill={"duration": 0.36702, "end_time": "2020-12-14T21:24:40.187800", "exception": false, "start_time": "2020-12-14T21:24:39.820780", "status": "completed"} tags=[]
 from IPython.display import display
 
-# import numpy as np
 import pandas as pd
 
 import conf
 from data.cache import read_data
-
-# from entity import Trait
 
 # %% [markdown] papermill={"duration": 0.01365, "end_time": "2020-12-14T21:24:40.215577", "exception": false, "start_time": "2020-12-14T21:24:40.201927", "status": "completed"} tags=[]
 # # Load S-MultiXcan results
