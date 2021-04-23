@@ -14,24 +14,24 @@
 #     name: python3
 # ---
 
-# %% [markdown] papermill={"duration": 0.090218, "end_time": "2020-12-18T23:50:38.326556", "exception": false, "start_time": "2020-12-18T23:50:38.236338", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.02314, "end_time": "2021-04-23T03:19:24.000632", "exception": false, "start_time": "2021-04-23T03:19:23.977492", "status": "completed"} tags=[]
 # # Description
 
-# %% [markdown] papermill={"duration": 0.050521, "end_time": "2020-12-18T23:50:38.468335", "exception": false, "start_time": "2020-12-18T23:50:38.417814", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.017745, "end_time": "2021-04-23T03:19:24.037233", "exception": false, "start_time": "2021-04-23T03:19:24.019488", "status": "completed"} tags=[]
 # This notebook reads .h5 files generated in PhenomeXcan by [this notebook](https://github.com/hakyimlab/phenomexcan/blob/master/scripts/100_postprocessing/05_spredixcan.ipynb), and saves one file per tissue with the results in pandas DataFrame format (genes in rows, traits in columns). It saves these in two formats: pickle and tsv.gz
 #
 # The notebook will generate two other folders in the parent of `SPREDIXCAN_H5_FOLDER`: `pkl` and `tsv`
 #
 # **The idea** is to have the data in a friendly format.
 
-# %% [markdown] papermill={"duration": 0.016094, "end_time": "2020-12-18T23:50:38.502287", "exception": false, "start_time": "2020-12-18T23:50:38.486193", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.017783, "end_time": "2021-04-23T03:19:24.072985", "exception": false, "start_time": "2021-04-23T03:19:24.055202", "status": "completed"} tags=[]
 # # Modules loading
 
-# %% papermill={"duration": 0.026911, "end_time": "2020-12-18T23:50:38.544923", "exception": false, "start_time": "2020-12-18T23:50:38.518012", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.03736, "end_time": "2021-04-23T03:19:24.128335", "exception": false, "start_time": "2021-04-23T03:19:24.090975", "status": "completed"} tags=[]
 # %load_ext autoreload
 # %autoreload 2
 
-# %% papermill={"duration": 0.206677, "end_time": "2020-12-18T23:50:38.768435", "exception": false, "start_time": "2020-12-18T23:50:38.561758", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.306121, "end_time": "2021-04-23T03:19:24.453190", "exception": false, "start_time": "2021-04-23T03:19:24.147069", "status": "completed"} tags=[]
 from pathlib import Path
 
 import numpy as np
@@ -41,10 +41,10 @@ import conf
 from data.cache import read_data
 from data.hdf5 import simplify_trait_fullcode, HDF5_FILE_PATTERN
 
-# %% [markdown] papermill={"duration": 0.016582, "end_time": "2020-12-18T23:50:38.802319", "exception": false, "start_time": "2020-12-18T23:50:38.785737", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.020026, "end_time": "2021-04-23T03:19:24.517072", "exception": false, "start_time": "2021-04-23T03:19:24.497046", "status": "completed"} tags=[]
 # # Settings
 
-# %% papermill={"duration": 0.031439, "end_time": "2020-12-18T23:50:38.849882", "exception": false, "start_time": "2020-12-18T23:50:38.818443", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.038362, "end_time": "2021-04-23T03:19:24.574495", "exception": false, "start_time": "2021-04-23T03:19:24.536133", "status": "completed"} tags=[]
 SPREDIXCAN_H5_FOLDER = Path(
     conf.PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"],
     "hdf5",
@@ -52,39 +52,39 @@ SPREDIXCAN_H5_FOLDER = Path(
 display(SPREDIXCAN_H5_FOLDER)
 assert SPREDIXCAN_H5_FOLDER.is_dir(), "The folder does not exist"
 
-# %% papermill={"duration": 0.027386, "end_time": "2020-12-18T23:50:38.899215", "exception": false, "start_time": "2020-12-18T23:50:38.871829", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.028686, "end_time": "2021-04-23T03:19:24.621820", "exception": false, "start_time": "2021-04-23T03:19:24.593134", "status": "completed"} tags=[]
 spredixcan_pkl_output_folder = Path(SPREDIXCAN_H5_FOLDER.parent, "pkl").resolve()
 spredixcan_pkl_output_folder.mkdir(exist_ok=True)
 display(spredixcan_pkl_output_folder)
 
-# %% papermill={"duration": 0.026616, "end_time": "2020-12-18T23:50:38.942918", "exception": false, "start_time": "2020-12-18T23:50:38.916302", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.029585, "end_time": "2021-04-23T03:19:24.670272", "exception": false, "start_time": "2021-04-23T03:19:24.640687", "status": "completed"} tags=[]
 spredixcan_tsv_output_folder = Path(SPREDIXCAN_H5_FOLDER.parent, "tsv").resolve()
 spredixcan_tsv_output_folder.mkdir(exist_ok=True)
 display(spredixcan_tsv_output_folder)
 
-# %% [markdown] papermill={"duration": 0.017139, "end_time": "2020-12-18T23:50:38.977602", "exception": false, "start_time": "2020-12-18T23:50:38.960463", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.018906, "end_time": "2021-04-23T03:19:24.708770", "exception": false, "start_time": "2021-04-23T03:19:24.689864", "status": "completed"} tags=[]
 # # Read S-PrediXcan results
 
-# %% [markdown] papermill={"duration": 0.016849, "end_time": "2020-12-18T23:50:39.011504", "exception": false, "start_time": "2020-12-18T23:50:38.994655", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.018975, "end_time": "2021-04-23T03:19:24.746525", "exception": false, "start_time": "2021-04-23T03:19:24.727550", "status": "completed"} tags=[]
 # ## Get list of files
 
-# %% papermill={"duration": 0.026479, "end_time": "2020-12-18T23:50:39.054839", "exception": false, "start_time": "2020-12-18T23:50:39.028360", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.028734, "end_time": "2021-04-23T03:19:24.794482", "exception": false, "start_time": "2021-04-23T03:19:24.765748", "status": "completed"} tags=[]
 from glob import glob
 
-# %% papermill={"duration": 0.026833, "end_time": "2020-12-18T23:50:39.099161", "exception": false, "start_time": "2020-12-18T23:50:39.072328", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.028449, "end_time": "2021-04-23T03:19:24.842153", "exception": false, "start_time": "2021-04-23T03:19:24.813704", "status": "completed"} tags=[]
 spredixcan_files = list(SPREDIXCAN_H5_FOLDER.glob("*.h5"))
 
-# %% papermill={"duration": 0.028272, "end_time": "2020-12-18T23:50:39.145360", "exception": false, "start_time": "2020-12-18T23:50:39.117088", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.028956, "end_time": "2021-04-23T03:19:24.890480", "exception": false, "start_time": "2021-04-23T03:19:24.861524", "status": "completed"} tags=[]
 display(spredixcan_files[:5])
 assert len(spredixcan_files) == 49
 
-# %% [markdown] papermill={"duration": 0.017986, "end_time": "2020-12-18T23:50:39.182462", "exception": false, "start_time": "2020-12-18T23:50:39.164476", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.01886, "end_time": "2021-04-23T03:19:24.928861", "exception": false, "start_time": "2021-04-23T03:19:24.910001", "status": "completed"} tags=[]
 # ## Get tissue name from file list
 
-# %% papermill={"duration": 0.026917, "end_time": "2020-12-18T23:50:39.226872", "exception": false, "start_time": "2020-12-18T23:50:39.199955", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.02822, "end_time": "2021-04-23T03:19:24.975888", "exception": false, "start_time": "2021-04-23T03:19:24.947668", "status": "completed"} tags=[]
 import re
 
-# %% papermill={"duration": 0.027491, "end_time": "2020-12-18T23:50:39.272478", "exception": false, "start_time": "2020-12-18T23:50:39.244987", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.02849, "end_time": "2021-04-23T03:19:25.023490", "exception": false, "start_time": "2021-04-23T03:19:24.995000", "status": "completed"} tags=[]
 # some testing
 match = re.search(HDF5_FILE_PATTERN, "spredixcan-Esophagus_Muscularis-zscore.h5")
 assert match.group("tissue") == "Esophagus_Muscularis"
@@ -94,16 +94,16 @@ match = re.search(
 )
 assert match.group("tissue") == "Brain_Anterior_cingulate_cortex_BA24"
 
-# %% [markdown] papermill={"duration": 0.017957, "end_time": "2020-12-18T23:50:39.308937", "exception": false, "start_time": "2020-12-18T23:50:39.290980", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.019608, "end_time": "2021-04-23T03:19:25.062918", "exception": false, "start_time": "2021-04-23T03:19:25.043310", "status": "completed"} tags=[]
 # # Load S-PrediXcan results
 
-# %% [markdown] papermill={"duration": 0.017422, "end_time": "2020-12-18T23:50:39.343651", "exception": false, "start_time": "2020-12-18T23:50:39.326229", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.019041, "end_time": "2021-04-23T03:19:25.100915", "exception": false, "start_time": "2021-04-23T03:19:25.081874", "status": "completed"} tags=[]
 # ## Get all PhenomeXcan trait full codes
 
-# %% papermill={"duration": 0.204969, "end_time": "2020-12-18T23:50:39.566040", "exception": false, "start_time": "2020-12-18T23:50:39.361071", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.317156, "end_time": "2021-04-23T03:19:25.436949", "exception": false, "start_time": "2021-04-23T03:19:25.119793", "status": "completed"} tags=[]
 from entity import Trait
 
-# %% papermill={"duration": 0.33429, "end_time": "2020-12-18T23:50:39.919472", "exception": false, "start_time": "2020-12-18T23:50:39.585182", "status": "completed"} tags=[]
+# %% papermill={"duration": 3.537499, "end_time": "2021-04-23T03:19:28.998167", "exception": false, "start_time": "2021-04-23T03:19:25.460668", "status": "completed"} tags=[]
 all_phenomexcan_traits = {
     trait_fullcode
     for trait_fullcode in read_data(
@@ -111,14 +111,14 @@ all_phenomexcan_traits = {
     ).columns
 }
 
-# %% papermill={"duration": 0.028867, "end_time": "2020-12-18T23:50:39.969314", "exception": false, "start_time": "2020-12-18T23:50:39.940447", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.029812, "end_time": "2021-04-23T03:19:29.064655", "exception": false, "start_time": "2021-04-23T03:19:29.034843", "status": "completed"} tags=[]
 display(len(all_phenomexcan_traits))
 assert len(all_phenomexcan_traits) == 4091
 
-# %% [markdown] papermill={"duration": 0.017718, "end_time": "2020-12-18T23:50:40.005136", "exception": false, "start_time": "2020-12-18T23:50:39.987418", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.018745, "end_time": "2021-04-23T03:19:29.103018", "exception": false, "start_time": "2021-04-23T03:19:29.084273", "status": "completed"} tags=[]
 # ## Read all results
 
-# %% papermill={"duration": 16543.399286, "end_time": "2020-12-19T04:26:23.422002", "exception": false, "start_time": "2020-12-18T23:50:40.022716", "status": "completed"} tags=[]
+# %% papermill={"duration": 18305.907855, "end_time": "2021-04-23T08:24:35.030046", "exception": false, "start_time": "2021-04-23T03:19:29.122191", "status": "completed"} tags=[]
 for f_idx, f in enumerate(spredixcan_files):
     f_tissue = re.search(HDF5_FILE_PATTERN, f.name).group("tissue")
     print(f"{f_idx}. {f.name}")
@@ -155,62 +155,62 @@ for f_idx, f in enumerate(spredixcan_files):
             float_format="%.5e",
         )
 
-# %% [markdown] papermill={"duration": 0.029082, "end_time": "2020-12-19T04:26:23.485688", "exception": false, "start_time": "2020-12-19T04:26:23.456606", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.030059, "end_time": "2021-04-23T08:24:35.096196", "exception": false, "start_time": "2021-04-23T08:24:35.066137", "status": "completed"} tags=[]
 # # Testing
 
-# %% [markdown] papermill={"duration": 0.025997, "end_time": "2020-12-19T04:26:23.537564", "exception": false, "start_time": "2020-12-19T04:26:23.511567", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.028135, "end_time": "2021-04-23T08:24:35.152241", "exception": false, "start_time": "2021-04-23T08:24:35.124106", "status": "completed"} tags=[]
 # ## List of traits match those in S-MultiXcan
 
-# %% papermill={"duration": 0.051068, "end_time": "2020-12-19T04:26:23.641801", "exception": false, "start_time": "2020-12-19T04:26:23.590733", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.04596, "end_time": "2021-04-23T08:24:35.225870", "exception": false, "start_time": "2021-04-23T08:24:35.179910", "status": "completed"} tags=[]
 _phenomexcan_trait_fullcodes = pd.Index(all_phenomexcan_traits)
 display(_phenomexcan_trait_fullcodes)
 assert _phenomexcan_trait_fullcodes.is_unique
 
-# %% [markdown] papermill={"duration": 0.025616, "end_time": "2020-12-19T04:26:23.694724", "exception": false, "start_time": "2020-12-19T04:26:23.669108", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.026848, "end_time": "2021-04-23T08:24:35.281138", "exception": false, "start_time": "2021-04-23T08:24:35.254290", "status": "completed"} tags=[]
 # ### pickle
 
-# %% papermill={"duration": 0.222144, "end_time": "2020-12-19T04:26:23.942519", "exception": false, "start_time": "2020-12-19T04:26:23.720375", "status": "completed"} tags=[]
+# %% papermill={"duration": 2.359798, "end_time": "2021-04-23T08:24:37.668827", "exception": false, "start_time": "2021-04-23T08:24:35.309029", "status": "completed"} tags=[]
 output_filename_prefix = f"spredixcan-mashr-zscores-Adipose_Subcutaneous"
 filepath = Path(spredixcan_pkl_output_folder, f"{output_filename_prefix}.pkl")
 _spredixcan_traits = pd.read_pickle(filepath).columns
 
-# %% papermill={"duration": 0.03774, "end_time": "2020-12-19T04:26:24.007657", "exception": false, "start_time": "2020-12-19T04:26:23.969917", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.038805, "end_time": "2021-04-23T08:24:37.738471", "exception": false, "start_time": "2021-04-23T08:24:37.699666", "status": "completed"} tags=[]
 _spredixcan_traits
 
-# %% papermill={"duration": 0.036937, "end_time": "2020-12-19T04:26:24.071976", "exception": false, "start_time": "2020-12-19T04:26:24.035039", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.037878, "end_time": "2021-04-23T08:24:37.805264", "exception": false, "start_time": "2021-04-23T08:24:37.767386", "status": "completed"} tags=[]
 assert _spredixcan_traits.is_unique
 
-# %% papermill={"duration": 0.038609, "end_time": "2020-12-19T04:26:24.137243", "exception": false, "start_time": "2020-12-19T04:26:24.098634", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.038632, "end_time": "2021-04-23T08:24:37.871550", "exception": false, "start_time": "2021-04-23T08:24:37.832918", "status": "completed"} tags=[]
 _tmp = _phenomexcan_trait_fullcodes.intersection(_spredixcan_traits)
 display(_tmp)
 assert _tmp.shape[0] == _phenomexcan_trait_fullcodes.shape[0]
 
-# %% [markdown] papermill={"duration": 0.026432, "end_time": "2020-12-19T04:26:24.192239", "exception": false, "start_time": "2020-12-19T04:26:24.165807", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.02767, "end_time": "2021-04-23T08:24:37.928387", "exception": false, "start_time": "2021-04-23T08:24:37.900717", "status": "completed"} tags=[]
 # ### tsv.gz
 
-# %% papermill={"duration": 16.328505, "end_time": "2020-12-19T04:26:40.547293", "exception": false, "start_time": "2020-12-19T04:26:24.218788", "status": "completed"} tags=[]
+# %% papermill={"duration": 16.334215, "end_time": "2021-04-23T08:24:54.289956", "exception": false, "start_time": "2021-04-23T08:24:37.955741", "status": "completed"} tags=[]
 output_filename_prefix = f"spredixcan-mashr-zscores-Adipose_Visceral_Omentum"
 filepath = Path(spredixcan_tsv_output_folder, f"{output_filename_prefix}.tsv.gz")
 _spredixcan_traits = pd.read_csv(filepath, sep="\t", index_col="gene_id").columns
 
-# %% papermill={"duration": 0.037996, "end_time": "2020-12-19T04:26:40.614756", "exception": false, "start_time": "2020-12-19T04:26:40.576760", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.038867, "end_time": "2021-04-23T08:24:54.363037", "exception": false, "start_time": "2021-04-23T08:24:54.324170", "status": "completed"} tags=[]
 _spredixcan_traits
 
-# %% papermill={"duration": 0.037735, "end_time": "2020-12-19T04:26:40.679677", "exception": false, "start_time": "2020-12-19T04:26:40.641942", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.037572, "end_time": "2021-04-23T08:24:54.428890", "exception": false, "start_time": "2021-04-23T08:24:54.391318", "status": "completed"} tags=[]
 assert _spredixcan_traits.is_unique
 
-# %% papermill={"duration": 0.038634, "end_time": "2020-12-19T04:26:40.746025", "exception": false, "start_time": "2020-12-19T04:26:40.707391", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.039529, "end_time": "2021-04-23T08:24:54.496498", "exception": false, "start_time": "2021-04-23T08:24:54.456969", "status": "completed"} tags=[]
 _tmp = _phenomexcan_trait_fullcodes.intersection(_spredixcan_traits)
 display(_tmp)
 assert _tmp.shape[0] == _phenomexcan_trait_fullcodes.shape[0]
 
-# %% [markdown] papermill={"duration": 0.02712, "end_time": "2020-12-19T04:26:40.801457", "exception": false, "start_time": "2020-12-19T04:26:40.774337", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.027324, "end_time": "2021-04-23T08:24:54.552389", "exception": false, "start_time": "2021-04-23T08:24:54.525065", "status": "completed"} tags=[]
 # ## Values
 
-# %% [markdown] papermill={"duration": 0.026976, "end_time": "2020-12-19T04:26:40.855783", "exception": false, "start_time": "2020-12-19T04:26:40.828807", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.027508, "end_time": "2021-04-23T08:24:54.607564", "exception": false, "start_time": "2021-04-23T08:24:54.580056", "status": "completed"} tags=[]
 # Tests taken from: https://github.com/hakyimlab/phenomexcan/blob/master/scripts/100_postprocessing/05_spredixcan.ipynb
 
-# %% papermill={"duration": 0.2444, "end_time": "2020-12-19T04:26:41.127379", "exception": false, "start_time": "2020-12-19T04:26:40.882979", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.24338, "end_time": "2021-04-23T08:24:54.878512", "exception": false, "start_time": "2021-04-23T08:24:54.635132", "status": "completed"} tags=[]
 # pkl
 output_filename_prefix = f"spredixcan-mashr-zscores-Thyroid"
 filepath = Path(spredixcan_pkl_output_folder, f"{output_filename_prefix}.pkl")
@@ -223,7 +223,7 @@ assert df.loc["ENSG00000213965"] == -3.6753054157625686
 assert pd.isnull(df.loc["ENSG00000198670"])
 assert df.loc["ENSG00000177025"] == 4.316259089446458
 
-# %% papermill={"duration": 16.936349, "end_time": "2020-12-19T04:26:58.094257", "exception": false, "start_time": "2020-12-19T04:26:41.157908", "status": "completed"} tags=[]
+# %% papermill={"duration": 16.689601, "end_time": "2021-04-23T08:25:11.600257", "exception": false, "start_time": "2021-04-23T08:24:54.910656", "status": "completed"} tags=[]
 # tsv.gz
 output_filename_prefix = f"spredixcan-mashr-zscores-Thyroid"
 filepath = Path(spredixcan_tsv_output_folder, f"{output_filename_prefix}.tsv.gz")
@@ -236,10 +236,10 @@ assert df.loc["ENSG00000213965"].round(5) == -3.67531
 assert pd.isnull(df.loc["ENSG00000198670"])
 assert df.loc["ENSG00000177025"].round(5) == 4.31626
 
-# %% [markdown] papermill={"duration": 0.027664, "end_time": "2020-12-19T04:26:58.154146", "exception": false, "start_time": "2020-12-19T04:26:58.126482", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.028047, "end_time": "2021-04-23T08:25:11.660322", "exception": false, "start_time": "2021-04-23T08:25:11.632275", "status": "completed"} tags=[]
 # Check if small values in tsv.gz are correctly saved:
 
-# %% papermill={"duration": 16.465154, "end_time": "2020-12-19T04:27:14.647412", "exception": false, "start_time": "2020-12-19T04:26:58.182258", "status": "completed"} tags=[]
+# %% papermill={"duration": 16.365751, "end_time": "2021-04-23T08:25:28.054796", "exception": false, "start_time": "2021-04-23T08:25:11.689045", "status": "completed"} tags=[]
 # tsv.gz
 output_filename_prefix = f"spredixcan-mashr-zscores-Adipose_Subcutaneous"
 filepath = Path(spredixcan_tsv_output_folder, f"{output_filename_prefix}.tsv.gz")
@@ -274,71 +274,71 @@ assert (
     == "-3.89826e-09"
 )
 
-# %% [markdown] papermill={"duration": 0.027112, "end_time": "2020-12-19T04:27:14.705905", "exception": false, "start_time": "2020-12-19T04:27:14.678793", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.027918, "end_time": "2021-04-23T08:25:28.121294", "exception": false, "start_time": "2021-04-23T08:25:28.093376", "status": "completed"} tags=[]
 # More tests taken from the webapp:
 
-# %% [markdown] papermill={"duration": 0.0273, "end_time": "2020-12-19T04:27:14.760785", "exception": false, "start_time": "2020-12-19T04:27:14.733485", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.027701, "end_time": "2021-04-23T08:25:28.176552", "exception": false, "start_time": "2021-04-23T08:25:28.148851", "status": "completed"} tags=[]
 # Standing height
 
-# %% papermill={"duration": 0.190563, "end_time": "2020-12-19T04:27:14.979411", "exception": false, "start_time": "2020-12-19T04:27:14.788848", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.199171, "end_time": "2021-04-23T08:25:28.403131", "exception": false, "start_time": "2021-04-23T08:25:28.203960", "status": "completed"} tags=[]
 output_filename_prefix = f"spredixcan-mashr-zscores-Whole_Blood"
 filepath = Path(spredixcan_pkl_output_folder, f"{output_filename_prefix}.pkl")
 _tmp = pd.read_pickle(filepath)["50_raw-Standing_height"]
 assert _tmp.shape == (12610,)
 
-# %% papermill={"duration": 0.039263, "end_time": "2020-12-19T04:27:15.048499", "exception": false, "start_time": "2020-12-19T04:27:15.009236", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.039071, "end_time": "2021-04-23T08:25:28.474622", "exception": false, "start_time": "2021-04-23T08:25:28.435551", "status": "completed"} tags=[]
 assert _tmp.loc["ENSG00000101019"].round(3) == -34.024
 
-# %% papermill={"duration": 0.038372, "end_time": "2020-12-19T04:27:15.115043", "exception": false, "start_time": "2020-12-19T04:27:15.076671", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.037342, "end_time": "2021-04-23T08:25:28.540467", "exception": false, "start_time": "2021-04-23T08:25:28.503125", "status": "completed"} tags=[]
 assert _tmp.loc["ENSG00000109805"].round(3) == -22.855
 
-# %% papermill={"duration": 0.038249, "end_time": "2020-12-19T04:27:15.182664", "exception": false, "start_time": "2020-12-19T04:27:15.144415", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.037507, "end_time": "2021-04-23T08:25:28.606469", "exception": false, "start_time": "2021-04-23T08:25:28.568962", "status": "completed"} tags=[]
 assert _tmp.loc["ENSG00000177311"].round(3) == 33.819
 
-# %% papermill={"duration": 13.986454, "end_time": "2020-12-19T04:27:29.198339", "exception": false, "start_time": "2020-12-19T04:27:15.211885", "status": "completed"} tags=[]
+# %% papermill={"duration": 13.840854, "end_time": "2021-04-23T08:25:42.475301", "exception": false, "start_time": "2021-04-23T08:25:28.634447", "status": "completed"} tags=[]
 output_filename_prefix = f"spredixcan-mashr-zscores-Whole_Blood"
 filepath = Path(spredixcan_tsv_output_folder, f"{output_filename_prefix}.tsv.gz")
 _tmp = pd.read_csv(filepath, sep="\t", index_col="gene_id")["50_raw-Standing_height"]
 assert _tmp.shape == (12610,)
 
-# %% papermill={"duration": 0.039225, "end_time": "2020-12-19T04:27:29.270924", "exception": false, "start_time": "2020-12-19T04:27:29.231699", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.038931, "end_time": "2021-04-23T08:25:42.546791", "exception": false, "start_time": "2021-04-23T08:25:42.507860", "status": "completed"} tags=[]
 assert _tmp.loc["ENSG00000101019"].round(3) == -34.024
 
-# %% papermill={"duration": 0.038623, "end_time": "2020-12-19T04:27:29.338009", "exception": false, "start_time": "2020-12-19T04:27:29.299386", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.037849, "end_time": "2021-04-23T08:25:42.612953", "exception": false, "start_time": "2021-04-23T08:25:42.575104", "status": "completed"} tags=[]
 assert _tmp.loc["ENSG00000109805"].round(3) == -22.855
 
-# %% papermill={"duration": 0.03786, "end_time": "2020-12-19T04:27:29.405210", "exception": false, "start_time": "2020-12-19T04:27:29.367350", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.037922, "end_time": "2021-04-23T08:25:42.679148", "exception": false, "start_time": "2021-04-23T08:25:42.641226", "status": "completed"} tags=[]
 assert _tmp.loc["ENSG00000177311"].round(3) == 33.819
 
-# %% [markdown] papermill={"duration": 0.028052, "end_time": "2020-12-19T04:27:29.461591", "exception": false, "start_time": "2020-12-19T04:27:29.433539", "status": "completed"} tags=[]
+# %% [markdown] papermill={"duration": 0.027489, "end_time": "2021-04-23T08:25:42.734860", "exception": false, "start_time": "2021-04-23T08:25:42.707371", "status": "completed"} tags=[]
 # Schizophrenia
 
-# %% papermill={"duration": 0.213025, "end_time": "2020-12-19T04:27:29.702289", "exception": false, "start_time": "2020-12-19T04:27:29.489264", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.203188, "end_time": "2021-04-23T08:25:42.967111", "exception": false, "start_time": "2021-04-23T08:25:42.763923", "status": "completed"} tags=[]
 output_filename_prefix = f"spredixcan-mashr-zscores-Prostate"
 filepath = Path(spredixcan_pkl_output_folder, f"{output_filename_prefix}.pkl")
 _tmp = pd.read_pickle(filepath)["pgc.scz2"]
 
-# %% papermill={"duration": 0.040031, "end_time": "2020-12-19T04:27:29.773654", "exception": false, "start_time": "2020-12-19T04:27:29.733623", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.039983, "end_time": "2021-04-23T08:25:43.037731", "exception": false, "start_time": "2021-04-23T08:25:42.997748", "status": "completed"} tags=[]
 assert _tmp.loc["ENSG00000233822"].round(3) == 10.752
 
-# %% papermill={"duration": 0.038456, "end_time": "2020-12-19T04:27:29.841036", "exception": false, "start_time": "2020-12-19T04:27:29.802580", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.038271, "end_time": "2021-04-23T08:25:43.105661", "exception": false, "start_time": "2021-04-23T08:25:43.067390", "status": "completed"} tags=[]
 assert _tmp.loc["ENSG00000137312"].round(3) == -8.827
 
-# %% papermill={"duration": 0.03823, "end_time": "2020-12-19T04:27:29.908907", "exception": false, "start_time": "2020-12-19T04:27:29.870677", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.037969, "end_time": "2021-04-23T08:25:43.172492", "exception": false, "start_time": "2021-04-23T08:25:43.134523", "status": "completed"} tags=[]
 assert _tmp.loc["ENSG00000204257"].round(3) == -7.965
 
-# %% papermill={"duration": 16.025026, "end_time": "2020-12-19T04:27:45.962916", "exception": false, "start_time": "2020-12-19T04:27:29.937890", "status": "completed"} tags=[]
+# %% papermill={"duration": 15.793113, "end_time": "2021-04-23T08:25:58.994545", "exception": false, "start_time": "2021-04-23T08:25:43.201432", "status": "completed"} tags=[]
 output_filename_prefix = f"spredixcan-mashr-zscores-Prostate"
 filepath = Path(spredixcan_tsv_output_folder, f"{output_filename_prefix}.tsv.gz")
 _tmp = pd.read_csv(filepath, sep="\t", index_col="gene_id")["pgc.scz2"]
 
-# %% papermill={"duration": 0.03967, "end_time": "2020-12-19T04:27:46.032677", "exception": false, "start_time": "2020-12-19T04:27:45.993007", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.039145, "end_time": "2021-04-23T08:25:59.066187", "exception": false, "start_time": "2021-04-23T08:25:59.027042", "status": "completed"} tags=[]
 assert _tmp.loc["ENSG00000233822"].round(3) == 10.752
 
-# %% papermill={"duration": 0.038588, "end_time": "2020-12-19T04:27:46.100316", "exception": false, "start_time": "2020-12-19T04:27:46.061728", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.039253, "end_time": "2021-04-23T08:25:59.145996", "exception": false, "start_time": "2021-04-23T08:25:59.106743", "status": "completed"} tags=[]
 assert _tmp.loc["ENSG00000137312"].round(3) == -8.827
 
-# %% papermill={"duration": 0.039568, "end_time": "2020-12-19T04:27:46.169166", "exception": false, "start_time": "2020-12-19T04:27:46.129598", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.037367, "end_time": "2021-04-23T08:25:59.212573", "exception": false, "start_time": "2021-04-23T08:25:59.175206", "status": "completed"} tags=[]
 assert _tmp.loc["ENSG00000204257"].round(3) == -7.965
 
-# %% papermill={"duration": 0.028873, "end_time": "2020-12-19T04:27:46.227280", "exception": false, "start_time": "2020-12-19T04:27:46.198407", "status": "completed"} tags=[]
+# %% papermill={"duration": 0.027461, "end_time": "2021-04-23T08:25:59.268494", "exception": false, "start_time": "2021-04-23T08:25:59.241033", "status": "completed"} tags=[]
