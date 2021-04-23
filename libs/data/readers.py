@@ -32,7 +32,8 @@ def read_tsv(file_path: str, **kwargs):
         **kwargs: any other argument given to pandas.read_csv
 
     Returns:
-
+        A function that reads file_path and, when run, returns a pandas
+        DataFrame.
     """
     kwargs.pop("sep", None)
 
