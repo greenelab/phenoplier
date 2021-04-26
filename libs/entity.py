@@ -347,6 +347,9 @@ class Trait(object, metaclass=ABCMeta):
         appears in a preferred DOID list (such as those present in the gold standard).
         If none in the list is there, then return the first one.
         """
+        if doids is None or len(doids) == 0:
+            raise ValueError("List of Disease Ontology IDs is empty or None")
+        
         for doid in doids:
             if doid in preferred_doid_list:
                 return doid
