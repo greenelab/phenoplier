@@ -115,7 +115,7 @@ def _predict(
     if n_top_conditions is not None:
         output_file_suffix = f"top_{n_top_conditions}_genes"
 
-    print(f"  predicting {output_file_suffix}...", end="")
+    print(f"predicting {output_file_suffix}...", end="")
 
     # create output dir
     output_dir.mkdir(exist_ok=True, parents=True)
@@ -125,7 +125,7 @@ def _predict(
     ).resolve()
 
     if output_file.exists() and not force_run:
-        print(" already run")
+        print("  already run")
         return
 
     print("")
@@ -140,7 +140,7 @@ def _predict(
 
     # compute predictions
     drug_disease_assocs = prediction_function(drug_gene_data, gene_trait_data)
-    print(f"    shape: {drug_disease_assocs.shape}")
+    print(f"  shape: {drug_disease_assocs.shape}")
 
     print(f"  saving to: {str(output_file)}")
     with pd.HDFStore(output_file, mode="w", complevel=4) as store:
@@ -174,23 +174,23 @@ def _save_predictions(drug_disease_assocs, store, key_name):
     """
     Saves the predictions into an HDFStore using the key_name as key.
     """
-    classifier_data = (
+    predictions_data = (
         drug_disease_assocs.unstack()
         .reset_index()
         .rename(columns={"level_0": "trait", "perturbagen": "drug", 0: "score"})
     )
 
-    classifier_data["trait"] = classifier_data["trait"].astype("category")
-    classifier_data["drug"] = classifier_data["drug"].astype("category")
+    predictions_data["trait"] = predictions_data["trait"].astype("category")
+    predictions_data["drug"] = predictions_data["drug"].astype("category")
 
-    assert classifier_data.shape == classifier_data.dropna().shape
-    print(f"    shape: {classifier_data.shape}")
-    display(classifier_data.describe())
+    assert predictions_data.shape == predictions_data.dropna().shape
+    print(f"      shape: {predictions_data.shape}")
+    display(predictions_data.describe())
 
     # save
-    print(f"    key: {key_name}")
+    print(f"      key: {key_name}")
 
-    store.put(key_name, classifier_data, format="table")
+    store.put(key_name, predictions_data, format="table")
 
 
 def predict_dotprod_neg(
