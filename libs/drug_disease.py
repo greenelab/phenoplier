@@ -163,6 +163,9 @@ def _predict(
         metadata = pd.DataFrame(
             {
                 "method": [base_method_name],
+                # FIXME: consider adding a categorical/string value for
+                #  "n_top_genes", instead of numerical. See discussion here:
+                #  https://github.com/greenelab/phenoplier/pull/35#discussion_r619476007
                 "n_top_genes": [-1.0 if n_top_conditions is None else n_top_conditions],
                 "data": [gene_trait_data_filename.stem],
             }
