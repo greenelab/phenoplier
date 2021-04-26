@@ -349,7 +349,7 @@ class Trait(object, metaclass=ABCMeta):
         """
         if doids is None or len(doids) == 0:
             raise ValueError("List of Disease Ontology IDs is empty or None")
-        
+
         for doid in doids:
             if doid in preferred_doid_list:
                 return doid
