@@ -194,6 +194,27 @@ PHENOMEXCAN["GTEX_GWAS_PHENO_INFO_FILE"] = Path(
     PHENOMEXCAN["BASE_DIR"], "gtex_gwas_phenotypes_metadata.tsv"
 ).resolve()
 
+# ld blocks
+PHENOMEXCAN["LD_BLOCKS"] = {}
+PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] = Path(
+    PHENOMEXCAN["BASE_DIR"], "ld_blocks"
+).resolve()
+PHENOMEXCAN["LD_BLOCKS"]["LD_BLOCKS_FILE"] = Path(
+    PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "ld_block_pickrell_eur_b38.rda"
+).resolve()
+PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"] = Path(
+    PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "reference_panel_1000G"
+).resolve()
+
+# predictions models
+PHENOMEXCAN["PREDICTION_MODELS"] = {}
+PHENOMEXCAN["PREDICTION_MODELS"]["BASE_DIR"] = Path(
+    PHENOMEXCAN["BASE_DIR"], "prediction_models"
+).resolve()
+PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"] = Path(
+    PHENOMEXCAN["PREDICTION_MODELS"]["BASE_DIR"], "mashr"
+).resolve()
+
 
 #
 # Hetionet
