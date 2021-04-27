@@ -12,9 +12,11 @@ dependencies:
   - pandas
   - papermill
   - pip
+  - fastparquet
   - pytables
   - pytest
   - python=3.8.*
+  - python-snappy
   - pyyaml
   - requests
   - r-base=3.6.*
