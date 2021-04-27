@@ -8,6 +8,7 @@ from collections import namedtuple
 from pathlib import Path
 from functools import lru_cache
 
+import numpy as np
 import pandas as pd
 
 import conf
@@ -594,3 +595,123 @@ class Gene(object):
         band = gene_data["band"]
 
         return f"{chrom}{band}"
+
+    @staticmethod
+    def _get_tissue_connection(tissue: str, model_type: str = "MASHR"):
+        """
+        - the caller is responsible of closing this connection object
+        by calling the `close` method
+
+        Args:
+            tissue:
+
+        Returns:
+
+        """
+        # check that the file for the tissue exists
+        tissue_weights_file = (
+            conf.PHENOMEXCAN["PREDICTION_MODELS"][model_type] / f"mashr_{tissue}.db"
+        )
+        if not tissue_weights_file.exists():
+            raise ValueError(
+                f"Model file for tissue does not exist: {str(tissue_weights_file)}"
+            )
+
+        import sqlite3
+
+        db_uri = f"file:{str(tissue_weights_file)}?mode=ro"
+        return sqlite3.connect(db_uri, uri=True)
+
+    @staticmethod
+    @lru_cache(maxsize=None)
+    def _get_prediction_weights(tissue: str, model_type: str = "MASHR"):
+        sqlite_conn = Gene._get_tissue_connection(tissue, model_type)
+
+        try:
+            df = pd.read_sql("select gene, varID, weight from weights", sqlite_conn)
+
+            # remove gene id version
+            df["gene"] = df["gene"].apply(lambda x: x.split(".")[0])
+
+            return df
+        finally:
+            sqlite_conn.close()
+
+    @staticmethod
+    @lru_cache(maxsize=None)
+    def _get_snps_covariances(tissue: str, model_type: str = "MASHR"):
+        # FIXME
+        # FIXME Shouldn't I get this from 1000G as well? I think so
+        # FIXME
+        snp_covariance_file = (
+            conf.PHENOMEXCAN["PREDICTION_MODELS"][model_type] / f"mashr_{tissue}.txt.gz"
+        )
+        df = pd.read_csv(snp_covariance_file, sep="\s+")
+        df["GENE"] = df["GENE"].apply(lambda x: x.split(".")[0])
+
+        return df
+
+    @lru_cache(maxsize=None)
+    def get_pred_expression_variance(self, tissue: str, model_type: str = "MASHR"):
+        """
+        TODO
+
+        Args:
+            tissue:
+
+        Returns:
+
+        """
+        gene_pred_expr_w = Gene._get_prediction_weights(tissue, model_type)
+        if self.ensembl_id not in gene_pred_expr_w["gene"].values:
+            return None
+
+        snps_covariance = Gene._get_snps_covariances(tissue, model_type)
+
+        # gene model weights
+        w = gene_pred_expr_w[gene_pred_expr_w["gene"] == self.ensembl_id][
+            ["varID", "weight"]
+        ].set_index("varID")
+        gene_n_snps = w.shape[0]
+
+        # LD of snps in gene model
+        gene_snps_cov = snps_covariance[snps_covariance["GENE"] == self.ensembl_id][
+            ["RSID1", "RSID2", "VALUE"]
+        ]
+
+        # make a series of checks
+        gene_snps_cov_vc = gene_snps_cov["RSID1"].value_counts()
+        if gene_snps_cov_vc.shape[0] == gene_n_snps:
+            # if the number of snps in the gene's model equals the number found
+            # in the LD data, then check that the data there really
+            # represents the upper triangular matrix (of the covariance matrix).
+            # That is, if there are N snps, then we must see N snps for the
+            # first group, N - 1 for the other, etc, until 1
+            assert gene_snps_cov_vc.iloc[0] == gene_n_snps
+            assert np.all(gene_snps_cov_vc == np.flip(np.arange(1, gene_n_snps + 1)))
+
+        elif gene_snps_cov_vc.shape[0] < gene_n_snps:
+            # if we don't have the same number of snps in the LD data, then keep
+            # only those SNPs present in the LD data
+            w = w.loc[gene_snps_cov_vc.index]
+
+        else:
+            raise Exception("This should not happen")
+
+        # get the complete and unique list of SNPs in the proper order
+        snps_index = gene_snps_cov["RSID1"].drop_duplicates()
+        r = pd.DataFrame(index=snps_index, columns=snps_index)
+
+        for idx, row in gene_snps_cov.iterrows():
+            rsid1 = row["RSID1"]
+            rsid2 = row["RSID2"]
+            value = row["VALUE"]
+
+            r.loc[rsid1, rsid2] = value
+            r.loc[rsid2, rsid1] = value
+
+        # return variance of gene's predicted expression
+        # formula taken from:
+        #   - MetaXcan paper: https://doi.org/10.1038/s41467-018-03621-1
+        #   - MultiXcan paper: https://doi.org/10.1371/journal.pgen.1007889
+        return (w.T @ r @ w).iloc[0, 0]
