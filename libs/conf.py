@@ -289,8 +289,12 @@ CRISPR["LIPIDS_GENE_SETS_FILE"] = Path(CRISPR["BASE_DIR"], "lipid_DEG.csv").reso
 HETIONET_BASE_DIR = Path(DATA_DIR, "hetionet").resolve()
 
 PHARMACOTHERAPYDB = {}
-PHARMACOTHERAPYDB["BASE_DIR"] = Path(HETIONET_BASE_DIR, "pharmacotherapydb-v1.0").resolve()
-PHARMACOTHERAPYDB["INDICATIONS_FILE"] = Path(PHARMACOTHERAPYDB["BASE_DIR"], "indications.tsv").resolve()
+PHARMACOTHERAPYDB["BASE_DIR"] = Path(
+    HETIONET_BASE_DIR, "pharmacotherapydb-v1.0"
+).resolve()
+PHARMACOTHERAPYDB["INDICATIONS_FILE"] = Path(
+    PHARMACOTHERAPYDB["BASE_DIR"], "indications.tsv"
+).resolve()
 
 LINCS = {}
 LINCS["BASE_DIR"] = Path(HETIONET_BASE_DIR, "lincs-v2.0").resolve()
