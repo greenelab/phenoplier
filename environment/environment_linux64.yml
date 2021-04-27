@@ -18,6 +18,7 @@ dependencies:
   - binutils_linux-64=2.35=h67ddf6f_30
   - black=20.8b1=py_1
   - bleach=3.3.0=pyh44b312d_0
+  - blosc=1.21.0=h9c3ff4c_0
   - brotlipy=0.7.0=py38h497a2fe_1001
   - bwidget=1.9.14=ha770c72_0
   - bzip2=1.0.8=h7f98852_4
@@ -54,6 +55,7 @@ dependencies:
   - gxx_impl_linux-64=9.3.0=hd87eabc_18
   - gxx_linux-64=9.3.0=h3fbe746_30
   - harfbuzz=2.7.4=h5cf4720_0
+  - hdf5=1.10.6=nompi_h6a2412b_1114
   - icu=68.1=h58526e2_0
   - idna=2.10=pyh9f0ad1d_0
   - importlib-metadata=3.7.0=py38h578d9bd_0
@@ -117,6 +119,7 @@ dependencies:
   - libxml2=2.9.10=h72842e0_3
   - llvmlite=0.35.0=py38h4630a5e_1
   - lz4-c=1.9.3=h9c3ff4c_0
+  - lzo=2.10=h516909a_1000
   - make=4.3=hd18ef5c_1
   - markdown-it-py=0.5.8=pyhd8ed1ab_0
   - markupsafe=1.1.1=py38h497a2fe_3
@@ -124,6 +127,7 @@ dependencies:
   - matplotlib-base=3.3.4=py38h0efea84_0
   - mdit-py-plugins=0.2.5=pyhd8ed1ab_0
   - mistune=0.8.4=py38h497a2fe_1003
+  - mock=4.0.3=py38h578d9bd_1
   - more-itertools=8.7.0=pyhd8ed1ab_0
   - mypy_extensions=0.4.3=py38h578d9bd_3
   - mysql-common=8.0.23=ha770c72_1
@@ -139,6 +143,7 @@ dependencies:
   - nspr=4.29=h9c3ff4c_1
   - nss=3.62=hb5efdd6_0
   - numba=0.52.0=py38h51da96c_0
+  - numexpr=2.7.3=py38h51da96c_0
   - numpy=1.19.5=py38h18fd61f_1
   - olefile=0.46=pyh9f0ad1d_1
   - openssl=1.1.1j=h7f98852_0
@@ -175,6 +180,7 @@ dependencies:
   - pyqtwebengine=5.12.1=py38h7400c14_7
   - pyrsistent=0.17.3=py38h497a2fe_2
   - pysocks=1.7.1=py38h578d9bd_3
+  - pytables=3.6.1=py38hc386592_3
   - pytest=6.1.2=py38h578d9bd_0
   - python=3.8.8=hffdb5ce_0_cpython
   - python-dateutil=2.8.1=py_0
