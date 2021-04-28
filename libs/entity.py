@@ -648,8 +648,29 @@ class Gene(object):
             sqlite_conn.close()
 
     @staticmethod
-    # @lru_cache(maxsize=None)
-    def _get_snps_cov(snps_ids_list1, snps_ids_list2=None, check=True):
+    @lru_cache(maxsize=1)
+    def _read_snps_cov(snps_chr):
+        """
+        lru_cache / maxsize is 1 because the idea is call always on the same chromosome to speed up
+        Args:
+            snps_chr:
+
+        Returns:
+
+        """
+        snps_cov_file = (
+            conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
+            / "mashr_snps_chr_blocks_cov.h5"
+        )
+
+        # go to disk and read the data
+        with pd.HDFStore(snps_cov_file, mode="r") as store:
+            return store[snps_chr]
+
+    @staticmethod
+    def _get_snps_cov(
+        snps_ids_list1, snps_ids_list2=None, check=True
+    ):
         # check all snps belong to the same chromosome
         # read hdf5 file and return the squared marix
 
@@ -674,18 +695,13 @@ class Gene(object):
             if all_snps_chr.unique().shape[0] != 1:
                 raise ValueError("Only snps from the same chromosome are supported")
 
-        snps_cov_file = (
-            conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "mashr_snps_chr_blocks_cov.h5"
-        )
+        snps_cov = Gene._read_snps_cov(snps_chr)
 
-        with pd.HDFStore(snps_cov_file, mode="r") as store:
-            snps_cov = store[snps_chr]
+        variants_with_genotype = set(snps_cov.index)
+        snps_ids_list1 = [v for v in snps_ids_list1 if v in variants_with_genotype]
+        snps_ids_list2 = [v for v in snps_ids_list2 if v in variants_with_genotype]
 
-            variants_with_genotype = set(snps_cov.index)
-            snps_ids_list1 = [v for v in snps_ids_list1 if v in variants_with_genotype]
-            snps_ids_list2 = [v for v in snps_ids_list2 if v in variants_with_genotype]
-
-            snps_cov = snps_cov.loc[snps_ids_list1, snps_ids_list2]
+        snps_cov = snps_cov.loc[snps_ids_list1, snps_ids_list2]
 
         if snps_cov.shape[0] == 0 or snps_cov.shape[1] == None:
             return None
@@ -708,7 +724,7 @@ class Gene(object):
             return None
 
         # LD of snps in gene model
-        gene_snps_cov = Gene._get_snps_cov(w["varID"], check=False)
+        gene_snps_cov = Gene._get_snps_cov(w["varID"])
         # gene_snps_cov = self.get_snps_cov(tissue, model_type)
         if gene_snps_cov is None:
             return None
