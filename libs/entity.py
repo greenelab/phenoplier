@@ -582,13 +582,21 @@ class Gene(object):
         self._band = None
 
     @property
-    def band(self):
-        """Returns the cytoband of a gene."""
-        if self._band is not None:
-            return self.band
-
+    @lru_cache(maxsize=None)
+    def chromosome(self):
+        """Returns the chromosome of the gene."""
         if self.ensembl_id not in Gene.BIOMART_GENES.index:
-            return ""
+            return None
+
+        gene_data = Gene.BIOMART_GENES.loc[self.ensembl_id]
+        return gene_data["chromosome_name"]
+
+    @property
+    @lru_cache(maxsize=None)
+    def band(self):
+        """Returns the cytoband of the gene."""
+        if self.ensembl_id not in Gene.BIOMART_GENES.index:
+            return None
 
         gene_data = Gene.BIOMART_GENES.loc[self.ensembl_id]
         chrom = gene_data["chromosome_name"]
@@ -622,34 +630,67 @@ class Gene(object):
         db_uri = f"file:{str(tissue_weights_file)}?mode=ro"
         return sqlite3.connect(db_uri, uri=True)
 
-    @staticmethod
     @lru_cache(maxsize=None)
-    def _get_prediction_weights(tissue: str, model_type: str = "MASHR"):
+    def get_prediction_weights(self, tissue: str, model_type: str = "MASHR"):
         sqlite_conn = Gene._get_tissue_connection(tissue, model_type)
 
         try:
-            df = pd.read_sql("select gene, varID, weight from weights", sqlite_conn)
+            df = pd.read_sql(
+                f"select varID, weight from weights where gene like '{self.ensembl_id}.%'",
+                sqlite_conn,
+            )
 
-            # remove gene id version
-            df["gene"] = df["gene"].apply(lambda x: x.split(".")[0])
+            if df.shape[0] == 0:
+                return None
 
             return df
         finally:
             sqlite_conn.close()
 
     @staticmethod
-    @lru_cache(maxsize=None)
-    def _get_snps_covariances(tissue: str, model_type: str = "MASHR"):
-        # FIXME
-        # FIXME Shouldn't I get this from 1000G as well? I think so
-        # FIXME
-        snp_covariance_file = (
-            conf.PHENOMEXCAN["PREDICTION_MODELS"][model_type] / f"mashr_{tissue}.txt.gz"
-        )
-        df = pd.read_csv(snp_covariance_file, sep="\s+")
-        df["GENE"] = df["GENE"].apply(lambda x: x.split(".")[0])
+    # @lru_cache(maxsize=None)
+    def _get_snps_cov(snps_ids_list1, snps_ids_list2=None, check=True):
+        # check all snps belong to the same chromosome
+        # read hdf5 file and return the squared marix
 
-        return df
+        snps_ids_list1 = list(snps_ids_list1)
+
+        if len(snps_ids_list1) == 0:
+            return None
+
+        if snps_ids_list2 is None:
+            snps_ids_list2 = snps_ids_list1
+        else:
+            snps_ids_list2 = list(snps_ids_list2)
+            if len(snps_ids_list2) == 0:
+                return None
+
+        first_snp_id = snps_ids_list1[0]
+        snps_chr = first_snp_id.split("_")[0]
+
+        if check:
+            all_snps = pd.Series(list(set(snps_ids_list1 + snps_ids_list2)))
+            all_snps_chr = all_snps.str.split("_", expand=True)[0]
+            if all_snps_chr.unique().shape[0] != 1:
+                raise ValueError("Only snps from the same chromosome are supported")
+
+        snps_cov_file = (
+            conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "mashr_snps_chr_blocks_cov.h5"
+        )
+
+        with pd.HDFStore(snps_cov_file, mode="r") as store:
+            snps_cov = store[snps_chr]
+
+            variants_with_genotype = set(snps_cov.index)
+            snps_ids_list1 = [v for v in snps_ids_list1 if v in variants_with_genotype]
+            snps_ids_list2 = [v for v in snps_ids_list2 if v in variants_with_genotype]
+
+            snps_cov = snps_cov.loc[snps_ids_list1, snps_ids_list2]
+
+        if snps_cov.shape[0] == 0 or snps_cov.shape[1] == None:
+            return None
+
+        return snps_cov
 
     @lru_cache(maxsize=None)
     def get_pred_expression_variance(self, tissue: str, model_type: str = "MASHR"):
@@ -662,56 +703,65 @@ class Gene(object):
         Returns:
 
         """
-        gene_pred_expr_w = Gene._get_prediction_weights(tissue, model_type)
-        if self.ensembl_id not in gene_pred_expr_w["gene"].values:
+        w = self.get_prediction_weights(tissue, model_type)
+        if w is None:
             return None
 
-        snps_covariance = Gene._get_snps_covariances(tissue, model_type)
+        # LD of snps in gene model
+        gene_snps_cov = Gene._get_snps_cov(w["varID"], check=False)
+        # gene_snps_cov = self.get_snps_cov(tissue, model_type)
+        if gene_snps_cov is None:
+            return None
 
         # gene model weights
-        w = gene_pred_expr_w[gene_pred_expr_w["gene"] == self.ensembl_id][
-            ["varID", "weight"]
-        ].set_index("varID")
-        gene_n_snps = w.shape[0]
+        w = w.set_index("varID")
 
-        # LD of snps in gene model
-        gene_snps_cov = snps_covariance[snps_covariance["GENE"] == self.ensembl_id][
-            ["RSID1", "RSID2", "VALUE"]
-        ]
+        # align weights with snps cov
+        common_snps = set(w.index).intersection(set(gene_snps_cov.index))
+        gene_n_snps = len(common_snps)
+        if gene_n_snps == 0:
+            # FIXME this is for debugging purposes
+            raise Exception("No common snps")
 
-        # make a series of checks
-        gene_snps_cov_vc = gene_snps_cov["RSID1"].value_counts()
-        if gene_snps_cov_vc.shape[0] == gene_n_snps:
-            # if the number of snps in the gene's model equals the number found
-            # in the LD data, then check that the data there really
-            # represents the upper triangular matrix (of the covariance matrix).
-            # That is, if there are N snps, then we must see N snps for the
-            # first group, N - 1 for the other, etc, until 1
-            assert gene_snps_cov_vc.iloc[0] == gene_n_snps
-            assert np.all(gene_snps_cov_vc == np.flip(np.arange(1, gene_n_snps + 1)))
-
-        elif gene_snps_cov_vc.shape[0] < gene_n_snps:
-            # if we don't have the same number of snps in the LD data, then keep
-            # only those SNPs present in the LD data
-            w = w.loc[gene_snps_cov_vc.index]
-
-        else:
-            raise Exception("This should not happen")
-
-        # get the complete and unique list of SNPs in the proper order
-        snps_index = gene_snps_cov["RSID1"].drop_duplicates()
-        r = pd.DataFrame(index=snps_index, columns=snps_index)
-
-        for idx, row in gene_snps_cov.iterrows():
-            rsid1 = row["RSID1"]
-            rsid2 = row["RSID2"]
-            value = row["VALUE"]
-
-            r.loc[rsid1, rsid2] = value
-            r.loc[rsid2, rsid1] = value
+        w = w.loc[common_snps]
+        r = gene_snps_cov.loc[common_snps, common_snps]
 
         # return variance of gene's predicted expression
         # formula taken from:
         #   - MetaXcan paper: https://doi.org/10.1038/s41467-018-03621-1
         #   - MultiXcan paper: https://doi.org/10.1371/journal.pgen.1007889
-        return (w.T @ r @ w).iloc[0, 0]
+        return (w.T @ r @ w).squeeze()
+
+    def get_expression_correlation(self, other_gene, tissue: str):
+        gene_w = self.get_prediction_weights(tissue)
+        if gene_w is None:
+            return 0.0
+        gene_w = gene_w.set_index("varID")
+
+        other_gene_w = other_gene.get_prediction_weights(tissue)
+        if other_gene_w is None:
+            return 0.0
+        other_gene_w = other_gene_w.set_index("varID")
+
+        # get genes' variances
+        gene_var = self.get_pred_expression_variance(tissue)
+        if gene_var is None:
+            return 0.0
+
+        other_gene_var = other_gene.get_pred_expression_variance(tissue)
+        if other_gene_var is None:
+            return 0.0
+
+        try:
+            snps_cov = self._get_snps_cov(gene_w.index, other_gene_w.index)
+        except ValueError:
+            # if genes are from different chromosomes, correlation is zero
+            return 0.0
+
+        # align weights with snps cov
+        gene_w = gene_w.loc[snps_cov.index]
+        other_gene_w = other_gene_w.loc[snps_cov.columns]
+
+        return (gene_w.T @ snps_cov @ other_gene_w).squeeze() / np.sqrt(
+            gene_var * other_gene_var
+        )
