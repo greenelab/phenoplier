@@ -659,8 +659,7 @@ class Gene(object):
 
         """
         snps_cov_file = (
-            conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
-            / "mashr_snps_chr_blocks_cov.h5"
+            conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "mashr_snps_chr_blocks_cov.h5"
         )
 
         # go to disk and read the data
@@ -668,9 +667,7 @@ class Gene(object):
             return store[snps_chr]
 
     @staticmethod
-    def _get_snps_cov(
-        snps_ids_list1, snps_ids_list2=None, check=True
-    ):
+    def _get_snps_cov(snps_ids_list1, snps_ids_list2=None, check=True):
         # check all snps belong to the same chromosome
         # read hdf5 file and return the squared marix
 
@@ -753,19 +750,23 @@ class Gene(object):
         if gene_w is None:
             return 0.0
         gene_w = gene_w.set_index("varID")
+        if gene_w.abs().sum().sum() == 0.0:
+            return 0.0
 
         other_gene_w = other_gene.get_prediction_weights(tissue)
         if other_gene_w is None:
             return 0.0
         other_gene_w = other_gene_w.set_index("varID")
+        if other_gene_w.abs().sum().sum() == 0.0:
+            return 0.0
 
         # get genes' variances
         gene_var = self.get_pred_expression_variance(tissue)
-        if gene_var is None:
+        if gene_var is None or gene_var == 0.0:
             return 0.0
 
         other_gene_var = other_gene.get_pred_expression_variance(tissue)
-        if other_gene_var is None:
+        if other_gene_var is None or other_gene_var == 0.0:
             return 0.0
 
         try:
