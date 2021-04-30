@@ -430,3 +430,17 @@ def test_gene_get_expression_correlation_no_prediction_models(
     assert genes_corr_2 == genes_corr
 
     assert genes_corr == expected_corr
+
+
+def test_gene_get_expression_correlation_gene_weights_are_zero():
+    gene1 = Gene(ensembl_id="ENSG00000134686")
+
+    # weights for this gene in whole blood are all zero
+    gene2 = Gene(ensembl_id="ENSG00000117215")
+
+    tissue = "Whole_Blood"
+
+    genes_corr = gene1.get_expression_correlation(gene2, tissue)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert genes_corr == 0.0
