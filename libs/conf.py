@@ -201,9 +201,9 @@ PHENOMEXCAN["LD_BLOCKS"] = {}
 PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] = Path(
     PHENOMEXCAN["BASE_DIR"], "ld_blocks"
 ).resolve()
-PHENOMEXCAN["LD_BLOCKS"]["LD_BLOCKS_FILE"] = Path(
-    PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "ld_block_pickrell_eur_b38.rda"
-).resolve()
+# PHENOMEXCAN["LD_BLOCKS"]["LD_BLOCKS_FILE"] = Path(
+#     PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "ld_block_pickrell_eur_b38.rda"
+# ).resolve()
 PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"] = Path(
     PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "reference_panel_1000G"
 ).resolve()
