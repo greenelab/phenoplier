@@ -64,18 +64,26 @@ def test_compare_arrays_use_weighting():
     def my_func(a, b):
         return np.sum(a) + np.sum(b)
 
-    # xy
     xy = compare_arrays(x, y, my_func, use_weighting=True)
 
     assert xy is not None
     assert not np.isnan(xy)
-    assert xy == 3 * ((0 + 2 + 0 + 4 + 5) + (0 + 7 + 0 + 9 + 0))
+    expected_weight = 3.0 / 5.0
+    assert xy == expected_weight * ((0 + 2 + 0 + 4 + 5) + (0 + 7 + 0 + 9 + 0))
 
-    # xz
-    z = np.array([10, 20, 30, 40, 50])
 
-    xz = compare_arrays(x, z, my_func, use_weighting=True)
+def test_compare_arrays_use_weighting_more_data():
+    x = np.array([1, 2, np.nan, 4, 5, 6, 7])
+    y = np.array([10, 20, 30, 40, 50, 60, 70])
 
-    assert xz is not None
-    assert not np.isnan(xz)
-    assert xz == 4 * ((1 + 2 + 0 + 4 + 5) + (10 + 20 + 0 + 40 + 50))
+    def my_func(a, b):
+        return np.sum(a) + np.sum(b)
+
+    xy = compare_arrays(x, y, my_func, use_weighting=True)
+
+    assert xy is not None
+    assert not np.isnan(xy)
+    expected_weight = 6.0 / 7.0
+    assert xy == expected_weight * (
+        (1 + 2 + 0 + 4 + 5 + 6 + 7) + (10 + 20 + 0 + 40 + 50 + 60 + 70)
+    )
