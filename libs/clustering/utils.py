@@ -99,8 +99,8 @@ def compare_arrays(x, y, comp_func, use_weighting=False):
         comp_func: any function that accepts two arguments (numpy arrays) and
             returns a numerical value.
         use_weighting: a boolean indicating if the numerical output of function
-            comp_func should be multiplied by the number of non-nan values in the
-            input arrays.
+            comp_func should be weighted/multiplied by the proportion of non-nan
+            values in the input arrays.
 
     Returns:
         Any numerical value representing, for instance, the similarity between
@@ -111,6 +111,8 @@ def compare_arrays(x, y, comp_func, use_weighting=False):
 
     weight = 1.0
     if use_weighting:
-        weight = xy.shape[0]
+        # this weight is 1.0 if all original data points are present in both
+        # arrays, and something between 0.0 and 1.0 otherwise
+        weight = xy.shape[0] / x.shape[0]
 
     return weight * comp_func(xy[:, 0], xy[:, 1])
