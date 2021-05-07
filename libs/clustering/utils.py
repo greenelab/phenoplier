@@ -84,7 +84,7 @@ def reset_estimator(estimator_obj):
         delattr(estimator_obj, attr)
 
 
-def compare_arrays(x, y, comp_func):
+def compare_arrays(x, y, comp_func, use_weighting=False):
     """
     It compares non-nan values from two numpy arrays using a specified
     function that returns a numerical value.
@@ -98,6 +98,9 @@ def compare_arrays(x, y, comp_func):
         y: a 1D numpy array.
         comp_func: any function that accepts two arguments (numpy arrays) and
             returns a numerical value.
+        use_weighting: a boolean indicating if the numerical output of function
+            comp_func should be multiplied by the number of non-nan values in the
+            input arrays.
 
     Returns:
         Any numerical value representing, for instance, the similarity between
@@ -105,4 +108,9 @@ def compare_arrays(x, y, comp_func):
     """
     xy = np.array([x, y]).T
     xy = xy[~np.isnan(xy).any(axis=1)]
-    return comp_func(xy[:, 0], xy[:, 1])
+
+    weight = 1.0
+    if use_weighting:
+        weight = xy.shape[0]
+
+    return weight * comp_func(xy[:, 0], xy[:, 1])
