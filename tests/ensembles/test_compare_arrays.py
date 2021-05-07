@@ -55,3 +55,27 @@ def test_compare_arrays_with_more_nans():
     assert xy is not None
     assert not np.isnan(xy)
     assert xy == (0 + 4 + 0 + 8 + 10) + (0 + 14 + 0 + 18 + 0)
+
+
+def test_compare_arrays_use_weighting():
+    x = np.array([1, 2, np.nan, 4, 5])
+    y = np.array([np.nan, 7, 8, 9, 0])
+
+    def my_func(a, b):
+        return np.sum(a) + np.sum(b)
+
+    # xy
+    xy = compare_arrays(x, y, my_func, use_weighting=True)
+
+    assert xy is not None
+    assert not np.isnan(xy)
+    assert xy == 3 * ((0 + 2 + 0 + 4 + 5) + (0 + 7 + 0 + 9 + 0))
+
+    # xz
+    z = np.array([10, 20, 30, 40, 50])
+
+    xz = compare_arrays(x, z, my_func, use_weighting=True)
+
+    assert xz is not None
+    assert not np.isnan(xz)
+    assert xz == 4 * ((1 + 2 + 0 + 4 + 5) + (10 + 20 + 0 + 40 + 50))

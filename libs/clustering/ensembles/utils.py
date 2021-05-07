@@ -217,15 +217,24 @@ def run_method_and_compute_agreement(method_func, ensemble_data, ensemble, k, **
     part = method_func(ensemble_data, k, **kwargs)
 
     nmi_values = np.array(
-        [compare_arrays(ensemble_member, part, nmi) for ensemble_member in ensemble]
+        [
+            compare_arrays(ensemble_member, part, nmi, use_weighting=True)
+            for ensemble_member in ensemble
+        ]
     )
 
     ami_values = np.array(
-        [compare_arrays(ensemble_member, part, ami) for ensemble_member in ensemble]
+        [
+            compare_arrays(ensemble_member, part, ami, use_weighting=True)
+            for ensemble_member in ensemble
+        ]
     )
 
     ari_values = np.array(
-        [compare_arrays(ensemble_member, part, ari) for ensemble_member in ensemble]
+        [
+            compare_arrays(ensemble_member, part, ari, use_weighting=True)
+            for ensemble_member in ensemble
+        ]
     )
 
     performance_values = {
