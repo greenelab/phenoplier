@@ -123,7 +123,7 @@ selected_k_values.sort()
 display(selected_k_values)
 
 # %% tags=[]
-for k in selected_k_values:
+for kidx, k in enumerate(selected_k_values):
     display(HTML(f"<h2>Partition with k={k}</h2>"))
     display(best_partitions.loc[k])
 
@@ -137,7 +137,12 @@ for k in selected_k_values:
         display(HTML(f"<h3>Cluster {k}.{cluster_number}</h3>"))
 
         cluster_traits = data_umap[part == cluster_number].index
-        display(len(cluster_traits))
-        display(cluster_traits)
+        _len = len(cluster_traits)
+        display(_len)
+
+        if kidx == (len(selected_k_values) - 1) and _len < 150:
+            display(cluster_traits.tolist())
+        else:
+            display(cluster_traits)
 
 # %% tags=[]
