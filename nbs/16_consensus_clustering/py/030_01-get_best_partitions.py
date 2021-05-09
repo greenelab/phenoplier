@@ -61,6 +61,83 @@ consensus_clustering_results.shape
 consensus_clustering_results.head()
 
 # %% [markdown] tags=[]
+# # Explore clustering indexes
+
+# %% tags=[]
+_col = "ari_mean"
+
+_best_parts_by_ari = (
+    consensus_clustering_results.groupby("k")
+    .apply(lambda x: x.sort_values(_col, ascending=False).head(1))
+    .sort_values(_col, ascending=False)[["method", "k", _col]]
+    .rename(columns={_col: "index_value"})
+)
+
+# %% tags=[]
+_col = "ami_mean"
+
+_best_parts_by_ami = (
+    consensus_clustering_results.groupby("k")
+    .apply(lambda x: x.sort_values(_col, ascending=False).head(1))
+    .sort_values(_col, ascending=False)[["method", "k", _col]]
+    .rename(columns={_col: "index_value"})
+)
+
+# %% tags=[]
+_col = "nmi_mean"
+
+_best_parts_by_nmi = (
+    consensus_clustering_results.groupby("k")
+    .apply(lambda x: x.sort_values(_col, ascending=False).head(1))
+    .sort_values(_col, ascending=False)[["method", "k", _col]]
+    .rename(columns={_col: "index_value"})
+)
+
+# %%
+_indexes_colors = sns.color_palette("colorblind", 3)
+display(_indexes_colors)
+
+# %% tags=[]
+with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
+    "whitegrid", {"grid.linestyle": "--"}
+):
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    ax = sns.pointplot(
+        data=_best_parts_by_ari,
+        x="k",
+        y="index_value",
+        color=_indexes_colors[0],
+        ci=None,
+    )
+    ax = sns.pointplot(
+        data=_best_parts_by_ami,
+        x="k",
+        y="index_value",
+        color=_indexes_colors[1],
+        ci=None,
+    )
+    ax = sns.pointplot(
+        data=_best_parts_by_nmi,
+        x="k",
+        y="index_value",
+        color=_indexes_colors[2],
+        ci=None,
+    )
+
+    ax.set_ylabel(f"Agreement with ensemble")
+    ax.set_xlabel("Number of clusters ($k$)")
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+    plt.legend(labels=["ARI", "AMI", "NMI"])
+    plt.grid(True)
+    plt.tight_layout()
+
+# %% [markdown]
+# AMI and NMI show the same trend for higher `k`. That's surprising. I would have expected that AMI has the same pattern as ARI, since both are adjusted-for-chance, and should not show higher values for higher `k` as it is expected for a not adjusted-for-chance index as NMI.
+#
+# I will pick ARI for the follow up analysis.
+
+# %% [markdown] tags=[]
 # # Explore best partition per k
 
 # %% tags=[]
@@ -68,23 +145,43 @@ _selected_measure = "ARI"
 _mean_column, _median_column = "ari_mean", "ari_median"
 
 # %% tags=[]
-_tmp = (
+best_parts_by_mean = (
     consensus_clustering_results.groupby("k")
     .apply(lambda x: x.sort_values(_mean_column, ascending=False).head(1))
-    .sort_values(_mean_column, ascending=False)[
-        ["method", "k", _mean_column, _median_column]
-    ]
+    .sort_values(_mean_column, ascending=False)[["method", "k", _mean_column]]
 )
-display(_tmp.head(10))
+display(best_parts_by_mean.head(10))
+
+# %% tags=[]
+best_parts_by_median = (
+    consensus_clustering_results.groupby("k")
+    .apply(lambda x: x.sort_values(_median_column, ascending=False).head(1))
+    .sort_values(_median_column, ascending=False)[["method", "k", _median_column]]
+)
+display(best_parts_by_median.head(10))
 
 # %% tags=[]
 with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     "whitegrid", {"grid.linestyle": "--"}
 ):
     fig, ax = plt.subplots(figsize=(12, 6))
-    ax = sns.pointplot(data=_tmp, x="k", y=_mean_column, ci=None, label="One")
+
     ax = sns.pointplot(
-        data=_tmp, x="k", y=_median_column, ci=None, color="red", label="Two", ax=ax
+        data=best_parts_by_mean,
+        x="k",
+        y=_mean_column,
+        ci=None,
+        color=_indexes_colors[0],
+        label="Mean",
+    )
+    ax = sns.pointplot(
+        data=best_parts_by_median,
+        x="k",
+        y=_median_column,
+        ci=None,
+        color=_indexes_colors[1],
+        label="Median",
+        ax=ax,
     )
     ax.set_ylabel(f"Agreement with ensemble ({_selected_measure})")
     ax.set_xlabel("Number of clusters ($k$)")
@@ -92,6 +189,48 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.legend(labels=["Mean", "Median"])
     plt.grid(True)
     plt.tight_layout()
+
+# %% [markdown]
+# Both central tendency measures (the mean and the median) have the same tendency: higher agreement on lower k values, and lower agreement on higher k values.
+
+# %% [markdown] tags=[]
+# # Which consensus method performs better?
+
+# %% [markdown]
+# For this comparison, I take the partitions with an agreement higher than the 75th percentile. From this set, I count how many times each method won.
+
+# %% [markdown]
+# ## Using best by mean
+
+# %%
+_stats_data = best_parts_by_mean[_mean_column].describe()
+display(_stats_data)
+
+# %%
+best_parts_by_mean[best_parts_by_mean[_mean_column] > _stats_data["75%"]][
+    "method"
+].value_counts()
+
+# %% [markdown]
+# SCC picked the "best partition" 14 times, whereas EAC (hierarhical clustering) did it only once.
+
+# %% [markdown]
+# ## Using best by median
+
+# %%
+_stats_data = best_parts_by_median[_median_column].describe()
+display(_stats_data)
+
+# %%
+best_parts_by_median[best_parts_by_median[_median_column] > _stats_data["75%"]][
+    "method"
+].value_counts()
+
+# %% [markdown]
+# If we use the "best partitions by median", EAC (HC) picked the best one 5 times, whereas SCC did it 10 times.
+
+# %% [markdown]
+# **CONCLUSION:** we select SCC as the method for follow up analysis.
 
 # %% [markdown] tags=[]
 # # Select best partition per k
@@ -102,7 +241,10 @@ _measure_col = _median_column
 
 # %% tags=[]
 best_parts = (
-    consensus_clustering_results.groupby("k")
+    consensus_clustering_results[
+        consensus_clustering_results["method"].str.startswith("scc_")
+    ]
+    .groupby("k")
     .apply(lambda x: x.sort_values(_measure_col, ascending=False).head(1))
     .sort_values(_measure_col, ascending=False)[
         ["method", "k", "partition", _measure_col]
