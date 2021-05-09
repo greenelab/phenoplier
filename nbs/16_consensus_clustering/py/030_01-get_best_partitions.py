@@ -93,7 +93,7 @@ _best_parts_by_nmi = (
     .rename(columns={_col: "index_value"})
 )
 
-# %%
+# %% tags=[]
 _indexes_colors = sns.color_palette("colorblind", 3)
 display(_indexes_colors)
 
@@ -132,7 +132,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.grid(True)
     plt.tight_layout()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # AMI and NMI show the same trend for higher `k`. That's surprising. I would have expected that AMI has the same pattern as ARI, since both are adjusted-for-chance, and should not show higher values for higher `k` as it is expected for a not adjusted-for-chance index as NMI.
 #
 # I will pick ARI for the follow up analysis.
@@ -190,46 +190,46 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
     plt.grid(True)
     plt.tight_layout()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Both central tendency measures (the mean and the median) have the same tendency: higher agreement on lower k values, and lower agreement on higher k values.
 
 # %% [markdown] tags=[]
 # # Which consensus method performs better?
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # For this comparison, I take the partitions with an agreement higher than the 75th percentile. From this set, I count how many times each method won.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Using best by mean
 
-# %%
+# %% tags=[]
 _stats_data = best_parts_by_mean[_mean_column].describe()
 display(_stats_data)
 
-# %%
+# %% tags=[]
 best_parts_by_mean[best_parts_by_mean[_mean_column] > _stats_data["75%"]][
     "method"
 ].value_counts()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # SCC picked the "best partition" 14 times, whereas EAC (hierarhical clustering) did it only once.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Using best by median
 
-# %%
+# %% tags=[]
 _stats_data = best_parts_by_median[_median_column].describe()
 display(_stats_data)
 
-# %%
+# %% tags=[]
 best_parts_by_median[best_parts_by_median[_median_column] > _stats_data["75%"]][
     "method"
 ].value_counts()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # If we use the "best partitions by median", EAC (HC) picked the best one 5 times, whereas SCC did it 10 times.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # **CONCLUSION:** we select SCC as the method for follow up analysis.
 
 # %% [markdown] tags=[]
