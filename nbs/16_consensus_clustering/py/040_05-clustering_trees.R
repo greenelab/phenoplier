@@ -83,7 +83,7 @@ options(repr.plot.width = 20, repr.plot.height = 15)
 clustree(data, prefix = "k")
 
 ggsave(
-    file.path(OUTPUT_FIG_DIR, "clustering_tree.pdf"),
+    file.path(OUTPUT_FIG_DIR, "clustering_tree.svg"),
     height=15,
     width=20,
     scale=1,
