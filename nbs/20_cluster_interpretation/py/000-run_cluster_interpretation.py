@@ -90,6 +90,11 @@ CLUSTER_ANALYSIS_OUTPUT_DIR = Path(
 display(CLUSTER_ANALYSIS_OUTPUT_DIR)
 
 # %% tags=[]
+# first delete all ipynb files in output directory
+for f in CLUSTER_ANALYSIS_OUTPUT_DIR.rglob("*.ipynb"):
+    f.unlink()
+
+# %% tags=[]
 CLUSTER_ANALYSIS_OUTPUT_DIR.mkdir(exist_ok=True)
 
 
