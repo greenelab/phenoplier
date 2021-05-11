@@ -23,6 +23,12 @@
 # It uses the `papermill` API to run the notebook `interpret_cluster.run.ipynb` (which serves as a template) for each cluster. Results are saved in folder `cluster_analyses`.
 
 # %% [markdown] tags=[]
+# # Settings
+
+# %% tags=[]
+TOP_N_PARTITIONS = 5
+
+# %% [markdown] tags=[]
 # # Modules loading
 
 # %% tags=[]
@@ -72,11 +78,12 @@ best_partitions.head()
 # # Select top k partitions
 
 # %% tags=[]
-# I take the top 4 partitions (according to their number of clusters).
+# I take the top TOP_N_PARTITIONS partitions (according to their number of clusters).
 # These are the partitions that will be analyzed in the manuscript.
 selected_partition_ks = best_partitions[best_partitions["selected"]].index.sort_values(
     ascending=False
-)[:4]
+)[:TOP_N_PARTITIONS]
+
 display(selected_partition_ks)
 
 # %% [markdown] tags=[]
