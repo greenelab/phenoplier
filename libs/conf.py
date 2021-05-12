@@ -83,6 +83,8 @@ RESULTS["CLUSTERING_INTERPRETATION"]["CLUSTERS_STATS"] = Path(
     "20_cluster_interpretation",
 ).resolve()
 
+RESULTS["GLS"] = Path(RESULTS["BASE_DIR"], "gls").resolve()
+
 #
 # Manuscript
 #
