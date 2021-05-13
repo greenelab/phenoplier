@@ -25,7 +25,7 @@
 import conf
 
 # %% tags=[]
-N_JOBS = 1  # conf.GENERAL["N_JOBS"]
+N_JOBS = conf.GENERAL["N_JOBS"]
 display(N_JOBS)
 
 # %% tags=[]
@@ -39,7 +39,6 @@ display(N_JOBS)
 
 # %%
 from pathlib import Path
-from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import statsmodels.api as sm
 import numpy as np
@@ -220,8 +219,6 @@ for (part_k, cluster_id), extra_for_lvs in PHENOTYPES_LVS_CONFIG.items():
         for lv_code in lv_list:
             phenotypes_lvs_pairs.append(
                 {
-                    "phenotype_part_k": part_k,
-                    "phenotype_cluster_id": cluster_id,
                     "phenotype": phenotype_code,
                     "lv": lv_code,
                 }
@@ -242,66 +239,41 @@ phenotypes_lvs_pairs.head()
 # ## Run
 
 # %%
-from utils import chunker
-
-# %%
 output_file = OUTPUT_DIR / "gls_phenotypes.pkl"
 display(output_file)
 
 # %%
-phenotype_lvs_chunks = chunker(phenotypes_lvs_pairs, 25)
-phenotype_lvs_chunks = list(phenotype_lvs_chunks)
-
-# %%
-len(phenotype_lvs_chunks)
-
-
-# %%
-def _process_phenotypes(chunk):
-    results = []
-
-    for idx, row in chunk.iterrows():
-        phenotype_code = row["phenotype"]
-        lv_code = row["lv"]
-
-        gls_model = GLSPhenoplier()
-        gls_model.fit_named(lv_code, phenotype_code)
-        res = gls_model.results
-
-        results.append(
-            {
-                "part_k": row["phenotype_part_k"],
-                "cluster_id": row["phenotype_cluster_id"],
-                "phenotype": phenotype_code,
-                "lv": lv_code,
-                "lv_with_pathway": lv_code in well_aligned_lv_codes,
-                "coef": res.params.loc["lv"],
-                "pvalue": res.pvalues.loc["lv"],
-                "summary": gls_model.results_summary,
-            }
-        )
-
-    return results
-
-
-# %%
-all_results = []
+results = []
 
 pbar = tqdm(total=phenotypes_lvs_pairs.shape[0])
 
-with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
-    tasks = [
-        executor.submit(_process_phenotypes, chunk) for chunk in phenotype_lvs_chunks
-    ]
+for idx, row in phenotypes_lvs_pairs.iterrows():
+    phenotype_code = row["phenotype"]
+    lv_code = row["lv"]
 
-    for idx, future in enumerate(as_completed(tasks)):
-        res = future.result()
-        all_results.extend(res)
+    pbar.set_description(f"{phenotype_code} - {lv_code}")
 
-        if (idx % 10) == 0:
-            pd.DataFrame(results).to_pickle(output_file)
+    gls_model = GLSPhenoplier()
+    gls_model.fit_named(lv_code, phenotype_code)
+    res = gls_model.results
 
-        pbar.update(len(res))
+    results.append(
+        {
+            "part_k": part_k,
+            "cluster_id": cluster_id,
+            "phenotype": phenotype_code,
+            "lv": lv_code,
+            "lv_with_pathway": lv_code in well_aligned_lv_codes,
+            "coef": res.params.loc["lv"],
+            "pvalue": res.pvalues.loc["lv"],
+            "summary": gls_model.results_summary,
+        }
+    )
+
+    if (idx % 10) == 0:
+        pd.DataFrame(results).to_pickle(output_file)
+
+    pbar.update(1)
 
 pbar.close()
 
