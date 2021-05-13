@@ -219,6 +219,8 @@ for (part_k, cluster_id), extra_for_lvs in PHENOTYPES_LVS_CONFIG.items():
         for lv_code in lv_list:
             phenotypes_lvs_pairs.append(
                 {
+                    "phenotype_part_k": part_k,
+                    "phenotype_cluster_id": cluster_id,
                     "phenotype": phenotype_code,
                     "lv": lv_code,
                 }
@@ -259,8 +261,8 @@ for idx, row in phenotypes_lvs_pairs.iterrows():
 
     results.append(
         {
-            "part_k": part_k,
-            "cluster_id": cluster_id,
+            "part_k": row["phenotype_part_k"],
+            "cluster_id": row["phenotype_cluster_id"],
             "phenotype": phenotype_code,
             "lv": lv_code,
             "lv_with_pathway": lv_code in well_aligned_lv_codes,
