@@ -327,6 +327,46 @@ def download_spredixcan_hdf5_results(**kwargs):
         f.extractall(output_folder.parent)
 
 
+def download_1000g_genotype_data(**kwargs):
+    # FIXME: this method was not tested yet!!!!!!!
+    output_folder = conf.PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"]
+    output_folder.parent.mkdir(exist_ok=True, parents=True)
+
+    output_tar_file = Path(
+        conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "sample_data.tar"
+    ).resolve()
+    output_tar_file_md5 = "8b42c388953d016e1112051d3b6140ed"
+
+    if not Path(output_tar_file).exists() or not md5_matches(
+        output_tar_file_md5, output_tar_file
+    ):
+        # download
+        curl(
+            "https://zenodo.org/record/3657902/files/sample_data.tar?download=1",
+            output_tar_file,
+            output_tar_file_md5,
+            logger=logger,
+        )
+
+    # uncompress file
+    import tarfile
+
+    logger.info(f"Extracting {output_tar_file}")
+    with tarfile.open(output_tar_file, "r") as f:
+        selected_folder = [
+            tarinfo
+            for tarinfo in f.getmembers()
+            if tarinfo.name.startswith("data/reference_panel_1000G/")
+        ]
+
+        # FIXME: this won't work
+        assert (
+            output_folder.name in selected_folder
+        ), "Output folder name not inside tar file"
+
+        f.extractall(output_folder, members=selected_folder)
+
+
 def _get_file_from_zip(
     zip_file_url,
     zip_file_path,
