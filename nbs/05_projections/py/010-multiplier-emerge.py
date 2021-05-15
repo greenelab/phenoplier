@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: all,-execution,-papermill
+#     cell_metadata_filter: all,-execution,-papermill,-trusted
 #     formats: ipynb,py//py:percent
 #     text_representation:
 #       extension: .py
@@ -23,27 +23,25 @@
 # %% [markdown] tags=[]
 # # Modules loading
 
-# %% tags=[] trusted=true
+# %% tags=[]
 # %load_ext autoreload
 # %autoreload 2
 
-# %% tags=[] trusted=true
+# %% tags=[]
 from pathlib import Path
 
 from IPython.display import display
 import pandas as pd
 
 import conf
-from data.cache import read_data
-from multiplier import MultiplierProjection
 from entity import Gene
+from multiplier import MultiplierProjection
 
 # %% [markdown] tags=[]
 # # Settings
 
-# %% tags=[] trusted=true
+# %% tags=[]
 RESULTS_PROJ_OUTPUT_DIR = Path(conf.RESULTS["PROJECTIONS_DIR"])
-
 RESULTS_PROJ_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 display(RESULTS_PROJ_OUTPUT_DIR)
@@ -51,78 +49,75 @@ display(RESULTS_PROJ_OUTPUT_DIR)
 # %% [markdown] tags=[]
 # # Load eMERGE data (S-MultiXcan)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_results_filename = conf.EMERGE["SMULTIXCAN_MASHR_ZSCORES_FILE"]
 
 display(smultixcan_results_filename)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 results_filename_stem = smultixcan_results_filename.stem
 display(results_filename_stem)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_results = pd.read_pickle(smultixcan_results_filename)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_results.shape
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_results.head()
 
 # %% [markdown] tags=[]
 # ## Gene IDs to Gene names
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_results = smultixcan_results.rename(index=Gene.GENE_ID_TO_NAME_MAP)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_results.shape
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_results.head()
 
 # %% [markdown] tags=[]
 # ## Remove duplicated gene entries
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_results.index[smultixcan_results.index.duplicated(keep="first")]
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_results = smultixcan_results.loc[
     ~smultixcan_results.index.duplicated(keep="first")
 ]
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_results.shape
 
 # %% [markdown] tags=[]
 # ## Remove NaN values
 
-# %% [markdown] tags=[]
-# **TODO**: it might be better to try to impute these values
-
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_results = smultixcan_results.dropna(how="any")
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_results.shape
 
 # %% [markdown] tags=[]
 # # Standardize S-MultiXcan results
 
 # %% [markdown] tags=[]
-# Here we adjust for highly polygenic traits.
+# Here we adjust for highly polygenic traits (see notebook `005_00-data_analysis.ipynb`): we penalize those traits that have large effect sizes across several genes, such as antropometric traits.
 
-# %% tags=[] trusted=true
+# %% tags=[]
 _tmp = smultixcan_results.apply(lambda x: x / x.sum())
 
-# %% tags=[] trusted=true
+# %% tags=[]
 _tmp.shape
 
-# %% tags=[] trusted=true
+# %% tags=[]
 assert _tmp.shape == smultixcan_results.shape
 
-# %% tags=[] trusted=true
+# %% tags=[]
 # some testing
 _trait = "513"
 _gene = "SCYL3"
@@ -152,47 +147,50 @@ assert (
     == smultixcan_results.loc[_gene, _trait] / smultixcan_results[_trait].sum()
 )
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_results = _tmp
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_results.head()
 
 # %% [markdown] tags=[]
 # # Project S-MultiXcan data into MultiPLIER latent space
 
-# %% tags=[] trusted=true
+# %% tags=[]
 mproj = MultiplierProjection()
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_into_multiplier = mproj.transform(smultixcan_results)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_into_multiplier.shape
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_into_multiplier.head()
 
 # %% [markdown] tags=[]
 # # Quick analysis
 
-# %% tags=[] trusted=true
+# %% tags=[]
 (smultixcan_into_multiplier.loc["LV603"].sort_values(ascending=False).head(20))
 
-# %% tags=[] trusted=true
+# %% tags=[]
 (smultixcan_into_multiplier.loc["LV136"].sort_values(ascending=False).head(20))
+
+# %% tags=[]
+(smultixcan_into_multiplier.loc["LV844"].sort_values(ascending=False).head(20))
 
 # %% [markdown] tags=[]
 # # Save
 
-# %% tags=[] trusted=true
+# %% tags=[]
 output_file = Path(
     RESULTS_PROJ_OUTPUT_DIR, f"projection-{results_filename_stem}.pkl"
 ).resolve()
 
 display(output_file)
 
-# %% tags=[] trusted=true
+# %% tags=[]
 smultixcan_into_multiplier.to_pickle(output_file)
 
 # %% tags=[]
