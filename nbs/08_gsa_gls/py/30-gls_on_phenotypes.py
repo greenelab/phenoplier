@@ -255,7 +255,11 @@ for idx, row in phenotypes_lvs_pairs.iterrows():
 
     pbar.set_description(f"{phenotype_code} - {lv_code}")
 
-    gls_model = GLSPhenoplier()
+    gls_model = GLSPhenoplier(
+        smultixcan_result_set_filepath=conf.PHENOMEXCAN[
+            "SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE"
+        ]
+    )
     gls_model.fit_named(lv_code, phenotype_code)
     res = gls_model.results
 
