@@ -32,14 +32,14 @@ class GLSPhenoplier(object):
 
     @staticmethod
     @lru_cache(maxsize=None)
-    def _get_data(smultixcan_result_set):
+    def _get_data(smultixcan_result_set_filepath):
         input_filepath = (
             conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
             / "multiplier_genes-pred_expression_corr_avg-gene_names.pkl"
         )
         gene_corrs = pd.read_pickle(input_filepath)
 
-        input_filepath = conf.PHENOMEXCAN[smultixcan_result_set]
+        input_filepath = smultixcan_result_set_filepath
         phenotype_assocs = pd.read_pickle(input_filepath)
         phenotype_assocs = phenotype_assocs.rename(index=Gene.GENE_ID_TO_NAME_MAP)
         phenotype_assocs = phenotype_assocs[
