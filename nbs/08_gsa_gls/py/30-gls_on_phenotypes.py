@@ -17,11 +17,11 @@
 # %% [markdown] tags=[]
 # # Environment variables
 
-# %%
+# %% tags=[]
 # %load_ext autoreload
 # %autoreload 2
 
-# %%
+# %% tags=[]
 import conf
 
 # %% tags=[]
@@ -34,10 +34,10 @@ display(N_JOBS)
 # %env NUMEXPR_NUM_THREADS=$N_JOBS
 # %env OMP_NUM_THREADS=$N_JOBS
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Modules
 
-# %%
+# %% tags=[]
 from pathlib import Path
 
 import statsmodels.api as sm
@@ -48,79 +48,79 @@ from tqdm import tqdm
 
 from gls import GLSPhenoplier
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Settings
 
-# %%
+# %% tags=[]
 OUTPUT_DIR = conf.RESULTS["GLS"]
 display(OUTPUT_DIR)
 
 OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Load data
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## PhenomeXcan (S-MultiXcan)
 
-# %%
+# %% tags=[]
 INPUT_SUBSET = "z_score_std"
 
-# %%
+# %% tags=[]
 INPUT_STEM = "projection-smultixcan-efo_partial-mashr-zscores"
 
-# %%
+# %% tags=[]
 input_filepath = Path(
     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
     INPUT_SUBSET,
     f"{INPUT_SUBSET}-{INPUT_STEM}.pkl",
 ).resolve()
 
-# %%
+# %% tags=[]
 data = pd.read_pickle(input_filepath)
 
-# %%
+# %% tags=[]
 data.shape
 
-# %%
+# %% tags=[]
 data.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Clustering results
 
-# %%
+# %% tags=[]
 CONSENSUS_CLUSTERING_DIR = Path(
     conf.RESULTS["CLUSTERING_DIR"], "consensus_clustering"
 ).resolve()
 
 display(CONSENSUS_CLUSTERING_DIR)
 
-# %%
+# %% tags=[]
 input_file = Path(CONSENSUS_CLUSTERING_DIR, "best_partitions_by_k.pkl").resolve()
 display(input_file)
 
-# %%
+# %% tags=[]
 best_partitions = pd.read_pickle(input_file)
 
-# %%
+# %% tags=[]
 best_partitions.shape
 
-# %%
+# %% tags=[]
 best_partitions.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## MultiPLIER summary
 
-# %%
+# %% tags=[]
 multiplier_model_summary = pd.read_pickle(conf.MULTIPLIER["MODEL_SUMMARY_FILE"])
 
-# %%
+# %% tags=[]
 multiplier_model_summary.shape
 
-# %%
+# %% tags=[]
 multiplier_model_summary.head()
 
-# %%
+# %% tags=[]
 well_aligned_lvs = multiplier_model_summary[
     (multiplier_model_summary["FDR"] < 0.05) | (multiplier_model_summary["AUC"] >= 0.75)
 ]
@@ -128,19 +128,19 @@ well_aligned_lvs = multiplier_model_summary[
 display(well_aligned_lvs.shape)
 display(well_aligned_lvs.head())
 
-# %%
+# %% tags=[]
 well_aligned_lv_codes = set([f"LV{lvi}" for lvi in well_aligned_lvs["LV index"]])
 
-# %%
+# %% tags=[]
 len(well_aligned_lv_codes)
 
-# %%
+# %% tags=[]
 list(well_aligned_lv_codes)[:5]
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Select partition / cluster pairs
 
-# %%
+# %% tags=[]
 # key: a tuple (partition_k, cluster_id)
 # value: a list of tuples
 # this specifies
@@ -165,14 +165,14 @@ PHENOTYPES_LVS_CONFIG = {
     (29, 12): [],
 }
 
-# %%
+# %% tags=[]
 CLUSTER_LV_DIR = conf.RESULTS["CLUSTERING_INTERPRETATION"]["BASE_DIR"] / "cluster_lvs"
 assert CLUSTER_LV_DIR.exists()
 
 display(CLUSTER_LV_DIR)
 
 
-# %%
+# %% tags=[]
 def _get_lvs_data(part_k, cluster_idx):
     cluster_lvs = pd.read_pickle(
         CLUSTER_LV_DIR
@@ -190,16 +190,16 @@ def _get_lvs_data(part_k, cluster_idx):
     return list(cluster_lvs["name"])
 
 
-# %%
+# %% tags=[]
 _get_lvs_data(29, 11)[:5]
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # GLSPhenoplier
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Get list of phenotypes/lvs pairs
 
-# %%
+# %% tags=[]
 phenotypes_lvs_pairs = []
 
 for (part_k, cluster_id), extra_for_lvs in PHENOTYPES_LVS_CONFIG.items():
@@ -228,23 +228,23 @@ for (part_k, cluster_id), extra_for_lvs in PHENOTYPES_LVS_CONFIG.items():
 
 phenotypes_lvs_pairs = pd.DataFrame(phenotypes_lvs_pairs).drop_duplicates()
 
-# %%
+# %% tags=[]
 phenotypes_lvs_pairs = phenotypes_lvs_pairs.sort_values("phenotype")
 
-# %%
+# %% tags=[]
 phenotypes_lvs_pairs.shape
 
-# %%
+# %% tags=[]
 phenotypes_lvs_pairs.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Run
 
-# %%
+# %% tags=[]
 output_file = OUTPUT_DIR / "gls_phenotypes.pkl"
 display(output_file)
 
-# %%
+# %% tags=[]
 results = []
 
 pbar = tqdm(total=phenotypes_lvs_pairs.shape[0])
@@ -283,22 +283,22 @@ for idx, row in phenotypes_lvs_pairs.iterrows():
 
 pbar.close()
 
-# %%
+# %% tags=[]
 results = pd.DataFrame(results)
 
-# %%
+# %% tags=[]
 results.shape
 
-# %%
+# %% tags=[]
 results.head()
 
-# %%
+# %% tags=[]
 results.sort_values("pvalue").head(10)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Save
 
-# %%
+# %% tags=[]
 results.to_pickle(output_file)
 
-# %%
+# %% tags=[]
