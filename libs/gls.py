@@ -11,10 +11,14 @@ from entity import Gene
 class GLSPhenoplier(object):
     def __init__(
         self,
-        smultixcan_result_set="SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE",
+        smultixcan_result_set_filepath=None,
         sigma=None,
     ):
-        self.smultixcan_result_set = smultixcan_result_set
+        self.smultixcan_result_set_filepath = conf.PHENOMEXCAN[
+            "SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE"
+        ]
+        if smultixcan_result_set_filepath is not None:
+            self.smultixcan_result_set_filepath = smultixcan_result_set_filepath
 
         # FIXME: add in documentation that sigma should not be changed, this is just for
         #  debugging purposes.
@@ -59,7 +63,7 @@ class GLSPhenoplier(object):
 
     def fit_named(self, lv_code, phenotype_code):
         gene_corrs, phenotype_assocs, lv_weights = GLSPhenoplier._get_data(
-            self.smultixcan_result_set
+            self.smultixcan_result_set_filepath
         )
 
         if self.sigma is not None:
