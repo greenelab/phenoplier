@@ -1,3 +1,11 @@
+"""
+This file contains unit tests for the GLSPhenoplier class.
+They are not here yet, only some tests description I want to include in the
+future. The GLSPhenoplier class was tested using a notebook in the gls_testing
+branch, and those will be moved here in the future.
+
+This is reported in this issue: https://github.com/greenelab/phenoplier/issues/40
+"""
 import pytest
 
 
