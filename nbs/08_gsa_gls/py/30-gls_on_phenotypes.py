@@ -229,7 +229,9 @@ for (part_k, cluster_id), extra_for_lvs in PHENOTYPES_LVS_CONFIG.items():
 phenotypes_lvs_pairs = pd.DataFrame(phenotypes_lvs_pairs).drop_duplicates()
 
 # %% tags=[]
-phenotypes_lvs_pairs = phenotypes_lvs_pairs.sort_values("phenotype")
+phenotypes_lvs_pairs = phenotypes_lvs_pairs.sort_values("phenotype").reset_index(
+    drop=True
+)
 
 # %% tags=[]
 phenotypes_lvs_pairs.shape
