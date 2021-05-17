@@ -21,6 +21,8 @@
 # This notebook computes predicted expression correlations between all genes in the MultiPLIER models.
 #
 # It also has a parameter set for papermill to run on a single chromosome to run in parallel (see under `Settings` below).
+#
+# This notebook does not have an output because it is not directly run. If you want to see outputs for each chromosome, check out the `gene_corrs` folder, which contains a copy of this notebook for each chromosome.
 
 # %% [markdown] tags=[]
 # # Modules
