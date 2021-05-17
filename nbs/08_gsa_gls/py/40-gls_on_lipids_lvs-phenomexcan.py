@@ -148,67 +148,67 @@ deg_enrich = pd.read_csv(
     sep="\t",
 )
 
-# %%
+# %% tags=[]
 deg_enrich.shape
 
-# %%
+# %% tags=[]
 deg_enrich.head()
 
-# %%
+# %% tags=[]
 deg_enrich_max_idx = deg_enrich.groupby(["lv", "pathway"])["padj"].idxmax()
 
-# %%
+# %% tags=[]
 deg_enrich = deg_enrich.loc[deg_enrich_max_idx].reset_index(drop=True)
 display(deg_enrich.shape)
 display(deg_enrich.head())
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Lipids-increasing gene sets
 
-# %%
+# %% tags=[]
 deg_increase = deg_enrich[
     deg_enrich["pathway"].isin(("gene_set_increase",)) & (deg_enrich["padj"] < 0.05)
 ].sort_values("padj", ascending=True)
 
-# %%
+# %% tags=[]
 deg_increase.shape
 
-# %%
+# %% tags=[]
 deg_increase.head()
 
-# %%
+# %% tags=[]
 lvs_increase = deg_increase["lv"].unique()
 
-# %%
+# %% tags=[]
 lvs_increase.shape
 
-# %%
+# %% tags=[]
 lvs_increase
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Lipids-decreasing gene sets
 
-# %%
+# %% tags=[]
 deg_decrease = deg_enrich[
     deg_enrich["pathway"].isin(("gene_set_decrease",)) & (deg_enrich["padj"] < 0.05)
 ].sort_values("padj", ascending=True)
 
-# %%
+# %% tags=[]
 deg_decrease.shape
 
-# %%
+# %% tags=[]
 deg_decrease.head()
 
-# %%
+# %% tags=[]
 lvs_decrease = deg_decrease["lv"].unique()
 
-# %%
+# %% tags=[]
 lvs_decrease.shape
 
-# %%
+# %% tags=[]
 lvs_decrease
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Merge final
 
 # %% tags=[]
@@ -216,13 +216,13 @@ _tmp0 = pd.DataFrame({"lv": lvs_increase, "lv_set": "lipids-increasing"})
 
 _tmp1 = pd.DataFrame({"lv": lvs_decrease, "lv_set": "lipids-decreasing"})
 
-# %%
+# %% tags=[]
 gls_selected_lvs = pd.concat([_tmp0, _tmp1], ignore_index=True)
 
-# %%
+# %% tags=[]
 gls_selected_lvs.shape
 
-# %%
+# %% tags=[]
 gls_selected_lvs.head()
 
 # %% [markdown] tags=[]
