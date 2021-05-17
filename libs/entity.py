@@ -743,7 +743,7 @@ class Gene(object):
 
         snps_cov = snps_cov.loc[snps_ids_list1, snps_ids_list2]
 
-        if snps_cov.shape[0] == 0 or snps_cov.shape[1] == None:
+        if snps_cov.shape[0] == 0 or snps_cov.shape[1] == 0:
             return None
 
         return snps_cov
