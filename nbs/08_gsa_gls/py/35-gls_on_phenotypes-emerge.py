@@ -61,7 +61,7 @@ OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
 # # Load data
 
 # %% [markdown] tags=[]
-# ## eMERGE to PhenomeXcan maps
+# ## eMERGE traits info
 
 # %% tags=[]
 # FIXME: hardcoded
@@ -141,18 +141,18 @@ emerge_projection.shape
 emerge_projection.head()
 
 # %% [markdown] tags=[]
-# ## eMERGE (S-MultiXcan) projection
+# ## eMERGE (S-MultiXcan)
 
 # %% tags=[]
 # FIXME: path hardcoded
-emerge_smultixcan_projection_filepath = Path(
+emerge_smultixcan_zscores_filepath = Path(
     "/home/miltondp/projects/labs/greenelab/phenoplier/base/data/emerge/gene_assoc/emerge-smultixcan-mashr-zscores.pkl"
 ).resolve()
 
-display(emerge_smultixcan_projection_filepath)
+display(emerge_smultixcan_zscores_filepath)
 
 # %% tags=[]
-_tmp = pd.read_pickle(emerge_smultixcan_projection_filepath)
+_tmp = pd.read_pickle(emerge_smultixcan_zscores_filepath)
 
 # %% tags=[]
 _tmp.shape
@@ -300,7 +300,7 @@ for idx, row in phenotypes_lvs_pairs.iterrows():
     pbar.set_description(f"{phenotype_code} - {lv_code}")
 
     gls_model = GLSPhenoplier(
-        smultixcan_result_set_filepath=emerge_smultixcan_projection_filepath
+        smultixcan_result_set_filepath=emerge_smultixcan_zscores_filepath
     )
     gls_model.fit_named(lv_code, phenotype_code)
     res = gls_model.results
