@@ -27,14 +27,6 @@ def is_number(s):
         return False
 
 
-def chunker(seq, size):
-    """
-    Divides a sequence in chunks according to the given size.
-    FIXME: COMPLETE
-    """
-    return (seq[pos : pos + size] for pos in range(0, len(seq), size))
-
-
 def curl(url: str, output_file: str, md5hash: str = None, logger=get_logger("setup")):
     """Downloads a file from an URL. If the md5hash option is specified, it checks
     if the file was successfully downloaded (whether MD5 matches).
