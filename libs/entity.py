@@ -607,19 +607,24 @@ class Gene(object):
     @staticmethod
     def _get_tissue_connection(tissue: str, model_type: str = "MASHR"):
         """
-        - the caller is responsible of closing this connection object
-        by calling the `close` method
+        Returns an SQLite connection to the prediction models of PrediXcan for
+        a specified tissue. The caller is responsible of closing this connection
+        object by calling the `close` method after using it.
 
         Args:
             tissue:
+                The tissue name to get the connection from.
+            model_type:
+                The model type. Right now there is only one: "MASHR".
 
         Returns:
-
+            An read-only SQLite connection object.
         """
         # check that the file for the tissue exists
         tissue_weights_file = (
             conf.PHENOMEXCAN["PREDICTION_MODELS"][model_type] / f"mashr_{tissue}.db"
         )
+
         if not tissue_weights_file.exists():
             raise ValueError(
                 f"Model file for tissue does not exist: {str(tissue_weights_file)}"
@@ -632,6 +637,22 @@ class Gene(object):
 
     @lru_cache(maxsize=None)
     def get_prediction_weights(self, tissue: str, model_type: str = "MASHR"):
+        """
+        Given a tissue and model type, it returns the prediction weights for
+        this gene. The prediction weights are a list of SNPs with the weights
+        learned from a regression model to predict its expression.
+
+        Args:
+            tissue:
+                The tissue name.
+            model_type:
+                The model type. Right now there is only one: "MASHR".
+
+        Returns:
+            A pandas DataFrame with the variants' weight for the prediction of
+             this gene expression. It has these columns: variant ID (in GTEx v8
+             format) and its weight.
+        """
         sqlite_conn = Gene._get_tissue_connection(tissue, model_type)
 
         try:
@@ -651,12 +672,15 @@ class Gene(object):
     @lru_cache(maxsize=1)
     def _read_snps_cov(snps_chr):
         """
-        lru_cache / maxsize is 1 because the idea is call always on the same chromosome to speed up
+        Returns the covariance matrix for all SNPs (in the predictions models)
+        in a chromosome. lru_cache / maxsize is 1 because the idea is call
+        always on the same chromosome in sequence to speed up.
+
         Args:
             snps_chr:
-
+                A string specifying the chromosome in format "chr{num}".
         Returns:
-
+            A square pandas dataframe with SNPs covariances.
         """
         snps_cov_file = (
             conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "mashr_snps_chr_blocks_cov.h5"
@@ -668,9 +692,24 @@ class Gene(object):
 
     @staticmethod
     def _get_snps_cov(snps_ids_list1, snps_ids_list2=None, check=True):
-        # check all snps belong to the same chromosome
-        # read hdf5 file and return the squared marix
+        """
+        Given one or (optionally) two lists of SNPs IDs, it returns the
+        covariance matrix for
+        Args:
+            snps_ids_list1:
+                A list of SNPs IDs. When only this parameter is used, generally
+                one wants to compute its predicted expression covariance.
+            snps_ids_list2:
+                (Optional) A second list of SNPs IDs. When this is used, it is
+                generally the SNPs from a second gene.
+            check:
+                If should be checked that all SNPs are from the same chromosome.
 
+        Returns:
+            Return a pandas dataframe with the SNPs specified in the arguments
+            for which we have genotype data (otherwise we don't have its
+            covariance).
+        """
         snps_ids_list1 = list(snps_ids_list1)
 
         if len(snps_ids_list1) == 0:
@@ -687,13 +726,17 @@ class Gene(object):
         snps_chr = first_snp_id.split("_")[0]
 
         if check:
+            # all snps must be from the same chromosome
             all_snps = pd.Series(list(set(snps_ids_list1 + snps_ids_list2)))
             all_snps_chr = all_snps.str.split("_", expand=True)[0]
             if all_snps_chr.unique().shape[0] != 1:
                 raise ValueError("Only snps from the same chromosome are supported")
 
+        # read the entire covariance matrix for this chromosome
         snps_cov = Gene._read_snps_cov(snps_chr)
 
+        # from the specified SNP lists, only keep those for which we have
+        # genotypes
         variants_with_genotype = set(snps_cov.index)
         snps_ids_list1 = [v for v in snps_ids_list1 if v in variants_with_genotype]
         snps_ids_list2 = [v for v in snps_ids_list2 if v in variants_with_genotype]
@@ -708,13 +751,14 @@ class Gene(object):
     @lru_cache(maxsize=None)
     def get_pred_expression_variance(self, tissue: str, model_type: str = "MASHR"):
         """
-        TODO
+        Given a tissue, it computes the covariance of the predicted gene
+        expression.
 
         Args:
             tissue:
-
+                The tissue name.
         Returns:
-
+            A float with the covariance of the gene predicted expression.
         """
         w = self.get_prediction_weights(tissue, model_type)
         if w is None:
@@ -722,7 +766,6 @@ class Gene(object):
 
         # LD of snps in gene model
         gene_snps_cov = Gene._get_snps_cov(w["varID"])
-        # gene_snps_cov = self.get_snps_cov(tissue, model_type)
         if gene_snps_cov is None:
             return None
 
@@ -733,24 +776,38 @@ class Gene(object):
         common_snps = set(w.index).intersection(set(gene_snps_cov.index))
         gene_n_snps = len(common_snps)
         if gene_n_snps == 0:
-            # FIXME this is for debugging purposes
             raise Exception("No common snps")
 
         w = w.loc[common_snps]
+
+        # snps covariance of common snps
         r = gene_snps_cov.loc[common_snps, common_snps]
 
-        # return variance of gene's predicted expression
-        # formula taken from:
+        # return variance of gene's predicted expression using formula from:
         #   - MetaXcan paper: https://doi.org/10.1038/s41467-018-03621-1
         #   - MultiXcan paper: https://doi.org/10.1371/journal.pgen.1007889
         return (w.T @ r @ w).squeeze()
 
     def get_expression_correlation(self, other_gene, tissue: str):
+        """
+        Given another Gene object and a tissue, it computes the correlation
+        between their predicted expression.
+
+        Args:
+            other_gene:
+                Another Gene object.
+            tissue:
+                The tissue name.
+
+        Returns:
+            A float with the correlation of the two genes' predicted expression.
+        """
         gene_w = self.get_prediction_weights(tissue)
         if gene_w is None:
             return 0.0
         gene_w = gene_w.set_index("varID")
         if gene_w.abs().sum().sum() == 0.0:
+            # some genes in the models have weight equal to zero (weird)
             return 0.0
 
         other_gene_w = other_gene.get_prediction_weights(tissue)
@@ -779,6 +836,8 @@ class Gene(object):
         gene_w = gene_w.loc[snps_cov.index]
         other_gene_w = other_gene_w.loc[snps_cov.columns]
 
+        # formula from the MultiXcan paper:
+        #   https://doi.org/10.1371/journal.pgen.1007889
         return (gene_w.T @ snps_cov @ other_gene_w).squeeze() / np.sqrt(
             gene_var * other_gene_var
         )
