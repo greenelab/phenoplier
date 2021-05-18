@@ -84,7 +84,7 @@ def reset_estimator(estimator_obj):
         delattr(estimator_obj, attr)
 
 
-def compare_arrays(x, y, comp_func, use_weighting=False):
+def compare_arrays(x, y, comp_func, use_weighting=True):
     """
     It compares non-nan values from two numpy arrays using a specified
     function that returns a numerical value.
@@ -92,13 +92,17 @@ def compare_arrays(x, y, comp_func, use_weighting=False):
     In this module, these two arrays are always data partitions (generated
     from a clustering algorithm, and specifying the cluster each object
     belongs to), and the return value is a similarity measure between them.
+    Since the data partitions are assumed to be derived from the same data,
+    both x and y must have the same length.
 
     Args:
         x: a 1D numpy array.
         y: a 1D numpy array.
         comp_func: any function that accepts two arguments (numpy arrays) and
             returns a numerical value.
-        use_weighting: a boolean indicating if the numerical output of function
+        use_weighting: FIXME: this parameter should be removed and always
+            perform weighting.
+            A boolean indicating if the numerical output of function
             comp_func should be weighted/multiplied by the proportion of non-nan
             values in the input arrays.
 
