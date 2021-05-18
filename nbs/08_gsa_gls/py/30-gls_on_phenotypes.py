@@ -15,6 +15,12 @@
 # ---
 
 # %% [markdown] tags=[]
+# # Description
+
+# %% [markdown] tags=[]
+# It runs GLSPhenoplier to compute an association between each selected LV and PhenomeXcan trait. Traits of interest are selected from the "complex branch" (clustering results), and LVs are those predicted (by a decision tree classifier) to be discriminative for those clusters in the "complex branch".
+
+# %% [markdown] tags=[]
 # # Environment variables
 
 # %% tags=[]
@@ -141,9 +147,17 @@ list(well_aligned_lv_codes)[:5]
 # # Select partition / cluster pairs
 
 # %% tags=[]
-# key: a tuple (partition_k, cluster_id)
-# value: a list of tuples
-# this specifies
+# This dictionary specifies in the keys the partition/clusters where traits will be selected from.
+# To select the LVs, we will take those LVs that are discriminative for the partition/cluster in the key,
+# but we also include an additional set of partition/clusters since there is a hierarchy of clustering solutions,
+# one LV in those might have not been present in the original partition/cluster tuple. This is manually inferred
+# by looking at the clustering tree. For example, within the "complex branch", we have the partition/cluster tuple
+# (29,11), including coronary artery disease and other traits. This tuple has a set of (at most) 20 LVs that are
+# discriminative for these traits. However, at k=26, this tuple is a children of (26,13) (which is a parent of (29,16)),
+# which has another set of discriminative LVs. We also take those ones for (29,11).
+#
+# key: a tuple (partition_k or ID, cluster_id)
+# value: a list of tuples (each tuple having two elements: (partition_k or ID, cluster_id))
 PHENOTYPES_LVS_CONFIG = {
     # cardiovascular
     (29, 14): [(16, 15)],
@@ -174,18 +188,14 @@ display(CLUSTER_LV_DIR)
 
 # %% tags=[]
 def _get_lvs_data(part_k, cluster_idx):
+    """
+    For a partition/cluster pair, it returns a list of LV names that are discriminative for that cluster.
+    """
     cluster_lvs = pd.read_pickle(
         CLUSTER_LV_DIR
         / f"part{part_k}"
         / f"cluster_interpreter-part{part_k}_k{cluster_idx}.pkl"
     )
-
-    #     # keep well-aligned lvs only
-    #     cluster_lvs = cluster_lvs[
-    #         cluster_lvs.index.astype(str).isin(well_aligned_lvs["LV index"])
-    #     ]
-
-    cluster_lvs["cluster"] = cluster_idx
 
     return list(cluster_lvs["name"])
 
@@ -199,22 +209,28 @@ _get_lvs_data(29, 11)[:5]
 # %% [markdown] tags=[]
 # ## Get list of phenotypes/lvs pairs
 
+# %% [markdown] tags=[]
+# Here I get a list of phenotype/lv pairs to run GLSPhenoplier on. I do this because I don't need to train the model
+# for all LVs and all traits. The pairs are read from the `PHENOTYPES_LVS_CONFIG` dictionary specified before.
+
 # %% tags=[]
 phenotypes_lvs_pairs = []
 
 for (part_k, cluster_id), extra_for_lvs in PHENOTYPES_LVS_CONFIG.items():
+    # get traits from the partition/cluster
     part = best_partitions.loc[part_k, "partition"]
-
-    # get traits
     cluster_traits = data.index[part == cluster_id]
 
-    # get extra lvs
+    # get first the LVs that are predictive for this partition/cluster
+    # then, add extra LVs from the partition/cluster "parents" specified in
+    # PHENOTYPES_LVS_CONFIG as a list of values
     lv_list = _get_lvs_data(part_k, cluster_id)
 
     for extra_part_k, extra_cluster_id in extra_for_lvs:
         extra_lv_list = _get_lvs_data(part_k, cluster_id)
         lv_list.extend(extra_lv_list)
 
+    # now create the list of trait/lv pairs where GLSPhenoplier will be run on later
     for phenotype_code in cluster_traits:
         for lv_code in lv_list:
             phenotypes_lvs_pairs.append(
@@ -278,6 +294,7 @@ for idx, row in phenotypes_lvs_pairs.iterrows():
         }
     )
 
+    # save results every 10 models trained
     if (idx % 10) == 0:
         pd.DataFrame(results).to_pickle(output_file)
 

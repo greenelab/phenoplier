@@ -15,6 +15,13 @@
 # ---
 
 # %% [markdown] tags=[]
+# # Description
+
+# %% [markdown] tags=[]
+# This notebook is similar to `30` and `35`, but here I use the LVs that we found to be significantly enriched for the lipids CRISPR analysis, which might or might not coincide with the previously used LVs (those that discriminate clusters).
+# The traits here are from PhenomeXcan.
+
+# %% [markdown] tags=[]
 # # Environment variables
 
 # %% tags=[]
@@ -138,7 +145,7 @@ list(well_aligned_lv_codes)[:5]
 # # Select LVs from CRISPR analysis
 
 # %% tags=[]
-# FIXME hardcoded
+# FIXME: there will be a specific folder for crispr analysis in the future, that should be replaced here
 deg_enrich = pd.read_csv(
     Path(
         conf.RESULTS["BASE_DIR"],
@@ -209,7 +216,7 @@ lvs_decrease.shape
 lvs_decrease
 
 # %% [markdown] tags=[]
-# ## Merge final
+# ## Merge into one dataframe
 
 # %% tags=[]
 _tmp0 = pd.DataFrame({"lv": lvs_increase, "lv_set": "lipids-increasing"})
@@ -227,6 +234,9 @@ gls_selected_lvs.head()
 
 # %% [markdown] tags=[]
 # # Select traits from specific partition/cluster
+
+# %% [markdown] tags=[]
+# For this run on the LVs related to the lipids CRISPR analysis, I'm only interested in the main clusters of the cardiovascular sub-branch.
 
 # %% tags=[]
 PHENOTYPES_CONFIG = [
@@ -248,17 +258,9 @@ PHENOTYPES_CONFIG = [
 phenotypes_lvs_pairs = []
 
 for part_k, cluster_id in PHENOTYPES_CONFIG:
+    # get traits from the partition/cluster
     part = best_partitions.loc[part_k, "partition"]
-
-    # get traits
     cluster_traits = data.index[part == cluster_id]
-
-    #     # get extra lvs
-    #     lv_list = _get_lvs_data(part_k, cluster_id)
-
-    #     for extra_part_k, extra_cluster_id in extra_for_lvs:
-    #         extra_lv_list = _get_lvs_data(part_k, cluster_id)
-    #         lv_list.extend(extra_lv_list)
 
     for phenotype_code in cluster_traits:
         for idx, lv_row in gls_selected_lvs.iterrows():
@@ -325,6 +327,7 @@ for idx, row in phenotypes_lvs_pairs.iterrows():
         }
     )
 
+    # save results every 10 models trained
     if (idx % 10) == 0:
         pd.DataFrame(results).to_pickle(output_file)
 

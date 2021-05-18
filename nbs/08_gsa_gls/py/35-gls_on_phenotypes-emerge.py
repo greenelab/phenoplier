@@ -15,6 +15,14 @@
 # ---
 
 # %% [markdown] tags=[]
+# # Description
+
+# %% [markdown] tags=[]
+# This notebook is similar to `30-gls_on_phenotypes...` but for eMERGE S-MultiXcan results instead of PhenomeXcan.
+#
+# Since we don't have partition/clusters of eMERGE results, we selected the same set of LVs from the run on PhenomeXcan (`30-gls_on_phenotypes...`); and regarding traits, we take the top 20 traits from each LVs to create a list of trait/LVs pairs to run GLSPhenoplier on.
+
+# %% [markdown] tags=[]
 # # Environment variables
 
 # %% tags=[]
@@ -51,6 +59,9 @@ from gls import GLSPhenoplier
 # %% [markdown] tags=[]
 # # Settings
 
+# %%
+N_TOP_TRAITS_FROM_LV = 20
+
 # %% tags=[]
 OUTPUT_DIR = conf.RESULTS["GLS"]
 display(OUTPUT_DIR)
@@ -64,9 +75,10 @@ OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
 # ## eMERGE traits info
 
 # %% tags=[]
-# FIXME: hardcoded
+# FIXME: in the future, there will be a specific entry in config for the eMERGE directory that should be replaced here
 input_filepath = Path(
-    "/home/miltondp/projects/labs/greenelab/phenoplier/base/data/emerge",
+    conf.DATA_DIR,
+    "emerge",
     "eMERGE_III_PMBB_GSA_v2_2020_phecode_AFR_EUR_cc50_counts_w_dictionary.txt",
 ).resolve()
 display(input_filepath)
@@ -97,9 +109,10 @@ emerge_traits_df.head()
 # ## eMERGE to PhenomeXcan maps
 
 # %% tags=[]
-# FIXME: hardcoded
+# FIXME: in the future, there will be a specific entry in config for the eMERGE directory that should be replaced here
 emerge_phenomexcan_maps_filepath = Path(
-    "/home/miltondp/projects/labs/greenelab/phenoplier/base/data/emerge",
+    conf.DATA_DIR,
+    "emerge",
     "phecodes_phenomexcan_maps.tsv",
 ).resolve()
 display(emerge_phenomexcan_maps_filepath)
@@ -124,9 +137,8 @@ emerge_phenomexcan_maps.head()
 # ## eMERGE (S-MultiXcan) projection
 
 # %% tags=[]
-# FIXME hardcoded
 input_filepath = Path(
-    "/home/miltondp/projects/labs/greenelab/phenoplier/base/results/projections",
+    conf.RESULTS["PROJECTIONS_DIR"],
     "projection-emerge-smultixcan-mashr-zscores.pkl",
 ).resolve()
 display(input_filepath)
@@ -144,9 +156,12 @@ emerge_projection.head()
 # ## eMERGE (S-MultiXcan)
 
 # %% tags=[]
-# FIXME: path hardcoded
+# FIXME: in the future, there will be a specific entry in config for the eMERGE directory that should be replaced here
 emerge_smultixcan_zscores_filepath = Path(
-    "/home/miltondp/projects/labs/greenelab/phenoplier/base/data/emerge/gene_assoc/emerge-smultixcan-mashr-zscores.pkl"
+    conf.DATA_DIR,
+    "emerge",
+    "gene_assoc",
+    "emerge-smultixcan-mashr-zscores.pkl",
 ).resolve()
 
 display(emerge_smultixcan_zscores_filepath)
@@ -162,6 +177,9 @@ _tmp.head()
 
 # %% [markdown] tags=[]
 # ## GLS results on PhenomeXcan
+
+# %% [markdown] tags=[]
+# Read results obtained with `30-gls_on_phenotypes.ipynb` (PhenomeXcan)
 
 # %% tags=[]
 input_filepath = conf.RESULTS["GLS"] / "gls_phenotypes.pkl"
@@ -206,7 +224,7 @@ len(well_aligned_lv_codes)
 list(well_aligned_lv_codes)[:5]
 
 # %% [markdown] tags=[]
-# # Select LV from previous GLS run on PhenomeXcan
+# # Select LVs from previous GLS run on PhenomeXcan
 
 # %% tags=[]
 gls_phenomexcan_lvs = gls_phenomexcan["lv"].unique()
@@ -219,6 +237,11 @@ gls_phenomexcan_lvs
 
 # %% [markdown] tags=[]
 # # Select eMERGE traits
+
+# %% [markdown] tags=[]
+# This is an attempt to first get those eMERGE traits that correspond to the same EFO code in PhenomeXcan.
+# However, turns out that we only have a few matchings. That's why I'm taking the top 20 traits from each LVs in addition
+# to these ones.
 
 # %% tags=[]
 gls_phenomexcan_traits = gls_phenomexcan["phenotype"].unique()
@@ -242,9 +265,6 @@ gls_emerge_phecodes = gls_phenomexcan_in_emerge["phecode"].unique().tolist()
 # these are the mapped traits from PhenomeXcan to phecodes
 gls_emerge_phecodes
 
-# %% tags=[]
-# phecode_to_desc_map = emerge_traits_df[["phecode", "phecode_phenotype"]].set_index("phecode").squeeze().to_dict()
-
 # %% [markdown] tags=[]
 # # GLSPhenoplier
 
@@ -254,11 +274,12 @@ gls_emerge_phecodes
 # %% tags=[]
 phenotypes_lvs_pairs = []
 
-# for lvs run for PhenomeXcan, I take the top traits in eMERGE + global mapped phenotypes
+# for each LV that was run on PhenomeXcan, I take the top `N_TOP_TRAITS_FROM_LV` traits
+# in eMERGE + global mapped phenotypes (variable `gls_emerge_phecodes`)
 for lv in gls_phenomexcan_lvs:
     lv_traits = emerge_projection.loc[lv]
     lv_traits = lv_traits[lv_traits > 0.0]
-    lv_traits = lv_traits.sort_values(ascending=False).head(20)
+    lv_traits = lv_traits.sort_values(ascending=False).head(N_TOP_TRAITS_FROM_LV)
 
     for phenotype_code in set(lv_traits.index.tolist() + gls_emerge_phecodes):
         phenotypes_lvs_pairs.append(
@@ -316,6 +337,7 @@ for idx, row in phenotypes_lvs_pairs.iterrows():
         }
     )
 
+    # save results every 10 models trained
     if (idx % 10) == 0:
         pd.DataFrame(results).to_pickle(output_file)
 
