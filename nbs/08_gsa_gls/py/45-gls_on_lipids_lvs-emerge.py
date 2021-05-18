@@ -213,10 +213,10 @@ gls_phenomexcan_lvs.head()
 # %% [markdown] tags=[]
 # # Select traits from previous GLS run on eMERGE
 
-# %%
+# %% tags=[]
 emerge_traits_df["phecode_category"].unique()
 
-# %%
+# %% tags=[]
 gls_traits = emerge_traits_df[
     emerge_traits_df["phecode_category"].isin(
         [
@@ -227,10 +227,10 @@ gls_traits = emerge_traits_df[
     )
 ]["phecode"].unique()
 
-# %%
+# %% tags=[]
 gls_traits.shape
 
-# %%
+# %% tags=[]
 gls_traits
 
 # %% [markdown] tags=[]
@@ -272,7 +272,7 @@ phenotypes_lvs_pairs.head()
 output_file = OUTPUT_DIR / "gls_phenotypes-emerge-crispr_lvs.pkl"
 display(output_file)
 
-# %%
+# %% tags=[]
 results = []
 
 pbar = tqdm(total=phenotypes_lvs_pairs.shape[0])
