@@ -230,6 +230,8 @@ for chr_num in all_chrs:
         assert gene_corrs_flat.max() <= 1.001
 
         # save
+        # FIXME: consider saving only the condenced matrix here. See here for
+        # more details: https://github.com/greenelab/phenoplier/pull/38#discussion_r634600813
         gene_corrs_data = squareform(np.array(gene_corrs, dtype=np.float32))
         np.fill_diagonal(gene_corrs_data, 1.0)
 
