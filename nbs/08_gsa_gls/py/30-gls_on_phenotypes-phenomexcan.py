@@ -63,6 +63,10 @@ display(OUTPUT_DIR)
 
 OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
 
+# %% tags=[]
+OUTPUT_FILENAME = OUTPUT_DIR / "gls_phenotypes-phenomexcan.pkl"
+display(OUTPUT_FILENAME)
+
 # %% [markdown] tags=[]
 # # Load data
 
@@ -259,10 +263,6 @@ phenotypes_lvs_pairs.head()
 # ## Run
 
 # %% tags=[]
-output_file = OUTPUT_DIR / "gls_phenotypes.pkl"
-display(output_file)
-
-# %% tags=[]
 results = []
 
 pbar = tqdm(total=phenotypes_lvs_pairs.shape[0])
@@ -296,7 +296,7 @@ for idx, row in phenotypes_lvs_pairs.iterrows():
 
     # save results every 10 models trained
     if (idx % 10) == 0:
-        pd.DataFrame(results).to_pickle(output_file)
+        pd.DataFrame(results).to_pickle(OUTPUT_FILENAME)
 
     pbar.update(1)
 
@@ -318,6 +318,6 @@ results.sort_values("pvalue").head(10)
 # ## Save
 
 # %% tags=[]
-results.to_pickle(output_file)
+results.to_pickle(OUTPUT_FILENAME)
 
 # %% tags=[]
