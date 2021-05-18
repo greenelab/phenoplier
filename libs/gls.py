@@ -71,11 +71,14 @@ class GLSPhenoplier(object):
         Args:
             smultixcan_result_set_filepath:
                 Filepath where gene-trait associations will be loaded from.
+                We expect to have either gene symbols or Ensembl IDs in the rows
+                to represent the genes. If Ensembl IDs are given, they will be
+                converted to gene symbols.
         Returns:
             A tuple with three matrices in this order: gene correlations,
             gene-trait associations and gene loadings (Z).
         """
-        # load gene correlations
+        # load gene correlations (with gene symbols)
         input_filepath = (
             conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
             / "multiplier_genes-pred_expression_corr_avg-gene_names.pkl"
@@ -97,6 +100,7 @@ class GLSPhenoplier(object):
         lv_weights = pd.read_pickle(input_filepath)
 
         # get common genes and align all three matrices
+        # all common genes IDs will be gene symbols at this point
         common_genes = gene_corrs.index.intersection(
             phenotype_assocs.index
         ).intersection(lv_weights.index)

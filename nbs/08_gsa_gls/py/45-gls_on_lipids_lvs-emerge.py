@@ -15,6 +15,12 @@
 # ---
 
 # %% [markdown] tags=[]
+# # Description
+
+# %% [markdown] tags=[]
+# This notebook is similar to `40` (using LVs that we found to be significantly enriched for the lipids CRISPR analysis), but traits here are from eMERGE.
+
+# %% [markdown] tags=[]
 # # Environment variables
 
 # %% tags=[]
@@ -58,31 +64,6 @@ OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
 # # Load data
 
 # %% [markdown] tags=[]
-# ## PhenomeXcan (S-MultiXcan)
-
-# %% tags=[]
-# INPUT_SUBSET = "z_score_std"
-
-# %% tags=[]
-# INPUT_STEM = "projection-smultixcan-efo_partial-mashr-zscores"
-
-# %% tags=[]
-# input_filepath = Path(
-#     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
-#     INPUT_SUBSET,
-#     f"{INPUT_SUBSET}-{INPUT_STEM}.pkl",
-# ).resolve()
-
-# %% tags=[]
-# data = pd.read_pickle(input_filepath)
-
-# %% tags=[]
-# data.shape
-
-# %% tags=[]
-# data.head()
-
-# %% [markdown] tags=[]
 # ## MultiPLIER summary
 
 # %% tags=[]
@@ -115,9 +96,10 @@ list(well_aligned_lv_codes)[:5]
 # ## eMERGE traits info
 
 # %% tags=[]
-# FIXME: hardcoded
+# FIXME: in the future, there will be a specific entry in config for the eMERGE directory that should be replaced here
 input_filepath = Path(
-    "/home/miltondp/projects/labs/greenelab/phenoplier/base/data/emerge",
+    conf.DATA_DIR,
+    "emerge",
     "eMERGE_III_PMBB_GSA_v2_2020_phecode_AFR_EUR_cc50_counts_w_dictionary.txt",
 ).resolve()
 display(input_filepath)
@@ -148,9 +130,12 @@ emerge_traits_df.head()
 # ## eMERGE (S-MultiXcan)
 
 # %% tags=[]
-# FIXME: path hardcoded
+# FIXME: in the future, there will be a specific entry in config for the eMERGE directory that should be replaced here
 emerge_smultixcan_zscores_filepath = Path(
-    "/home/miltondp/projects/labs/greenelab/phenoplier/base/data/emerge/gene_assoc/emerge-smultixcan-mashr-zscores.pkl"
+    conf.DATA_DIR,
+    "emerge",
+    "gene_assoc",
+    "emerge-smultixcan-mashr-zscores.pkl",
 ).resolve()
 
 display(emerge_smultixcan_zscores_filepath)
@@ -181,23 +166,10 @@ gls_phenomexcan_crispr.shape
 gls_phenomexcan_crispr.head()
 
 # %% [markdown] tags=[]
-# ## GLS results on eMERGE
-
-# %% tags=[]
-# input_filepath = conf.RESULTS["GLS"] / "gls_phenotypes-emerge.pkl"
-# display(input_filepath)
-
-# %% tags=[]
-# gls_emerge = pd.read_pickle(input_filepath)
-
-# %% tags=[]
-# gls_emerge.shape
-
-# %% tags=[]
-# gls_emerge.head()
+# # Select LV from previous GLS run on PhenomeXcan
 
 # %% [markdown] tags=[]
-# # Select LV from previous GLS run on PhenomeXcan
+# This selectes the LVs enriched for the lipids CRISPR anaysis.
 
 # %% tags=[]
 gls_phenomexcan_lvs = (
@@ -211,7 +183,10 @@ gls_phenomexcan_lvs.shape
 gls_phenomexcan_lvs.head()
 
 # %% [markdown] tags=[]
-# # Select traits from previous GLS run on eMERGE
+# # Select relevant traits from eMERGE
+
+# %% [markdown] tags=[]
+# Here we don't have partitions/cluters as with PhenomeXcan. So for this analysis (LVs related to lipids), I select relevant categories of traits from eMERGE (we have a "category" column for this results).
 
 # %% tags=[]
 emerge_traits_df["phecode_category"].unique()
@@ -220,7 +195,6 @@ emerge_traits_df["phecode_category"].unique()
 gls_traits = emerge_traits_df[
     emerge_traits_df["phecode_category"].isin(
         [
-            #     "hematopoietic",
             "circulatory system",
             "endocrine/metabolic",
         ]
@@ -301,6 +275,7 @@ for idx, row in phenotypes_lvs_pairs.iterrows():
         }
     )
 
+    # save results every 10 models trained
     if (idx % 10) == 0:
         pd.DataFrame(results).to_pickle(output_file)
 
