@@ -18,9 +18,9 @@
 # # Description
 
 # %% [markdown] tags=[]
-# This notebook is similar to `30-gls_on_phenotypes...` but for eMERGE S-MultiXcan results instead of PhenomeXcan.
+# This notebook is similar to `30-gls_on_phenotypes-phenomexcan.ipynb` but for eMERGE S-MultiXcan results instead of PhenomeXcan.
 #
-# Since we don't have partition/clusters of eMERGE results, we selected the same set of LVs from the run on PhenomeXcan (`30-gls_on_phenotypes...`); and regarding traits, we take the top 20 traits from each LVs to create a list of trait/LVs pairs to run GLSPhenoplier on.
+# Since we don't have partition/clusters of eMERGE results, we selected the same set of LVs from the run on PhenomeXcan (`30-gls_on_phenotypes-phenomexcan.ipynb`); and regarding traits, we take the top 20 traits from each LVs to create a list of trait/LVs pairs to run GLSPhenoplier on.
 
 # %% [markdown] tags=[]
 # # Environment variables
