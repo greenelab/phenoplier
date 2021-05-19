@@ -13,6 +13,7 @@ dependencies:
   - papermill
   - pip
   - fastparquet
+  - openpyxl
   - pytables
   - pytest
   - python=3.8.*
