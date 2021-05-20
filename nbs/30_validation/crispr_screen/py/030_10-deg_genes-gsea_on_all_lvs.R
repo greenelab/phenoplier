@@ -22,6 +22,7 @@ library(IRdisplay)
 library(readr)
 library(fgsea)
 library(dplyr)
+library(tidyverse)
 library(reticulate)
 
 # %%
@@ -191,7 +192,6 @@ for (lv in names(lvs)) {
     
     for (i in 1:n_reps) {
         rep_res <- fgsea(pathways = deg_gene_sets, stats = lvs[[lv]], scoreType = "pos", eps = 0.0)[order(pval), ]
-        rep_res[, "leadingEdge"] <- sapply(rep_res$leadingEdge, paste, collapse=",")
         rep_res[, "lv"] <- lv
         rep_res[, "rep_idx"] <- i
         
@@ -208,6 +208,9 @@ length(results)
 
 # %%
 df <- do.call(rbind, results)
+
+# %%
+df <- df %>% mutate(leadingEdge = map_chr(leadingEdge, toString))
 
 # %%
 dim(df)
@@ -238,7 +241,7 @@ df %>% filter(lv == "LV100" & pathway == "gene_set_increase") %>% arrange(desc(p
 # ## Show significant LVs
 
 # %%
-df_signif <- df %>% group_by(lv, pathway) %>% summarize(max_padj = max(padj)) %>% filter(max_padj < 0.05)
+df_signif <- df %>% group_by(lv, pathway) %>% summarize(max_padj = max(pval)) %>% filter(max_padj < 0.05)
 
 # %%
 nrow(df_signif)
