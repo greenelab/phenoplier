@@ -175,6 +175,10 @@ for (cidx in 1:ncol(multiplier_z)) {
     lvs[[paste0("LV", cidx)]] <- data[data > q]
 }
 
+# %%
+display(length(lvs))
+stopifnot(length(lvs) == 987)
+
 # %% [markdown]
 # # Compute enrichment on all LVs
 
