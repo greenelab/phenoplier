@@ -28,6 +28,7 @@
 # %autoreload 2
 
 # %% tags=[]
+import pickle
 from pathlib import Path
 
 import numpy as np
@@ -44,12 +45,35 @@ import conf
 
 # %% tags=[]
 EXPERIMENT_NAME = "lv"
-LIPIDS_GENE_SET = "gene_set_increase"
+LIPIDS_GENE_SET = "gene_set_decrease"
 
 # %%
 RANDOM_SEED = 0
 N_PERMUTATIONS = 1000
 N_TOP_TRAITS = 25
+
+# %%
+OUTPUT_DIR = Path(
+    conf.RESULTS["CRISPR_ANALYSES"]["BASE_DIR"],
+    f"{EXPERIMENT_NAME}-{LIPIDS_GENE_SET}",
+    "permutations",
+)
+OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
+display(OUTPUT_DIR)
+
+# %%
+lipids_related_traits = {
+    "celiac disease",
+    "4079_raw-Diastolic_blood_pressure_automated_reading",
+    "6150_100-Vascularheart_problems_diagnosed_by_doctor_None_of_the_above",
+    "I9_UAP-Unstable_angina_pectoris",
+    "6150_4-Vascularheart_problems_diagnosed_by_doctor_High_blood_pressure",
+    "malabsorption syndrome",
+    "K11_COELIAC-Coeliac_disease",
+    "hypertension",
+    "atherosclerosis",
+    "4080_raw-Systolic_blood_pressure_automated_reading",
+}
 
 # %% [markdown] tags=[]
 # # Data loading
@@ -187,11 +211,22 @@ multiplier_model_summary.shape
 multiplier_model_summary.head()
 
 # %% [markdown] tags=[]
+# # Save list of traits
+
+# %%
+output_filepath = OUTPUT_DIR / "lipid_traits_list.pkl"
+display(output_filepath)
+
+# %%
+with open(output_filepath, "wb") as handle:
+    pickle.dump(lipids_related_traits, handle, protocol=pickle.DEFAULT_PROTOCOL)
+
+# %% [markdown] tags=[]
 # # Get gene modules under analysis
 
 # %% tags=[]
 df = deg_enrich[
-    deg_enrich["pathway"].isin(("gene_set_decrease",)) & (deg_enrich["padj"] < 0.05)
+    deg_enrich["pathway"].isin((LIPIDS_GENE_SET,)) & (deg_enrich["padj"] < 0.05)
 ].sort_values("padj", ascending=True)
 
 # %% tags=[]
@@ -221,20 +256,6 @@ multiplier_z[df["lv"].values].apply(lambda x: x[x > 0].shape[0]).describe()
 
 # %%
 from multiplier import MultiplierProjection
-
-# %%
-lipids_related_traits = {
-    "celiac disease",
-    "4079_raw-Diastolic_blood_pressure_automated_reading",
-    "6150_100-Vascularheart_problems_diagnosed_by_doctor_None_of_the_above",
-    "I9_UAP-Unstable_angina_pectoris",
-    "6150_4-Vascularheart_problems_diagnosed_by_doctor_High_blood_pressure",
-    "malabsorption syndrome",
-    "K11_COELIAC-Coeliac_disease",
-    "hypertension",
-    "atherosclerosis",
-    "4080_raw-Systolic_blood_pressure_automated_reading",
-}
 
 # %%
 np.random.seed(RANDOM_SEED)
@@ -280,23 +301,14 @@ for i in tqdm(range(N_PERMUTATIONS)):
     permutation_results.append(lipids_related_traits.intersection(top_traits["trait"]))
 
 # %% [markdown] tags=[]
-# ## Calculate p-value
+# ## Save
 
 # %%
-# in this case we are permisive to compute the p-value, and count cases where at least half of the important traits are among the top
-pval = (
-    sum(
-        [
-            (i / len(lipids_related_traits)) > 0.50
-            for i in list(map(len, permutation_results))
-        ]
-    )
-    + 1
-) / (len(permutation_results) + 1)
-display(pval)
+output_filepath = OUTPUT_DIR / "permutation_results.pkl"
+display(output_filepath)
 
 # %%
-# what we claim in the manuscript
-assert pval < 0.001
+with open(output_filepath, "wb") as handle:
+    pickle.dump(permutation_results, handle, protocol=pickle.DEFAULT_PROTOCOL)
 
 # %%
