@@ -42,7 +42,7 @@ import conf
 # %% [markdown] tags=[]
 # # Settings
 
-# %%
+# %% tags=[]
 FGSEA_INPUT_FILEPATH = Path(
     conf.RESULTS["CRISPR_ANALYSES"]["BASE_DIR"], "fgsea-all_lvs.tsv"
 ).resolve()
@@ -65,7 +65,7 @@ deg_enrich.shape
 # %% tags=[]
 deg_enrich.head()
 
-# %%
+# %% tags=[]
 deg_enrich = deg_enrich.dropna()
 
 # %% tags=[]
@@ -92,19 +92,19 @@ display(deg_enrich.head())
 # %% [markdown] tags=[]
 # # Adjust p-values
 
-# %%
+# %% tags=[]
 adj_pvals = multipletests(deg_enrich["pval"], alpha=0.05, method="fdr_bh")
 
-# %%
+# %% tags=[]
 adj_pvals
 
-# %%
+# %% tags=[]
 np.sum(adj_pvals[0])
 
-# %%
+# %% tags=[]
 deg_enrich = deg_enrich.assign(padj=adj_pvals[1])
 
-# %%
+# %% tags=[]
 deg_enrich.head()
 
 # %% [markdown] tags=[]
@@ -129,4 +129,4 @@ deg_enrich.to_csv(
     sep="\t",
 )
 
-# %%
+# %% tags=[]
