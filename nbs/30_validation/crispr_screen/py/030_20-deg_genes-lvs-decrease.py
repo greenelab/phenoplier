@@ -143,7 +143,7 @@ for lv in important_lvs:
 
     _tmp = phenomexcan_data[lv]
     _tmp = _tmp[_tmp > 0.0].sort_values(ascending=False)
-    
+
     traits.append(_tmp)
 
 # %% [markdown] tags=[]
