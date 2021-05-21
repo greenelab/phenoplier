@@ -47,12 +47,12 @@ import conf
 EXPERIMENT_NAME = "lv"
 LIPIDS_GENE_SET = "gene_set_decrease"
 
-# %%
+# %% tags=[]
 RANDOM_SEED = 0
 N_PERMUTATIONS = 1000
 N_TOP_TRAITS = 25
 
-# %%
+# %% tags=[]
 OUTPUT_DIR = Path(
     conf.RESULTS["CRISPR_ANALYSES"]["BASE_DIR"],
     f"{EXPERIMENT_NAME}-{LIPIDS_GENE_SET}",
@@ -67,32 +67,32 @@ display(OUTPUT_DIR)
 # %% [markdown] tags=[]
 # ## Traits list
 
-# %%
+# %% tags=[]
 input_filepath = OUTPUT_DIR / "lipid_traits_list.pkl"
 display(input_filepath)
 
-# %%
+# %% tags=[]
 with open(input_filepath, "rb") as handle:
     lipids_related_traits = pickle.load(handle)
 
-# %%
+# %% tags=[]
 lipids_related_traits
 
 # %% [markdown] tags=[]
 # ## Permutations
 
-# %%
+# %% tags=[]
 input_filepath = OUTPUT_DIR / "permutation_results.pkl"
 display(input_filepath)
 
-# %%
+# %% tags=[]
 with open(input_filepath, "rb") as handle:
     permutation_results = pickle.load(handle)
 
-# %%
+# %% tags=[]
 df = pd.Series([x for l in permutation_results for x in l])
 
-# %%
+# %% tags=[]
 with pd.option_context(
     "display.max_rows", None, "display.max_columns", None, "max_colwidth", None
 ):
@@ -101,7 +101,7 @@ with pd.option_context(
 # %% [markdown] tags=[]
 # # p-value
 
-# %%
+# %% tags=[]
 # in this case we are permisive to compute the p-value, and count cases where at least half of the important traits are among the top
 pval = (
     sum(
@@ -115,5 +115,5 @@ pval = (
 
 display(pval)
 
-# %%
+# %% tags=[]
 assert pval < 0.05
