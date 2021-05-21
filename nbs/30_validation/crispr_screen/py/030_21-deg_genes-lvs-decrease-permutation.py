@@ -47,12 +47,12 @@ import conf
 EXPERIMENT_NAME = "lv"
 LIPIDS_GENE_SET = "gene_set_decrease"
 
-# %%
+# %% tags=[]
 RANDOM_SEED = 0
 N_PERMUTATIONS = 1000
 N_TOP_TRAITS = 25
 
-# %%
+# %% tags=[]
 OUTPUT_DIR = Path(
     conf.RESULTS["CRISPR_ANALYSES"]["BASE_DIR"],
     f"{EXPERIMENT_NAME}-{LIPIDS_GENE_SET}",
@@ -61,7 +61,7 @@ OUTPUT_DIR = Path(
 OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
 display(OUTPUT_DIR)
 
-# %%
+# %% tags=[]
 lipids_related_traits = {
     "celiac disease",
     "4079_raw-Diastolic_blood_pressure_automated_reading",
@@ -155,13 +155,13 @@ smultixcan_results.head()
 # %% [markdown] tags=[]
 # ## MultiPLIER Z matrix
 
-# %%
+# %% tags=[]
 multiplier_z = pd.read_pickle(conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"])
 
-# %%
+# %% tags=[]
 multiplier_z.shape
 
-# %%
+# %% tags=[]
 multiplier_z.head()
 
 # %% [markdown] tags=[]
@@ -213,11 +213,11 @@ multiplier_model_summary.head()
 # %% [markdown] tags=[]
 # # Save list of traits
 
-# %%
+# %% tags=[]
 output_filepath = OUTPUT_DIR / "lipid_traits_list.pkl"
 display(output_filepath)
 
-# %%
+# %% tags=[]
 with open(output_filepath, "wb") as handle:
     pickle.dump(lipids_related_traits, handle, protocol=pickle.DEFAULT_PROTOCOL)
 
@@ -232,7 +232,7 @@ df = deg_enrich[
 # %% tags=[]
 df.shape
 
-# %%
+# %% tags=[]
 df.head()
 
 # %% tags=[]
@@ -245,19 +245,19 @@ assert important_lvs.shape[0] == 24
 # %% tags=[]
 important_lvs
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # How many genes with nonzero weight on average in these modules?
 
-# %%
+# %% tags=[]
 multiplier_z[df["lv"].values].apply(lambda x: x[x > 0].shape[0]).describe()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # How likely is to get relevant traits at the top of these 24 modules?
 
-# %%
+# %% tags=[]
 from multiplier import MultiplierProjection
 
-# %%
+# %% tags=[]
 np.random.seed(RANDOM_SEED)
 
 # %% tags=[]
@@ -303,12 +303,12 @@ for i in tqdm(range(N_PERMUTATIONS)):
 # %% [markdown] tags=[]
 # ## Save
 
-# %%
+# %% tags=[]
 output_filepath = OUTPUT_DIR / "permutation_results.pkl"
 display(output_filepath)
 
-# %%
+# %% tags=[]
 with open(output_filepath, "wb") as handle:
     pickle.dump(permutation_results, handle, protocol=pickle.DEFAULT_PROTOCOL)
 
-# %%
+# %% tags=[]
