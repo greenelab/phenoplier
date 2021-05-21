@@ -116,4 +116,4 @@ pval = (
 display(pval)
 
 # %% tags=[]
-assert pval < 0.05
+assert pval < 0.01
