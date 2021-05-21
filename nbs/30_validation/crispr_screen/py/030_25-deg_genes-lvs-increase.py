@@ -88,14 +88,6 @@ deg_enrich.shape
 # %% tags=[]
 deg_enrich.head()
 
-# %% tags=[]
-deg_enrich_max_idx = deg_enrich.groupby(["lv", "pathway"])["padj"].idxmax()
-
-# %% tags=[]
-deg_enrich = deg_enrich.loc[deg_enrich_max_idx].reset_index(drop=True)
-display(deg_enrich.shape)
-display(deg_enrich.head())
-
 # %% [markdown] tags=[]
 # ## MultiPLIER summary
 
@@ -120,7 +112,7 @@ df = deg_enrich[
 df.shape
 
 # %% tags=[]
-df
+df.head()
 
 # %% tags=[]
 important_lvs = df["lv"].unique()
@@ -152,7 +144,6 @@ for lv in important_lvs:
     _tmp = phenomexcan_data[lv]
     _tmp = _tmp[_tmp > 0.0].sort_values(ascending=False)
 
-    #     _tmp = _tmp.head(50)
     traits.append(_tmp)
 
 # %% [markdown] tags=[]
