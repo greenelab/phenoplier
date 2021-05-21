@@ -169,10 +169,8 @@ z_gene_names <- rownames(multiplier_z)
 for (cidx in 1:ncol(multiplier_z)) {
     data <- multiplier_z[, cidx]
     names(data) <- z_gene_names
-    # q <- quantile(data, 0.75, names=FALSE)
-    q <- 0.0
     
-    lvs[[paste0("LV", cidx)]] <- data[data > q]
+    lvs[[paste0("LV", cidx)]] <- data[data > 0.0]
 }
 
 # %% tags=[]
@@ -245,7 +243,7 @@ df %>% filter(lv == "LV100" & pathway == "gene_set_increase") %>% arrange(desc(p
 # ## Show significant LVs
 
 # %% tags=[]
-df_signif <- df %>% group_by(lv, pathway) %>% summarize(max_pval = max(pval)) %>% filter(max_pval < 0.05)
+df_signif <- df %>% group_by(lv, pathway) %>% summarize(max_padj = max(padj)) %>% filter(max_padj < 0.05)
 
 # %% tags=[]
 nrow(df_signif)
@@ -254,6 +252,6 @@ nrow(df_signif)
 stopifnot(nrow(df_signif) > 50)
 
 # %% tags=[]
-df_signif %>% arrange(max_pval)
+df_signif %>% arrange(max_padj)
 
 # %% tags=[]
