@@ -44,8 +44,7 @@ import conf
 
 # %%
 FGSEA_INPUT_FILEPATH = Path(
-    conf.RESULTS["CRISPR_ANALYSES"]["BASE_DIR"],
-    "fgsea-all_lvs.tsv"
+    conf.RESULTS["CRISPR_ANALYSES"]["BASE_DIR"], "fgsea-all_lvs.tsv"
 ).resolve()
 
 # %% [markdown] tags=[]
@@ -70,7 +69,7 @@ deg_enrich.head()
 deg_enrich = deg_enrich.dropna()
 
 # %% tags=[]
-# for each lv/pathway pair we ran fgsea 10 times; here take the maximum pvalue (least significant) for those runs
+# for each lv/pathway pair we ran fgsea 10 times; here take the maximum pvalue (least significant) among those runs
 deg_enrich_max_idx = deg_enrich.groupby(["lv", "pathway"])["pval"].idxmax()
 
 # %% tags=[]
@@ -112,9 +111,7 @@ deg_enrich.head()
 # # Analysis
 
 # %% tags=[]
-df = deg_enrich[
-    (deg_enrich["padj"] < 0.05)
-].sort_values("padj", ascending=True)
+df = deg_enrich[(deg_enrich["padj"] < 0.05)].sort_values("padj", ascending=True)
 
 # %% tags=[]
 df.shape
@@ -125,14 +122,11 @@ df.sort_values("pval")
 # %% [markdown] tags=[]
 # # Save
 
-# %%
-output_filepath = Path(
-    FGSEA_INPUT_FILEPATH.parent,
-    FGSEA_INPUT_FILEPATH.stem + "-pval_adjusted.tsv",
-).resolve()
-display(output_filepath)
-
 # %% tags=[]
-deg_enrich.to_csv(output_filepath, sep="\t",)
+# override the original file with adjusted p-values
+deg_enrich.to_csv(
+    FGSEA_INPUT_FILEPATH,
+    sep="\t",
+)
 
 # %%
