@@ -37,7 +37,6 @@ from tqdm import tqdm
 
 from entity import Trait, Gene
 
-# from data.cache import read_data
 import conf
 
 # %% [markdown] tags=[]
@@ -175,14 +174,6 @@ deg_enrich.shape
 # %% tags=[]
 deg_enrich.head()
 
-# %% tags=[]
-deg_enrich_max_idx = deg_enrich.groupby(["lv", "pathway"])["padj"].idxmax()
-
-# %% tags=[]
-deg_enrich = deg_enrich.loc[deg_enrich_max_idx].reset_index(drop=True)
-display(deg_enrich.shape)
-display(deg_enrich.head())
-
 # %% [markdown] tags=[]
 # ## MultiPLIER summary
 
@@ -307,8 +298,5 @@ display(pval)
 # %%
 # what we claim in the manuscript
 assert pval < 0.001
-
-# %%
-# permutation_results
 
 # %%
