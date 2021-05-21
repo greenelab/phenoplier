@@ -57,7 +57,7 @@ FGSEA_INPUT_FILEPATH = Path(
 deg_enrich = pd.read_csv(
     FGSEA_INPUT_FILEPATH,
     sep="\t",
-).drop(columns=["padj"])
+)
 
 # %% tags=[]
 deg_enrich.shape
@@ -102,7 +102,7 @@ adj_pvals
 np.sum(adj_pvals[0])
 
 # %% tags=[]
-deg_enrich = deg_enrich.assign(padj=adj_pvals[1])
+deg_enrich = deg_enrich.assign(fdr=adj_pvals[1])
 
 # %% tags=[]
 deg_enrich.head()
@@ -111,13 +111,13 @@ deg_enrich.head()
 # # Analysis
 
 # %% tags=[]
-df = deg_enrich[(deg_enrich["padj"] < 0.05)].sort_values("padj", ascending=True)
+df = deg_enrich[(deg_enrich["fdr"] < 0.05)].sort_values("fdr", ascending=True)
 
 # %% tags=[]
 df.shape
 
 # %% tags=[]
-df.sort_values("pval")
+df.sort_values("fdr")
 
 # %% [markdown] tags=[]
 # # Save
@@ -127,6 +127,7 @@ df.sort_values("pval")
 deg_enrich.to_csv(
     FGSEA_INPUT_FILEPATH,
     sep="\t",
+    index=False,
 )
 
 # %% tags=[]
