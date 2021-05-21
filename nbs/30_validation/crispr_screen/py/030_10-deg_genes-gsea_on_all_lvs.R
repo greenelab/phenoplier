@@ -245,7 +245,7 @@ df %>% filter(lv == "LV100" & pathway == "gene_set_increase") %>% arrange(desc(p
 # ## Show significant LVs
 
 # %%
-df_signif <- df %>% group_by(lv, pathway) %>% summarize(max_padj = max(pval)) %>% filter(max_padj < 0.05)
+df_signif <- df %>% group_by(lv, pathway) %>% summarize(max_pval = max(pval)) %>% filter(max_pval < 0.05)
 
 # %%
 nrow(df_signif)
@@ -254,6 +254,6 @@ nrow(df_signif)
 stopifnot(nrow(df_signif) > 50)
 
 # %%
-df_signif %>% arrange(max_padj)
+df_signif %>% arrange(max_pval)
 
 # %%
