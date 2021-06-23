@@ -7,7 +7,7 @@ HDF5_FILE_PATTERN = re.compile(r"spredixcan-(?P<tissue>.+)-zscore\.h5")
 HDF5_KEY_NO_PATTERN = re.compile(r"[^0-9a-zA-Z_]")
 
 
-def simplify_trait_fullcode(trait_full_code: str) -> str:
+def simplify_trait_fullcode(trait_full_code: str, prefix: str = "c") -> str:
     """
     Simplifies a phenotype's full code for HDF5.
 
@@ -15,10 +15,11 @@ def simplify_trait_fullcode(trait_full_code: str) -> str:
 
     Args:
         trait_full_code: The full code of a PhenomeXcan's trait
+        prefix: COMPLETE
 
     Returns:
          A new version of the trait's full code only with allowed characters
          for a key in a HDF5 file.
     """
     clean_col = re.sub(HDF5_KEY_NO_PATTERN, "_", trait_full_code)
-    return "c" + clean_col
+    return prefix + clean_col
