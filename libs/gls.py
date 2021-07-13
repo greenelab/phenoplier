@@ -165,8 +165,7 @@ class GLSPhenoplier(object):
         gls_results.pvalues_onesided = gls_results.pvalues.copy()
         idx = gls_results.pvalues_onesided.index.tolist()
         gls_results.pvalues_onesided.loc[idx] = stats.t.sf(
-            gls_results.tvalues.loc[idx],
-            gls_results.df_resid
+            gls_results.tvalues.loc[idx], gls_results.df_resid
         )
 
         # save results
