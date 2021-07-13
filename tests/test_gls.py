@@ -6,7 +6,59 @@ branch, and those will be moved here in the future.
 
 This is reported in this issue: https://github.com/greenelab/phenoplier/issues/40
 """
-import pytest
+from scipy import stats
+
+from gls import GLSPhenoplier
+
+
+def test_one_sided_pvalue_coef_positive():
+    model = GLSPhenoplier()
+    model.fit_named("LV603", "neutrophil count")
+
+    df = model.results.df_resid
+
+    # one-sided pvalue
+    exp_pval_twosided = stats.t.sf(model.results.tvalues.loc["lv"], df) * 2.0
+    exp_pval_onesided = stats.t.sf(model.results.tvalues.loc["lv"], df)
+
+    # two-sided pvalue
+    obs_pval_twosided = model.results.pvalues.loc["lv"]
+
+    assert obs_pval_twosided is not None
+    assert obs_pval_twosided > 0.0
+    assert obs_pval_twosided < 1e-6
+    assert obs_pval_twosided == exp_pval_twosided == exp_pval_onesided * 2.0
+
+    # one-sided pvalue
+    obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+
+    assert obs_pval_onesided is not None
+    assert obs_pval_onesided > 0.0
+    assert obs_pval_onesided < 1e-6
+    assert obs_pval_onesided == exp_pval_onesided == exp_pval_twosided / 2.0
+
+
+def test_one_sided_pvalue_coef_negative():
+    model = GLSPhenoplier()
+    model.fit_named("LV270", "20459-General_happiness_with_own_health")
+
+    df = model.results.df_resid
+
+    # two-sided pvalue
+    obs_pval_twosided = model.results.pvalues.loc["lv"]
+
+    assert obs_pval_twosided is not None
+    assert obs_pval_twosided > 0.0
+    assert obs_pval_twosided < 1e-2
+
+    # one-sided
+    exp_pval_onesided = stats.t.sf(model.results.tvalues.loc["lv"], df)
+    obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+
+    assert obs_pval_onesided is not None
+    assert obs_pval_onesided > 0.99
+    assert obs_pval_onesided < 1.0
+    assert obs_pval_onesided == exp_pval_onesided
 
 
 def test_gls_no_correlation_structure():

@@ -1,6 +1,7 @@
 from functools import lru_cache
 
 import pandas as pd
+from scipy import stats
 import statsmodels.api as sm
 from sklearn.preprocessing import scale
 
@@ -159,6 +160,14 @@ class GLSPhenoplier(object):
         # create GLS model and fit
         gls_model = sm.GLS(data["phenotype"], data[["i", "lv"]], sigma=gene_corrs)
         gls_results = gls_model.fit()
+
+        # add one-sided pvalue
+        gls_results.pvalues_onesided = gls_results.pvalues.copy()
+        idx = gls_results.pvalues_onesided.index.tolist()
+        gls_results.pvalues_onesided.loc[idx] = stats.t.sf(
+            gls_results.tvalues.loc[idx],
+            gls_results.df_resid
+        )
 
         # save results
         self.lv_code = lv_code
