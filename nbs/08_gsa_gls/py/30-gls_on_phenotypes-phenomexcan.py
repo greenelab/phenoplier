@@ -291,7 +291,8 @@ for idx, row in phenotypes_lvs_pairs.iterrows():
             "lv": lv_code,
             "lv_with_pathway": lv_code in well_aligned_lv_codes,
             "coef": res.params.loc["lv"],
-            "pvalue": res.pvalues.loc["lv"],
+            "pvalue": res.pvalues_onesided.loc["lv"],
+            "pvalue_twosided": res.pvalues.loc["lv"],
             "summary": gls_model.results_summary,
         }
     )
