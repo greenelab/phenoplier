@@ -180,7 +180,9 @@ PHENOTYPES_LVS_CONFIG = {
     # hapiness
     (29, 27): [],
     # asthma
-    (29, 12): [],
+    # (29, 12): [],
+    # neutrophils
+    (29, 9): [],
 }
 
 # %% tags=[]
