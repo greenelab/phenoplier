@@ -186,7 +186,7 @@ _tmp.head()
 # Read results obtained with `30-gls_on_phenotypes.ipynb` (PhenomeXcan)
 
 # %% tags=[]
-input_filepath = conf.RESULTS["GLS"] / "gls_phenotypes.pkl"
+input_filepath = conf.RESULTS["GLS"] / "gls_phenotypes-phenomexcan.pkl"
 display(input_filepath)
 
 # %% tags=[]

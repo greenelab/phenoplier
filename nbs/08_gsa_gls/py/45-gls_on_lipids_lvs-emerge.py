@@ -157,7 +157,7 @@ _tmp.head()
 # ## GLS results on PhenomeXcan
 
 # %% tags=[]
-input_filepath = conf.RESULTS["GLS"] / "gls_phenotypes-crispr_lvs.pkl"
+input_filepath = conf.RESULTS["GLS"] / "gls_phenotypes-crispr_lvs-phenomexcan.pkl"
 display(input_filepath)
 
 # %% tags=[]
