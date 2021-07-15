@@ -59,7 +59,7 @@ from gls import GLSPhenoplier
 # %% [markdown] tags=[]
 # # Settings
 
-# %%
+# %% tags=[]
 N_TOP_TRAITS_FROM_LV = 20
 
 # %% tags=[]

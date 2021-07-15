@@ -64,22 +64,22 @@ display(OUTPUT_DIR)
 
 assert OUTPUT_DIR.exists()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Get results files
 
-# %%
+# %% tags=[]
 INPUT_FILES_PER_COHORT = {
     "phenomexcan": list(OUTPUT_DIR.glob("gls_phenotypes*phenomexcan*.pkl")),
     "emerge": list(OUTPUT_DIR.glob("gls_phenotypes*emerge*.pkl")),
 }
 
-# %%
+# %% tags=[]
 display(INPUT_FILES_PER_COHORT)
 
 # %% [markdown] tags=[]
 # # Combine by cohort
 
-# %%
+# %% tags=[]
 for cohort, result_files in INPUT_FILES_PER_COHORT.items():
     display(cohort)
 
