@@ -101,7 +101,7 @@ adj_pvals
 # %% tags=[]
 np.sum(adj_pvals[0])
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # There are no significant LVs after correcting for multiple-testing
 
 # %% tags=[]
