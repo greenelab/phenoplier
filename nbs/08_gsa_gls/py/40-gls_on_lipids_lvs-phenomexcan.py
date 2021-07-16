@@ -154,7 +154,7 @@ deg_enrich = pd.read_csv(
     Path(
         conf.RESULTS["BASE_DIR"],
         "crispr_analyses",
-        "fgsea-all_lvs.tsv",
+        "fgsea-hi_conf-all_lvs.tsv",
     ).resolve(),
     sep="\t",
 )
@@ -166,20 +166,20 @@ deg_enrich.shape
 deg_enrich.head()
 
 # %% tags=[]
-deg_enrich_max_idx = deg_enrich.groupby(["lv", "pathway"])["padj"].idxmax()
+# deg_enrich_max_idx = deg_enrich.groupby(["lv", "pathway"])["pval"].idxmax()
 
 # %% tags=[]
-deg_enrich = deg_enrich.loc[deg_enrich_max_idx].reset_index(drop=True)
-display(deg_enrich.shape)
-display(deg_enrich.head())
+# deg_enrich = deg_enrich.loc[deg_enrich_max_idx].reset_index(drop=True)
+# display(deg_enrich.shape)
+# display(deg_enrich.head())
 
 # %% [markdown] tags=[]
 # ## Lipids-increasing gene sets
 
 # %% tags=[]
 deg_increase = deg_enrich[
-    deg_enrich["pathway"].isin(("gene_set_increase",)) & (deg_enrich["padj"] < 0.05)
-].sort_values("padj", ascending=True)
+    deg_enrich["pathway"].isin(("gene_set_increase",)) & (deg_enrich["pval"] < 0.01)
+].sort_values("pval", ascending=True)
 
 # %% tags=[]
 deg_increase.shape
@@ -201,8 +201,8 @@ lvs_increase
 
 # %% tags=[]
 deg_decrease = deg_enrich[
-    deg_enrich["pathway"].isin(("gene_set_decrease",)) & (deg_enrich["padj"] < 0.05)
-].sort_values("padj", ascending=True)
+    deg_enrich["pathway"].isin(("gene_set_decrease",)) & (deg_enrich["pval"] < 0.01)
+].sort_values("pval", ascending=True)
 
 # %% tags=[]
 deg_decrease.shape
