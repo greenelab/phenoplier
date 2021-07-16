@@ -201,6 +201,8 @@ gls_traits = emerge_traits_df[
         [
             "circulatory system",
             "endocrine/metabolic",
+            "neurological",
+            "mental disorders",
         ]
     )
 ]["phecode"].unique()
