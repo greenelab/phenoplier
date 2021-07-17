@@ -268,7 +268,7 @@ phenotypes_lvs_pairs = []
 for idx, row in gls_selected_lvs.iterrows():
     lv_name = row["lv"]
     lv_set = row["lv_set"]
-    
+
     lv_traits = phenomexcan_projection.loc[lv_name]
     lv_traits = lv_traits[lv_traits > 0.0]
     lv_traits = lv_traits.sort_values(ascending=False).head(N_TOP_TRAITS_FROM_LV)
