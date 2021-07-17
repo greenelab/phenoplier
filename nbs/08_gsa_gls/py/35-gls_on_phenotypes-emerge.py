@@ -243,31 +243,31 @@ gls_phenomexcan_lvs
 # # Select eMERGE traits
 
 # %% [markdown] tags=[]
-# This is an attempt to first get those eMERGE traits that correspond to the same EFO code in PhenomeXcan.
+# ~This is an attempt to first get those eMERGE traits that correspond to the same EFO code in PhenomeXcan.
 # However, turns out that we only have a few matchings. That's why I'm taking the top 20 traits from each LVs in addition
-# to these ones.
+# to these ones.~
 
 # %% tags=[]
-gls_phenomexcan_traits = gls_phenomexcan["phenotype"].unique()
+# gls_phenomexcan_traits = gls_phenomexcan["phenotype"].unique()
 
 # %% tags=[]
-gls_phenomexcan_traits.shape
+# gls_phenomexcan_traits.shape
 
 # %% tags=[]
-gls_phenomexcan_in_emerge = emerge_phenomexcan_maps[
-    (emerge_phenomexcan_maps["efo"].isin(gls_phenomexcan_traits))
-    | (emerge_phenomexcan_maps["phenomexcan"].isin(gls_phenomexcan_traits))
-]
+# gls_phenomexcan_in_emerge = emerge_phenomexcan_maps[
+#     (emerge_phenomexcan_maps["efo"].isin(gls_phenomexcan_traits))
+#     | (emerge_phenomexcan_maps["phenomexcan"].isin(gls_phenomexcan_traits))
+# ]
 
 # %% tags=[]
-gls_phenomexcan_in_emerge
+# gls_phenomexcan_in_emerge
 
 # %% tags=[]
-gls_emerge_phecodes = gls_phenomexcan_in_emerge["phecode"].unique().tolist()
+# gls_emerge_phecodes = gls_phenomexcan_in_emerge["phecode"].unique().tolist()
 
 # %% tags=[]
 # these are the mapped traits from PhenomeXcan to phecodes
-gls_emerge_phecodes
+# gls_emerge_phecodes
 
 # %% [markdown] tags=[]
 # # GLSPhenoplier
@@ -279,13 +279,14 @@ gls_emerge_phecodes
 phenotypes_lvs_pairs = []
 
 # for each LV that was run on PhenomeXcan, I take the top `N_TOP_TRAITS_FROM_LV` traits
-# in eMERGE + global mapped phenotypes (variable `gls_emerge_phecodes`)
+# in eMERGE
+# ~~~+ global mapped phenotypes (variable `gls_emerge_phecodes`)~~~
 for lv in gls_phenomexcan_lvs:
     lv_traits = emerge_projection.loc[lv]
     lv_traits = lv_traits[lv_traits > 0.0]
     lv_traits = lv_traits.sort_values(ascending=False).head(N_TOP_TRAITS_FROM_LV)
 
-    for phenotype_code in set(lv_traits.index.tolist() + gls_emerge_phecodes):
+    for phenotype_code in set(lv_traits.index.tolist()): # + gls_emerge_phecodes):
         phenotypes_lvs_pairs.append(
             {
                 "phenotype": phenotype_code,
