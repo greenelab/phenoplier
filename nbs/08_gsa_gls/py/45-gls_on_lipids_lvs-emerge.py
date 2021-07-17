@@ -55,6 +55,9 @@ from gls import GLSPhenoplier
 # # Settings
 
 # %% tags=[]
+N_TOP_TRAITS_FROM_LV = 20
+
+# %% tags=[]
 OUTPUT_DIR = conf.RESULTS["GLS"]
 display(OUTPUT_DIR)
 
@@ -130,10 +133,10 @@ emerge_traits_df.shape
 # %% tags=[]
 emerge_traits_df.head()
 
-# %% [markdown] tags=[]
+# %% [markdown]
 # ## eMERGE (S-MultiXcan)
 
-# %% tags=[]
+# %%
 # FIXME: in the future, there will be a specific entry in config for the eMERGE directory that should be replaced here
 emerge_smultixcan_zscores_filepath = Path(
     conf.DATA_DIR,
@@ -144,14 +147,33 @@ emerge_smultixcan_zscores_filepath = Path(
 
 display(emerge_smultixcan_zscores_filepath)
 
-# %% tags=[]
+# %%
 _tmp = pd.read_pickle(emerge_smultixcan_zscores_filepath)
 
-# %% tags=[]
+# %%
 _tmp.shape
 
-# %% tags=[]
+# %%
 _tmp.head()
+
+# %% [markdown] tags=[]
+# ## eMERGE (S-MultiXcan) projection
+
+# %% tags=[]
+input_filepath = Path(
+    conf.RESULTS["PROJECTIONS_DIR"],
+    "projection-emerge-smultixcan-mashr-zscores.pkl",
+).resolve()
+display(input_filepath)
+
+# %% tags=[]
+emerge_projection = pd.read_pickle(input_filepath)
+
+# %% tags=[]
+emerge_projection.shape
+
+# %% tags=[]
+emerge_projection.head()
 
 # %% [markdown] tags=[]
 # ## GLS results on PhenomeXcan
@@ -190,28 +212,28 @@ gls_phenomexcan_lvs.head()
 # # Select relevant traits from eMERGE
 
 # %% [markdown] tags=[]
-# Here we don't have partitions/cluters as with PhenomeXcan. So for this analysis (LVs related to lipids), I select relevant categories of traits from eMERGE (we have a "category" column for this results).
+# ~Here we don't have partitions/cluters as with PhenomeXcan. So for this analysis (LVs related to lipids), I select relevant categories of traits from eMERGE (we have a "category" column for this results).~
 
 # %% tags=[]
-emerge_traits_df["phecode_category"].unique()
+# emerge_traits_df["phecode_category"].unique()
 
 # %% tags=[]
-gls_traits = emerge_traits_df[
-    emerge_traits_df["phecode_category"].isin(
-        [
-            "circulatory system",
-            "endocrine/metabolic",
-            "neurological",
-            "mental disorders",
-        ]
-    )
-]["phecode"].unique()
+# gls_traits = emerge_traits_df[
+#     emerge_traits_df["phecode_category"].isin(
+#         [
+#             "circulatory system",
+#             "endocrine/metabolic",
+#             "neurological",
+#             "mental disorders",
+#         ]
+#     )
+# ]["phecode"].unique()
 
 # %% tags=[]
-gls_traits.shape
+# gls_traits.shape
 
 # %% tags=[]
-gls_traits
+# gls_traits
 
 # %% [markdown] tags=[]
 # # GLSPhenoplier
@@ -222,13 +244,21 @@ gls_traits
 # %% tags=[]
 phenotypes_lvs_pairs = []
 
-for idx, lv_row in gls_phenomexcan_lvs.iterrows():
-    for phenotype_code in gls_traits:
+# for each LV, I take the top `N_TOP_TRAITS_FROM_LV` traits in eMERGE
+for idx, row in gls_phenomexcan_lvs.iterrows():
+    lv_name = row["lv"]
+    lv_set = row["lv_set"]
+    
+    lv_traits = emerge_projection.loc[lv_name]
+    lv_traits = lv_traits[lv_traits > 0.0]
+    lv_traits = lv_traits.sort_values(ascending=False).head(N_TOP_TRAITS_FROM_LV)
+
+    for phenotype_code in set(lv_traits.index.tolist()):
         phenotypes_lvs_pairs.append(
             {
                 "phenotype": phenotype_code,
-                "lv": lv_row["lv"],
-                "lv_set": lv_row["lv_set"],
+                "lv": lv_name,
+                "lv_set": row["lv_set"],
             }
         )
 
