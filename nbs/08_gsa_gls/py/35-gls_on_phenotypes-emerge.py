@@ -286,7 +286,7 @@ for lv in gls_phenomexcan_lvs:
     lv_traits = lv_traits[lv_traits > 0.0]
     lv_traits = lv_traits.sort_values(ascending=False).head(N_TOP_TRAITS_FROM_LV)
 
-    for phenotype_code in set(lv_traits.index.tolist()): # + gls_emerge_phecodes):
+    for phenotype_code in set(lv_traits.index.tolist()):  # + gls_emerge_phecodes):
         phenotypes_lvs_pairs.append(
             {
                 "phenotype": phenotype_code,
