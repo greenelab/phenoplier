@@ -130,7 +130,9 @@ multiplier_model_summary.head()
 
 # %% tags=[]
 well_aligned_lvs = multiplier_model_summary[
-    (multiplier_model_summary["FDR"] < 0.05) | (multiplier_model_summary["AUC"] >= 0.75)
+    (
+        multiplier_model_summary["FDR"] < 0.05
+    )  # & (multiplier_model_summary["AUC"] >= 0.75)
 ]
 
 display(well_aligned_lvs.shape)
@@ -172,6 +174,17 @@ deg_enrich.head()
 # deg_enrich = deg_enrich.loc[deg_enrich_max_idx].reset_index(drop=True)
 # display(deg_enrich.shape)
 # display(deg_enrich.head())
+
+# %%
+deg_enrich = deg_enrich.assign(
+    lv_aligned=deg_enrich["lv"].apply(lambda x: x in well_aligned_lv_codes)
+)
+
+# %%
+deg_enrich = deg_enrich[(deg_enrich["lv_aligned"])]
+
+# %%
+deg_enrich.shape
 
 # %% [markdown] tags=[]
 # ## Lipids-increasing gene sets
@@ -237,7 +250,7 @@ gls_selected_lvs.shape
 gls_selected_lvs.head()
 
 # %% [markdown] tags=[]
-# # Select traits from specific partition/cluster
+# # Select traits from main clusters
 
 # %% [markdown] tags=[]
 # For this run on the LVs related to the lipids CRISPR analysis, I'm only interested in the main clusters of the cardiovascular sub-branch.
