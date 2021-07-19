@@ -228,46 +228,45 @@ len(well_aligned_lv_codes)
 list(well_aligned_lv_codes)[:5]
 
 # %% [markdown] tags=[]
-# # Select LVs from previous GLS run on PhenomeXcan
+# # Select LVs
 
 # %% tags=[]
-gls_phenomexcan_lvs = gls_phenomexcan["lv"].unique()
+gls_phenomexcan_lvs = [
+    # from crispr analysis
+    "LV246",
+    "LV607",
+    "LV74",
+    "LV865",
+    "LV612",
+    "LV838",
+    # drug-disease prediction
+    "LV116",
+    "LV931",
+    "LV66",
+    # cluster analysis
+    "LV928",
+    "LV30",
+    "LV730",
+    "LV598",
+    "LV155",
+    "LV844",
+    "LV57",
+    "LV54",
+    "LV847",
+    "LV136",
+    "LV93",
+    "LV206",
+    "LV260",
+    "LV21",
+    "LV5",
+    "LV434",
+]
 
-# %% tags=[]
-gls_phenomexcan_lvs.shape
+# %%
+len(gls_phenomexcan_lvs)
 
-# %% tags=[]
-gls_phenomexcan_lvs
-
-# %% [markdown] tags=[]
-# # Select eMERGE traits
-
-# %% [markdown] tags=[]
-# ~This is an attempt to first get those eMERGE traits that correspond to the same EFO code in PhenomeXcan.
-# However, turns out that we only have a few matchings. That's why I'm taking the top 20 traits from each LVs in addition
-# to these ones.~
-
-# %% tags=[]
-# gls_phenomexcan_traits = gls_phenomexcan["phenotype"].unique()
-
-# %% tags=[]
-# gls_phenomexcan_traits.shape
-
-# %% tags=[]
-# gls_phenomexcan_in_emerge = emerge_phenomexcan_maps[
-#     (emerge_phenomexcan_maps["efo"].isin(gls_phenomexcan_traits))
-#     | (emerge_phenomexcan_maps["phenomexcan"].isin(gls_phenomexcan_traits))
-# ]
-
-# %% tags=[]
-# gls_phenomexcan_in_emerge
-
-# %% tags=[]
-# gls_emerge_phecodes = gls_phenomexcan_in_emerge["phecode"].unique().tolist()
-
-# %% tags=[]
-# these are the mapped traits from PhenomeXcan to phecodes
-# gls_emerge_phecodes
+# %%
+assert len(gls_phenomexcan_lvs) == len(set(gls_phenomexcan_lvs)), "Repeated LVs in list"
 
 # %% [markdown] tags=[]
 # # GLSPhenoplier
@@ -276,17 +275,21 @@ gls_phenomexcan_lvs
 # ## Get list of phenotypes/lvs pairs
 
 # %% tags=[]
+traits = emerge_traits_df["phecode"].unique()
+display(traits.shape)
+
+# %% tags=[]
 phenotypes_lvs_pairs = []
 
 # for each LV that was run on PhenomeXcan, I take the top `N_TOP_TRAITS_FROM_LV` traits
 # in eMERGE
 # ~~~+ global mapped phenotypes (variable `gls_emerge_phecodes`)~~~
 for lv in gls_phenomexcan_lvs:
-    lv_traits = emerge_projection.loc[lv]
-    lv_traits = lv_traits[lv_traits > 0.0]
-    lv_traits = lv_traits.sort_values(ascending=False).head(N_TOP_TRAITS_FROM_LV)
+    #     lv_traits = emerge_projection.loc[lv]
+    #     lv_traits = lv_traits[lv_traits > 0.0]
+    #     lv_traits = lv_traits.sort_values(ascending=False).head(N_TOP_TRAITS_FROM_LV)
 
-    for phenotype_code in set(lv_traits.index.tolist()):  # + gls_emerge_phecodes):
+    for phenotype_code in traits:  # + gls_emerge_phecodes):
         phenotypes_lvs_pairs.append(
             {
                 "phenotype": phenotype_code,

@@ -56,9 +56,6 @@ from gls import GLSPhenoplier
 # # Settings
 
 # %% tags=[]
-N_TOP_TRAITS_FROM_LV = 20
-
-# %% tags=[]
 OUTPUT_DIR = conf.RESULTS["GLS"]
 display(OUTPUT_DIR)
 
@@ -88,13 +85,13 @@ input_filepath = Path(
 ).resolve()
 
 # %% tags=[]
-phenomexcan_projection = pd.read_pickle(input_filepath)
+data = pd.read_pickle(input_filepath)
 
 # %% tags=[]
-phenomexcan_projection.shape
+data.shape
 
 # %% tags=[]
-phenomexcan_projection.head()
+data.head()
 
 # %% [markdown] tags=[]
 # ## Clustering results
@@ -245,15 +242,27 @@ gls_selected_lvs.head()
 # %% [markdown] tags=[]
 # For this run on the LVs related to the lipids CRISPR analysis, I'm only interested in the main clusters of the cardiovascular sub-branch.
 
+# %%
+k = 29
+
+# %%
+part29 = pd.Series(best_partitions.loc[k, "partition"])
+
+# %%
+part29.value_counts()
+
+# %%
+part29_clusters = part29.unique()
+
+# %%
+part29_clusters
+
+# %%
+# number of traits?
+part29.value_counts().loc[[x for x in part29_clusters if x not in (0,)]].sum()
+
 # %% tags=[]
-# PHENOTYPES_CONFIG = [
-#     # cardiovascular
-#     (29, 14),
-#     (29, 16),
-#     (29, 11),
-#     (29, 21),
-#     (29, 17),
-# ]
+PHENOTYPES_CONFIG = [(k, x) for x in part29_clusters if x not in (0,)]
 
 # %% [markdown] tags=[]
 # # GLSPhenoplier
@@ -264,30 +273,29 @@ gls_selected_lvs.head()
 # %% tags=[]
 phenotypes_lvs_pairs = []
 
-# for each LV, I take the top `N_TOP_TRAITS_FROM_LV` traits in eMERGE
-for idx, row in gls_selected_lvs.iterrows():
-    lv_name = row["lv"]
-    lv_set = row["lv_set"]
+for part_k, cluster_id in PHENOTYPES_CONFIG:
+    # get traits from the partition/cluster
+    part = best_partitions.loc[part_k, "partition"]
+    cluster_traits = data.index[part == cluster_id]
 
-    lv_traits = phenomexcan_projection[lv_name]
-    lv_traits = lv_traits[lv_traits > 0.0]
-    lv_traits = lv_traits.sort_values(ascending=False).head(N_TOP_TRAITS_FROM_LV)
-
-    for phenotype_code in set(lv_traits.index.tolist()):
-        phenotypes_lvs_pairs.append(
-            {
-                "phenotype": phenotype_code,
-                "lv": lv_name,
-                "lv_set": row["lv_set"],
-            }
-        )
+    for phenotype_code in cluster_traits:
+        for idx, lv_row in gls_selected_lvs.iterrows():
+            phenotypes_lvs_pairs.append(
+                {
+                    "phenotype_part_k": part_k,
+                    "phenotype_cluster_id": cluster_id,
+                    "phenotype": phenotype_code,
+                    "lv": lv_row["lv"],
+                    "lv_set": lv_row["lv_set"],
+                }
+            )
 
 phenotypes_lvs_pairs = pd.DataFrame(phenotypes_lvs_pairs).drop_duplicates()
 
 # %% tags=[]
-phenotypes_lvs_pairs = phenotypes_lvs_pairs.sort_values("phenotype").reset_index(
-    drop=True
-)
+phenotypes_lvs_pairs = phenotypes_lvs_pairs.sort_values(
+    ["phenotype", "lv"]
+).reset_index(drop=True)
 
 # %% tags=[]
 phenotypes_lvs_pairs.shape
@@ -319,6 +327,8 @@ for idx, row in phenotypes_lvs_pairs.iterrows():
 
     results.append(
         {
+            "part_k": row["phenotype_part_k"],
+            "cluster_id": row["phenotype_cluster_id"],
             "phenotype": phenotype_code,
             "lv": lv_code,
             "lv_set": row["lv_set"],
