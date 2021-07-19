@@ -133,10 +133,10 @@ emerge_traits_df.shape
 # %% tags=[]
 emerge_traits_df.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## eMERGE (S-MultiXcan)
 
-# %%
+# %% tags=[]
 # FIXME: in the future, there will be a specific entry in config for the eMERGE directory that should be replaced here
 emerge_smultixcan_zscores_filepath = Path(
     conf.DATA_DIR,
@@ -147,13 +147,13 @@ emerge_smultixcan_zscores_filepath = Path(
 
 display(emerge_smultixcan_zscores_filepath)
 
-# %%
+# %% tags=[]
 _tmp = pd.read_pickle(emerge_smultixcan_zscores_filepath)
 
-# %%
+# %% tags=[]
 _tmp.shape
 
-# %%
+# %% tags=[]
 _tmp.head()
 
 # %% [markdown] tags=[]
