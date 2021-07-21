@@ -175,15 +175,15 @@ deg_enrich.head()
 # display(deg_enrich.shape)
 # display(deg_enrich.head())
 
-# %%
+# %% tags=[]
 deg_enrich = deg_enrich.assign(
     lv_aligned=deg_enrich["lv"].apply(lambda x: x in well_aligned_lv_codes)
 )
 
-# %%
+# %% tags=[]
 deg_enrich = deg_enrich[(deg_enrich["lv_aligned"])]
 
-# %%
+# %% tags=[]
 deg_enrich.shape
 
 # %% [markdown] tags=[]
@@ -255,22 +255,22 @@ gls_selected_lvs.head()
 # %% [markdown] tags=[]
 # For this run on the LVs related to the lipids CRISPR analysis, I'm only interested in the main clusters of the cardiovascular sub-branch.
 
-# %%
+# %% tags=[]
 k = 29
 
-# %%
+# %% tags=[]
 part29 = pd.Series(best_partitions.loc[k, "partition"])
 
-# %%
+# %% tags=[]
 part29.value_counts()
 
-# %%
+# %% tags=[]
 part29_clusters = part29.unique()
 
-# %%
+# %% tags=[]
 part29_clusters
 
-# %%
+# %% tags=[]
 # number of traits?
 part29.value_counts().loc[[x for x in part29_clusters if x not in (0,)]].sum()
 

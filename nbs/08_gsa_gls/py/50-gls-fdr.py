@@ -97,7 +97,7 @@ for cohort, result_files in INPUT_FILES_PER_COHORT.items():
     dfs = dfs.assign(fdr=adj_pval[1])
 
     # drop unneeded columns
-    dfs = dfs.drop(columns=["lv_set", "lv_with_pathway", "summary"])
+    dfs = dfs.drop(columns=["lv_set", "lv_with_pathway", "summary"], errors="ignore")
 
     output_file = OUTPUT_DIR / f"gls_phenotypes-combined-{cohort}.pkl"
     display(output_file)

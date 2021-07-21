@@ -262,10 +262,10 @@ gls_phenomexcan_lvs = [
     "LV434",
 ]
 
-# %%
+# %% tags=[]
 len(gls_phenomexcan_lvs)
 
-# %%
+# %% tags=[]
 assert len(gls_phenomexcan_lvs) == len(set(gls_phenomexcan_lvs)), "Repeated LVs in list"
 
 # %% [markdown] tags=[]
