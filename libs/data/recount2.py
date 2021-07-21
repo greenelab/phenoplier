@@ -149,7 +149,7 @@ class LVAnalysis(object):
 
     RECOUNT2_SRP_DIR = Path(conf.RECOUNT2["BASE_DIR"], "srp").resolve()
 
-    def __init__(self, lv_name: str, lvs_traits_data: pd.DataFrame):
+    def __init__(self, lv_name: str, lvs_traits_data: pd.DataFrame = None):
         self.lv_name = lv_name
         self.lv_number = int(lv_name[2:])
 
@@ -160,7 +160,9 @@ class LVAnalysis(object):
 
         self._init_genes(multiplier_model_z)
         self._init_conditions(multiplier_model_b)
-        self._init_traits(lvs_traits_data)
+
+        if lvs_traits_data is not None:
+            self._init_traits(lvs_traits_data)
 
         self._experiment_attrs_sim = {}
 
@@ -280,13 +282,15 @@ class LVAnalysis(object):
         return top_projects.index
 
     @lru_cache(maxsize=None)
-    def get_experiments_data(self, quantile=0.99):
+    def get_experiments_data(self, quantile=0.99, debug=True, warnings=True):
         """
         For each top SRP code associated with this LV (see method get_top_projects),
         it obtains all experiments and concatenates everything into one dataframe.
 
         Args:
             quantile: quantile parameter of method get_top_projects
+            debug: activates debugging messages
+            warnings: activates warnings messages
 
         Returns:
 
@@ -297,7 +301,8 @@ class LVAnalysis(object):
 
         top_projects = self.get_top_projects(quantile)
         for srp_code in top_projects:
-            print(srp_code, end=", ", flush=True)
+            if debug:
+                print(srp_code, end=", ", flush=True)
 
             edr = ExperimentDataReader(
                 srp_code, srp_dir=LVAnalysis.RECOUNT2_SRP_DIR, compact=True
@@ -317,10 +322,11 @@ class LVAnalysis(object):
         # print()
 
         if len(experiments_df_list) != top_projects.shape[0]:
-            warnings.warn(
-                f"Not all experiments data could be loaded "
-                f"({len(experiments_df_list)} != {top_projects.shape[0]})"
-            )
+            if warnings:
+                warnings.warn(
+                    f"Not all experiments data could be loaded "
+                    f"({len(experiments_df_list)} != {top_projects.shape[0]})"
+                )
 
         df = pd.concat(experiments_df_list, ignore_index=True)
 
