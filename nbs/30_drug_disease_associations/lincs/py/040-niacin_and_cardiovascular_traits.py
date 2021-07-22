@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# **TODO**
+# This notebook analyzes the LVs driving the association of Niacin with some cardiovascular traits.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -40,29 +40,15 @@ import conf
 # # Settings
 
 # %% tags=[]
+QUANTILE = 0.95
+
+# %% [markdown] tags=[]
+# # Paths
+
+# %% tags=[]
 OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "lincs" / "analyses"
 display(OUTPUT_DIR)
 OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
-
-# %% tags=[]
-# OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"]
-# display(OUTPUT_DIR)
-
-# assert OUTPUT_DIR.exists()
-# # OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-# %% tags=[]
-# INPUT_DATA_DIR = Path(
-#     conf.RESULTS["DRUG_DISEASE_ANALYSES"],
-#     "data",
-# )
-# display(INPUT_DATA_DIR)
-
-# %% tags=[]
-# OUTPUT_PREDICTIONS_DIR = Path(
-#     conf.RESULTS["DRUG_DISEASE_ANALYSES"], "predictions", "dotprod_neg"
-# )
-# display(OUTPUT_PREDICTIONS_DIR)
 
 # %%
 INPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "lincs" / "predictions"
@@ -73,49 +59,6 @@ display(input_predictions_by_tissue_file)
 
 # %% [markdown] tags=[]
 # # Data loading
-
-# %% [markdown] tags=[]
-# ## S-MultiXcan projection
-
-# %% tags=[]
-# input_file = Path(
-#     conf.RESULTS["PROJECTIONS_DIR"],
-#     "projection-smultixcan-efo_partial-mashr-zscores.pkl",
-# ).resolve()
-# display(input_file)
-
-# %%
-# smultixcan_proj = pd.read_pickle(input_file)
-
-# %%
-# smultixcan_proj.shape
-
-# %%
-# smultixcan_proj.head()
-
-# %% [markdown] tags=[]
-# ## S-MultiXcan
-
-# %%
-# # smultixcan_zscores = pd.read_pickle(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
-# smultixcan_zscores = pd.read_pickle(
-#     conf.PHENOMEXCAN["SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE"]
-# )
-
-# %%
-# smultixcan_zscores = smultixcan_zscores.rename(index=Gene.GENE_ID_TO_NAME_MAP)
-
-# %%
-# smultixcan_zscores = smultixcan_zscores[~smultixcan_zscores.index.duplicated()]
-
-# %%
-# smultixcan_zscores = smultixcan_zscores.dropna(how="any")
-
-# %%
-# smultixcan_zscores.shape
-
-# %%
-# smultixcan_zscores.head()
 
 # %% [markdown] tags=[]
 # ## PharmacotherapyDB: load gold standard
@@ -215,243 +158,16 @@ display(lincs_projection.head())
 # ## MultiPLIER Z
 
 # %%
-multiplier_z = pd.read_pickle(conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"])
+# multiplier_z = pd.read_pickle(conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"])
 
 # %%
-multiplier_z.shape
+# multiplier_z.shape
 
 # %%
-multiplier_z.head()
-
-# %% [markdown] tags=[]
-# ## Prediction results
+# multiplier_z.head()
 
 # %% [markdown]
-# ### Full
-
-# %%
-output_file = Path(
-    conf.RESULTS["DRUG_DISEASE_ANALYSES"],
-    "lincs",
-    "predictions",
-    "predictions_results.pkl",
-).resolve()
-display(output_file)
-
-# %%
-predictions = pd.read_pickle(output_file)
-
-# %%
-predictions.shape
-
-# %%
-predictions.head()
-
-# %%
-# def _reduce_mean(x):
-#     return pd.Series(
-#         {"score": x["score"].mean(), "true_class": x["true_class"].unique()[0]}
-#     )
-
-# %%
-# predictions_by_tissue = (
-#     predictions.groupby(["trait", "drug", "method", "tissue"])
-#     .apply(_reduce_mean)
-#     .dropna()
-#     .sort_index()
-#     .reset_index()
-# )
-
-# %%
-# predictions_by_tissue.head()
-
-# %% [markdown] tags=[]
-# ### Aggregated
-
-# %%
-output_file = Path(
-    conf.RESULTS["DRUG_DISEASE_ANALYSES"],
-    "lincs",
-    "predictions",
-    "predictions_results_aggregated.pkl",
-).resolve()
-display(output_file)
-
-# %%
-predictions_avg = pd.read_pickle(output_file)
-
-# %%
-predictions_avg.shape
-
-# %%
-predictions_avg.head()
-
-# %% [markdown]
-# ### Merge
-
-# %%
-pharmadb_predictions = pd.merge(
-    gold_standard_info,
-    predictions_avg,
-    #     left_on=["doid_id", "drugbank_id"],
-    on=["trait", "drug"],
-    how="inner",
-)
-
-# %%
-pharmadb_predictions
-
-# %%
-pharmadb_predictions = pharmadb_predictions[
-    ["trait", "drug", "disease", "drug_name", "method", "score", "true_class_x"]
-].rename(columns={"true_class_x": "true_class", "drug_x": "drug"})
-
-# %%
-display(pharmadb_predictions.shape)
-assert pharmadb_predictions.shape[0] == predictions_avg.shape[0]
-
-# %%
-pharmadb_predictions.head()
-
-# %% tags=[]
-pharmadb_predictions["trait"].unique().shape
-
-# %% tags=[]
-pharmadb_predictions["drug"].unique().shape
-
-# %% [markdown]
-# ### Standardize
-
-# %%
-data_stats = pharmadb_predictions.groupby("method")["score"].describe()
-display(data_stats)
-
-
-# %%
-# Standardize scores by method
-def _standardize(x):
-    return (x["score"] - data_stats.loc[x["method"], "mean"]) / data_stats.loc[
-        x["method"], "std"
-    ]
-
-
-# %%
-pharmadb_predictions = pharmadb_predictions.assign(
-    score_std=pharmadb_predictions.apply(_standardize, axis=1)
-)
-
-# %%
-pharmadb_predictions
-
-# %% [markdown]
-# ### Testing
-
-# %%
-_tmp = pharmadb_predictions.groupby("method")[["score", "score_std"]].describe()
-display(_tmp)
-
-# %%
-_tmp0 = pharmadb_predictions[(pharmadb_predictions["method"] == "Gene-based")][
-    ["score", "score_std"]
-]
-
-# %%
-assert all(_tmp0.corr() > 0.99999)
-
-# %%
-_tmp0 = pharmadb_predictions[(pharmadb_predictions["method"] == "Module-based")][
-    ["score", "score_std"]
-]
-
-# %%
-assert all(_tmp0.corr() > 0.99999)
-
-
-# %% [markdown]
-# # Looks for differences in scores of both methods
-
-# %%
-def _compare(x):
-    assert x.shape[0] == 2
-    x_sign = np.sign(x["score_std"].values)
-    x0 = x.iloc[0]["score_std"]
-    x1 = x.iloc[1]["score_std"]
-
-    return pd.Series(
-        {"different_sign": x_sign[0] != x_sign[1], "score_difference": np.abs(x0 - x1)}
-    )
-
-
-# %%
-pharmadb_predictions = pharmadb_predictions.set_index(["trait", "drug"]).join(
-    pharmadb_predictions.groupby(["trait", "drug"]).apply(_compare)
-)
-
-# %%
-pharmadb_predictions.head()
-
-
-# %%
-def find_differences(trait_name):
-    with pd.option_context(
-        "display.max_rows", None, "display.max_columns", None, "max_colwidth", None
-    ):
-        _tmp = pharmadb_predictions[
-            (pharmadb_predictions["disease"] == trait_name)
-            & (pharmadb_predictions["different_sign"])
-        ].sort_values(
-            ["score_difference", "drug_name", "method"], ascending=[False, False, False]
-        )
-        display(_tmp)
-
-
-# %% [markdown]
-# ## any disease
-
-# %%
-# with pd.option_context(
-#     "display.max_rows", None, "display.max_columns", None, "max_colwidth", None
-# ):
-#     _tmp = pharmadb_predictions[
-#         (pharmadb_predictions["different_sign"])
-#         & (~pharmadb_predictions["disease"].str.contains("cancer"))  # avoid cancer
-#     ].sort_values(
-#         ["score_difference", "drug_name", "method"], ascending=[False, False, False]
-#     )
-#     display(_tmp.head(50))
-
-# %% [markdown]
-# ## coronary artery disease
-
-# %%
-pharmadb_predictions[
-    (pharmadb_predictions["disease"] == "coronary artery disease")
-    & (pharmadb_predictions["drug_name"] == "Niacin")
-    #     & (pharmadb_predictions["different_sign"])
-].sort_values(
-    ["score_difference", "drug_name", "method"], ascending=[False, False, False]
-)
-
-# %%
-find_differences("coronary artery disease")
-
-# %% [markdown]
-# ## atherosclerosis
-
-# %%
-pharmadb_predictions[
-    (pharmadb_predictions["disease"] == "atherosclerosis")
-    & (pharmadb_predictions["drug_name"] == "Niacin")
-    #     & (pharmadb_predictions["different_sign"])
-].sort_values(
-    ["score_difference", "drug_name", "method"], ascending=[False, False, False]
-)
-
-# %%
-find_differences("atherosclerosis")
-
-# %% [markdown]
-# # Niacin and Atherosclerosis/CAD
+# # Niacin and cardiovascular diseases
 
 # %%
 from entity import Trait
@@ -460,119 +176,38 @@ from entity import Trait
 Trait.get_traits_from_efo("atherosclerosis")
 
 # %%
-d = Trait.get_trait(full_code="I70-Diagnoses_main_ICD10_I70_Atherosclerosis")
-
-# %%
-d.n, d.n_cases
-
-# %%
-d.get_do_info()
-
-# %%
 Trait.get_traits_from_efo("coronary artery disease")
 
 # %%
-d = Trait.get_trait(full_code="CARDIoGRAM_C4D_CAD_ADDITIVE")
-
-# %%
-d.n, d.n_cases
-
-# %%
-d.get_do_info()
-
-# %%
-d = Trait.get_trait(
-    full_code="I25-Diagnoses_main_ICD10_I25_Chronic_ischaemic_heart_disease"
-)
-
-# %%
-d.n, d.n_cases
-
-# %%
-d.get_do_info()
-
-# %%
-Trait.get_traits_from_efo("hypertension")
-
-# %%
-d = Trait.get_trait(
-    full_code="20002_1065-Noncancer_illness_code_selfreported_hypertension"
-)
-
-# %%
-d.n, d.n_cases
-
-# %%
-d.get_do_info()
-
-# %%
-Trait.get_traits_from_efo("myocardial infarction")
-
-# %%
-d = Trait.get_trait(
-    full_code="20002_1075-Noncancer_illness_code_selfreported_heart_attackmyocardial_infarction"
-)
-
-# %%
-d.n, d.n_cases
-
-# %%
-d.get_do_info()
-
-# %%
-d = Trait.get_trait(
-    full_code="20002_1473-Noncancer_illness_code_selfreported_high_cholesterol"
-)
-
-# %%
-d.n, d.n_cases
-
-# %%
-d.get_do_info()
-
-# %%
-# _doid = "DOID:1936"
 _phenomexcan_traits = [
     "I70-Diagnoses_main_ICD10_I70_Atherosclerosis",
     "CARDIoGRAM_C4D_CAD_ADDITIVE",
     "I25-Diagnoses_main_ICD10_I25_Chronic_ischaemic_heart_disease",
-    "20002_1065-Noncancer_illness_code_selfreported_hypertension",
     "20002_1473-Noncancer_illness_code_selfreported_high_cholesterol",
-    # others
+    
     "6150_100-Vascularheart_problems_diagnosed_by_doctor_None_of_the_above",
-    "6150_4-Vascularheart_problems_diagnosed_by_doctor_High_blood_pressure",
-    # lipids
-    "MAGNETIC_HDL.C",
-    "MAGNETIC_LDL.C",
-    "MAGNETIC_IDL.TG",
-    "MAGNETIC_CH2.DB.ratio",
-    #
     "6150_1-Vascularheart_problems_diagnosed_by_doctor_Heart_attack",
     "I9_CHD-Major_coronary_heart_disease_event",
     "I9_CORATHER-Coronary_atherosclerosis",
     "I9_IHD-Ischaemic_heart_disease_wide_definition",
     "I9_MI-Myocardial_infarction",
-    "I9_MI_STRICT-Myocardial_infarction_strict",
     "I21-Diagnoses_main_ICD10_I21_Acute_myocardial_infarction",
     "20002_1075-Noncancer_illness_code_selfreported_heart_attackmyocardial_infarction",
 ]
-
-# _doid = "DOID:3393"
-# _phenomexcan_traits = [
-#     "I25-Diagnoses_main_ICD10_I25_Chronic_ischaemic_heart_disease",
-#     "CARDIoGRAM_C4D_CAD_ADDITIVE"
-# ]
 
 _drug_id = "DB00627"
 _drug_name = "Niacin"
 
 # %%
-pharmadb_predictions[pharmadb_predictions["drug_name"] == _drug_name].sort_values(
-    ["disease", "method"]
-)
+for p in _phenomexcan_traits:
+    print(p)
+    d = Trait.get_trait(full_code=p)
+    print((d.n, d.n_cases))
+    
+    print("\n")
 
 # %% [markdown]
-# ## Get best tissue results for traits
+# ## Get best tissue results for Niacin
 
 # %%
 drugs_tissue_df = {}
@@ -582,12 +217,19 @@ with pd.HDFStore(input_predictions_by_tissue_file, mode="r") as store:
         df = store[tk][_drug_id]
 
         drugs_tissue_df[tk[1:]] = df
-#         tissue_df_flatten = tissue_df.values.flatten()
-#         tissue_df = (tissue_df - tissue_df_flatten.mean()) / tissue_df_flatten.std()
-
-#         tissue_df = tissue_df.loc[_phenomexcan_traits, _drug_id]
 
 # %%
+_tmp = pd.DataFrame(drugs_tissue_df)
+display(_tmp.shape)
+display(_tmp.head())
+
+# %%
+# show top tissue models (from TWAS) for each trait
+traits_best_tissues_df = pd.DataFrame(drugs_tissue_df).loc[_phenomexcan_traits].idxmax(1)
+display(traits_best_tissues_df)
+
+# %%
+# pick the tissue with the maximum score for each trait
 drug_df = pd.DataFrame(drugs_tissue_df).max(1)
 
 # %%
@@ -597,72 +239,38 @@ drug_df.shape
 drug_df.head()
 
 # %%
+drug_df.loc[_phenomexcan_traits].sort_values()
+
+# %%
 drug_df.describe()
 
 # %%
-traits_tissue_df = {}
-
-with pd.HDFStore(input_predictions_by_tissue_file, mode="r") as store:
-    for tk in store.keys():
-        df = store[tk].loc[_phenomexcan_traits, _drug_id]
-
-        traits_tissue_df[tk[1:]] = df
-#         tissue_df_flatten = tissue_df.values.flatten()
-#         tissue_df = (tissue_df - tissue_df_flatten.mean()) / tissue_df_flatten.std()
-
-#         tissue_df = tissue_df.loc[_phenomexcan_traits, _drug_id]
+drug_mean, drug_std = drug_df.mean(), drug_df.std()
+display((drug_mean, drug_std))
 
 # %%
-# testing
-pd.DataFrame(traits_tissue_df).T.describe().T.sort_values("mean")
+drug_df_stats = ((drug_df - drug_mean) / drug_std).describe()
+display(drug_df_stats)
 
 # %%
-# testing
-pd.DataFrame(traits_tissue_df).sum(1).sort_values()
+drug_df = (drug_df.loc[_phenomexcan_traits] - drug_mean) / drug_std
 
 # %%
-traits_best_tissues_df = pd.DataFrame(traits_tissue_df).idxmax(1)
+drug_df.shape
 
 # %%
-traits_best_tissues_df
+drug_df.sort_values()
+
+# %% [markdown]
+# All predictions of Niacin for these traits are high (above the mean and a standard deviation away)
 
 # %%
-traits_df = pd.DataFrame(traits_tissue_df).max(1)
+# select traits for which niacin has a high prediction
+selected_traits = drug_df[drug_df > drug_df_stats["75%"]].index.tolist()
 
 # %%
-traits_df
+selected_traits
 
-# %%
-traits_df.shape
-
-# %%
-traits_df.sort_values()
-
-# %%
-traits_drug_df = (traits_df - drug_df.mean()) / drug_df.std()
-
-# %%
-traits_drug_df.sort_values()
-
-# %%
-d = Trait.get_trait(full_code="I9_IHD-Ischaemic_heart_disease_wide_definition")
-
-# %%
-d.n, d.n_cases
-
-# %%
-_tmp_df = (drug_df - drug_df.mean()) / drug_df.std()
-
-# %%
-_tmp_df.describe().apply(str)
-
-# %%
-_tmp_df.quantile([0.80, 0.85, 0.90, 0.95])
-
-
-# %%
-
-# %%
 
 # %% [markdown]
 # ## Gene module-based - LVs driving association
@@ -673,23 +281,14 @@ def find_best_tissue(trait_id):
 
 
 # %%
-_tmp_res = find_best_tissue("I9_IHD-Ischaemic_heart_disease_wide_definition")
+_tmp_res = find_best_tissue("I9_CORATHER-Coronary_atherosclerosis")
 display(_tmp_res)
 
 # %%
 # available_doids = set(predictions_by_tissue["trait"].unique())
 traits_lv_data = []
 
-for trait in _phenomexcan_traits:
-    #     t = Trait.get_trait(full_code=trait)
-
-    #     t_doid = t.get_do_info().id
-    #     # select available doid
-    #     t_doid = [x for x in t_doid if x in available_doids]
-    #     assert len(t_doid) == 1
-    #     t_doid = t_doid[0]
-    #     display(t_doid)
-
+for trait in selected_traits:
     best_module_tissue = find_best_tissue(trait)
     display(best_module_tissue)
 
@@ -715,48 +314,86 @@ module_tissue_data.head()
 drug_data = lincs_projection.loc[_drug_id]
 
 # %%
-drug_data
+drug_data.head()
 
 # %%
 _tmp = (-1.0 * drug_data.dot(module_tissue_data)).sort_values(ascending=False)
 display(_tmp)
 
 # %%
-# predictions_avg[
-#     predictions_avg["trait"].isin(("DOID:1936", "DOID:3393"))
-#     & (predictions_avg["drug"] == _drug_id)
-# ]
-
-# %%
 drug_trait_predictions = pd.DataFrame(
-    drug_data.to_frame().values * module_tissue_data.values,
+    -1.0 * (drug_data.to_frame().values * module_tissue_data.values),
     columns=module_tissue_data.columns.copy(),
     index=drug_data.index.copy(),
 )
 
 # %%
-_lvs_sel = ["LV246", "LV847", "LV931", "LV116"]
+drug_trait_predictions.shape
 
 # %%
-drug_data.quantile([0.05, 0.20, 0.80, 0.95])
+drug_trait_predictions.head()
 
 # %%
-drug_data.loc[_lvs_sel]
+common_lvs = []
 
-# %%
-drug_trait_predictions.loc[:, "I9_MI-Myocardial_infarction"].sort_values(
-    ascending=True
-).head(20)
-
-# %%
-for _trait in _phenomexcan_traits:
-    #     display(_trait)
-    _tmp = drug_trait_predictions.loc[_lvs_sel, _trait].sort_values(ascending=True)
-    display(_tmp)
-
-    d = Trait.get_trait(full_code=_trait)
-    display((d.n, d.n_cases))
-
+for c in drug_trait_predictions.columns:
+    _tmp = drug_trait_predictions[c]
+    
+    _tmp = _tmp[_tmp > 0.0]
+    q = _tmp.quantile(QUANTILE)
+    _tmp = _tmp[_tmp > q]
+    display(f"Number of LVs: {_tmp.shape[0]}")
+    
+    _tmp = _tmp.sort_values(ascending=False)
+    common_lvs.append(_tmp)
+    
+    display(_tmp.head(20))
     print()
+
+# %% [markdown]
+# # Niacin top LVs
+
+# %%
+drug_data.abs().sort_values(ascending=False).head(30)
+
+# %%
+drug_data.sort_values(ascending=False).head(15)
+
+# %%
+drug_data.sort_values(ascending=True).head(15)
+
+# %% [markdown]
+# # Get common LVs
+
+# %%
+common_lvs_df = pd.concat(common_lvs).reset_index().rename(columns={"index": "lv", 0: "value"})
+
+# %%
+common_lvs_df.shape
+
+# %%
+common_lvs_df.head()
+
+# %%
+lvs_by_sum = common_lvs_df.groupby("lv").sum().squeeze().sort_values(ascending=False)
+display(lvs_by_sum.head(25))
+
+# %%
+lvs_by_count = common_lvs_df.groupby("lv").count().squeeze().sort_values(ascending=False)
+display(lvs_by_count.head(25))
+
+# %% [markdown]
+# # Save
+
+# %%
+output_file = OUTPUT_DIR / "cardiovascular-niacin.h5"
+display(output_file)
+
+# %%
+with pd.HDFStore(output_file, mode="w", complevel=4) as store:
+    store.put("traits_module_tissue_data", module_tissue_data, format="fixed")
+    store.put("drug_data", drug_data, format="fixed")
+    store.put("drug_trait_predictions", drug_trait_predictions, format="fixed")
+    store.put("common_lvs", common_lvs_df, format="fixed")
 
 # %%
