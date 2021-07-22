@@ -309,16 +309,14 @@ for lv_name in pbar:
 # %%
 N_TOP_LVS = 10
 
-
 # %% [markdown]
 # # Cell types
 
 # %%
-def _get_lv_rank(data):
-    data = data.copy()
-    data["lv"] = data["lv"].rank()
-    return data
-
+# def _get_lv_rank(data):
+#     data = data.copy()
+#     data["lv"] = data["lv"].rank()
+#     return data
 
 # %%
 df = pd.concat(cell_type_dfs[:N_TOP_LVS], ignore_index=True)
