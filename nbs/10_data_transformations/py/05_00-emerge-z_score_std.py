@@ -71,57 +71,6 @@ display(RESULTS_DIR)
 # # Load eMERGE data
 
 # %% [markdown]
-# ## Phecodes description
-
-# %%
-input_file = conf.PMBB["PHECODE_DESC_FILE"]
-display(input_file)
-
-# %%
-phecodes_desc = pd.read_csv(input_file, dtype={"phecode": str}).set_index("phecode")
-
-# %%
-assert phecodes_desc.index.is_unique
-
-# %%
-phecodes_desc.shape
-
-# %%
-phecodes_desc.head()
-
-# %% [markdown]
-# ## ICD10 to Phecode mappings
-
-# %%
-input_file = conf.PMBB["ICD10_PHECODE_MAPPING_FILE"]
-display(input_file)
-
-# %%
-icd10_to_phecodes_map = pd.read_csv(input_file, sep="\t", dtype={"Phecode": str})
-
-# %%
-icd10_to_phecodes_map.shape
-
-# %%
-icd10_to_phecodes_map.head()
-
-# %% [markdown]
-# ## S-MultiXcan z-scores
-
-# %%
-input_file = conf.EMERGE["SMULTIXCAN_MASHR_ZSCORES_FILE"]
-display(input_file)
-
-# %%
-pmbb_zscores = pd.read_pickle(input_file)
-
-# %%
-pmbb_zscores.shape
-
-# %%
-pmbb_zscores.head()
-
-# %% [markdown]
 # ## Projection of S-MultiXcan z-scores
 
 # %% tags=[]
