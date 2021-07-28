@@ -13,9 +13,9 @@ jupytext \
 
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
-    # try without black
+    # if jupytext failed, it is very likely because it was an R script.
+    # Try again without black
     jupytext \
       --sync \
       ${NOTEBOOK}
 fi
-
