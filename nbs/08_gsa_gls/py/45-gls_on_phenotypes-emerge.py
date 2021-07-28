@@ -110,34 +110,6 @@ emerge_traits_df.shape
 emerge_traits_df.head()
 
 # %% [markdown] tags=[]
-# ## eMERGE to PhenomeXcan maps
-
-# %% tags=[]
-# FIXME: in the future, there will be a specific entry in config for the eMERGE directory that should be replaced here
-emerge_phenomexcan_maps_filepath = Path(
-    conf.DATA_DIR,
-    "emerge",
-    "phecodes_phenomexcan_maps.tsv",
-).resolve()
-display(emerge_phenomexcan_maps_filepath)
-
-# %% tags=[]
-emerge_phenomexcan_maps = pd.read_csv(
-    emerge_phenomexcan_maps_filepath, sep="\t", dtype={"phecode": str}
-)
-
-# %% tags=[]
-emerge_phenomexcan_maps = emerge_phenomexcan_maps.dropna(
-    subset=["phecode", "phenomexcan"], how="any"
-)
-
-# %% tags=[]
-emerge_phenomexcan_maps.shape
-
-# %% tags=[]
-emerge_phenomexcan_maps.head()
-
-# %% [markdown] tags=[]
 # ## eMERGE (S-MultiXcan) projection
 
 # %% tags=[]
