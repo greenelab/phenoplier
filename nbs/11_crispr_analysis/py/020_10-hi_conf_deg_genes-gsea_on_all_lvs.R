@@ -15,6 +15,12 @@
 # ---
 
 # %% [markdown] tags=[]
+# # Description
+
+# %% [markdown] tags=[]
+# This notebook load all LVs from the original MultiPLIER model and runs Gene-enrichment analysis with FGSEA on two lipids-related gene-sets identified with our CRISPR screen.
+
+# %% [markdown] tags=[]
 # # Module loading
 
 # %% tags=[]
@@ -62,7 +68,6 @@ for (r in unique(all_genes_ranked$rank)) {
     }
     
     data <- all_genes_ranked[all_genes_ranked$rank == r,]
-    #q <- quantile(data, 0.50, names=FALSE)
     
     orig_deg_gene_sets[[paste0("gene_set_", r)]] <- data$gene_name
 }
@@ -173,6 +178,9 @@ stopifnot(length(lvs) == 987)
 
 # %% [markdown] tags=[]
 # # Compute enrichment on all LVs
+
+# %% [markdown] tags=[]
+# Since `fgsea` generates slightly different p-values across the same runs, here I run it 10 times for each LV/gene-set pair, and later I will take the maximum p-value. This is to avoid reproducibility/inconsistency problems.
 
 # %% tags=[]
 n_reps = 10
