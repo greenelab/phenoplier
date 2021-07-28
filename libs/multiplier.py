@@ -16,7 +16,6 @@ class MultiplierProjection(object):
         self,
         y: pd.DataFrame,
         multiplier_compatible: bool = True,
-        multiplier_model_z: pd.DataFrame = None,
     ) -> pd.DataFrame:
         """Projects a gene dataset into the MultiPLIER model.
 
@@ -39,9 +38,6 @@ class MultiplierProjection(object):
                 If True, it will try to be fully compatible with the GetNewDataB
                 function in some situations (for instance, if the new data
                 contains NaNs).
-            multiplier_model_z (pandas.DataFrame): this parameter is used when a
-                modified version of the genes' loadings is needed. For instance,
-                when running a permutation test.
 
         Returns:
             A pandas.DataFrame with the projection of the input data into the
@@ -49,11 +45,7 @@ class MultiplierProjection(object):
             model are in rows, and the columns are those of the input data
             (conditions, traits, drugs, etc).
         """
-        if multiplier_model_z is None:
-            z = self._read_model_z()
-        else:
-            z = multiplier_model_z
-
+        z = self._read_model_z()
         metadata = self._read_model_metadata()
 
         # nothing special is done if the input data contains NaNs, but it will
