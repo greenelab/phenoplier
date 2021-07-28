@@ -19,6 +19,8 @@
 
 # %% [markdown] tags=[]
 # It projects eMERGE S-MultiXcan results into the MultiPLIER latent space.
+#
+# The eMERGE TWAS results are not publicly available, so this won't work if you don't have access to the data.
 
 # %% [markdown] tags=[]
 # # Modules loading
