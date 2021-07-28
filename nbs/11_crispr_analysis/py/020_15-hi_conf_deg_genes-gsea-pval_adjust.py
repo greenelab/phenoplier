@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# TODO
+# This notebook reads the FGSEA results on all LVs, takes the maximum p-value for each LV/gene-set pair, and then adjusts for multiple-testing.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -69,25 +69,13 @@ deg_enrich.head()
 deg_enrich = deg_enrich.dropna()
 
 # %% tags=[]
-# for each lv/pathway pair we ran fgsea 10 times; here take the maximum pvalue (least significant) among those runs
+# for each lv/pathway pair we ran fgsea 10 times; here I take the maximum pvalue (least significant) among those runs
 deg_enrich_max_idx = deg_enrich.groupby(["lv", "pathway"])["pval"].idxmax()
 
 # %% tags=[]
 deg_enrich = deg_enrich.loc[deg_enrich_max_idx].reset_index(drop=True)
 display(deg_enrich.shape)
 display(deg_enrich.head())
-
-# %% [markdown] tags=[]
-# ## MultiPLIER summary
-
-# %% tags=[]
-# multiplier_model_summary = read_data(conf.MULTIPLIER["MODEL_SUMMARY_FILE"])
-
-# %% tags=[]
-# multiplier_model_summary.shape
-
-# %% tags=[]
-# multiplier_model_summary.head()
 
 # %% [markdown] tags=[]
 # # Adjust p-values
