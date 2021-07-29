@@ -18,7 +18,8 @@
 # # Description
 
 # %% [markdown] tags=[]
-# This notebooks analyzes the drug-disease pairs discussed in the manuscript.
+# This notebooks analyzes the drug-disease prediction differences between the gene-based and module-based approaches.
+# It focuses on pairs discussed in the manuscript.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -38,26 +39,6 @@ import conf
 
 # %% [markdown] tags=[]
 # # Settings
-
-# %% tags=[]
-# OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"]
-# display(OUTPUT_DIR)
-
-# assert OUTPUT_DIR.exists()
-# # OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-# %% tags=[]
-# INPUT_DATA_DIR = Path(
-#     conf.RESULTS["DRUG_DISEASE_ANALYSES"],
-#     "data",
-# )
-# display(INPUT_DATA_DIR)
-
-# %% tags=[]
-# OUTPUT_PREDICTIONS_DIR = Path(
-#     conf.RESULTS["DRUG_DISEASE_ANALYSES"], "predictions", "dotprod_neg"
-# )
-# display(OUTPUT_PREDICTIONS_DIR)
 
 # %% [markdown] tags=[]
 # # Data loading
@@ -274,7 +255,7 @@ with pd.option_context(
     _tmp = pharmadb_predictions[(pharmadb_predictions["different_sign"])].sort_values(
         ["score_difference", "drug_name", "method"], ascending=[False, False, False]
     )
-    
+
     display(_tmp.shape)
     display(_tmp)
 
