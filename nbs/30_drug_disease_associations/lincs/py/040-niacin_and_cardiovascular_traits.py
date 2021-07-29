@@ -19,6 +19,7 @@
 
 # %% [markdown] tags=[]
 # This notebook analyzes the LVs driving the association of Niacin with some cardiovascular traits.
+# It saves some dataframes with the common list of LVs affecting cardiovascular traits and other data for later use.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -33,17 +34,24 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from entity import Gene
+from entity import Gene, Trait
 import conf
 
 # %% [markdown] tags=[]
 # # Settings
 
 # %% tags=[]
+# it specified the threshold to select the top-contributing LVs for each selected trait
 QUANTILE = 0.95
 
 # %% [markdown] tags=[]
 # # Paths
+
+# %%
+INPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "lincs" / "predictions"
+input_predictions_by_tissue_file = INPUT_DIR / "full_predictions_by_tissue-rank.h5"
+display(input_predictions_by_tissue_file)
+assert input_predictions_by_tissue_file.exists()
 
 # %% tags=[]
 OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "lincs" / "analyses"
@@ -51,20 +59,17 @@ display(OUTPUT_DIR)
 OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
 
 # %%
-INPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "lincs" / "predictions"
-# display(OUTPUT_DIR)
-# OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-input_predictions_by_tissue_file = INPUT_DIR / "full_predictions_by_tissue-rank.h5"
-display(input_predictions_by_tissue_file)
+OUTPUT_FILEPATH = OUTPUT_DIR / "cardiovascular-niacin.h5"
+display(OUTPUT_FILEPATH)
 
 # %% [markdown] tags=[]
 # # Data loading
 
 # %% [markdown] tags=[]
-# ## PharmacotherapyDB: load gold standard
+# ## PharmacotherapyDB
 
-# %% [markdown]
-# ### Final
+# %% [markdown] tags=[]
+# ### Gold standard set
 
 # %%
 gold_standard = pd.read_pickle(
@@ -81,10 +86,7 @@ gold_standard.head()
 # ### Info
 
 # %% tags=[]
-# TODO hardcoded
-input_file = Path(
-    conf.DATA_DIR, "hetionet/pharmacotherapydb-v1.0", "indications.tsv"
-).resolve()
+input_file = conf.PHARMACOTHERAPYDB["INDICATIONS_FILE"]
 display(input_file)
 
 # %%
@@ -154,23 +156,11 @@ display(lincs_projection.shape)
 # %% tags=[]
 display(lincs_projection.head())
 
-# %% [markdown] tags=[]
-# ## MultiPLIER Z
-
-# %%
-# multiplier_z = pd.read_pickle(conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"])
-
-# %%
-# multiplier_z.shape
-
-# %%
-# multiplier_z.head()
-
 # %% [markdown]
 # # Niacin and cardiovascular diseases
 
-# %%
-from entity import Trait
+# %% [markdown]
+# ## Select traits and show their sample size
 
 # %%
 Trait.get_traits_from_efo("atherosclerosis")
@@ -263,7 +253,8 @@ drug_df.shape
 drug_df.sort_values()
 
 # %% [markdown]
-# All predictions of Niacin for these traits are high (above the mean and a standard deviation away)
+# Most predictions of Niacin for these traits are high (above the mean and a standard deviation away).
+# The ones that are low are related to heart attack, but there seems to be heterogeneity among definitions, since self-reported ones got a negative score, whereas the ICD10 (from hospital-level data) is positive.
 
 # %%
 # select traits for which niacin has a high prediction
@@ -272,25 +263,29 @@ selected_traits = drug_df[drug_df > drug_df_stats["75%"]].index.tolist()
 # %%
 selected_traits
 
+# %% [markdown]
+# ## Get niacin projection values
+
+# %%
+drug_data = lincs_projection.loc[_drug_id]
+
+# %%
+drug_data.shape
+
+# %%
+drug_data.head()
 
 # %% [markdown]
 # ## Gene module-based - LVs driving association
 
-# %%
-def find_best_tissue(trait_id):
-    return traits_best_tissues_df.loc[trait_id]
-
+# %% [markdown]
+# Find which LVs are positively contributing to the prediction of these selected traits.
 
 # %%
-_tmp_res = find_best_tissue("I9_CORATHER-Coronary_atherosclerosis")
-display(_tmp_res)
-
-# %%
-# available_doids = set(predictions_by_tissue["trait"].unique())
 traits_lv_data = []
 
 for trait in selected_traits:
-    best_module_tissue = find_best_tissue(trait)
+    best_module_tissue = traits_best_tissues_df.loc[trait]
     display(best_module_tissue)
 
     best_module_tissue_data = pd.read_pickle(
@@ -312,16 +307,11 @@ module_tissue_data.shape
 module_tissue_data.head()
 
 # %%
-drug_data = lincs_projection.loc[_drug_id]
-
-# %%
-drug_data.head()
-
-# %%
 _tmp = (-1.0 * drug_data.dot(module_tissue_data)).sort_values(ascending=False)
 display(_tmp)
 
 # %%
+# create a dataframe where for each trait (column) I have the contribution of each LVs in the rows
 drug_trait_predictions = pd.DataFrame(
     -1.0 * (drug_data.to_frame().values * module_tissue_data.values),
     columns=module_tissue_data.columns.copy(),
@@ -334,12 +324,22 @@ drug_trait_predictions.shape
 # %%
 drug_trait_predictions.head()
 
+# %% [markdown]
+# This dataframe now allows me to see which LVs are the largest for each trait.
+
+# %% [markdown]
+# ## Get common LVs across selected traits
+
+# %%
+display(QUANTILE)
+
 # %%
 common_lvs = []
 
-for c in drug_trait_predictions.columns:
-    _tmp = drug_trait_predictions[c]
+for trait in drug_trait_predictions.columns:
+    _tmp = drug_trait_predictions[trait]
 
+    # for each trait, get the set of LVs with a contribution greater than the specified quantile
     _tmp = _tmp[_tmp > 0.0]
     q = _tmp.quantile(QUANTILE)
     _tmp = _tmp[_tmp > q]
@@ -350,21 +350,6 @@ for c in drug_trait_predictions.columns:
 
     display(_tmp.head(20))
     print()
-
-# %% [markdown]
-# # Niacin top LVs
-
-# %%
-drug_data.abs().sort_values(ascending=False).head(30)
-
-# %%
-drug_data.sort_values(ascending=False).head(15)
-
-# %%
-drug_data.sort_values(ascending=True).head(15)
-
-# %% [markdown]
-# # Get common LVs
 
 # %%
 common_lvs_df = (
@@ -378,24 +363,37 @@ common_lvs_df.shape
 common_lvs_df.head()
 
 # %%
+# group by LV and sum
 lvs_by_sum = common_lvs_df.groupby("lv").sum().squeeze().sort_values(ascending=False)
 display(lvs_by_sum.head(25))
 
 # %%
+# group by LV and count
 lvs_by_count = (
     common_lvs_df.groupby("lv").count().squeeze().sort_values(ascending=False)
 )
 display(lvs_by_count.head(25))
 
 # %% [markdown]
+# LV116, LV931 and LV246 (which we discuss in the manuscript) are the common across several cardiovascular traits.
+
+# %% [markdown]
+# # Which are the top LVs "affected" by Niacin?
+
+# %%
+drug_data.abs().sort_values(ascending=False).head(30)
+
+# %%
+drug_data.sort_values(ascending=False).head(15)
+
+# %%
+drug_data.sort_values(ascending=True).head(15)
+
+# %% [markdown]
 # # Save
 
 # %%
-output_file = OUTPUT_DIR / "cardiovascular-niacin.h5"
-display(output_file)
-
-# %%
-with pd.HDFStore(output_file, mode="w", complevel=4) as store:
+with pd.HDFStore(OUTPUT_FILEPATH, mode="w", complevel=4) as store:
     store.put("traits_module_tissue_data", module_tissue_data, format="fixed")
     store.put("drug_data", drug_data, format="fixed")
     store.put("drug_trait_predictions", drug_trait_predictions, format="fixed")
