@@ -47,7 +47,7 @@ QUANTILE = 0.95
 # %% [markdown] tags=[]
 # # Paths
 
-# %%
+# %% tags=[]
 INPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "lincs" / "predictions"
 input_predictions_by_tissue_file = INPUT_DIR / "full_predictions_by_tissue-rank.h5"
 display(input_predictions_by_tissue_file)
@@ -58,7 +58,7 @@ OUTPUT_DIR = conf.RESULTS["DRUG_DISEASE_ANALYSES"] / "lincs" / "analyses"
 display(OUTPUT_DIR)
 OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
 
-# %%
+# %% tags=[]
 OUTPUT_FILEPATH = OUTPUT_DIR / "cardiovascular-niacin.h5"
 display(OUTPUT_FILEPATH)
 
@@ -71,28 +71,28 @@ display(OUTPUT_FILEPATH)
 # %% [markdown] tags=[]
 # ### Gold standard set
 
-# %%
+# %% tags=[]
 gold_standard = pd.read_pickle(
     Path(conf.RESULTS["DRUG_DISEASE_ANALYSES"], "gold_standard.pkl"),
 )
 
-# %%
+# %% tags=[]
 gold_standard.shape
 
-# %%
+# %% tags=[]
 gold_standard.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ### Info
 
 # %% tags=[]
 input_file = conf.PHARMACOTHERAPYDB["INDICATIONS_FILE"]
 display(input_file)
 
-# %%
+# %% tags=[]
 gold_standard_info = pd.read_csv(input_file, sep="\t")
 
-# %%
+# %% tags=[]
 gold_standard_info = gold_standard_info.rename(columns={"drug": "drug_name"})
 
 # %% tags=[]
@@ -101,7 +101,7 @@ gold_standard_info.shape
 # %% tags=[]
 gold_standard_info.head()
 
-# %%
+# %% tags=[]
 gold_standard_info = (
     gold_standard.set_index(["trait", "drug"])
     .join(
@@ -156,19 +156,19 @@ display(lincs_projection.shape)
 # %% tags=[]
 display(lincs_projection.head())
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Niacin and cardiovascular diseases
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Select traits and show their sample size
 
-# %%
+# %% tags=[]
 Trait.get_traits_from_efo("atherosclerosis")
 
-# %%
+# %% tags=[]
 Trait.get_traits_from_efo("coronary artery disease")
 
-# %%
+# %% tags=[]
 _phenomexcan_traits = [
     "I70-Diagnoses_main_ICD10_I70_Atherosclerosis",
     "CARDIoGRAM_C4D_CAD_ADDITIVE",
@@ -187,7 +187,7 @@ _phenomexcan_traits = [
 _drug_id = "DB00627"
 _drug_name = "Niacin"
 
-# %%
+# %% tags=[]
 for p in _phenomexcan_traits:
     print(p)
     d = Trait.get_trait(full_code=p)
@@ -195,10 +195,10 @@ for p in _phenomexcan_traits:
 
     print("\n")
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Get best tissue results for Niacin
 
-# %%
+# %% tags=[]
 drugs_tissue_df = {}
 
 with pd.HDFStore(input_predictions_by_tissue_file, mode="r") as store:
@@ -207,81 +207,81 @@ with pd.HDFStore(input_predictions_by_tissue_file, mode="r") as store:
 
         drugs_tissue_df[tk[1:]] = df
 
-# %%
+# %% tags=[]
 _tmp = pd.DataFrame(drugs_tissue_df)
 display(_tmp.shape)
 display(_tmp.head())
 
-# %%
+# %% tags=[]
 # show top tissue models (from TWAS) for each trait
 traits_best_tissues_df = (
     pd.DataFrame(drugs_tissue_df).loc[_phenomexcan_traits].idxmax(1)
 )
 display(traits_best_tissues_df)
 
-# %%
+# %% tags=[]
 # pick the tissue with the maximum score for each trait
 drug_df = pd.DataFrame(drugs_tissue_df).max(1)
 
-# %%
+# %% tags=[]
 drug_df.shape
 
-# %%
+# %% tags=[]
 drug_df.head()
 
-# %%
+# %% tags=[]
 drug_df.loc[_phenomexcan_traits].sort_values()
 
-# %%
+# %% tags=[]
 drug_df.describe()
 
-# %%
+# %% tags=[]
 drug_mean, drug_std = drug_df.mean(), drug_df.std()
 display((drug_mean, drug_std))
 
-# %%
+# %% tags=[]
 drug_df_stats = ((drug_df - drug_mean) / drug_std).describe()
 display(drug_df_stats)
 
-# %%
+# %% tags=[]
 drug_df = (drug_df.loc[_phenomexcan_traits] - drug_mean) / drug_std
 
-# %%
+# %% tags=[]
 drug_df.shape
 
-# %%
+# %% tags=[]
 drug_df.sort_values()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Most predictions of Niacin for these traits are high (above the mean and a standard deviation away).
 # The ones that are low are related to heart attack, but there seems to be heterogeneity among definitions, since self-reported ones got a negative score, whereas the ICD10 (from hospital-level data) is positive.
 
-# %%
+# %% tags=[]
 # select traits for which niacin has a high prediction
 selected_traits = drug_df[drug_df > drug_df_stats["75%"]].index.tolist()
 
-# %%
+# %% tags=[]
 selected_traits
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Get niacin projection values
 
-# %%
+# %% tags=[]
 drug_data = lincs_projection.loc[_drug_id]
 
-# %%
+# %% tags=[]
 drug_data.shape
 
-# %%
+# %% tags=[]
 drug_data.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Gene module-based - LVs driving association
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Find which LVs are positively contributing to the prediction of these selected traits.
 
-# %%
+# %% tags=[]
 traits_lv_data = []
 
 for trait in selected_traits:
@@ -297,20 +297,20 @@ for trait in selected_traits:
 
     traits_lv_data.append(best_module_tissue_data)
 
-# %%
+# %% tags=[]
 module_tissue_data = pd.DataFrame(traits_lv_data).T
 
-# %%
+# %% tags=[]
 module_tissue_data.shape
 
-# %%
+# %% tags=[]
 module_tissue_data.head()
 
-# %%
+# %% tags=[]
 _tmp = (-1.0 * drug_data.dot(module_tissue_data)).sort_values(ascending=False)
 display(_tmp)
 
-# %%
+# %% tags=[]
 # create a dataframe where for each trait (column) I have the contribution of each LVs in the rows
 drug_trait_predictions = pd.DataFrame(
     -1.0 * (drug_data.to_frame().values * module_tissue_data.values),
@@ -318,22 +318,22 @@ drug_trait_predictions = pd.DataFrame(
     index=drug_data.index.copy(),
 )
 
-# %%
+# %% tags=[]
 drug_trait_predictions.shape
 
-# %%
+# %% tags=[]
 drug_trait_predictions.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # This dataframe now allows me to see which LVs are the largest for each trait.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Get common LVs across selected traits
 
-# %%
+# %% tags=[]
 display(QUANTILE)
 
-# %%
+# %% tags=[]
 common_lvs = []
 
 for trait in drug_trait_predictions.columns:
@@ -351,52 +351,52 @@ for trait in drug_trait_predictions.columns:
     display(_tmp.head(20))
     print()
 
-# %%
+# %% tags=[]
 common_lvs_df = (
     pd.concat(common_lvs).reset_index().rename(columns={"index": "lv", 0: "value"})
 )
 
-# %%
+# %% tags=[]
 common_lvs_df.shape
 
-# %%
+# %% tags=[]
 common_lvs_df.head()
 
-# %%
+# %% tags=[]
 # group by LV and sum
 lvs_by_sum = common_lvs_df.groupby("lv").sum().squeeze().sort_values(ascending=False)
 display(lvs_by_sum.head(25))
 
-# %%
+# %% tags=[]
 # group by LV and count
 lvs_by_count = (
     common_lvs_df.groupby("lv").count().squeeze().sort_values(ascending=False)
 )
 display(lvs_by_count.head(25))
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # LV116, LV931 and LV246 (which we discuss in the manuscript) are the common across several cardiovascular traits.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Which are the top LVs "affected" by Niacin?
 
-# %%
+# %% tags=[]
 drug_data.abs().sort_values(ascending=False).head(30)
 
-# %%
+# %% tags=[]
 drug_data.sort_values(ascending=False).head(15)
 
-# %%
+# %% tags=[]
 drug_data.sort_values(ascending=True).head(15)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Save
 
-# %%
+# %% tags=[]
 with pd.HDFStore(OUTPUT_FILEPATH, mode="w", complevel=4) as store:
     store.put("traits_module_tissue_data", module_tissue_data, format="fixed")
     store.put("drug_data", drug_data, format="fixed")
     store.put("drug_trait_predictions", drug_trait_predictions, format="fixed")
     store.put("common_lvs", common_lvs_df, format="fixed")
 
-# %%
+# %% tags=[]
