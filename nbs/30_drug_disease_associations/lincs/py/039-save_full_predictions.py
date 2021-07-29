@@ -61,7 +61,7 @@ display(OUTPUT_DIR)
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # %% tags=[]
-OUTPUT_FILENAME = Path(OUTPUT_DIR, "predictions")
+OUTPUT_FILENAME = Path(OUTPUT_DIR, "full_predictions_by_tissue-rank.h5")
 display(OUTPUT_FILENAME)
 
 # %% [markdown] tags=[]
