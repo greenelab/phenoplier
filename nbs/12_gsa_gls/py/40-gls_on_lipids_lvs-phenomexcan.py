@@ -151,13 +151,8 @@ list(well_aligned_lv_codes)[:5]
 # # Select LVs from CRISPR analysis
 
 # %% tags=[]
-# FIXME: there will be a specific folder for crispr analysis in the future, that should be replaced here
 deg_enrich = pd.read_csv(
-    Path(
-        conf.RESULTS["BASE_DIR"],
-        "crispr_analyses",
-        "fgsea-hi_conf-all_lvs.tsv",
-    ).resolve(),
+    conf.RESULTS["CRISPR_ANALYSES"]["BASE_DIR"], "fgsea-hi_conf-all_lvs.tsv",
     sep="\t",
 )
 
