@@ -15,7 +15,8 @@ def simplify_trait_fullcode(trait_full_code: str, prefix: str = "c") -> str:
 
     Args:
         trait_full_code: The full code of a PhenomeXcan's trait
-        prefix: COMPLETE
+        prefix: prefix for trait's full code. By default it's "c" to avoid
+            problems with HDF5 key names.
 
     Returns:
          A new version of the trait's full code only with allowed characters
