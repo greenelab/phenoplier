@@ -54,12 +54,6 @@ from sklearn.preprocessing import scale
 # %% [markdown] tags=[]
 # # Settings
 
-# %% [markdown] tags=[]
-# ## Input data
-
-# %% [markdown] tags=[]
-# ## Output folder
-
 # %% tags=[]
 # output dir for this notebook
 RESULTS_DIR = Path(conf.RESULTS["DATA_TRANSFORMATIONS_DIR"], "z_score_std").resolve()

@@ -67,6 +67,7 @@ smultixcan_results = pd.read_pickle(smultixcan_results_filename)
 smultixcan_results.shape
 
 # %% tags=[]
+# rows are gene IDs, and columns are phecodes (https://phewascatalog.org/phecodes)
 smultixcan_results.head()
 
 # %% [markdown] tags=[]
@@ -83,6 +84,10 @@ smultixcan_results.head()
 
 # %% [markdown] tags=[]
 # ## Remove duplicated gene entries
+
+# %% [markdown] tags=[]
+# After converting from Gene Ensembl IDs to symbols, we get some duplicated gene symbol entries.
+# Since these are just six genes, I just remove duplicates by keepng the first ones.
 
 # %% tags=[]
 smultixcan_results.index[smultixcan_results.index.duplicated(keep="first")]
@@ -120,7 +125,7 @@ _tmp.shape
 assert _tmp.shape == smultixcan_results.shape
 
 # %% tags=[]
-# some testing
+# pick some random traits and genes for testing
 _trait = "513"
 _gene = "SCYL3"
 assert (
@@ -172,6 +177,9 @@ smultixcan_into_multiplier.head()
 
 # %% [markdown] tags=[]
 # # Quick analysis
+
+# %% [markdown] tags=[]
+# Show the top phecodes for some LVs we were already looking at in PhenomeXcan.
 
 # %% tags=[]
 (smultixcan_into_multiplier.loc["LV603"].sort_values(ascending=False).head(20))
