@@ -168,14 +168,6 @@ deg_enrich.shape
 deg_enrich.head()
 
 # %% tags=[]
-# deg_enrich_max_idx = deg_enrich.groupby(["lv", "pathway"])["pval"].idxmax()
-
-# %% tags=[]
-# deg_enrich = deg_enrich.loc[deg_enrich_max_idx].reset_index(drop=True)
-# display(deg_enrich.shape)
-# display(deg_enrich.head())
-
-# %% tags=[]
 deg_enrich = deg_enrich.assign(
     lv_aligned=deg_enrich["lv"].apply(lambda x: x in well_aligned_lv_codes)
 )
