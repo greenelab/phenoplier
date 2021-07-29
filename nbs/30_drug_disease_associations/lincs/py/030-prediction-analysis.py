@@ -63,10 +63,10 @@ import conf
 # # Data loading
 
 # %% [markdown] tags=[]
-# ## PharmacotherapyDB: load gold standard
+# ## PharmacotherapyDB
 
 # %% [markdown]
-# ### Final
+# ### Gold standard set
 
 # %%
 gold_standard = pd.read_pickle(
@@ -83,10 +83,7 @@ gold_standard.head()
 # ### Info
 
 # %% tags=[]
-# TODO hardcoded
-input_file = Path(
-    conf.DATA_DIR, "hetionet/pharmacotherapydb-v1.0", "indications.tsv"
-).resolve()
+input_file = conf.PHARMACOTHERAPYDB["INDICATIONS_FILE"]
 display(input_file)
 
 # %%
@@ -277,7 +274,9 @@ with pd.option_context(
     _tmp = pharmadb_predictions[(pharmadb_predictions["different_sign"])].sort_values(
         ["score_difference", "drug_name", "method"], ascending=[False, False, False]
     )
-    display(_tmp.head(50))
+    
+    display(_tmp.shape)
+    display(_tmp)
 
 
 # %%
