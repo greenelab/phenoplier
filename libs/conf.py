@@ -83,6 +83,11 @@ RESULTS["CLUSTERING_INTERPRETATION"]["CLUSTERS_STATS"] = Path(
     "20_cluster_interpretation",
 ).resolve()
 
+RESULTS["CRISPR_ANALYSES"] = {}
+RESULTS["CRISPR_ANALYSES"]["BASE_DIR"] = Path(
+    RESULTS["BASE_DIR"], "crispr_analyses"
+).resolve()
+
 RESULTS["GLS"] = Path(RESULTS["BASE_DIR"], "gls").resolve()
 
 #
@@ -247,6 +252,14 @@ EMERGE["GENE_ASSOC_DIR"] = Path(EMERGE["BASE_DIR"], "gene_assoc").resolve()
 EMERGE["SMULTIXCAN_MASHR_ZSCORES_FILE"] = Path(
     EMERGE["GENE_ASSOC_DIR"], "emerge-smultixcan-mashr-zscores.pkl"
 ).resolve()
+
+
+#
+# CRISPR screening
+#
+CRISPR = {}
+CRISPR["BASE_DIR"] = Path(DATA_DIR, "crispr_screen").resolve()
+CRISPR["LIPIDS_GENE_SETS_FILE"] = Path(CRISPR["BASE_DIR"], "lipid_DEG.csv").resolve()
 
 
 if __name__ == "__main__":
