@@ -84,7 +84,7 @@ assert len(current_prediction_files) == (N_TISSUES * N_THRESHOLDS)
 current_prediction_files[:10]
 
 
-# %%
+# %% tags=[]
 def _get_tissue(x):
     """
     It extracts the tissue name from a filename.
@@ -95,7 +95,7 @@ def _get_tissue(x):
         return x.split("spredixcan-mashr-zscores-")[1].split("-data")[0]
 
 
-# %%
+# %% tags=[]
 # get all tissue names
 
 all_tissues = set()
@@ -113,31 +113,31 @@ for f in tqdm(current_prediction_files, ncols=100):
     _n_top_genes = metadata.n_top_genes.values[0]
     all_methods.add(_n_top_genes)
 
-# %%
+# %% tags=[]
 assert len(all_methods) == N_THRESHOLDS
 display(all_methods)
 
-# %%
+# %% tags=[]
 all_tissues = sorted(list(all_tissues))
 
-# %%
+# %% tags=[]
 assert len(all_tissues) == N_TISSUES
 
-# %%
+# %% tags=[]
 _tmp_df = pd.read_hdf(current_prediction_files[0], key="full_prediction")
 all_traits = _tmp_df["trait"].drop_duplicates().tolist()
 all_drugs = _tmp_df["drug"].drop_duplicates().tolist()
 
-# %%
+# %% tags=[]
 _tmp_df.head()
 
-# %%
+# %% tags=[]
 assert len(all_traits) == 4091
 
-# %%
+# %% tags=[]
 assert len(all_drugs) == 1170
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Create predictions dataframe
 
 # %% tags=[]
@@ -192,42 +192,42 @@ with pd.HDFStore(OUTPUT_FILENAME, mode="w", complevel=4) as store:
 # %% tags=[]
 _tissue = "Adipose_Subcutaneous"
 
-# %%
+# %% tags=[]
 with pd.HDFStore(OUTPUT_FILENAME, mode="r") as store:
     tissue_df = store[simplify_trait_fullcode(_tissue, prefix="")]
 
-# %%
+# %% tags=[]
 assert not tissue_df.isna().any().any()
 
-# %%
+# %% tags=[]
 tissue_df.shape
 
-# %%
+# %% tags=[]
 tissue_df.head()
 
-# %%
+# %% tags=[]
 _files = [x for x in current_prediction_files if f"-{_tissue}-" in x.name]
 
-# %%
+# %% tags=[]
 display(len(_files))
 assert len(_files) == N_THRESHOLDS
 
-# %%
+# %% tags=[]
 _files_data = [
     pd.read_hdf(f, key="full_prediction").set_index(["trait", "drug"]).squeeze().rank()
     for f in _files
 ]
 
-# %%
+# %% tags=[]
 _files_data[0].head(5)
 
-# %%
+# %% tags=[]
 _trait = "I9_PHLETHROMBDVTLOW-DVT_of_lower_extremities"
 _drug = "DB00014"
 
-# %%
+# %% tags=[]
 assert tissue_df.loc[_trait, _drug].round(7) == np.mean(
     [x.loc[(_trait, _drug)] for x in _files_data]
 ).round(7).astype("float32")
 
-# %%
+# %% tags=[]
