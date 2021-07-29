@@ -241,6 +241,20 @@ LINCS["CONSENSUS_SIGNATURES_FILE"] = Path(
 
 
 #
+# eMERGE
+#
+EMERGE = {}
+EMERGE["BASE_DIR"] = Path(DATA_DIR, "emerge").resolve()
+EMERGE["PHECODE_DESC_FILE"] = Path(
+    EMERGE["BASE_DIR"], "phecode_definitions1.2.csv"
+).resolve()
+EMERGE["GENE_ASSOC_DIR"] = Path(EMERGE["BASE_DIR"], "gene_assoc").resolve()
+EMERGE["SMULTIXCAN_MASHR_ZSCORES_FILE"] = Path(
+    EMERGE["GENE_ASSOC_DIR"], "emerge-smultixcan-mashr-zscores.pkl"
+).resolve()
+
+
+#
 # CRISPR screening
 #
 CRISPR = {}
