@@ -19,7 +19,7 @@
 
 # %% [markdown] tags=[]
 # This notebook is similar to `30` and `35`, but here I use the LVs that we found to be significantly enriched for the lipids CRISPR analysis, which might or might not coincide with the previously used LVs (those that discriminate clusters).
-# The traits here are from PhenomeXcan.
+# The traits here are from PhenomeXcan, and we select those from the main clusters found (see below) indicated in the clustering tree figure in the manuscript.
 
 # %% [markdown] tags=[]
 # # Environment variables
@@ -152,7 +152,8 @@ list(well_aligned_lv_codes)[:5]
 
 # %% tags=[]
 deg_enrich = pd.read_csv(
-    conf.RESULTS["CRISPR_ANALYSES"]["BASE_DIR"], "fgsea-hi_conf-all_lvs.tsv",
+    conf.RESULTS["CRISPR_ANALYSES"]["BASE_DIR"],
+    "fgsea-hi_conf-all_lvs.tsv",
     sep="\t",
 )
 
@@ -262,6 +263,7 @@ part29_clusters
 part29.value_counts().loc[[x for x in part29_clusters if x not in (0,)]].sum()
 
 # %% tags=[]
+# I only exclude the cluster labeled as 0, which has the "not-clustered" traits.
 PHENOTYPES_CONFIG = [(k, x) for x in part29_clusters if x not in (0,)]
 
 # %% [markdown] tags=[]
