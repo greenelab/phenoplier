@@ -274,9 +274,7 @@ pharmadb_predictions.head()
 with pd.option_context(
     "display.max_rows", None, "display.max_columns", None, "max_colwidth", None
 ):
-    _tmp = pharmadb_predictions[
-        (pharmadb_predictions["different_sign"])
-    ].sort_values(
+    _tmp = pharmadb_predictions[(pharmadb_predictions["different_sign"])].sort_values(
         ["score_difference", "drug_name", "method"], ascending=[False, False, False]
     )
     display(_tmp.head(50))

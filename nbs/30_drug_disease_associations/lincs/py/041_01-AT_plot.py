@@ -184,13 +184,10 @@ df = df.replace(
             "Monocyte": "Monocytes",
             "monocyte-derived macrophages": "Monocyte-derived\nmacrophages (WNV)",
             "Tongue squamous cell carcinoma": "Tongue squamous\ncell carcinoma",
-            
             "CD4+CD25highCD127low/- Treg cells": "Regulatory T cells (Treg)",
-            
             "WAT": "White adipose tissue",
             "BAT": "Brown adipose tissue",
             "human adipose-derived stem cells": "Adipose-derived stem cells",
-            
             "neural precursor cell derived neuronal like cells": "Neural precursor cell",
             "Neural crest cells (hNCC) derived from H9 ESC": "Neural crest cells",
             "NPC": "Neural progenitor cell",
@@ -215,7 +212,7 @@ with sns.plotting_context("paper", font_scale=2.5), sns.axes_style("whitegrid"):
         linewidth=None,
         ax=ax,
     )
-    
+
     ax.set_xlabel("Cell type")
     ax.set_ylabel("LV value")
     plt.xticks(rotation=45, horizontalalignment="right")
@@ -252,7 +249,9 @@ lv_data.head()
 import numpy as np
 
 # %%
-mask = np.column_stack([lv_data[col].str.contains("^NPC$", na=False) for col in lv_data if col != LV_NAME])
+mask = np.column_stack(
+    [lv_data[col].str.contains("^NPC$", na=False) for col in lv_data if col != LV_NAME]
+)
 
 # %%
 lv_data.loc[mask.any(axis=1)]
