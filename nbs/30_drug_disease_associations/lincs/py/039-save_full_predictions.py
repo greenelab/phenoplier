@@ -34,12 +34,14 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+from data.hdf5 import simplify_trait_fullcode
 import conf
 
 # %% [markdown] tags=[]
 # # Settings
 
 # %% tags=[]
+# these numbers are for testing/checking
 N_TISSUES = 49
 N_THRESHOLDS = 5
 
@@ -57,6 +59,10 @@ INPUT_PREDICTIONS_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_DIR = Path(INPUT_DIR, "predictions")
 display(OUTPUT_DIR)
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+# %% tags=[]
+OUTPUT_FILENAME = Path(OUTPUT_DIR, "predictions")
+display(OUTPUT_FILENAME)
 
 # %% [markdown] tags=[]
 # # Load drug-disease predictions
@@ -80,6 +86,9 @@ current_prediction_files[:10]
 
 # %%
 def _get_tissue(x):
+    """
+    It extracts the tissue name from a filename.
+    """
     if x.endswith("-projection"):
         return x.split("spredixcan-mashr-zscores-")[1].split("-projection")[0]
     else:
@@ -131,49 +140,15 @@ assert len(all_drugs) == 1170
 # %% [markdown]
 # ## Create predictions dataframe
 
-# %%
-# predictions_interables = [
-#     pd.CategoricalIndex(all_tissues, ordered=True),
-#     pd.CategoricalIndex(all_traits, ordered=True),
-#     pd.CategoricalIndex(all_drugs, ordered=True),
-# ]
-
-# %%
-# predictions_index = pd.MultiIndex.from_product(predictions_interables, names=["tissue", "trait", "drug"])
-
-# %%
-# predictions_index.shape
-
-# %%
-# predictions_index[0]
-
-# %%
-# predictions = pd.Series(data=0.0, index=predictions_index, name="score", dtype="int")
-
-# %%
-# predictions.shape
-
-# %%
-# predictions.head()
-
-# %%
-output_file = Path(OUTPUT_DIR, "full_predictions_by_tissue-rank.h5").resolve()
-display(output_file)
-
-# %%
-from data.hdf5 import simplify_trait_fullcode
-
 # %% tags=[]
-# iterate for each prediction file and perform some preprocessing
-# each prediction file (.h5) has the predictions of one method (either module-based
+# Iterate for each prediction file and perform some preprocessing.
+#
+# Each prediction file (.h5) has the predictions of one method (either module-based
 # or gene-based) for all drug-disease pairs across all S-PrediXcan tissues
 
-# _tmp_unique = predictions.unique()
-# assert _tmp_unique.shape[0] == 1
-# assert _tmp_unique[0] == 0
-
-with pd.HDFStore(output_file, mode="w", complevel=4) as store:
+with pd.HDFStore(OUTPUT_FILENAME, mode="w", complevel=4) as store:
     for tissue in tqdm(all_tissues, ncols=100):
+        # get all the prediction files for one tissue
         tissue_prediction_files = [
             x for x in current_prediction_files if f"-{tissue}-" in x.name
         ]
@@ -201,10 +176,10 @@ with pd.HDFStore(output_file, mode="w", complevel=4) as store:
             )
             prediction_data = prediction_data.astype("float32")
 
-            # sum across N_THRESHOLDS
+            # sum across N_THRESHOLDS (which is equals to len(all_methods))
             tissue_df += prediction_data.loc[tissue_df.index, tissue_df.columns]
 
-        # save
+        # save the average
         store.put(
             simplify_trait_fullcode(tissue, prefix=""),
             (tissue_df / len(all_methods)).astype("float32"),
@@ -218,7 +193,7 @@ with pd.HDFStore(output_file, mode="w", complevel=4) as store:
 _tissue = "Adipose_Subcutaneous"
 
 # %%
-with pd.HDFStore(output_file, mode="r") as store:
+with pd.HDFStore(OUTPUT_FILENAME, mode="r") as store:
     tissue_df = store[simplify_trait_fullcode(_tissue, prefix="")]
 
 # %%
