@@ -282,7 +282,7 @@ class LVAnalysis(object):
         return top_projects.index
 
     @lru_cache(maxsize=None)
-    def get_experiments_data(self, quantile=0.99, debug=True, warnings=True):
+    def get_experiments_data(self, quantile=0.99, debug=True, show_warnings=True):
         """
         For each top SRP code associated with this LV (see method get_top_projects),
         it obtains all experiments and concatenates everything into one dataframe.
@@ -290,7 +290,7 @@ class LVAnalysis(object):
         Args:
             quantile: quantile parameter of method get_top_projects
             debug: activates debugging messages
-            warnings: activates warnings messages
+            show_warnings: activates warnings messages
 
         Returns:
 
@@ -319,14 +319,11 @@ class LVAnalysis(object):
 
             experiments_df_list.append(edr.data)
 
-        # print()
-
-        if len(experiments_df_list) != top_projects.shape[0]:
-            if warnings:
-                warnings.warn(
-                    f"Not all experiments data could be loaded "
-                    f"({len(experiments_df_list)} != {top_projects.shape[0]})"
-                )
+        if show_warnings and (len(experiments_df_list) != top_projects.shape[0]):
+            warnings.warn(
+                f"Not all experiments data could be loaded "
+                f"({len(experiments_df_list)} != {top_projects.shape[0]})"
+            )
 
         df = pd.concat(experiments_df_list, ignore_index=True)
 
