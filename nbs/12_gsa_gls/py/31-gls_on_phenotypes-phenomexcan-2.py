@@ -21,7 +21,7 @@
 # It runs GLSPhenoplier to compute an association between each selected LV and PhenomeXcan trait. Traits of interest are selected from the "complex branch" (clustering results), and LVs are those predicted (by a decision tree classifier) to be discriminative for those clusters in the "complex branch".
 
 # %% [markdown] tags=[]
-# This notebook includes more clusters of traits.
+# This notebook is the same as `30-gls_on_phenotypes-phenomexcan.ipynb`, but it includes more clusters of traits. The fact that it is separated is that we want to avoid running all again (we decided to analyze other clusters later).
 
 # %% [markdown] tags=[]
 # # Environment variables
