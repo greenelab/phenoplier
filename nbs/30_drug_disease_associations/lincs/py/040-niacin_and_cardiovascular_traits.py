@@ -184,7 +184,6 @@ _phenomexcan_traits = [
     "CARDIoGRAM_C4D_CAD_ADDITIVE",
     "I25-Diagnoses_main_ICD10_I25_Chronic_ischaemic_heart_disease",
     "20002_1473-Noncancer_illness_code_selfreported_high_cholesterol",
-    
     "6150_100-Vascularheart_problems_diagnosed_by_doctor_None_of_the_above",
     "6150_1-Vascularheart_problems_diagnosed_by_doctor_Heart_attack",
     "I9_CHD-Major_coronary_heart_disease_event",
@@ -203,7 +202,7 @@ for p in _phenomexcan_traits:
     print(p)
     d = Trait.get_trait(full_code=p)
     print((d.n, d.n_cases))
-    
+
     print("\n")
 
 # %% [markdown]
@@ -225,7 +224,9 @@ display(_tmp.head())
 
 # %%
 # show top tissue models (from TWAS) for each trait
-traits_best_tissues_df = pd.DataFrame(drugs_tissue_df).loc[_phenomexcan_traits].idxmax(1)
+traits_best_tissues_df = (
+    pd.DataFrame(drugs_tissue_df).loc[_phenomexcan_traits].idxmax(1)
+)
 display(traits_best_tissues_df)
 
 # %%
@@ -338,15 +339,15 @@ common_lvs = []
 
 for c in drug_trait_predictions.columns:
     _tmp = drug_trait_predictions[c]
-    
+
     _tmp = _tmp[_tmp > 0.0]
     q = _tmp.quantile(QUANTILE)
     _tmp = _tmp[_tmp > q]
     display(f"Number of LVs: {_tmp.shape[0]}")
-    
+
     _tmp = _tmp.sort_values(ascending=False)
     common_lvs.append(_tmp)
-    
+
     display(_tmp.head(20))
     print()
 
@@ -366,7 +367,9 @@ drug_data.sort_values(ascending=True).head(15)
 # # Get common LVs
 
 # %%
-common_lvs_df = pd.concat(common_lvs).reset_index().rename(columns={"index": "lv", 0: "value"})
+common_lvs_df = (
+    pd.concat(common_lvs).reset_index().rename(columns={"index": "lv", 0: "value"})
+)
 
 # %%
 common_lvs_df.shape
@@ -379,7 +382,9 @@ lvs_by_sum = common_lvs_df.groupby("lv").sum().squeeze().sort_values(ascending=F
 display(lvs_by_sum.head(25))
 
 # %%
-lvs_by_count = common_lvs_df.groupby("lv").count().squeeze().sort_values(ascending=False)
+lvs_by_count = (
+    common_lvs_df.groupby("lv").count().squeeze().sort_values(ascending=False)
+)
 display(lvs_by_count.head(25))
 
 # %% [markdown]
