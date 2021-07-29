@@ -225,8 +225,17 @@ pharmadb_predictions["disease"].unique()
 # %% [markdown] tags=[]
 # # Looks for differences in scores of both methods
 
+# %% [markdown]
+# Here I'm interested in seeing in which drug-disease pairs the method differ the most.
+
 # %% tags=[]
 def _compare(x):
+    """
+    It takes a DataFrame with the results for a drug-disease pair for each method (gene and module-based) and
+    computes whether signs in both scores are different and the absolute value of the scores. For example, if the
+    gene-based method assigned a score (standardized) of -0.76 (below the mean) and the module-based a score of 1.56 (above
+    the mean), it will indicate that signs are different and return also the difference.
+    """
     assert x.shape[0] == 2
     x_sign = np.sign(x["score_std"].values)
     x0 = x.iloc[0]["score_std"]
@@ -246,7 +255,7 @@ pharmadb_predictions = pharmadb_predictions.set_index(["trait", "drug"]).join(
 pharmadb_predictions.head()
 
 # %% [markdown] tags=[]
-# ## any disease
+# ## Across all disease
 
 # %% tags=[]
 with pd.option_context(
@@ -262,6 +271,9 @@ with pd.option_context(
 
 # %% tags=[]
 def find_differences(trait_name):
+    """
+    Given the name of a trait, it shows for which drugs both methods provide different scores.
+    """
     with pd.option_context(
         "display.max_rows", None, "display.max_columns", None, "max_colwidth", None
     ):
@@ -278,16 +290,20 @@ def find_differences(trait_name):
 # ## coronary artery disease
 
 # %% tags=[]
+# take a look at CAD and niacin
 with pd.option_context(
     "display.max_rows", None, "display.max_columns", None, "max_colwidth", None
 ):
     _tmp = pharmadb_predictions[
         (pharmadb_predictions["drug_name"] == "Niacin")
-        & (pharmadb_predictions["disease"] == "coronary artery disease")  # avoid cancer
+        & (pharmadb_predictions["disease"] == "coronary artery disease")
     ].sort_values(
         ["score_difference", "drug_name", "method"], ascending=[False, False, False]
     )
     display(_tmp.head(50))
+
+# %% [markdown]
+# For CAD, both methods assigned a positive score for niacin.
 
 # %% tags=[]
 find_differences("coronary artery disease")
@@ -296,6 +312,7 @@ find_differences("coronary artery disease")
 # ## atherosclerosis
 
 # %% tags=[]
+# take a look at AT and niacin
 with pd.option_context(
     "display.max_rows", None, "display.max_columns", None, "max_colwidth", None
 ):
@@ -306,6 +323,9 @@ with pd.option_context(
         ["score_difference", "drug_name", "method"], ascending=[False, False, False]
     )
     display(_tmp.head(50))
+
+# %% [markdown]
+# For AT, the module-based method assigned a positive score, whereas the gene-based assigned one close to the mean, thus not giving a strong prediction for this pair.
 
 # %% tags=[]
 find_differences("atherosclerosis")
