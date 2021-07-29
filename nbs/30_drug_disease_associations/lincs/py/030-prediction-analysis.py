@@ -46,31 +46,31 @@ import conf
 # %% [markdown] tags=[]
 # ## PharmacotherapyDB
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ### Gold standard set
 
-# %%
+# %% tags=[]
 gold_standard = pd.read_pickle(
     Path(conf.RESULTS["DRUG_DISEASE_ANALYSES"], "gold_standard.pkl"),
 )
 
-# %%
+# %% tags=[]
 gold_standard.shape
 
-# %%
+# %% tags=[]
 gold_standard.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ### Info
 
 # %% tags=[]
 input_file = conf.PHARMACOTHERAPYDB["INDICATIONS_FILE"]
 display(input_file)
 
-# %%
+# %% tags=[]
 gold_standard_info = pd.read_csv(input_file, sep="\t")
 
-# %%
+# %% tags=[]
 gold_standard_info = gold_standard_info.rename(columns={"drug": "drug_name"})
 
 # %% tags=[]
@@ -79,7 +79,7 @@ gold_standard_info.shape
 # %% tags=[]
 gold_standard_info.head()
 
-# %%
+# %% tags=[]
 gold_standard_info = (
     gold_standard.set_index(["trait", "drug"])
     .join(
@@ -118,7 +118,7 @@ display(lincs_data.head())
 # %% [markdown] tags=[]
 # ## Prediction results (aggregated)
 
-# %%
+# %% tags=[]
 output_file = Path(
     conf.RESULTS["DRUG_DISEASE_ANALYSES"],
     "lincs",
@@ -127,19 +127,19 @@ output_file = Path(
 ).resolve()
 display(output_file)
 
-# %%
+# %% tags=[]
 predictions_avg = pd.read_pickle(output_file)
 
-# %%
+# %% tags=[]
 predictions_avg.shape
 
-# %%
+# %% tags=[]
 predictions_avg.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ### Merge with gold standard set
 
-# %%
+# %% tags=[]
 pharmadb_predictions = pd.merge(
     gold_standard_info,
     predictions_avg,
@@ -147,19 +147,19 @@ pharmadb_predictions = pd.merge(
     how="inner",
 )
 
-# %%
+# %% tags=[]
 pharmadb_predictions
 
-# %%
+# %% tags=[]
 pharmadb_predictions = pharmadb_predictions[
     ["trait", "drug", "disease", "drug_name", "method", "score", "true_class_x"]
 ].rename(columns={"true_class_x": "true_class", "drug_x": "drug"})
 
-# %%
+# %% tags=[]
 display(pharmadb_predictions.shape)
 assert pharmadb_predictions.shape[0] == predictions_avg.shape[0]
 
-# %%
+# %% tags=[]
 pharmadb_predictions.head()
 
 # %% tags=[]
@@ -168,15 +168,15 @@ pharmadb_predictions["trait"].unique().shape
 # %% tags=[]
 pharmadb_predictions["drug"].unique().shape
 
-# %%
+# %% tags=[]
 data_stats = pharmadb_predictions.groupby("method")["score"].describe()
 display(data_stats)
 
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Standardize scores for each method
 
-# %%
+# %% tags=[]
 # Standardize scores by method
 def _standardize(x):
     return (x["score"] - data_stats.loc[x["method"], "mean"]) / data_stats.loc[
@@ -184,48 +184,48 @@ def _standardize(x):
     ]
 
 
-# %%
+# %% tags=[]
 pharmadb_predictions = pharmadb_predictions.assign(
     score_std=pharmadb_predictions.apply(_standardize, axis=1)
 )
 
-# %%
+# %% tags=[]
 pharmadb_predictions
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ### Testing
 
-# %%
+# %% tags=[]
 _tmp = pharmadb_predictions.groupby("method")[["score", "score_std"]].describe()
 display(_tmp)
 
-# %%
+# %% tags=[]
 _tmp0 = pharmadb_predictions[(pharmadb_predictions["method"] == "Gene-based")][
     ["score", "score_std"]
 ]
 
-# %%
+# %% tags=[]
 assert all(_tmp0.corr() > 0.99999)
 
-# %%
+# %% tags=[]
 _tmp0 = pharmadb_predictions[(pharmadb_predictions["method"] == "Module-based")][
     ["score", "score_std"]
 ]
 
-# %%
+# %% tags=[]
 assert all(_tmp0.corr() > 0.99999)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # List diseases
 
-# %%
+# %% tags=[]
 pharmadb_predictions["disease"].unique()
 
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Looks for differences in scores of both methods
 
-# %%
+# %% tags=[]
 def _compare(x):
     assert x.shape[0] == 2
     x_sign = np.sign(x["score_std"].values)
@@ -237,18 +237,18 @@ def _compare(x):
     )
 
 
-# %%
+# %% tags=[]
 pharmadb_predictions = pharmadb_predictions.set_index(["trait", "drug"]).join(
     pharmadb_predictions.groupby(["trait", "drug"]).apply(_compare)
 )
 
-# %%
+# %% tags=[]
 pharmadb_predictions.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## any disease
 
-# %%
+# %% tags=[]
 with pd.option_context(
     "display.max_rows", None, "display.max_columns", None, "max_colwidth", None
 ):
@@ -260,7 +260,7 @@ with pd.option_context(
     display(_tmp)
 
 
-# %%
+# %% tags=[]
 def find_differences(trait_name):
     with pd.option_context(
         "display.max_rows", None, "display.max_columns", None, "max_colwidth", None
@@ -274,10 +274,10 @@ def find_differences(trait_name):
         display(_tmp)
 
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## coronary artery disease
 
-# %%
+# %% tags=[]
 with pd.option_context(
     "display.max_rows", None, "display.max_columns", None, "max_colwidth", None
 ):
@@ -289,13 +289,13 @@ with pd.option_context(
     )
     display(_tmp.head(50))
 
-# %%
+# %% tags=[]
 find_differences("coronary artery disease")
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## atherosclerosis
 
-# %%
+# %% tags=[]
 with pd.option_context(
     "display.max_rows", None, "display.max_columns", None, "max_colwidth", None
 ):
@@ -307,7 +307,7 @@ with pd.option_context(
     )
     display(_tmp.head(50))
 
-# %%
+# %% tags=[]
 find_differences("atherosclerosis")
 
-# %%
+# %% tags=[]
