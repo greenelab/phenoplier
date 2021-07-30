@@ -17,21 +17,23 @@ def test_one_sided_pvalue_coef_positive():
 
     df = model.results.df_resid
 
-    # one-sided pvalue
+    # get expected pvalues for the one-sided and two-sided tests
     exp_pval_twosided = stats.t.sf(model.results.tvalues.loc["lv"], df) * 2.0
     exp_pval_onesided = stats.t.sf(model.results.tvalues.loc["lv"], df)
 
-    # two-sided pvalue
+    # get observed two-sided pvalue
     obs_pval_twosided = model.results.pvalues.loc["lv"]
 
+    # check that pvalue is greater than zero and sufficiently small
     assert obs_pval_twosided is not None
     assert obs_pval_twosided > 0.0
     assert obs_pval_twosided < 1e-6
     assert obs_pval_twosided == exp_pval_twosided == exp_pval_onesided * 2.0
 
-    # one-sided pvalue
+    # get observed one-sided pvalue
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
+    # check pvalue
     assert obs_pval_onesided is not None
     assert obs_pval_onesided > 0.0
     assert obs_pval_onesided < 1e-6
@@ -44,17 +46,20 @@ def test_one_sided_pvalue_coef_negative():
 
     df = model.results.df_resid
 
-    # two-sided pvalue
+    # get observed two-sided pvalue
     obs_pval_twosided = model.results.pvalues.loc["lv"]
 
+    # check that pvalue is greater than zero and sufficiently small
     assert obs_pval_twosided is not None
     assert obs_pval_twosided > 0.0
     assert obs_pval_twosided < 1e-2
 
-    # one-sided
+    # get expected and observed one-sided pvalue
     exp_pval_onesided = stats.t.sf(model.results.tvalues.loc["lv"], df)
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
+    # check that pvalue for one-sided test is large enough, almost close to one,
+    # since here the coeficient is negative
     assert obs_pval_onesided is not None
     assert obs_pval_onesided > 0.99
     assert obs_pval_onesided < 1.0
