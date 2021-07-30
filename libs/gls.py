@@ -162,6 +162,10 @@ class GLSPhenoplier(object):
         gls_results = gls_model.fit()
 
         # add one-sided pvalue
+        # in this case we are only interested in testing whether the coeficient
+        # is positive (positive correlation between gene weights in an LV and
+        # gene associations for a trait). We are not interested if it is
+        # negative, since it does not seem to make much sense.
         gls_results.pvalues_onesided = gls_results.pvalues.copy()
         idx = gls_results.pvalues_onesided.index.tolist()
         gls_results.pvalues_onesided.loc[idx] = stats.t.sf(
