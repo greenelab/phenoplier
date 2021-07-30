@@ -209,15 +209,30 @@ assert recount2_all_paths_cm.loc["MMP14", "PID_HIF2PATHWAY"]
 # %% [markdown] tags=[]
 # ## Save
 
+# %% [markdown] tags=[]
+# ### Pickle format
+
 # %% tags=[]
 output_filename = Path(conf.RECOUNT2["BASE_DIR"], "recount_all_paths_cm.pkl").resolve()
-
 display(output_filename)
 
 # %% tags=[]
 recount2_all_paths_cm.to_pickle(output_filename)
 
+# %% [markdown] tags=[]
+# ### Text format
+
 # %% tags=[]
-del recount2_all_paths_cm
+# tsv format
+output_text_file = output_filename.with_suffix(".tsv.gz")
+display(output_text_file)
+
+# %%
+recount2_all_paths_cm.astype("int").head()
+
+# %% tags=[]
+recount2_all_paths_cm.astype("int").to_csv(
+    output_text_file, sep="\t", index=True, float_format="%.5e"
+)
 
 # %% tags=[]
