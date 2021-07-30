@@ -170,7 +170,7 @@ with localconverter(ro.default_converter + pandas2ri.converter):
 recount2_all_paths_cm_values
 
 # %% tags=[]
-recount2_all_paths_cm = pd.DataFrame(
+recount2_all_paths_cm_df = pd.DataFrame(
     data=recount2_all_paths_cm_values,
     index=recount2_all_paths_cm.rownames,
     columns=recount2_all_paths_cm.colnames,
@@ -178,33 +178,33 @@ recount2_all_paths_cm = pd.DataFrame(
 )
 
 # %% tags=[]
-assert recount2_all_paths_cm.shape == (6750, 628)
+assert recount2_all_paths_cm_df.shape == (6750, 628)
 
 # %% tags=[]
-recount2_all_paths_cm.shape
+recount2_all_paths_cm_df.shape
 
 # %% tags=[]
-recount2_all_paths_cm.dtypes.unique()
+recount2_all_paths_cm_df.dtypes.unique()
 
 # %% tags=[]
-recount2_all_paths_cm.head()
+recount2_all_paths_cm_df.head()
 
 # %% [markdown] tags=[]
 # ## Testing
 
 # %% tags=[]
-recount2_all_paths_cm.loc["CTSD", "REACTOME_SCFSKP2_MEDIATED_DEGRADATION_OF_P27_P21"]
+recount2_all_paths_cm_df.loc["CTSD", "REACTOME_SCFSKP2_MEDIATED_DEGRADATION_OF_P27_P21"]
 
 # %% tags=[]
-assert not recount2_all_paths_cm.loc[
+assert not recount2_all_paths_cm_df.loc[
     "CTSD", "REACTOME_SCFSKP2_MEDIATED_DEGRADATION_OF_P27_P21"
 ]
 
 # %% tags=[]
-assert recount2_all_paths_cm.loc["CTSD", "PID_P53DOWNSTREAMPATHWAY"]
+assert recount2_all_paths_cm_df.loc["CTSD", "PID_P53DOWNSTREAMPATHWAY"]
 
 # %% tags=[]
-assert recount2_all_paths_cm.loc["MMP14", "PID_HIF2PATHWAY"]
+assert recount2_all_paths_cm_df.loc["MMP14", "PID_HIF2PATHWAY"]
 
 # %% [markdown] tags=[]
 # ## Save
@@ -217,7 +217,17 @@ output_filename = Path(conf.RECOUNT2["BASE_DIR"], "recount_all_paths_cm.pkl").re
 display(output_filename)
 
 # %% tags=[]
-recount2_all_paths_cm.to_pickle(output_filename)
+recount2_all_paths_cm_df.to_pickle(output_filename)
+
+# %% [markdown] tags=[]
+# ### RDS format
+
+# %% tags=[]
+output_rds_file = output_filename.with_suffix(".rds")
+display(output_rds_file)
+
+# %%
+saveRDS(recount2_all_paths_cm, str(output_rds_file))
 
 # %% [markdown] tags=[]
 # ### Text format
@@ -228,10 +238,10 @@ output_text_file = output_filename.with_suffix(".tsv.gz")
 display(output_text_file)
 
 # %% tags=[]
-recount2_all_paths_cm.astype("int").head()
+recount2_all_paths_cm_df.astype("int").head()
 
 # %% tags=[]
-recount2_all_paths_cm.astype("int").to_csv(
+recount2_all_paths_cm_df.astype("int").to_csv(
     output_text_file, sep="\t", index=True, float_format="%.5e"
 )
 
