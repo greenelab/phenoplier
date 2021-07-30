@@ -89,7 +89,10 @@ for cohort, result_files in INPUT_FILES_PER_COHORT.items():
 
     dfs = pd.concat(dfs, ignore_index=True)
 
-    # remove duplicate runs
+    # remove duplicate tests/runs
+    # This can happen because in PhenomeXcan I select LV-trait pairs by their
+    # associationfrom the clustering results (notebooks 30-, 31-) or from the
+    # CRISPR results (notebook 40-). And they might overlap.
     dfs = dfs.drop_duplicates(subset=["phenotype", "lv"])
 
     # adjust pvalues
