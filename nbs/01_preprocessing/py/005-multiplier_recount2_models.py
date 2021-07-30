@@ -44,6 +44,9 @@ import conf
 # %% tags=[]
 readRDS = ro.r["readRDS"]
 
+# %% tags=[]
+saveRDS = ro.r["saveRDS"]
+
 # %% [markdown] tags=[]
 # # Read MultiPLIER model
 
@@ -118,6 +121,16 @@ display(output_file)
 multiplier_model_matrix_df.to_pickle(output_file)
 
 # %% [markdown] tags=[]
+# ### RDS format
+
+# %% tags=[]
+output_rds_file = output_file.with_suffix(".rds")
+display(output_rds_file)
+
+# %%
+saveRDS(multiplier_model_matrix, str(output_rds_file))
+
+# %% [markdown] tags=[]
 # ### Text format
 
 # %% tags=[]
@@ -185,6 +198,16 @@ display(output_file)
 
 # %% tags=[]
 multiplier_model_matrix_df.to_pickle(output_file)
+
+# %% [markdown] tags=[]
+# ### RDS format
+
+# %% tags=[]
+output_rds_file = output_file.with_suffix(".rds")
+display(output_rds_file)
+
+# %%
+saveRDS(multiplier_model_matrix, str(output_rds_file))
 
 # %% [markdown] tags=[]
 # ### Text format
@@ -298,6 +321,16 @@ display(output_file)
 multiplier_model_matrix_df.to_pickle(output_file)
 
 # %% [markdown] tags=[]
+# ### RDS format
+
+# %% tags=[]
+output_rds_file = output_file.with_suffix(".rds")
+display(output_rds_file)
+
+# %%
+saveRDS(multiplier_model_matrix, str(output_rds_file))
+
+# %% [markdown] tags=[]
 # ### Text format
 
 # %% tags=[]
@@ -374,6 +407,16 @@ display(output_file)
 
 # %% tags=[]
 multiplier_model_matrix_df.to_pickle(output_file)
+
+# %% [markdown] tags=[]
+# ### RDS format
+
+# %% tags=[]
+output_rds_file = output_file.with_suffix(".rds")
+display(output_rds_file)
+
+# %%
+saveRDS(multiplier_model_matrix, str(output_rds_file))
 
 # %% [markdown] tags=[]
 # ### Text format
@@ -454,6 +497,16 @@ display(output_file)
 multiplier_model_matrix_df.to_pickle(output_file)
 
 # %% [markdown] tags=[]
+# ### RDS format
+
+# %% tags=[]
+output_rds_file = output_file.with_suffix(".rds")
+display(output_rds_file)
+
+# %%
+saveRDS(multiplier_model_matrix, str(output_rds_file))
+
+# %% [markdown] tags=[]
 # ### Text format
 
 # %% tags=[]
@@ -504,6 +557,23 @@ with open(output_file, "wb") as handle:
     pickle.dump(model_metadata, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # %% [markdown] tags=[]
+# ### RDS format
+
+# %% tags=[]
+output_rds_file = output_file.with_suffix(".rds")
+display(output_rds_file)
+
+# %%
+# convert numpy.float64 to standard float objects
+rds_list = ro.ListVector({k: float(v) for k, v in model_metadata.items()})
+
+# %%
+rds_list
+
+# %%
+saveRDS(rds_list, str(output_rds_file))
+
+# %% [markdown] tags=[]
 # ### Text format
 
 # %% tags=[]
@@ -526,7 +596,6 @@ multiplier_model_matrix_df.to_csv(
     output_text_file,
     sep="\t",
     index=False,
-    #     float_format="%.5e"
 )
 
 # %% tags=[]
