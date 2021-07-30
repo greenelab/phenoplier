@@ -44,6 +44,9 @@ import conf
 # %% tags=[]
 readRDS = ro.r["readRDS"]
 
+# %% tags=[]
+saveRDS = ro.r["saveRDS"]
+
 # %% [markdown] tags=[]
 # # Read entire recount data prep file
 
