@@ -229,7 +229,7 @@ recount2_all_paths_cm_df.to_pickle(output_filename)
 output_rds_file = output_filename.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 saveRDS(recount2_all_paths_cm, str(output_rds_file))
 
 # %% [markdown] tags=[]

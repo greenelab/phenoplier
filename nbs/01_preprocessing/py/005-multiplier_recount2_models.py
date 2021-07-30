@@ -127,7 +127,7 @@ multiplier_model_matrix_df.to_pickle(output_file)
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 saveRDS(multiplier_model_matrix, str(output_rds_file))
 
 # %% [markdown] tags=[]
@@ -206,7 +206,7 @@ multiplier_model_matrix_df.to_pickle(output_file)
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 saveRDS(multiplier_model_matrix, str(output_rds_file))
 
 # %% [markdown] tags=[]
@@ -327,7 +327,7 @@ multiplier_model_matrix_df.to_pickle(output_file)
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 saveRDS(multiplier_model_matrix, str(output_rds_file))
 
 # %% [markdown] tags=[]
@@ -415,7 +415,7 @@ multiplier_model_matrix_df.to_pickle(output_file)
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 saveRDS(multiplier_model_matrix, str(output_rds_file))
 
 # %% [markdown] tags=[]
@@ -503,7 +503,7 @@ multiplier_model_matrix_df.to_pickle(output_file)
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 saveRDS(multiplier_model_matrix, str(output_rds_file))
 
 # %% [markdown] tags=[]
@@ -563,14 +563,14 @@ with open(output_file, "wb") as handle:
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 # convert numpy.float64 to standard float objects
 rds_list = ro.ListVector({k: float(v) for k, v in model_metadata.items()})
 
-# %%
+# %% tags=[]
 rds_list
 
-# %%
+# %% tags=[]
 saveRDS(rds_list, str(output_rds_file))
 
 # %% [markdown] tags=[]
