@@ -227,7 +227,7 @@ recount2_all_paths_cm.to_pickle(output_filename)
 output_text_file = output_filename.with_suffix(".tsv.gz")
 display(output_text_file)
 
-# %%
+# %% tags=[]
 recount2_all_paths_cm.astype("int").head()
 
 # %% tags=[]
