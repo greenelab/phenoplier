@@ -3,6 +3,7 @@ General utility functions.
 """
 import re
 import hashlib
+import subprocess
 from pathlib import Path
 from subprocess import run
 from typing import Dict
@@ -123,3 +124,18 @@ def generate_result_set_name(
         filename = f"{filename}{suffix}"
 
     return filename
+
+
+def get_git_repository_path():
+    """
+    Returns the Git repository path. If for any reason running git fails, it
+    returns the operating system temporary folder.
+    """
+    try:
+        results = run(["git", "rev-parse", "--show-toplevel"], stdout=subprocess.PIPE)
+
+        return Path(results.stdout.decode("utf-8").strip())
+    except Exception:
+        import tempfile
+
+        return Path(tempfile.gettempdir())
