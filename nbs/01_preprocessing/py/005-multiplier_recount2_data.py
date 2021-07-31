@@ -52,11 +52,11 @@ saveRDS = ro.r["saveRDS"]
 # %% [markdown] tags=[]
 # # Settings
 
-# %%
+# %% tags=[]
 DELIVERABLES_BASE_DIR = get_git_repository_path() / "data"
 display(DELIVERABLES_BASE_DIR)
 
-# %%
+# %% tags=[]
 OUTPUT_DIR = DELIVERABLES_BASE_DIR / "multiplier"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 display(OUTPUT_DIR)
@@ -250,7 +250,7 @@ copyfile(
 output_rds_file = output_filename.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 saveRDS(recount2_all_paths_cm, str(output_rds_file))
 
 # %% tags=[]

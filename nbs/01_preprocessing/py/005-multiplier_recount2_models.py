@@ -52,11 +52,11 @@ saveRDS = ro.r["saveRDS"]
 # %% [markdown] tags=[]
 # # Settings
 
-# %%
+# %% tags=[]
 DELIVERABLES_BASE_DIR = get_git_repository_path() / "data"
 display(DELIVERABLES_BASE_DIR)
 
-# %%
+# %% tags=[]
 OUTPUT_DIR = DELIVERABLES_BASE_DIR / "multiplier"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 display(OUTPUT_DIR)
@@ -148,7 +148,7 @@ copyfile(
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 saveRDS(multiplier_model_matrix, str(output_rds_file))
 
 # %% tags=[]
@@ -248,7 +248,7 @@ copyfile(
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 saveRDS(multiplier_model_matrix, str(output_rds_file))
 
 # %% tags=[]
@@ -390,7 +390,7 @@ copyfile(
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 saveRDS(multiplier_model_matrix, str(output_rds_file))
 
 # %% tags=[]
@@ -499,7 +499,7 @@ copyfile(
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 saveRDS(multiplier_model_matrix, str(output_rds_file))
 
 # %% tags=[]
@@ -608,7 +608,7 @@ copyfile(
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 saveRDS(multiplier_model_matrix, str(output_rds_file))
 
 # %% tags=[]
@@ -689,14 +689,14 @@ copyfile(
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 # convert numpy.float64 to standard float objects
 rds_list = ro.ListVector({k: float(v) for k, v in model_metadata.items()})
 
-# %%
+# %% tags=[]
 rds_list
 
-# %%
+# %% tags=[]
 saveRDS(rds_list, str(output_rds_file))
 
 # %% tags=[]
