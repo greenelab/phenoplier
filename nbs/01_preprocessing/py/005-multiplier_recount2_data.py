@@ -31,6 +31,7 @@
 
 # %% tags=[]
 from pathlib import Path
+from shutil import copyfile
 
 from IPython.display import display
 import pandas as pd
@@ -40,12 +41,25 @@ from rpy2.robjects import pandas2ri
 from rpy2.robjects.conversion import localconverter
 
 import conf
+from utils import get_git_repository_path
 
 # %% tags=[]
 readRDS = ro.r["readRDS"]
 
 # %% tags=[]
 saveRDS = ro.r["saveRDS"]
+
+# %% [markdown] tags=[]
+# # Settings
+
+# %%
+DELIVERABLES_BASE_DIR = get_git_repository_path() / "data"
+display(DELIVERABLES_BASE_DIR)
+
+# %%
+OUTPUT_DIR = DELIVERABLES_BASE_DIR / "multiplier"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+display(OUTPUT_DIR)
 
 # %% [markdown] tags=[]
 # # Read entire recount data prep file
@@ -222,6 +236,13 @@ display(output_filename)
 # %% tags=[]
 recount2_all_paths_cm_df.to_pickle(output_filename)
 
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_filename,
+    OUTPUT_DIR / output_filename.name,
+)
+
 # %% [markdown] tags=[]
 # ### RDS format
 
@@ -229,8 +250,15 @@ recount2_all_paths_cm_df.to_pickle(output_filename)
 output_rds_file = output_filename.with_suffix(".rds")
 display(output_rds_file)
 
-# %% tags=[]
+# %%
 saveRDS(recount2_all_paths_cm, str(output_rds_file))
+
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_rds_file,
+    OUTPUT_DIR / output_rds_file.name,
+)
 
 # %% [markdown] tags=[]
 # ### Text format
@@ -246,6 +274,13 @@ recount2_all_paths_cm_df.astype("int").head()
 # %% tags=[]
 recount2_all_paths_cm_df.astype("int").to_csv(
     output_text_file, sep="\t", index=True, float_format="%.5e"
+)
+
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_text_file,
+    OUTPUT_DIR / output_text_file.name,
 )
 
 # %% tags=[]

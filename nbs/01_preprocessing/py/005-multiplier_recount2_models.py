@@ -30,6 +30,7 @@
 
 # %% tags=[]
 import pickle
+from shutil import copyfile
 
 import numpy as np
 import pandas as pd
@@ -40,12 +41,25 @@ from rpy2.robjects import pandas2ri
 from rpy2.robjects.conversion import localconverter
 
 import conf
+from utils import get_git_repository_path
 
 # %% tags=[]
 readRDS = ro.r["readRDS"]
 
 # %% tags=[]
 saveRDS = ro.r["saveRDS"]
+
+# %% [markdown] tags=[]
+# # Settings
+
+# %%
+DELIVERABLES_BASE_DIR = get_git_repository_path() / "data"
+display(DELIVERABLES_BASE_DIR)
+
+# %%
+OUTPUT_DIR = DELIVERABLES_BASE_DIR / "multiplier"
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+display(OUTPUT_DIR)
 
 # %% [markdown] tags=[]
 # # Read MultiPLIER model
@@ -120,6 +134,13 @@ display(output_file)
 # %% tags=[]
 multiplier_model_matrix_df.to_pickle(output_file)
 
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_file,
+    OUTPUT_DIR / output_file.name,
+)
+
 # %% [markdown] tags=[]
 # ### RDS format
 
@@ -127,8 +148,15 @@ multiplier_model_matrix_df.to_pickle(output_file)
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %% tags=[]
+# %%
 saveRDS(multiplier_model_matrix, str(output_rds_file))
+
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_rds_file,
+    OUTPUT_DIR / output_rds_file.name,
+)
 
 # %% [markdown] tags=[]
 # ### Text format
@@ -141,6 +169,13 @@ display(output_text_file)
 # %% tags=[]
 multiplier_model_matrix_df.to_csv(
     output_text_file, sep="\t", index=False, float_format="%.5e"
+)
+
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_text_file,
+    OUTPUT_DIR / output_text_file.name,
 )
 
 # %% [markdown] tags=[]
@@ -199,6 +234,13 @@ display(output_file)
 # %% tags=[]
 multiplier_model_matrix_df.to_pickle(output_file)
 
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_file,
+    OUTPUT_DIR / output_file.name,
+)
+
 # %% [markdown] tags=[]
 # ### RDS format
 
@@ -206,8 +248,15 @@ multiplier_model_matrix_df.to_pickle(output_file)
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %% tags=[]
+# %%
 saveRDS(multiplier_model_matrix, str(output_rds_file))
+
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_rds_file,
+    OUTPUT_DIR / output_rds_file.name,
+)
 
 # %% [markdown] tags=[]
 # ### Text format
@@ -220,6 +269,13 @@ display(output_text_file)
 # %% tags=[]
 multiplier_model_matrix_df.to_csv(
     output_text_file, sep="\t", index=True, float_format="%.5e"
+)
+
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_text_file,
+    OUTPUT_DIR / output_text_file.name,
 )
 
 # %% [markdown] tags=[]
@@ -320,6 +376,13 @@ display(output_file)
 # %% tags=[]
 multiplier_model_matrix_df.to_pickle(output_file)
 
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_file,
+    OUTPUT_DIR / output_file.name,
+)
+
 # %% [markdown] tags=[]
 # ### RDS format
 
@@ -327,8 +390,15 @@ multiplier_model_matrix_df.to_pickle(output_file)
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %% tags=[]
+# %%
 saveRDS(multiplier_model_matrix, str(output_rds_file))
+
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_rds_file,
+    OUTPUT_DIR / output_rds_file.name,
+)
 
 # %% [markdown] tags=[]
 # ### Text format
@@ -341,6 +411,13 @@ display(output_text_file)
 # %% tags=[]
 multiplier_model_matrix_df.to_csv(
     output_text_file, sep="\t", index=True, float_format="%.5e"
+)
+
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_text_file,
+    OUTPUT_DIR / output_text_file.name,
 )
 
 # %% [markdown] tags=[]
@@ -408,6 +485,13 @@ display(output_file)
 # %% tags=[]
 multiplier_model_matrix_df.to_pickle(output_file)
 
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_file,
+    OUTPUT_DIR / output_file.name,
+)
+
 # %% [markdown] tags=[]
 # ### RDS format
 
@@ -415,8 +499,15 @@ multiplier_model_matrix_df.to_pickle(output_file)
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %% tags=[]
+# %%
 saveRDS(multiplier_model_matrix, str(output_rds_file))
+
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_rds_file,
+    OUTPUT_DIR / output_rds_file.name,
+)
 
 # %% [markdown] tags=[]
 # ### Text format
@@ -429,6 +520,13 @@ display(output_text_file)
 # %% tags=[]
 multiplier_model_matrix_df.to_csv(
     output_text_file, sep="\t", index=True, float_format="%.5e"
+)
+
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_text_file,
+    OUTPUT_DIR / output_text_file.name,
 )
 
 # %% [markdown] tags=[]
@@ -496,6 +594,13 @@ display(output_file)
 # %% tags=[]
 multiplier_model_matrix_df.to_pickle(output_file)
 
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_file,
+    OUTPUT_DIR / output_file.name,
+)
+
 # %% [markdown] tags=[]
 # ### RDS format
 
@@ -503,8 +608,15 @@ multiplier_model_matrix_df.to_pickle(output_file)
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %% tags=[]
+# %%
 saveRDS(multiplier_model_matrix, str(output_rds_file))
+
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_rds_file,
+    OUTPUT_DIR / output_rds_file.name,
+)
 
 # %% [markdown] tags=[]
 # ### Text format
@@ -517,6 +629,13 @@ display(output_text_file)
 # %% tags=[]
 multiplier_model_matrix_df.to_csv(
     output_text_file, sep="\t", index=True, float_format="%.5e"
+)
+
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_text_file,
+    OUTPUT_DIR / output_text_file.name,
 )
 
 # %% [markdown] tags=[]
@@ -556,6 +675,13 @@ display(output_file)
 with open(output_file, "wb") as handle:
     pickle.dump(model_metadata, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_file,
+    OUTPUT_DIR / output_file.name,
+)
+
 # %% [markdown] tags=[]
 # ### RDS format
 
@@ -563,15 +689,22 @@ with open(output_file, "wb") as handle:
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %% tags=[]
+# %%
 # convert numpy.float64 to standard float objects
 rds_list = ro.ListVector({k: float(v) for k, v in model_metadata.items()})
 
-# %% tags=[]
+# %%
 rds_list
 
-# %% tags=[]
+# %%
 saveRDS(rds_list, str(output_rds_file))
+
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_rds_file,
+    OUTPUT_DIR / output_rds_file.name,
+)
 
 # %% [markdown] tags=[]
 # ### Text format
@@ -596,6 +729,13 @@ multiplier_model_matrix_df.to_csv(
     output_text_file,
     sep="\t",
     index=False,
+)
+
+# %% tags=[]
+# # copy to deliverables folder
+copyfile(
+    output_text_file,
+    OUTPUT_DIR / output_text_file.name,
 )
 
 # %% tags=[]
