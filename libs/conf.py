@@ -98,9 +98,8 @@ MANUSCRIPT["BASE_DIR"] = os.environ.get(
     "PHENOPLIER_MANUSCRIPT_DIR", settings.MANUSCRIPT_DIR
 )
 if MANUSCRIPT["BASE_DIR"] is not None:
-    MANUSCRIPT["FIGURES_DIR"] = Path(
-        MANUSCRIPT["BASE_DIR"], "content", "images"
-    ).resolve()
+    MANUSCRIPT["CONTENT_DIR"] = Path(MANUSCRIPT["BASE_DIR"], "content").resolve()
+    MANUSCRIPT["FIGURES_DIR"] = Path(MANUSCRIPT["CONTENT_DIR"], "images").resolve()
 
 #
 # recount2
@@ -148,6 +147,9 @@ MULTIPLIER["MODEL_METADATA_FILE"] = Path(
 ).resolve()
 MULTIPLIER["RECOUNT2_MODEL_FILE"] = Path(
     MULTIPLIER["BASE_DIR"], "recount_PLIER_model.RDS"
+).resolve()
+MULTIPLIER["BANCHEREAU_MCPCOUNTER_NEUTROPHIL_FILE"] = Path(
+    MULTIPLIER["BASE_DIR"], "Banchereau_MCPcounter_neutrophil_LV.tsv"
 ).resolve()
 
 #
@@ -247,6 +249,10 @@ EMERGE = {}
 EMERGE["BASE_DIR"] = Path(DATA_DIR, "emerge").resolve()
 EMERGE["PHECODE_DESC_FILE"] = Path(
     EMERGE["BASE_DIR"], "phecode_definitions1.2.csv"
+).resolve()
+EMERGE["DESC_FILE_WITH_SAMPLE_SIZE"] = Path(
+    EMERGE["BASE_DIR"],
+    "eMERGE_III_PMBB_GSA_v2_2020_phecode_AFR_EUR_cc50_counts_w_dictionary.txt",
 ).resolve()
 EMERGE["GENE_ASSOC_DIR"] = Path(EMERGE["BASE_DIR"], "gene_assoc").resolve()
 EMERGE["SMULTIXCAN_MASHR_ZSCORES_FILE"] = Path(
