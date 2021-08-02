@@ -173,6 +173,24 @@ def download_efo_ontology(**kwargs):
     )
 
 
+def download_emerge_phenotypes_description(**kwargs):
+    output_file = conf.EMERGE["DESC_FILE_WITH_SAMPLE_SIZE"]
+    curl(
+        "https://upenn.box.com/shared/static/jvjaclxyckv4qd9gqh89qdc53147uctg.txt",
+        output_file,
+        "e8ed06025fc393e3216c1af9d6e16615",
+    )
+
+
+def download_multiplier_banchereau_mcp_neutrophils(**kwargs):
+    output_file = conf.MULTIPLIER["BANCHEREAU_MCPCOUNTER_NEUTROPHIL_FILE"]
+    curl(
+        "https://raw.githubusercontent.com/greenelab/multi-plier/master/results/40/Banchereau_MCPcounter_neutrophil_LV.tsv",
+        output_file,
+        "2ed8d71d9fdcf857a44b7fd1a42035f0",
+    )
+
+
 def download_multiplier_recount2_model(**kwargs):
     """
     This method downloads the MultiPLIER model on recount2. Since this file is inside
