@@ -106,7 +106,7 @@ with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
 ), sns.color_palette("muted"):
     current_palette = iter(sns.color_palette())
 
-    fig, ax = plt.subplots(figsize=(14, 6))
+    fig, ax = plt.subplots(figsize=(18, 6))
     ax = sns.pointplot(
         data=plot_data, x="k", y=_measure_col, color=next(current_palette)
     )
