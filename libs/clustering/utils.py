@@ -100,11 +100,11 @@ def compare_arrays(x, y, comp_func, use_weighting=True):
         y: a 1D numpy array.
         comp_func: any function that accepts two arguments (numpy arrays) and
             returns a numerical value.
-        use_weighting: FIXME: this parameter should be removed and always
-            perform weighting.
+        use_weighting:
             A boolean indicating if the numerical output of function
             comp_func should be weighted/multiplied by the proportion of non-nan
-            values in the input arrays.
+            values in the input arrays. Note that in the context of clustering
+            this parameter should always be True.
 
     Returns:
         Any numerical value representing, for instance, the similarity between
