@@ -198,6 +198,9 @@ for p in _phenomexcan_traits:
 # %% [markdown] tags=[]
 # ## Get best tissue results for Niacin
 
+# %% [markdown] tags=[]
+# Here I read all niacin-diseases predictions across all tissue models from TWAS (focused on niacin here). That's how the prediction method works: I take the projection of drugs (from LINCS L1000) and the projection of gene-trait associations (from PhenomeXcan) in all tissues (49 tissues in total). By computing the negative dot product of the first matrix with those 49 matrices, I have 49 drug-disease predictions. The challenge here (an open problem) is to select the "best tissue". If we were working with, let's say, neuropsychiatric diseases, it would be relatively easy: take all brain tissues. But since we are predicting across a range of diseases with very different tissue etiologies, selecting the "best tissue" for each disease is challenging. The method we selected in the manuscript is, for each drug-disease pair, take the maximum prediction value. So in our case, the "best tissue" is the one that maximizes the prediction value/score for a drug-disease pair. The rationale is that this might select the closest to the "causal" tissue, but that can certainly not be the case. Maybe taking the mean or median is better, and this might likely be something a reviewer could ask us to do.
+
 # %% tags=[]
 drugs_tissue_df = {}
 
