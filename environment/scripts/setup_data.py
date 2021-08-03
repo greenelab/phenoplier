@@ -15,7 +15,9 @@ logger = get_logger("setup")
 # Methods names (that download files) which should only be included in testing
 # mode (see below).
 #
-DATA_IN_TESTING_MODE_ONLY = {}
+DATA_IN_TESTING_MODE_ONLY = {
+    "download_phenomexcan_rapid_gwas_pheno_info",
+}
 
 
 def _create_directories(node=conf.__dict__):
@@ -476,7 +478,7 @@ if __name__ == "__main__":
         ):
             continue
 
-        if key not in DATA_IN_TESTING_MODE_ONLY:
+        if key in DATA_IN_TESTING_MODE_ONLY:
             AVAILABLE_ACTIONS["testing"][key] = value
 
         AVAILABLE_ACTIONS["full"][key] = value
