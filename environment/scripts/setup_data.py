@@ -15,8 +15,7 @@ logger = get_logger("setup")
 # Methods names (that download files) which should only be included in testing
 # mode (see below).
 #
-DATA_IN_TESTING_MODE_ONLY = {
-}
+DATA_IN_TESTING_MODE_ONLY = {}
 
 
 def _create_directories(node=conf.__dict__):
