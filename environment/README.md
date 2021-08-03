@@ -26,12 +26,6 @@ supported** now.
     # Adjust the number of cores available for general tasks
     export PHENOPLIER_N_JOBS=2
 
-    # If you run the notebooks from the command line (using the
-    # `nbs/run_nbs.sh` script), this variable tells papermill to automatically
-    # override notebooks once finished (recommended). If not set, it will
-    # ask what you want to do.
-    export PHENOPLIER_RUN_NBS_OVERRIDE=1
-   
     # Export this variable if you downloaded the manuscript sources and want to
     # generate the figures for it.
     export PHENOPLIER_MANUSCRIPT_DIR=/tmp/manuscript_dir
@@ -42,11 +36,12 @@ supported** now.
 
 1. Adjust your `PYTHONPATH` variable to include the `libs` directory:
 
-FIXME: readlink does not work in macOS!!!!!!!!!!!!!!!!!!!!!!!
-
     ```bash
     export PYTHONPATH=`readlink -f ../libs/`:$PYTHONPATH
     ```
+
+    `readlink` might not work on macOS. In that case, simply replace it with
+    the absolute path to the `../libs/` folder.
 
 1. Download the data:
 
