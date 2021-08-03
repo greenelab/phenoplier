@@ -287,6 +287,12 @@ def find_differences(trait_name):
 
 
 # %% [markdown] tags=[]
+# # Cardiovascular diseases
+
+# %% [markdown] tags=[]
+# Since in the manuscript, in a previous section, we are working on an LV involved lipids metabolism, here we pick Niacin and some cardiovascular traits for further analysis.
+
+# %% [markdown] tags=[]
 # ## coronary artery disease
 
 # %% tags=[]
