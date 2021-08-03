@@ -12,14 +12,10 @@ logger = get_logger("setup")
 
 
 #
-# These are methods names (which download files) which should be included
-# in the full mode only (see __main__ below).
+# Methods names (that download files) which should only be included in testing
+# mode (see below).
 #
-DATA_IN_FULL_MODE_ONLY = {
-    "download_phenomexcan_smultixcan_mashr_zscores",
-    "download_phenomexcan_smultixcan_mashr_pvalues",
-    "download_multiplier_recount2_model",
-    "download_multiplier_recount2_data",
+DATA_IN_TESTING_MODE_ONLY = {
 }
 
 
@@ -466,8 +462,8 @@ if __name__ == "__main__":
 
     # create a list of available options:
     #   --mode=full:  it downloads all the data.
-    #   --mode=light: it downloads a smaller set of the data. This is useful for
-    #                 Github Action workflows.
+    #   --mode=testing: it downloads a smaller set of the data. This is useful for
+    #                   Github Action workflows.
     AVAILABLE_ACTIONS = defaultdict(dict)
 
     # Obtain all local attributes of this module and run functions to download files
@@ -481,8 +477,8 @@ if __name__ == "__main__":
         ):
             continue
 
-        if key not in DATA_IN_FULL_MODE_ONLY:
-            AVAILABLE_ACTIONS["light"][key] = value
+        if key not in DATA_IN_TESTING_MODE_ONLY:
+            AVAILABLE_ACTIONS["testing"][key] = value
 
         AVAILABLE_ACTIONS["full"][key] = value
 
@@ -492,8 +488,8 @@ if __name__ == "__main__":
         choices=list(AVAILABLE_ACTIONS.keys()),
         default="full",
         help="Specifies which kind of data should be downloaded. It "
-        "could be all the data (full) or a small subset (light, which is "
-        "used by default).",
+        "could be all the data (full) or a small subset (testing, which is "
+        "used by unit tests).",
     )
     parser.add_argument(
         "--action",
