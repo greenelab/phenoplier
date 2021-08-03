@@ -1,3 +1,8 @@
+"""
+This file has short renames for traits in PhenomeXcan. These are used mainly to
+generate the figures/tables.
+"""
+
 SHORT_TRAIT_NAMES = {
     "Non-cancer illness code, self-reported: high cholesterol": "High cholesterol (self-reported)",
     "Non-cancer illness code, self-reported: hypothyroidism/myxoedema": "hypothyroidism (self-reported)",
