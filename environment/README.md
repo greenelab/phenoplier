@@ -46,12 +46,12 @@ supported** now.
 1. Download the data:
 
     ```bash
-    python scripts/setup_data.py --mode light
+    python scripts/setup_data.py
     ```
 
-    Note that if you want to download all the data you have to use ``--mode
-    full``.  The full data set contains the original MultiPLIER RDS file with
-    the models, which is only necessary if you need to process it again.
+    Note that if you want to download just a subset of the data, you have to
+    use ``--mode light``. This won't download some files that are very large,
+    but will still be able to run most of the scripts.
 
 
 # Developer usage
@@ -81,16 +81,4 @@ These steps are only for PhenoPLIER developers.
     ```
 
 1. Modify `environment.yml` and leave only manually installed packages (not their dependencies).
-
-
-## Optional packages
-
-REMOVE THIS!!
-
-These optional packages might be useful for a developer, but are not necessary
-for a user.
-
-```bash
-conda install -c conda-forge jupytext
-```
 
