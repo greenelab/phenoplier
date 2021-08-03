@@ -490,7 +490,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--mode",
         choices=list(AVAILABLE_ACTIONS.keys()),
-        default="light",
+        default="full",
         help="Specifies which kind of data should be downloaded. It "
         "could be all the data (full) or a small subset (light, which is "
         "used by default).",
