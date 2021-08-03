@@ -36,7 +36,7 @@ def test_compare_arrays_with_nan():
     def my_func(a, b):
         return np.sum(a) + np.sum(b)
 
-    xy = compare_arrays(x, y, my_func)
+    xy = compare_arrays(x, y, my_func, use_weighting=False)
 
     assert xy is not None
     assert not np.isnan(xy)
@@ -50,7 +50,7 @@ def test_compare_arrays_with_more_nans():
     def my_func(a, b):
         return np.sum(a) + np.sum(b)
 
-    xy = compare_arrays(x, y, my_func)
+    xy = compare_arrays(x, y, my_func, use_weighting=False)
 
     assert xy is not None
     assert not np.isnan(xy)
