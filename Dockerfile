@@ -20,8 +20,13 @@ RUN wget \
 # setup phenoplier
 COPY . ${PHENOPLIER_CODE_DIR}
 RUN cd ${PHENOPLIER_CODE_DIR}/environment \
-    && conda env create --name phenoplier --file environment.yml \
-    && conda activate phenoplier \
+    && conda env create --name phenoplier --file environment.yml
+
+# Make RUN commands use the new environment
+RUN echo "conda activate phenoplier" >> ~/.bashrc
+SHELL ["/bin/bash", "--login", "-c"]
+
+RUN cd ${PHENOPLIER_CODE_DIR}/environment \
     && bash scripts/install_other_packages.sh
 
 ENV PYTHONPATH=${PHENOPLIER_CODE_DIR}/libs
