@@ -97,25 +97,6 @@ gold_standard_info.shape
 gold_standard_info.head()
 
 # %% [markdown] tags=[]
-# ## LINCS data
-
-# %% tags=[]
-input_file = Path(
-    conf.RESULTS["DRUG_DISEASE_ANALYSES"], "lincs", "lincs-data.pkl"
-).resolve()
-
-display(input_file)
-
-# %% tags=[]
-lincs_data = pd.read_pickle(input_file).T.rename(columns=Gene.GENE_ID_TO_NAME_MAP)
-
-# %% tags=[]
-display(lincs_data.shape)
-
-# %% tags=[]
-display(lincs_data.head())
-
-# %% [markdown] tags=[]
 # ## Prediction results (aggregated)
 
 # %% tags=[]
