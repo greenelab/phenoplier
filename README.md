@@ -1,26 +1,40 @@
 # PhenoPLIER
 
-![tests](https://github.com/greenelab/phenoplier/workflows/tests/badge.svg)
-![lint](https://github.com/greenelab/phenoplier/workflows/lint/badge.svg)
+[![Code tests](https://github.com/greenelab/phenoplier/workflows/tests/badge.svg)](https://github.com/greenelab/phenoplier/actions/workflows/pytest.yaml)
+[![HTML Manuscript](https://img.shields.io/badge/manuscript-HTML-blue.svg)](https://greenelab.github.io/phenoplier_manuscript/)
+[![PDF Manuscript](https://img.shields.io/badge/manuscript-PDF-blue.svg)](https://greenelab.github.io/phenoplier_manuscript/manuscript.pdf)
 
-Transcriptome-wide association studies (TWAS) allow to compute a gene-based
-association by imputing the genetically regulated gene expression and then
-correlating it with the trait of interest. However, these approaches usually
-look at one gene at a time, not considering that they act together to carry out
-different functions. This lack of a broader view of the molecular mechanisms
-involved in disease pathophysiology could harm the accurate prioritization of
-causal genes, thus hampering the identification of good targets for drug
-development or repurposing.
+# Overview
 
-PhenoPLIER is a computational approach that integrates TWAS and pharmacological
-perturbations with gene co-expression patterns (gene modules) learned from large
-expression compendia across different tissues, cell types and other conditions.
-PhenoPLIER aims to find novel gene module associations with complex traits, and
-also new pharmarcological perturbations that can suggest alternative treatment
-options when some genes are not druggable. The approach allows to infer 1) how
-gene modules affect complex traits, 2) in which conditions (cell types, tissues,
-etc) are those genes activated, and 3) how a gene module activity could be
-modulated with different compounds.
+![](images/phenoplier_overview.png)
+
+Understanding how dysregulated transcriptional processes result in
+tissue-specific pathology requires a mechanistic interpretation of expression
+regulation across different cell types. It has been shown that this insight is
+key for the development of new therapies. These mechanisms can be identified
+with transcriptome-wide association studies (TWAS), which have represented a
+significant step forward to test the mediating role of gene expression in GWAS
+associations. However, it is hard to disentangle causal cell types using eQTL
+data alone, and other methods generally do not use the large amounts of
+publicly available RNA-seq data. Here we introduce PhenoPLIER, a polygenic
+approach that maps both gene-trait associations and pharmacological
+perturbation data into a common latent representation for a joint analysis.
+This representation is based on modules of genes with similar expression
+patterns across the same tissues. We observed that diseases were significantly
+associated with gene modules expressed in relevant cell types, and our approach
+was accurate in predicting known drug-disease pairs and inferring mechanisms of
+action. Furthermore, using a CRISPR screen to analyze lipid regulation, we
+found that functionally important players lacked TWAS associations but were
+prioritized in phenotype-associated modules by PhenoPLIER. By incorporating
+groups of co-expressed genes, PhenoPLIER can contextualize genetic associations
+and reveal potential targets within associated processes that are missed by
+single-gene strategies.
+
+
+You can read the manuscript in
+[bioRxiv](https://doi.org/10.1101/2021.07.05.450786) or the [Manubot
+version](https://greenelab.github.io/phenoplier_manuscript/).
+
 
 # Setup
 
@@ -50,7 +64,7 @@ cd nbs/
 parallel -k --lb --halt 2 -j1 'bash run_nbs.sh {}' ::: 01_preprocessing/*.ipynb
 ```
 
-Or if you want to run all the analysis at once, you can use:
+Or if you want to run all the analyses at once, you can use:
 
 ```bash
 shopt -s globstar
@@ -67,4 +81,8 @@ bash scripts/run_nbs_server.sh
 
 Then, go to `http://localhost:8892`, browse the `nbs` folder, and run the
 notebooks in the specified order.
+
+## Docker image
+
+Coming soon.
 
