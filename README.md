@@ -82,7 +82,7 @@ bash scripts/run_nbs_server.sh
 Then, go to `http://localhost:8892`, browse the `nbs` folder, and run the
 notebooks in the specified order.
 
-## Docker image
+## From a Docker image
 
 Coming soon.
 
