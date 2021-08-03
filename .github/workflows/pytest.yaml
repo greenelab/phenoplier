@@ -34,7 +34,7 @@ jobs:
         env:
           PYTHONPATH: libs/
         run: |
-          python environment/scripts/setup_data.py --mode light
+          python environment/scripts/setup_data.py --mode testing
       - name: Run pytest
         shell: bash -l {0}
         env:
