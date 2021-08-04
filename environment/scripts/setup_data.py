@@ -277,6 +277,17 @@ def download_lincs_consensus_signatures(**kwargs):
     )
 
 
+def download_precomputed_gene_correlations(**kwargs):
+    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_NAMES_CORR_AVG"]
+    output_file.parent.mkdir(exist_ok=True, parents=True)
+    curl(
+        "https://upenn.box.com/shared/static/xopvxtlj44t4tswz3zzz8uxr6z7dzk0w.pkl",
+        output_file,
+        "cb2f7cabc1aa399a80699076b162a261",
+        logger=logger,
+    )
+
+
 def download_predixcan_mashr_prediction_models(**kwargs):
     output_folder = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"]
     if output_folder.exists():
