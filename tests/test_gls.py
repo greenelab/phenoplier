@@ -8,11 +8,12 @@ This is reported in this issue: https://github.com/greenelab/phenoplier/issues/4
 """
 from scipy import stats
 
+import conf
 from gls import GLSPhenoplier
 
 
 def test_one_sided_pvalue_coef_positive():
-    model = GLSPhenoplier()
+    model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
     model.fit_named("LV603", "neutrophil count")
 
     df = model.results.df_resid
@@ -41,7 +42,7 @@ def test_one_sided_pvalue_coef_positive():
 
 
 def test_one_sided_pvalue_coef_negative():
-    model = GLSPhenoplier()
+    model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
     model.fit_named("LV270", "20459-General_happiness_with_own_health")
 
     df = model.results.df_resid
