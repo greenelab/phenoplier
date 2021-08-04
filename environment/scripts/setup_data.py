@@ -280,7 +280,9 @@ def download_lincs_consensus_signatures(**kwargs):
 def download_predixcan_mashr_prediction_models(**kwargs):
     output_folder = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"]
     if output_folder.exists():
-        logger.warning(f"Output directory already exists ({output_folder}). This might cause issues, consider removing it first")
+        logger.warning(
+            f"Output directory already exists ({output_folder}). This might cause issues, consider removing it first"
+        )
         return
 
     output_folder.parent.mkdir(exist_ok=True, parents=True)
@@ -316,7 +318,9 @@ def download_predixcan_mashr_prediction_models(**kwargs):
 def download_spredixcan_hdf5_results(**kwargs):
     output_folder = conf.PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"] / "hdf5"
     if output_folder.exists():
-        logger.warning(f"Output directory already exists ({output_folder}). This might cause issues, consider removing it first")
+        logger.warning(
+            f"Output directory already exists ({output_folder}). This might cause issues, consider removing it first"
+        )
         return
 
     output_folder.parent.mkdir(exist_ok=True, parents=True)
@@ -377,7 +381,9 @@ def download_spredixcan_hdf5_results(**kwargs):
 def download_1000g_genotype_data(**kwargs):
     output_folder = conf.PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"]
     if output_folder.exists():
-        logger.warning(f"Output directory already exists ({output_folder}). This might cause issues, consider removing it first")
+        logger.warning(
+            f"Output directory already exists ({output_folder}). This might cause issues, consider removing it first"
+        )
         return
 
     output_folder.parent.mkdir(exist_ok=True, parents=True)
