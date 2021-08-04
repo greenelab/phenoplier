@@ -29,6 +29,7 @@ DATA_IN_TESTING_MODE_ONLY = {
     "download_predixcan_mashr_prediction_models",
     "download_precomputed_gene_correlations",
     "download_phenomexcan_smultixcan_mashr_zscores",
+    "download_snps_covariance",
 }
 
 
@@ -286,6 +287,17 @@ def download_precomputed_gene_correlations(**kwargs):
         "https://upenn.box.com/shared/static/xopvxtlj44t4tswz3zzz8uxr6z7dzk0w.pkl",
         output_file,
         "cb2f7cabc1aa399a80699076b162a261",
+        logger=logger,
+    )
+
+
+def download_snps_covariance(**kwargs):
+    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["SNPS_COVARIANCE_FILE"]
+    output_file.parent.mkdir(exist_ok=True, parents=True)
+    curl(
+        "https://upenn.box.com/shared/static/cm9my5bo8jw6nawsxy5y6z0ceh9wnecv.h5",
+        output_file,
+        "bac23b32561f49f1683c421965a4d237",
         logger=logger,
     )
 
