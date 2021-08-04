@@ -26,10 +26,12 @@ RUN cd ${PHENOPLIER_CODE_DIR}/environment \
 RUN echo "conda activate phenoplier" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
-RUN cd ${PHENOPLIER_CODE_DIR}/environment \
-    && bash scripts/install_other_packages.sh
+WORKDIR ${PHENOPLIER_CODE_DIR}
+
+RUN ["conda", "run", "-n", "phenoplier", "--no-capture-output", "/bin/bash", "environment/scripts/install_other_packages.sh"]
+
+#RUN cd ${PHENOPLIER_CODE_DIR}/environment \
+#    && bash scripts/install_other_packages.sh
 
 ENV PYTHONPATH=${PHENOPLIER_CODE_DIR}/libs
-
-WORKDIR ${PHENOPLIER_CODE_DIR}
 
