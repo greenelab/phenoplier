@@ -226,6 +226,10 @@ PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] = Path(
 PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"] = Path(
     PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "reference_panel_1000G"
 ).resolve()
+PHENOMEXCAN["LD_BLOCKS"]["SNPS_COVARIANCE_FILE"] = Path(
+    PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"],
+    "mashr_snps_chr_blocks_cov.h5",
+).resolve()
 PHENOMEXCAN["LD_BLOCKS"]["GENE_IDS_CORR_AVG"] = Path(
     PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"],
     "multiplier_genes-pred_expression_corr_avg.pkl",

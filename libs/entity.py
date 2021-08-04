@@ -682,9 +682,7 @@ class Gene(object):
         Returns:
             A square pandas dataframe with SNPs covariances.
         """
-        snps_cov_file = (
-            conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "mashr_snps_chr_blocks_cov.h5"
-        )
+        snps_cov_file = conf.PHENOMEXCAN["LD_BLOCKS"]["SNPS_COVARIANCE_FILE"]
 
         # go to disk and read the data
         with pd.HDFStore(snps_cov_file, mode="r") as store:

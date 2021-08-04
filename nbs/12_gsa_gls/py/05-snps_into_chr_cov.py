@@ -283,7 +283,7 @@ assert not _tmp.isna().any().any()
 # ## Compute covariance and save
 
 # %% tags=[]
-output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "mashr_snps_chr_blocks_cov.h5"
+output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["SNPS_COVARIANCE_FILE"]
 display(output_file)
 
 # %% tags=[]
