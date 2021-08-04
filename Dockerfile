@@ -1,10 +1,12 @@
 FROM ubuntu:20.04
 
 ENV PHENOPLIER_CODE_DIR=/opt/phenoplier_code
-
 ENV PHENOPLIER_N_JOBS=1
 ENV PHENOPLIER_ROOT_DIR=/opt/phenoplier_data
 ENV PHENOPLIER_MANUSCRIPT_DIR=/opt/phenoplier_manuscript
+
+VOLUME ${PHENOPLIER_ROOT_DIR}
+VOLUME ${PHENOPLIER_MANUSCRIPT_DIR}
 
 ENV PATH="/root/miniconda3/bin:${PATH}"
 ARG PATH="/root/miniconda3/bin:${PATH}"
