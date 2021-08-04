@@ -80,10 +80,7 @@ class GLSPhenoplier(object):
             gene-trait associations and gene loadings (Z).
         """
         # load gene correlations (with gene symbols)
-        input_filepath = (
-            conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
-            / "multiplier_genes-pred_expression_corr_avg-gene_names.pkl"
-        )
+        input_filepath = conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_NAMES_CORR_AVG"]
         gene_corrs = pd.read_pickle(input_filepath)
 
         # load gene-trait associations

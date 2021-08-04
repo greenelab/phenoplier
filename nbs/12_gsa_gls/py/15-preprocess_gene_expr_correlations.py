@@ -306,10 +306,7 @@ assert gene_corrs_df.loc[gene1, gene2] == _gene_values.mean()
 # ## With ensemble ids
 
 # %% tags=[]
-output_file = (
-    conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
-    / "multiplier_genes-pred_expression_corr_avg.pkl"
-)
+output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_IDS_CORR_AVG"]
 display(output_file)
 
 # %% tags=[]
@@ -319,10 +316,7 @@ gene_corrs_df.to_pickle(output_file)
 # ## With gene symbols
 
 # %% tags=[]
-output_file = (
-    conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
-    / "multiplier_genes-pred_expression_corr_avg-gene_names.pkl"
-)
+output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_NAMES_CORR_AVG"]
 display(output_file)
 
 # %% tags=[]
