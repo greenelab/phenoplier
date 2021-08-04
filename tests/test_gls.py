@@ -14,7 +14,7 @@ from gls import GLSPhenoplier
 
 def test_one_sided_pvalue_coef_positive():
     model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
-    model.fit_named("LV603", "neutrophil count")
+    model.fit_named("LV603", "Astle_et_al_2016_Neutrophil_count")
 
     df = model.results.df_resid
 
