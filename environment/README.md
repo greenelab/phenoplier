@@ -49,10 +49,6 @@ supported** now.
     python scripts/setup_data.py
     ```
 
-    Note that if you want to download just a subset of the data, you have to
-    use ``--mode light``. This won't download some files that are very large,
-    but will still be able to run most of the scripts.
-
 
 # Developer usage
 
