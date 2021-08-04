@@ -28,6 +28,7 @@ DATA_IN_TESTING_MODE_ONLY = {
     "download_multiplier_model_metadata_pkl",
     "download_predixcan_mashr_prediction_models",
     "download_precomputed_gene_correlations",
+    "download_phenomexcan_smultixcan_mashr_zscores",
 }
 
 
