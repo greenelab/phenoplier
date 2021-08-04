@@ -367,7 +367,6 @@ def download_spredixcan_hdf5_results(**kwargs):
 
 
 def download_1000g_genotype_data(**kwargs):
-    # FIXME: this method was not tested yet!!!!!!!
     output_folder = conf.PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"]
     output_folder.parent.mkdir(exist_ok=True, parents=True)
 
@@ -398,12 +397,11 @@ def download_1000g_genotype_data(**kwargs):
             if tarinfo.name.startswith("data/reference_panel_1000G/")
         ]
 
-        # FIXME: this won't work
-        assert (
-            output_folder.name in selected_folder
-        ), "Output folder name not inside tar file"
+        f.extractall(output_folder.parent, members=selected_folder)
 
-        f.extractall(output_folder, members=selected_folder)
+        # rename folder
+        (output_folder.parent / "data" / "reference_panel_1000G").rename(output_folder)
+        (output_folder.parent / "data").rmdir()
 
 
 def _get_file_from_zip(
