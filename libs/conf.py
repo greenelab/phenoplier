@@ -226,6 +226,14 @@ PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] = Path(
 PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"] = Path(
     PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "reference_panel_1000G"
 ).resolve()
+PHENOMEXCAN["LD_BLOCKS"]["GENE_IDS_CORR_AVG"] = Path(
+    PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"],
+    "multiplier_genes-pred_expression_corr_avg.pkl"
+).resolve()
+PHENOMEXCAN["LD_BLOCKS"]["GENE_NAMES_CORR_AVG"] = Path(
+    PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"],
+    "multiplier_genes-pred_expression_corr_avg-gene_names.pkl"
+).resolve()
 
 # predictions models
 PHENOMEXCAN["PREDICTION_MODELS"] = {}
