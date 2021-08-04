@@ -525,7 +525,7 @@ def plot_clustermap(rc, lv_labeling_function, output_filepath):
             cbar_pos=None,  # (-0.06, 0.8, 0.05, 0.18),
             xticklabels=False,
             yticklabels=True,
-            figsize=(18, 10),
+            figsize=(18, 13),
             method="complete",
             linewidths=0.25,
             rasterized=True,
@@ -580,7 +580,7 @@ def plot_clustermap(rc, lv_labeling_function, output_filepath):
 rc = {
     "axes.labelsize": 14,
     "xtick.labelsize": 14,
-    "ytick.labelsize": 7,
+    "ytick.labelsize": 8,
 }
 
 plot_clustermap(rc, None, OUTPUT_FIGURES_DIR / "global_clustermap-plain.svg")
