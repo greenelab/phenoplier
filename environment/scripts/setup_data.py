@@ -26,6 +26,7 @@ DATA_IN_TESTING_MODE_ONLY = {
     "download_biomart_genes_hg38",
     "download_multiplier_model_z_pkl",
     "download_multiplier_model_metadata_pkl",
+    "download_predixcan_mashr_prediction_models",
 }
 
 
@@ -274,6 +275,38 @@ def download_lincs_consensus_signatures(**kwargs):
         "891e257037adc15212405af461ffbfd6",
         logger=logger,
     )
+
+
+def download_predixcan_mashr_prediction_models(**kwargs):
+    output_folder = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"]
+    output_folder.parent.mkdir(exist_ok=True, parents=True)
+
+    output_tar_file = Path(
+        conf.PHENOMEXCAN["PREDICTION_MODELS"]["BASE_DIR"], "mashr_eqtl.tar"
+    ).resolve()
+    output_tar_file_md5 = "87f3470bf2676043c748b684fb35fa7d"
+
+    if not Path(output_tar_file).exists() or not md5_matches(
+        output_tar_file_md5, output_tar_file
+    ):
+        # download
+        curl(
+            "https://zenodo.org/record/3518299/files/mashr_eqtl.tar?download=1",
+            output_tar_file,
+            output_tar_file_md5,
+            logger=logger,
+        )
+
+    # uncompress file
+    import tarfile
+
+    logger.info(f"Extracting {output_tar_file}")
+    with tarfile.open(output_tar_file, "r") as f:
+        f.extractall(output_folder.parent)
+
+        # rename folder
+        (output_folder.parent / "eqtl" / "mashr").rename(output_folder)
+        (output_folder.parent / "eqtl").rmdir()
 
 
 def download_spredixcan_hdf5_results(**kwargs):
