@@ -27,6 +27,3 @@ The file `scripts/plier_util.R` was downloaded from
 [here](https://github.com/greenelab/multi-plier/blob/v0.2.0/util/plier_util.R).
 It is used to generate test data.
 
-## Development with PyCharm
-
-TODO: add here options to add enviromental variables to the Settings (both Python Console and Terminal sections)
