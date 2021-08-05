@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+GIT_ROOT_DIR=$(git rev-parse --show-toplevel)
+
 # This script runs a Jupyter notebook (.ipynb) from the command line using
 # papermill.
 #
@@ -53,6 +55,6 @@ jupyter nbconvert --to notebook ${output_notebook} --output ${output_notebook##*
 
 if [ "${override_nbs}" != "0" ]; then
     mv $output_notebook $input_notebook
-    bash ../scripts/convert_ipynb_to_py.sh ${input_notebook}
+    bash ${GIT_ROOT_DIR}/scripts/convert_ipynb_to_py.sh ${input_notebook}
 fi
 
