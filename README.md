@@ -67,12 +67,14 @@ cd nbs/
 parallel -k --lb --halt 2 -j1 'bash run_nbs.sh {}' ::: 01_preprocessing/*.ipynb
 ```
 
+<!--
 Or if you want to run all the analyses at once, you can use:
 
 ```bash
 shopt -s globstar
 parallel -k --lb --halt 2 -j1 'bash run_nbs.sh {}' ::: nbs/{,**/}*.ipynb
 ```
+-->
 
 ## From your browser
 
@@ -87,5 +89,40 @@ notebooks in the specified order.
 
 ## From a Docker image
 
-Coming soon.
+You can also run all the steps below using a Docker image instead of a local installation.
+
+```bash
+docker pull miltondp/phenoplier
+```
+
+The image only contains the conda environment with the code in this repository, so after pulling the image you need to download the data as well:
+
+```bash
+docker run \
+  -v "/tmp/phenoplier_data:/opt/phenoplier_data" \ 
+  miltondp/phenoplier \
+  python environment/scripts/setup_data.py
+```
+
+The `-v` parameter allows to specify a local directory (`/tmp/phenoplier_data`) where the data will be downloaded to.
+If you want to generate the figures and tables for the manuscript, you need to clone the PhenoPLIER manuscript repo and pass it with `-v [PATH_TO_MANUSCRIPT_REPO]:/opt/phenoplier_manuscript`.
+
+You can run notebooks from the command line:
+
+```bash
+docker run \
+  -v "/tmp/phenoplier_data:/opt/phenoplier_data" \
+  miltondp/phenoplier \
+  parallel -k --lb --halt 2 -j1 'bash nbs/run_nbs.sh {}' ::: nbs/01_preprocessing/*.ipynb
+```
+
+or start a Jupyter Notebook server with:
+
+```bash
+docker run \
+  -v "/tmp/phenoplier_data:/opt/phenoplier_data" \
+  miltondp/phenoplier
+```
+
+and access the interface by going to `http://localhost:8892`.
 
