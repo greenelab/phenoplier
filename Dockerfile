@@ -37,6 +37,6 @@ WORKDIR ${PHENOPLIER_CODE_DIR}
 RUN echo "Make sure modules can be loaded"
 RUN python -c "import conf"
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/opt/phenoplier_code/entrypoint.sh"]
 CMD ["scripts/run_nbs_server.sh"]
 
