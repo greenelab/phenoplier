@@ -14,10 +14,14 @@ eval `python libs/conf.py`
 
 IP="127.0.0.1"
 TOKEN=""
-if [ ! -z "$1" ]; then
+EXTRA_ARGS=""
+if [ "$1" = "--container-mode" ]; then
+    IP="*"
+    EXTRA_ARGS="--allow-root"
+elif [ ! -z "$1" ]; then
 	IP="*"
 	TOKEN="${1}"
 fi
 
-exec jupyter lab --ip="${IP}" --port="${PORT}" --no-browser --allow-root --NotebookApp.token="${TOKEN}"
+exec jupyter lab --ip="${IP}" --port="${PORT}" --no-browser --NotebookApp.token="${TOKEN}" ${EXTRA_ARGS}
 
