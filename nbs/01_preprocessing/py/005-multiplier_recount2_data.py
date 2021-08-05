@@ -30,6 +30,7 @@
 # %autoreload 2
 
 # %% tags=[]
+import sys
 from pathlib import Path
 from shutil import copyfile
 
@@ -66,6 +67,9 @@ display(OUTPUT_DIR)
 
 # %% tags=[]
 conf.RECOUNT2["PREPROCESSED_GENE_EXPRESSION_FILE"]
+if not conf.RECOUNT2["PREPROCESSED_GENE_EXPRESSION_FILE"].exists():
+    print("Input file does not exist")
+    sys.exit(0)
 
 # %% tags=[]
 recount_data_prep = readRDS(str(conf.RECOUNT2["PREPROCESSED_GENE_EXPRESSION_FILE"]))
