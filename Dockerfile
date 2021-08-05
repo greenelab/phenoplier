@@ -1,4 +1,6 @@
-FROM ubuntu:20.04
+FROM continuumio/miniconda3
+
+EXPOSE 8892/tcp
 
 ENV PHENOPLIER_CODE_DIR=/opt/phenoplier_code
 ENV PHENOPLIER_N_JOBS=1
@@ -8,32 +10,26 @@ ENV PHENOPLIER_MANUSCRIPT_DIR=/opt/phenoplier_manuscript
 VOLUME ${PHENOPLIER_ROOT_DIR}
 VOLUME ${PHENOPLIER_MANUSCRIPT_DIR}
 
-ENV PATH="/root/miniconda3/bin:${PATH}"
-ARG PATH="/root/miniconda3/bin:${PATH}"
-
-RUN apt-get update && apt-get install -y wget git && rm -rf /var/lib/apt/lists/*
-
-RUN wget \
-    https://repo.anaconda.com/miniconda/Miniconda3-py38_4.10.3-Linux-x86_64.sh -O miniconda3.sh \
-    && mkdir /root/.conda \
-    && bash miniconda3.sh -b \
-    && rm -f miniconda3.sh
-
 # setup phenoplier
-COPY . ${PHENOPLIER_CODE_DIR}
-RUN cd ${PHENOPLIER_CODE_DIR}/environment \
-    && conda env create --name phenoplier --file environment.yml
+COPY environment/environment.yml /tmp/
+RUN conda env create --name phenoplier --file /tmp/environment.yml
+COPY environment/scripts/install_other_packages.sh environment/scripts/install_r_packages.r /tmp/
+RUN ["conda", "run", "-n", "phenoplier", "--no-capture-output", "/bin/bash", "/tmp/install_other_packages.sh"]
 
-# Make RUN commands use the new environment
 RUN echo "conda activate phenoplier" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
+ENV PYTHONPATH=${PHENOPLIER_CODE_DIR}/libs:${PYTHONPATH}
+
+RUN echo "Make sure packages can be loaded"
+RUN python -c "import rpy2.robjects as ro"
+
+COPY . ${PHENOPLIER_CODE_DIR}
 WORKDIR ${PHENOPLIER_CODE_DIR}
 
-RUN ["conda", "run", "-n", "phenoplier", "--no-capture-output", "/bin/bash", "environment/scripts/install_other_packages.sh"]
+RUN echo "Make sure modules can be loaded"
+RUN python -c "import conf"
 
-#RUN cd ${PHENOPLIER_CODE_DIR}/environment \
-#    && bash scripts/install_other_packages.sh
-
-ENV PYTHONPATH=${PHENOPLIER_CODE_DIR}/libs
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["scripts/run_nbs_server.sh"]
 

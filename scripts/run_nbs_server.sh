@@ -19,5 +19,5 @@ if [ ! -z "$1" ]; then
 	TOKEN="${1}"
 fi
 
-jupyter lab --ip="${IP}" --port ${PORT} --no-browser --NotebookApp.token="${TOKEN}"
+exec jupyter lab --ip="${IP}" --port="${PORT}" --no-browser --allow-root --NotebookApp.token="${TOKEN}"
 
