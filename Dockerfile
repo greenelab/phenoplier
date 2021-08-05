@@ -10,12 +10,19 @@ ENV PHENOPLIER_MANUSCRIPT_DIR=/opt/phenoplier_manuscript
 VOLUME ${PHENOPLIER_ROOT_DIR}
 VOLUME ${PHENOPLIER_MANUSCRIPT_DIR}
 
-# setup phenoplier
-COPY environment/environment.yml /tmp/
-RUN conda env create --name phenoplier --file /tmp/environment.yml
-COPY environment/scripts/install_other_packages.sh environment/scripts/install_r_packages.r /tmp/
-RUN ["conda", "run", "-n", "phenoplier", "--no-capture-output", "/bin/bash", "/tmp/install_other_packages.sh"]
+# install gnu parallel
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+  && apt-get install -y --no-install-recommends parallel \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
+# setup phenoplier
+COPY environment/environment.yml environment/scripts/install_other_packages.sh environment/scripts/install_r_packages.r /tmp/
+RUN conda env create --name phenoplier --file /tmp/environment.yml \
+  && conda run -n phenoplier --no-capture-output /bin/bash /tmp/install_other_packages.sh \
+  && conda clean --all --yes
+
+# activate the environment when starting bash
 RUN echo "conda activate phenoplier" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
