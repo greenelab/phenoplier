@@ -120,9 +120,10 @@ or start a Jupyter Notebook server with:
 
 ```bash
 docker run \
+  -p 8888:8892 \
   -v "/tmp/phenoplier_data:/opt/phenoplier_data" \
   miltondp/phenoplier
 ```
 
-and access the interface by going to `http://localhost:8892`.
+and access the interface by going to `http://localhost:8888`.
 
