@@ -11,32 +11,10 @@ Unit tests are disabled for now
 
 ![](images/phenoplier_overview.png)
 
-Understanding how dysregulated transcriptional processes result in
-tissue-specific pathology requires a mechanistic interpretation of expression
-regulation across different cell types. It has been shown that this insight is
-key for the development of new therapies. These mechanisms can be identified
-with transcriptome-wide association studies (TWAS), which have represented a
-significant step forward to test the mediating role of gene expression in GWAS
-associations. However, it is hard to disentangle causal cell types using eQTL
-data alone, and other methods generally do not use the large amounts of
-publicly available RNA-seq data. Here we introduce PhenoPLIER, a polygenic
-approach that maps both gene-trait associations and pharmacological
-perturbation data into a common latent representation for a joint analysis.
-This representation is based on modules of genes with similar expression
-patterns across the same tissues. We observed that diseases were significantly
-associated with gene modules expressed in relevant cell types, and our approach
-was accurate in predicting known drug-disease pairs and inferring mechanisms of
-action. Furthermore, using a CRISPR screen to analyze lipid regulation, we
-found that functionally important players lacked TWAS associations but were
-prioritized in phenotype-associated modules by PhenoPLIER. By incorporating
-groups of co-expressed genes, PhenoPLIER can contextualize genetic associations
-and reveal potential targets within associated processes that are missed by
-single-gene strategies.
+PhenoPLIER is new computational strategy that integrates statistical associations from GWAS/TWAS with groups of genes (gene modules) that have similar expression patterns across the same cell types.
+This allows us to go beyond gene-trait statistical associations and infer the cell types where gene expression regulation is likely to be disrupted, resulting in cell type-specific pathology.
 
-
-You can read the manuscript in
-[bioRxiv](https://doi.org/10.1101/2021.07.05.450786) or the [Manubot
-version](https://greenelab.github.io/phenoplier_manuscript/).
+For more details, check out our manuscript in [bioRxiv](https://doi.org/10.1101/2021.07.05.450786) or our [Manubot web version](https://greenelab.github.io/phenoplier_manuscript/).
 
 # Data
 
