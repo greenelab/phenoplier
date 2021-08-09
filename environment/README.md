@@ -40,7 +40,7 @@ supported** now. If you want to run on Windows, use the Docker image instead.
     the absolute path to the `../libs/` folder.
 
 1. Run `bash scripts/setup_environment.sh`. This will create a conda environment and download the data needed to run the analyses.
-This will download XXX GB, so it will take a while.
+This will download ~70 GB, so it will take a while to finish.
 
 
 # Developer usage
