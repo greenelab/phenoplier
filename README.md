@@ -87,7 +87,7 @@ docker run \
   python environment/scripts/setup_data.py
 ```
 
-The `-v` parameter allows to specify a local directory (`/tmp/phenoplier_data`) where the data will be downloaded to.
+The `-v` parameter allows to specify a local directory (`/tmp/phenoplier_data`) where the data will be downloaded.
 If you want to generate the figures and tables for the manuscript, you need to clone the PhenoPLIER manuscript repo and pass it with `-v [PATH_TO_MANUSCRIPT_REPO]:/opt/phenoplier_manuscript`.
 
 You can run notebooks from the command line, for example:
