@@ -36,6 +36,6 @@ MANUSCRIPT_DIR = None
 N_JOBS = None
 
 # Amount of cores to use for low-computational tasks (IO, etc). This number
-# could be higher than N_JOBS.
+# can be greater than N_JOBS.
 # Default: same as N_JOBS.
 N_JOBS_HIGH = None
