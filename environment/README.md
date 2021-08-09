@@ -7,7 +7,7 @@ Keep in mind that the software only runs on Linux or macOS, **Windows is not
 supported** now.
 
 1. Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or Anaconda.
-1. Open a terminal, run `cd environment` from the folder where you cloned this
+1. Open a terminal, run `cd environment` from the `phenoplier` folder
    repo, and execute all following steps in it.
 1. Run:
  
@@ -77,4 +77,3 @@ These steps are only for PhenoPLIER developers.
     ```
 
 1. Modify `environment.yml` and leave only manually installed packages (not their dependencies).
-
