@@ -82,7 +82,7 @@ The image only contains the conda environment with the code in this repository, 
 
 ```bash
 docker run \
-  -v "/tmp/phenoplier_data:/opt/phenoplier_data" \ 
+  -v "/tmp/phenoplier_data:/opt/phenoplier_data" \
   miltondp/phenoplier \
   python environment/scripts/setup_data.py
 ```
