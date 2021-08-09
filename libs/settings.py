@@ -17,7 +17,7 @@ also provides an alternative way to specify its value using an environment varia
 # operating system (i.e. '/tmp/phenoplier' in Unix systems).
 #
 # Environment variable: PHENOPLIER_ROOT_DIR
-ROOT_DIR = "phenoplier_data"
+ROOT_DIR = None
 
 # Specifies the directory where the manuscript git repository was
 # cloned/downloaded to. If None, manuscript figures and other related files will
