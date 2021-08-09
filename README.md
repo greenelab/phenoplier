@@ -32,7 +32,7 @@ the necessary data. Alternatively, you can use our Docker image (see below).
 
 ### From command-line
 
-First of all, export your settings to environmental variables, so non-Python scripts
+First, export your settings to environmental variables, so non-Python scripts
 can access them:
 ```bash
 eval `python libs/conf.py`
