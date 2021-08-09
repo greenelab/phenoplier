@@ -32,9 +32,9 @@ the necessary data. Alternatively, you can use our Docker image (see below).
 
 ### From command-line
 
-First, export your settings to environmental variables, so non-Python scripts
-can access them:
+First, activate your conda environment and export your settings to environmental variables so non-Python scripts can access them:
 ```bash
+conda activate phenoplier
 eval `python libs/conf.py`
 ```
 
@@ -88,7 +88,7 @@ docker run \
 ```
 
 The `-v` parameter allows to specify a local directory (`/tmp/phenoplier_data`) where the data will be downloaded.
-If you want to generate the figures and tables for the manuscript, you need to clone the PhenoPLIER manuscript repo and pass it with `-v [PATH_TO_MANUSCRIPT_REPO]:/opt/phenoplier_manuscript`.
+If you want to generate the figures and tables for the manuscript, you need to clone the [PhenoPLIER manuscript repo](https://github.com/greenelab/phenoplier_manuscript) and pass it with `-v [PATH_TO_MANUSCRIPT_REPO]:/opt/phenoplier_manuscript`.
 
 You can run notebooks from the command line, for example:
 
