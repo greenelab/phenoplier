@@ -241,44 +241,6 @@ def test_gene_get_snps_cov_one_gene(gene_pair, expected_snps1, tissue):
     assert df.columns.tolist() == expected_snps1
 
 
-@pytest.mark.parametrize(
-    "gene_pair,expected_snps1,tissue",
-    [
-        (
-            [
-                "ENSG00000123200",
-            ],
-            [
-                "chr13_46050849_T_C_b38",
-                "chr13_46052725_T_C_b38",
-            ],
-            "Whole_Blood",
-        ),
-        (
-            [
-                "ENSG00000122026",
-            ],
-            [
-                "chr13_27251616_G_C_b38",
-                "chr13_27252069_G_A_b38",
-            ],
-            "Adipose_Subcutaneous",
-        ),
-    ],
-)
-def test_gene_get_snps_cov_one_gene(gene_pair, expected_snps1, tissue):
-    g1 = Gene(ensembl_id=gene_pair[0])
-
-    g1_snps = g1.get_prediction_weights(tissue)["varID"]
-
-    df = Gene._get_snps_cov(g1_snps)
-    assert df is not None
-    assert df.shape[0] == df.shape[1] == g1_snps.shape[0] == len(expected_snps1)
-    assert not df.isna().any().any()
-    assert df.index.tolist() == expected_snps1
-    assert df.columns.tolist() == expected_snps1
-
-
 def test_gene_get_snps_cov_snp_list_different_chromosomes():
     g1_snps = [
         "chr13_45120003_C_T_b38",
