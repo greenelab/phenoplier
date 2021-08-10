@@ -39,8 +39,10 @@ supported** now. If you want to run on Windows, use the Docker image instead.
     `readlink` might not work on macOS. In that case, simply replace it with
     the absolute path to the `../libs/` folder.
 
-1. Run `bash scripts/setup_environment.sh`. This will create a conda environment and download the data needed to run the analyses.
+1. Run `bash scripts/setup_environment.sh`.
+This will create a conda environment and download the data needed to run the analyses.
 This will download ~70 GB, so it will take a while to finish.
+If the `conda env create` command fails, try to set the channel priority in your conda installation to "strict" with `conda config --set channel_priority strict`.
 
 
 # Developer usage
