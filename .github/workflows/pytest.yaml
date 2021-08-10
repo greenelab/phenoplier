@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout git repo
         uses: actions/checkout@v2
+        with:
+          lfs: false
       - name: Cache conda
         uses: actions/cache@v2
         with:
@@ -29,7 +31,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
           use-only-tar-bz2: true
-      - name: Setup PhenoPLIER data
+      - name: Setup data
         shell: bash -l {0}
         env:
           PYTHONPATH: libs/
