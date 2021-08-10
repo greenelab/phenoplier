@@ -46,5 +46,6 @@ jobs:
         shell: bash -l {0}
         env:
           PYTHONPATH: libs/
-        run: pytest
+        run: |
+          pytest -rs --full-trace tests/
 
