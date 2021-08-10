@@ -2,7 +2,7 @@ name: tests
 on: [push, pull_request]
 jobs:
   pytest:
-    name: Python test suite
+    name: Python tests
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 4
