@@ -23,19 +23,23 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-4-${{ hashFiles('environment/environment.yml') }}
+          key: ${{ runner.os }}-conda-5-${{ hashFiles('environment/environment.yml') }}
       - name: Setup Miniconda
-        if: steps.cache.outputs.cache-hit != 'true'
         uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
           auto-update-conda: true
           activate-environment: phenoplier
           channel-priority: strict
-          environment-file: environment/environment.yml
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
           use-only-tar-bz2: true
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        shell: bash -l {0}
+        run: |
+          conda env update --name phenoplier --file environment/environment.yml
+          # bash environment/scripts/install_other_packages.sh
       - name: Setup data
         shell: bash -l {0}
         env:
