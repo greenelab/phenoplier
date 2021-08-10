@@ -19,11 +19,13 @@ jobs:
         with:
           lfs: false
       - name: Cache conda
+        id: cache
         uses: actions/cache@v2
         with:
           path: ~/conda_pkgs_dir
           key: ${{ runner.os }}-conda-3-${{ hashFiles('environment/environment.yml') }}
       - name: Setup Miniconda
+        if: steps.cache.outputs.cache-hit != 'true'
         uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
@@ -38,11 +40,13 @@ jobs:
         shell: bash -l {0}
         env:
           PYTHONPATH: libs/
+          PHENOPLIER_ROOT_DIR: ~/conda_pkgs_dir/phenoplier
         run: |
           python environment/scripts/setup_data.py --mode testing
       - name: Run pytest
         shell: bash -l {0}
         env:
           PYTHONPATH: libs/
+          PHENOPLIER_ROOT_DIR: ~/conda_pkgs_dir/phenoplier
         run: pytest
 
