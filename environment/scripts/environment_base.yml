@@ -8,6 +8,8 @@ dependencies:
   - jupytext
   - matplotlib
   - nodejs
+  # fix for umap errors:
+  - numba=0.52.*
   - numpy
   - pandas
   - papermill
