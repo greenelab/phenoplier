@@ -58,6 +58,8 @@ def curl(url: str, output_file: str, md5hash: str = None, logger=None):
     """
     logger = logger or get_logger("none")
 
+    Path(output_file).resolve().parent.mkdir(parents=True, exist_ok=True)
+
     if Path(output_file).exists() and (
         md5hash is None or md5_matches(md5hash, output_file)
     ):
