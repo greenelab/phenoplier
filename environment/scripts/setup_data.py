@@ -33,27 +33,6 @@ DATA_IN_TESTING_MODE_ONLY = {
 }
 
 
-def _create_directories(node=conf.__dict__):
-    """Creates directories for all setting entries pointing to a folder.
-
-    Args:
-        node (dict): a dictionary with key names pointing to different settings. By
-        default it uses all attributes from the conf module.
-    """
-    for k, v in node.items():
-        if isinstance(v, str) and not k.endswith("_DIR"):
-            continue
-
-        if isinstance(v, dict):
-            # if the key itself is a dictionary, then walk through its values
-            _create_directories(v)
-        elif k.endswith("_DIR"):
-            if v is None:
-                continue
-
-            os.makedirs(v, exist_ok=True)
-
-
 def download_phenomexcan_rapid_gwas_pheno_info(**kwargs):
     output_file = conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"]
     curl(
@@ -306,7 +285,7 @@ def download_predixcan_mashr_prediction_models(**kwargs):
     output_folder = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"]
     if output_folder.exists():
         logger.warning(
-            f"Output directory already exists ({output_folder}). This might cause issues, consider removing it first"
+            f"Output directory already exists ({output_folder}). Skipping."
         )
         return
 
@@ -344,7 +323,7 @@ def download_spredixcan_hdf5_results(**kwargs):
     output_folder = conf.PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"] / "hdf5"
     if output_folder.exists():
         logger.warning(
-            f"Output directory already exists ({output_folder}). This might cause issues, consider removing it first"
+            f"Output directory already exists ({output_folder}). Skipping."
         )
         return
 
@@ -407,7 +386,7 @@ def download_1000g_genotype_data(**kwargs):
     output_folder = conf.PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"]
     if output_folder.exists():
         logger.warning(
-            f"Output directory already exists ({output_folder}). This might cause issues, consider removing it first"
+            f"Output directory already exists ({output_folder}). Skipping."
         )
         return
 
@@ -581,9 +560,6 @@ if __name__ == "__main__":
         "the following: " + " ".join(AVAILABLE_ACTIONS["full"].keys()),
     )
     args = parser.parse_args()
-
-    # create all directories specified in the configuration
-    _create_directories()
 
     method_args = vars(args)
 
