@@ -6,5 +6,8 @@ set +eu
 conda activate phenoplier
 set -euo pipefail
 
+# load environment variables
+eval `python libs/conf.py`
+
 exec "$@"
 
