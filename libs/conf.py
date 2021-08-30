@@ -89,7 +89,7 @@ RESULTS["CLUSTERING_INTERPRETATION"]["BASE_DIR"] = Path(
 RESULTS["CLUSTERING_INTERPRETATION"]["CLUSTERS_STATS"] = Path(
     Path(__file__).parent.parent,
     "nbs",
-    "20_cluster_interpretation",
+    "14_cluster_interpretation",
 ).resolve()
 
 RESULTS["CRISPR_ANALYSES"] = {}

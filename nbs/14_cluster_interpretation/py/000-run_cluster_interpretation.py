@@ -102,7 +102,7 @@ for f in CLUSTER_ANALYSIS_OUTPUT_DIR.rglob("*.ipynb"):
     f.unlink()
 
 # %% tags=[]
-CLUSTER_ANALYSIS_OUTPUT_DIR.mkdir(exist_ok=True)
+CLUSTER_ANALYSIS_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # %% tags=[]
