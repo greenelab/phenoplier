@@ -24,20 +24,12 @@
 # # Modules
 
 # %% tags=[]
-from pathlib import Path
-
-import statsmodels.api as sm
-from statsmodels.stats.multitest import multipletests
-import numpy as np
 import pandas as pd
-from sklearn.preprocessing import scale
 import rpy2.robjects as ro
 from rpy2.robjects import pandas2ri
 from rpy2.robjects.conversion import localconverter
-from tqdm import tqdm
 
 import conf
-from gls import GLSPhenoplier
 
 # %%
 readRDS = ro.r["readRDS"]
