@@ -32,9 +32,19 @@ from IPython.display import display
 import numpy as np
 import pandas as pd
 
+import rpy2.robjects as ro
+from rpy2.robjects import pandas2ri
+from rpy2.robjects.conversion import localconverter
+
 import conf
 from data.cache import read_data
 from entity import Trait
+
+# %%
+readRDS = ro.r["readRDS"]
+
+# %% tags=[]
+saveRDS = ro.r["saveRDS"]
 
 # %% [markdown] tags=[]
 # # Load S-MultiXcan results
@@ -271,16 +281,83 @@ display(output_file)
 smultixcan_zscores_combined.to_pickle(output_file)
 
 # %% [markdown] tags=[]
+# ## RDS format
+
+# %% tags=[]
+output_rds_file = output_file.with_suffix(".rds")
+display(output_rds_file)
+
+# %%
+with localconverter(ro.default_converter + pandas2ri.converter):
+    data_r = ro.conversion.py2rpy(smultixcan_zscores_combined)
+
+# %%
+data_r
+
+# %% tags=[]
+saveRDS(data_r, str(output_rds_file))
+
+# %%
+# testing: load the rds file again
+data_r = readRDS(str(output_rds_file))
+
+# %%
+with localconverter(ro.default_converter + pandas2ri.converter):
+    data_again = ro.conversion.rpy2py(data_r)
+#     data_again.index = data_again.index.astype(int)
+
+# %%
+data_again.shape
+
+# %%
+data_again.head()
+
+# %%
+pd.testing.assert_frame_equal(
+    smultixcan_zscores_combined,
+    data_again,
+    check_names=False,
+    check_exact=True,
+    #     rtol=0.0,
+    #     atol=1e-50,
+    #     check_dtype=False,
+)
+
+# %% [markdown] tags=[]
 # ## TSV (text)
 
 # %% tags=[]
-# tsv format
 output_text_file = output_file.with_suffix(".tsv.gz")
 display(output_text_file)
 
 # %% tags=[]
 smultixcan_zscores_combined.to_csv(
     output_text_file, sep="\t", index=True, float_format="%.5e"
+)
+
+# %%
+# testing
+# data2 = data.copy()
+# data2.index = list(range(0, data2.shape[0]))
+
+data_again = pd.read_csv(output_text_file, sep="\t", index_col="gene_name")
+
+# data_again.index = list(data_again.index)
+# data_again["part_k"] = data_again["part_k"].astype(float)
+
+# %%
+data_again.shape
+
+# %%
+data_again.head()
+
+# %%
+pd.testing.assert_frame_equal(
+    smultixcan_zscores_combined,
+    data_again,
+    check_exact=False,
+    rtol=0.0,
+    atol=5e-5,
 )
 
 # %% tags=[]
