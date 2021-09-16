@@ -102,8 +102,8 @@ data_again.head()
 
 # %%
 pd.testing.assert_frame_equal(
-    data.head(),
-    data_again.head(),
+    data,
+    data_again,
     check_names=False,
     check_exact=True,
     #     rtol=0.0,
