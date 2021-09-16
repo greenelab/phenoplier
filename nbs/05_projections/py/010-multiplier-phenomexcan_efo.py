@@ -18,7 +18,9 @@
 # # Description
 
 # %% [markdown] tags=[]
-# It projects the PhenomeXcan results (EFO version) into the MultiPLIER latent space.
+# It projects the PhenomeXcan results (S-MultiXcan, EFO version) into the MultiPLIER latent space.
+# Before projecting, repeated gene symbols as well as genes with NaN are removed;
+# additionally (also before projecting), S-MultiXcan results are adjusted for highly polygenic traits.
 
 # %% [markdown] tags=[]
 # # Modules loading
