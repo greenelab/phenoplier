@@ -106,9 +106,9 @@ pd.testing.assert_frame_equal(
     data_again.head(),
     check_names=False,
     check_exact=True,
-#     rtol=0.0,
-#     atol=1e-50,
-#     check_dtype=False,
+    #     rtol=0.0,
+    #     atol=1e-50,
+    #     check_dtype=False,
 )
 
 # %% [markdown] tags=[]
