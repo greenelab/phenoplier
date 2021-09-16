@@ -31,7 +31,7 @@ from rpy2.robjects.conversion import localconverter
 
 import conf
 
-# %%
+# %% tags=[]
 readRDS = ro.r["readRDS"]
 
 # %% tags=[]
@@ -49,11 +49,11 @@ assert OUTPUT_DIR.exists()
 # %% [markdown] tags=[]
 # # S-MultiXcan
 
-# %%
+# %% tags=[]
 input_filepath = conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"]
 display(input_filepath)
 
-# %%
+# %% tags=[]
 data = pd.read_pickle(input_filepath)
 
 # %% tags=[]
@@ -62,7 +62,7 @@ data.shape
 # %% tags=[]
 data.head()
 
-# %%
+# %% tags=[]
 data.isna().any().any()
 
 # %% [markdown] tags=[]
@@ -75,32 +75,32 @@ data.isna().any().any()
 output_file = input_filepath.with_suffix(".rds")
 display(output_file)
 
-# %%
+# %% tags=[]
 with localconverter(ro.default_converter + pandas2ri.converter):
     data_r = ro.conversion.py2rpy(data)
 
-# %%
+# %% tags=[]
 data_r
 
 # %% tags=[]
 saveRDS(data_r, str(output_file))
 
-# %%
+# %% tags=[]
 # testing: load the rds file again
 data_r = readRDS(str(output_file))
 
-# %%
+# %% tags=[]
 with localconverter(ro.default_converter + pandas2ri.converter):
     data_again = ro.conversion.rpy2py(data_r)
 #     data_again.index = data_again.index.astype(int)
 
-# %%
+# %% tags=[]
 data_again.shape
 
-# %%
+# %% tags=[]
 data_again.head()
 
-# %%
+# %% tags=[]
 pd.testing.assert_frame_equal(
     data,
     data_again,
@@ -122,7 +122,7 @@ display(output_file)
 # %% tags=[]
 data.to_csv(output_file, sep="\t", index=True, float_format="%.5e")
 
-# %%
+# %% tags=[]
 # testing
 # data2 = data.copy()
 # data2.index = list(range(0, data2.shape[0]))
@@ -132,13 +132,13 @@ data_again = pd.read_csv(output_file, sep="\t", index_col="gene_name")
 # data_again.index = list(data_again.index)
 # data_again["part_k"] = data_again["part_k"].astype(float)
 
-# %%
+# %% tags=[]
 data_again.shape
 
-# %%
+# %% tags=[]
 data_again.head()
 
-# %%
+# %% tags=[]
 pd.testing.assert_frame_equal(
     data,
     data_again,
@@ -147,4 +147,4 @@ pd.testing.assert_frame_equal(
     atol=5e-5,
 )
 
-# %%
+# %% tags=[]
