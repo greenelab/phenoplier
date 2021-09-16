@@ -18,7 +18,8 @@
 # # Description
 
 # %% [markdown] tags=[]
-# It projects the PhenomeXcan results into the MultiPLIER latent space.
+# It projects the PhenomeXcan results (S-MultiXcan) into the MultiPLIER latent space.
+# Before projecting, repeated gene symbols as well as genes with NaN are removed.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -34,6 +35,7 @@ from IPython.display import display
 import pandas as pd
 
 import conf
+from entity import Gene
 from data.cache import read_data
 from multiplier import MultiplierProjection
 
@@ -42,17 +44,9 @@ from multiplier import MultiplierProjection
 
 # %% tags=[]
 RESULTS_PROJ_OUTPUT_DIR = Path(conf.RESULTS["PROJECTIONS_DIR"])
-
 RESULTS_PROJ_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 display(RESULTS_PROJ_OUTPUT_DIR)
-
-# %% [markdown] tags=[]
-# # Read gene mappings
-
-# %% tags=[]
-GENE_ID_TO_NAME_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"])
-GENE_NAME_TO_ID_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"])
 
 # %% [markdown] tags=[]
 # # Load PhenomeXcan data (S-MultiXcan)
@@ -79,7 +73,7 @@ smultixcan_results.head()
 # ## Gene IDs to Gene names
 
 # %% tags=[]
-smultixcan_results = smultixcan_results.rename(index=GENE_ID_TO_NAME_MAP)
+smultixcan_results = smultixcan_results.rename(index=Gene.GENE_ID_TO_NAME_MAP)
 
 # %% tags=[]
 smultixcan_results.shape
@@ -105,7 +99,7 @@ smultixcan_results.shape
 # ## Remove NaN values
 
 # %% [markdown] tags=[]
-# **TODO**: it might be better to try to impute this values
+# **TODO**: it might be better to try to impute these values
 
 # %% tags=[]
 smultixcan_results = smultixcan_results.dropna(how="any")
@@ -137,20 +131,20 @@ smultixcan_into_multiplier.head()
 # %% tags=[]
 (smultixcan_into_multiplier.loc["LV136"].sort_values(ascending=False).head(20))
 
+# %% tags=[]
+(smultixcan_into_multiplier.loc["LV844"].sort_values(ascending=False).head(20))
+
 # %% [markdown] tags=[]
 # # Save
 
-# %% [markdown] tags=[]
-# We are not using this data version, so saving is commented out here.
+# %% tags=[]
+output_file = Path(
+    RESULTS_PROJ_OUTPUT_DIR, f"projection-{results_filename_stem}.pkl"
+).resolve()
+
+display(output_file)
 
 # %% tags=[]
-# output_file = Path(
-#     RESULTS_PROJ_OUTPUT_DIR, f"projection-{results_filename_stem}.pkl"
-# ).resolve()
-
-# display(output_file)
-
-# %% tags=[]
-# smultixcan_into_multiplier.to_pickle(output_file)
+smultixcan_into_multiplier.to_pickle(output_file)
 
 # %% tags=[]
