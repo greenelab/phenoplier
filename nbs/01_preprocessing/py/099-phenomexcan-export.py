@@ -144,7 +144,7 @@ pd.testing.assert_frame_equal(
     data_again,
     check_exact=False,
     rtol=0.0,
-    atol=1e-5,
+    atol=5e-5,
 )
 
 # %%
