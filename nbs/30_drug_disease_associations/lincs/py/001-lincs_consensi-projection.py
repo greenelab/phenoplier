@@ -160,6 +160,85 @@ display(output_file)
 lincs_data.to_pickle(output_file)
 
 # %% [markdown] tags=[]
+# ### RDS format
+
+# %% tags=[]
+output_rds_file = output_file.with_suffix(".rds")
+display(output_rds_file)
+
+# %%
+with localconverter(ro.default_converter + pandas2ri.converter):
+    data_r = ro.conversion.py2rpy(lincs_data)
+
+# %%
+data_r
+
+# %% tags=[]
+saveRDS(data_r, str(output_rds_file))
+
+# %%
+# testing: load the rds file again
+data_r = readRDS(str(output_rds_file))
+
+# %%
+with localconverter(ro.default_converter + pandas2ri.converter):
+    data_again = ro.conversion.rpy2py(data_r)
+#     data_again.index = data_again.index.astype(int)
+
+# %%
+data_again.shape
+
+# %%
+data_again.head()
+
+# %%
+pd.testing.assert_frame_equal(
+    lincs_data,
+    data_again,
+    check_names=False,
+    check_exact=True,
+    #     rtol=0.0,
+    #     atol=1e-50,
+    #     check_dtype=False,
+)
+
+# %% [markdown] tags=[]
+# ### Text format
+
+# %% tags=[]
+# tsv format
+output_text_file = output_file.with_suffix(".tsv.gz")
+display(output_text_file)
+
+# %% tags=[]
+lincs_data.to_csv(output_text_file, sep="\t", index=True, float_format="%.5e")
+
+# %%
+# testing
+# data2 = data.copy()
+# data2.index = list(range(0, data2.shape[0]))
+
+data_again = pd.read_csv(output_text_file, sep="\t", index_col=0)
+
+# data_again.index = list(data_again.index)
+# data_again["part_k"] = data_again["part_k"].astype(float)
+
+# %%
+data_again.shape
+
+# %%
+data_again.head()
+
+# %%
+pd.testing.assert_frame_equal(
+    lincs_data,
+    data_again,
+    check_exact=False,
+    rtol=0.0,
+    atol=5e-5,
+)
+
+# %% [markdown] tags=[]
 # # Project into MultiPLIER
 
 # %% tags=[]
@@ -189,5 +268,84 @@ display(output_file)
 
 # %% tags=[]
 lincs_projection.to_pickle(output_file)
+
+# %% [markdown] tags=[]
+# ### RDS format
+
+# %% tags=[]
+output_rds_file = output_file.with_suffix(".rds")
+display(output_rds_file)
+
+# %%
+with localconverter(ro.default_converter + pandas2ri.converter):
+    data_r = ro.conversion.py2rpy(lincs_projection)
+
+# %%
+data_r
+
+# %% tags=[]
+saveRDS(data_r, str(output_rds_file))
+
+# %%
+# testing: load the rds file again
+data_r = readRDS(str(output_rds_file))
+
+# %%
+with localconverter(ro.default_converter + pandas2ri.converter):
+    data_again = ro.conversion.rpy2py(data_r)
+#     data_again.index = data_again.index.astype(int)
+
+# %%
+data_again.shape
+
+# %%
+data_again.head()
+
+# %%
+pd.testing.assert_frame_equal(
+    lincs_projection,
+    data_again,
+    check_names=False,
+    check_exact=True,
+    #     rtol=0.0,
+    #     atol=1e-50,
+    #     check_dtype=False,
+)
+
+# %% [markdown] tags=[]
+# ### Text format
+
+# %% tags=[]
+# tsv format
+output_text_file = output_file.with_suffix(".tsv.gz")
+display(output_text_file)
+
+# %% tags=[]
+lincs_projection.to_csv(output_text_file, sep="\t", index=True, float_format="%.5e")
+
+# %%
+# testing
+# data2 = data.copy()
+# data2.index = list(range(0, data2.shape[0]))
+
+data_again = pd.read_csv(output_text_file, sep="\t", index_col=0)
+
+# data_again.index = list(data_again.index)
+# data_again["part_k"] = data_again["part_k"].astype(float)
+
+# %%
+data_again.shape
+
+# %%
+data_again.head()
+
+# %%
+pd.testing.assert_frame_equal(
+    lincs_projection,
+    data_again,
+    check_exact=False,
+    rtol=0.0,
+    atol=5e-5,
+)
 
 # %% tags=[]
