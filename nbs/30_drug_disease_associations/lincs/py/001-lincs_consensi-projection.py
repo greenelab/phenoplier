@@ -32,8 +32,18 @@ from pathlib import Path
 
 import pandas as pd
 
+import rpy2.robjects as ro
+from rpy2.robjects import pandas2ri
+from rpy2.robjects.conversion import localconverter
+
 import conf
 from entity import Gene
+
+# %%
+readRDS = ro.r["readRDS"]
+
+# %% tags=[]
+saveRDS = ro.r["saveRDS"]
 
 # %% [markdown] tags=[]
 # # Settings
