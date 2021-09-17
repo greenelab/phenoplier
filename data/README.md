@@ -35,7 +35,7 @@ These projections are different versions of matrix **M** hat in the manuscript.
   * `projection-smultixcan-efo_partial-mashr-zscores.*`: projection of file `input/phenomexcan/smultixcan-efo_partial-mashr-zscores.*`.
   * `projection-lincs.*`: projection of file `input/lincs-data.pkl`.
 
-* `data_transformations/`: contains different transformations of the S-MultiXcan results (in folder `projections/`) projected into the latent space.
+* `data_transformations/`: contains different transformations of the S-MultiXcan results projected into the MultiPLIER latent space (in folder `projections/`). These include standardized, PCA and UMAP data versions that were used for clustering.
 
 * `gls/`: LV-trait association results (trats from PhenomeXcan) using a generalized least squares approach.
 See manuscript for more details.
