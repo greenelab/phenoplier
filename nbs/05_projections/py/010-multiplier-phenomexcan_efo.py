@@ -44,7 +44,7 @@ from entity import Gene
 from data.cache import read_data
 from multiplier import MultiplierProjection
 
-# %%
+# %% tags=[]
 readRDS = ro.r["readRDS"]
 
 # %% tags=[]
@@ -213,32 +213,32 @@ smultixcan_into_multiplier.to_pickle(output_file)
 output_rds_file = output_file.with_suffix(".rds")
 display(output_rds_file)
 
-# %%
+# %% tags=[]
 with localconverter(ro.default_converter + pandas2ri.converter):
     data_r = ro.conversion.py2rpy(smultixcan_into_multiplier)
 
-# %%
+# %% tags=[]
 data_r
 
 # %% tags=[]
 saveRDS(data_r, str(output_rds_file))
 
-# %%
+# %% tags=[]
 # testing: load the rds file again
 data_r = readRDS(str(output_rds_file))
 
-# %%
+# %% tags=[]
 with localconverter(ro.default_converter + pandas2ri.converter):
     data_again = ro.conversion.rpy2py(data_r)
 #     data_again.index = data_again.index.astype(int)
 
-# %%
+# %% tags=[]
 data_again.shape
 
-# %%
+# %% tags=[]
 data_again.head()
 
-# %%
+# %% tags=[]
 pd.testing.assert_frame_equal(
     smultixcan_into_multiplier,
     data_again,
@@ -262,7 +262,7 @@ smultixcan_into_multiplier.to_csv(
     output_text_file, sep="\t", index=True, float_format="%.5e"
 )
 
-# %%
+# %% tags=[]
 # testing
 # data2 = data.copy()
 # data2.index = list(range(0, data2.shape[0]))
@@ -272,13 +272,13 @@ data_again = pd.read_csv(output_text_file, sep="\t", index_col=0)
 # data_again.index = list(data_again.index)
 # data_again["part_k"] = data_again["part_k"].astype(float)
 
-# %%
+# %% tags=[]
 data_again.shape
 
-# %%
+# %% tags=[]
 data_again.head()
 
-# %%
+# %% tags=[]
 pd.testing.assert_frame_equal(
     smultixcan_into_multiplier,
     data_again,
