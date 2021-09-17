@@ -258,14 +258,16 @@ output_text_file = output_file.with_suffix(".tsv.gz")
 display(output_text_file)
 
 # %% tags=[]
-smultixcan_into_multiplier.to_csv(output_text_file, sep="\t", index=True, float_format="%.5e")
+smultixcan_into_multiplier.to_csv(
+    output_text_file, sep="\t", index=True, float_format="%.5e"
+)
 
 # %%
 # testing
 # data2 = data.copy()
 # data2.index = list(range(0, data2.shape[0]))
 
-data_again = pd.read_csv(output_text_file, sep="\t", index_col="gene_name")
+data_again = pd.read_csv(output_text_file, sep="\t", index_col=0)
 
 # data_again.index = list(data_again.index)
 # data_again["part_k"] = data_again["part_k"].astype(float)
