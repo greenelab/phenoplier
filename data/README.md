@@ -15,7 +15,7 @@ Please, if you use any of those PhenomeXcan files, cite the corresponding paper 
 Data is provided in binary and text formats.
 We always used binary formats, and text formats are provided for convenience (although always imply some loss of information since decimal places are reduced).
 The files are:
-  * `input/phenomexcan/smultixcan-mashr-zscores.*`: this is matrix **M** shown in Figure 1 in the manuscript (genes *x* traits).
+  * `input/phenomexcan/smultixcan-mashr-zscores.*`: this is one version of matrix **M** shown in Figure 1 in the manuscript (genes *x* traits).
 These are the original PhenomeXcan S-MultiXcan results but converted from p-values to z-scores.
 See Methods in manuscript for more details.
   * `input/phenomexcan/smultixcan-efo_partial-mashr-zscores.*`: this is a modified version of matrix **M** (previous file) where traits were mapped to EFO, combined and standardized (removing very similar traits and adjusting for highly polygenic ones), and it was used for the clustering of traits.
@@ -29,7 +29,8 @@ A more end-user-friendly version of this file can be found in `input/multiplier/
 This file is intended for a more end-user-friendly way to perform a quick analysis.
 If you want to access this data in a programatic way, you should check out the files `multiplier_model_z.*` instead.
   * `input/multiplier/*`: for the rest of the files, you can check out the MultiPLIER paper to get an idea of the information they provide. 
-  * `input/lincs-data.pkl`: LINCS L1000 data downloaded from [here](https://doi.org/10.6084/m9.figshare.3085426.v1) (specifically, file `consensi-drugbank-tsv.bz2`), where gene Entrez IDs were mapped to Ensembl ID.
+  * `input/lincs-data.pkl`: this is the other version of matrix **M** shown in Figure 1 of the manuscript.
+It is the LINCS L1000 data downloaded from [here](https://doi.org/10.6084/m9.figshare.3085426.v1) (specifically, file `consensi-drugbank-tsv.bz2`), where gene Entrez IDs were mapped to Ensembl ID.
 
 * `projections/`: contains data projected into the MultiPLIER latent space, such as gene-trait associations (S-MultiXcan or S-PrediXcan) and drug-induced transcriptional profiles (LINCS L1000).
 These projections are different versions of matrix **M** hat in the manuscript.
