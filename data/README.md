@@ -32,7 +32,8 @@ If you want to access this data in a programatic way, you should check out the f
   * `input/lincs-data.pkl`: LINCS L1000 data downloaded from [here](https://doi.org/10.6084/m9.figshare.3085426.v1) (specifically, file `consensi-drugbank-tsv.bz2`), where gene Entrez IDs were mapped to Ensembl ID.
 
 * `projections/`: contains data projected into the MultiPLIER latent space, such as gene-trait associations (S-MultiXcan or S-PrediXcan) and drug-induced transcriptional profiles (LINCS L1000).
-  * `projection-smultixcan-mashr-zscores.*`: projection of file `input/phenomexcan/smultixcan-mashr-zscores.*`. 
+These projections are different versions of matrix **M** hat in the manuscript.
+  * `projection-smultixcan-mashr-zscores.*`: projection of file `input/phenomexcan/smultixcan-mashr-zscores.*`.
   * `projection-phenomexcan-smultixcan_zscores-efo.*`: projection of file `input/phenomexcan/smultixcan-efo_partial-mashr-zscores.*`.
   * `projection-lincs.*`: projection of file `input/lincs-data.pkl`.
 
