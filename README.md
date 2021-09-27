@@ -12,7 +12,7 @@ Unit tests are disabled for now
 ![](images/phenoplier_overview.png)
 
 PhenoPLIER is new computational strategy that integrates statistical associations from GWAS/TWAS with groups of genes (gene modules) that have similar expression patterns across the same cell types.
-This allows us to go beyond gene-trait statistical associations and infer the cell types where gene expression regulation is likely to be disrupted, resulting in cell type-specific pathology.
+This allows us to go beyond individual gene-trait statistical associations, capture other functionally-related genes not detected by standard genetic studies methods, and infer the cell types where gene expression regulation is likely to be disrupted, resulting in cell type-specific pathology.
 
 For more details, check out our manuscript in [bioRxiv](https://doi.org/10.1101/2021.07.05.450786) or our [Manubot web version](https://greenelab.github.io/phenoplier_manuscript/).
 
