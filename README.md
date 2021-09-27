@@ -16,7 +16,7 @@ This allows us to go beyond gene-trait statistical associations and infer the ce
 
 For more details, check out our manuscript in [bioRxiv](https://doi.org/10.1101/2021.07.05.450786) or our [Manubot web version](https://greenelab.github.io/phenoplier_manuscript/).
 
-**Any questions?** We are using [Github Discussions](https://github.com/greenelab/phenoplier/discussions) to engage with our community. Start a discussion by asking a question or sharing your ideas!
+**Interested in using PhenoPLIER? Any questions?** Check out our [Discussions section](https://github.com/greenelab/phenoplier/discussions) and start a discussion by asking a question or sharing your thoughts. We are happy to help!
 
 ## Data
 
