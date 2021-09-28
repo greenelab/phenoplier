@@ -16,10 +16,10 @@ Data is provided in both binary and text formats.
 We always used binary formats for the analyses described here. 
 Text formats are provided for convenience but always imply some loss of information, since decimal places are reduced.
 The files are:
-  * `input/phenomexcan/smultixcan-mashr-zscores.*`: this is one version of matrix **M** shown in Figure 1 in the manuscript (genes *x* traits).
+  * `input/phenomexcan/smultixcan-mashr-zscores.*`: this is one version of matrix **M** shown in Figure 1 in the [manuscript](https://greenelab.github.io/phenoplier_manuscript/) (genes *x* traits).
 These are the original PhenomeXcan S-MultiXcan results but converted from p-values to z-scores.
 See Methods in manuscript for more details.
-  * `input/phenomexcan/smultixcan-efo_partial-mashr-zscores.*`: this is a modified version of matrix **M** (above) where traits were mapped to EFO, combined and standardized (combining very similar traits and adjusting for highly polygenic ones).
+  * `input/phenomexcan/smultixcan-efo_partial-mashr-zscores.*`: this is a modified version of matrix **M** (above) where traits were mapped to [EFO](https://www.ebi.ac.uk/efo) (Experimental Factor Ontology), combined and standardized (combining very similar traits and adjusting for highly polygenic ones).
 It was used for the clustering of traits.
 See Methods in manuscript for more details, and associated jupyter notebooks in `nbs/01_preprocessing/`.
   * `input/multiplier/multiplier_model_z.*`: Matrix **Z** from MultiPLIER model files (genes *x* latent variables).
