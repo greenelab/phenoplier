@@ -26,7 +26,7 @@ See Methods in manuscript for more details, and associated jupyter notebooks in 
 A more end-user-friendly version of this file can be found in `input/multiplier/lv-gene_weights.xlsx` which contains one sheet per LV (987 in total) with the list of genes that belong to each one sorted by their weights.
   * `input/multiplier/multiplier_model_b.*`: Matrix **B** from MultiPLIER model files (latent variables *x* samples/conditions).
   * `input/multiplier/multiplier_model_summary.*`: contains information about pathways associated with each LV.
-A more end-user-friendly version of this file can be found in `input/multiplier/lv-pathways.xlsx` where data is sorted by LV identifier and then by FDR.
+A more end-user-friendly version of this file can be found in `input/multiplier/lv-pathways.xlsx`, where data is sorted by LV identifier and then by FDR.
   * `input/multiplier/*`: for the rest of the MultiPLIER files, you can check out the MultiPLIER paper to get an idea of the information they provide. 
   * `input/lincs/lincs-data.*`: this is the drugs-related version of matrix **M** shown in Figure 1 of the manuscript.
 It is the LINCS L1000 data downloaded from [here](https://doi.org/10.6084/m9.figshare.3085426.v1) (specifically, file `consensi-drugbank-tsv.bz2`), where gene Entrez IDs were mapped to Ensembl ID.
