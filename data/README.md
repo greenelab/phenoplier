@@ -13,7 +13,8 @@ Please, if you use any of those PhenomeXcan files, cite the corresponding paper 
 
 * `input/`: contains data downloaded from other projects (PhenomeXcan and MultiPLIER), usually with minor changes (such as filtering genes that contain NaN, etc) or no changes at all.
 Data is provided in both binary and text formats.
-We always used binary formats, and text formats are provided for convenience (although always imply some loss of information since decimal places are reduced).
+We always used binary formats for the analyses described here. 
+Text formats are provided for convenience but always imply some loss of information, since decimal places are reduced.
 The files are:
   * `input/phenomexcan/smultixcan-mashr-zscores.*`: this is one version of matrix **M** shown in Figure 1 in the manuscript (genes *x* traits).
 These are the original PhenomeXcan S-MultiXcan results but converted from p-values to z-scores.
