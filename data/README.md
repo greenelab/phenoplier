@@ -11,7 +11,7 @@ Please, if you use any of those PhenomeXcan files, cite the corresponding paper 
 
 ## Data description
 
-* `input/`: contains data downloaded from other projects (PhenomeXcan and MultiPLIER), usually with minor changes (such as filtering genes that contain NaN, etc) or no changes at all.
+* `input/`: contains data downloaded from other projects (PhenomeXcan and MultiPLIER), usually with minor changes (such as filtering genes that contain NaN, etc) or no changes at  (code that made those changes can be found in [this folder](https://github.com/greenelab/phenoplier/tree/master/nbs/01_preprocessing)).
 Data is provided in both binary and text formats.
 We always used binary formats for the analyses described here. 
 Text formats are provided for convenience but always imply some loss of information, since decimal places are reduced.
