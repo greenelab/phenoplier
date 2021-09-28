@@ -19,7 +19,8 @@ The files are:
   * `input/phenomexcan/smultixcan-mashr-zscores.*`: this is one version of matrix **M** shown in Figure 1 in the manuscript (genes *x* traits).
 These are the original PhenomeXcan S-MultiXcan results but converted from p-values to z-scores.
 See Methods in manuscript for more details.
-  * `input/phenomexcan/smultixcan-efo_partial-mashr-zscores.*`: this is a modified version of matrix **M** (previous file) where traits were mapped to EFO, combined and standardized (combining very similar traits and adjusting for highly polygenic ones), and it was used for the clustering of traits.
+  * `input/phenomexcan/smultixcan-efo_partial-mashr-zscores.*`: this is a modified version of matrix **M** (above) where traits were mapped to EFO, combined and standardized (combining very similar traits and adjusting for highly polygenic ones).
+It was used for the clustering of traits.
 See Methods in manuscript for more details, and associated jupyter notebooks in `nbs/01_preprocessing/`.
   * `input/multiplier/multiplier_model_z.*`: Matrix **Z** from MultiPLIER model files (genes *x* latent variables).
 A more end-user-friendly version of this file can be found in `input/multiplier/lv-gene_weights.xlsx` which contains one sheet per LV (987 in total) with the list of genes that belong to each one sorted by their weights.
