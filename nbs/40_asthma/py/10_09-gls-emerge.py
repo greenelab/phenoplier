@@ -202,7 +202,10 @@ list(well_aligned_lv_codes)[:5]
 # # Select LVs
 
 # %%
-gls_phenomexcan_lvs = gls_phenomexcan[gls_phenomexcan["pvalue"] < 0.01]["lv"].unique()
+gls_phenomexcan.sort_values("pvalue").head(10)
+
+# %%
+gls_phenomexcan_lvs = gls_phenomexcan[gls_phenomexcan["pvalue"] < 0.05].sort_values("pvalue")["lv"].drop_duplicates(keep="first").to_numpy()
 display(gls_phenomexcan_lvs)
 
 # %% tags=[]
