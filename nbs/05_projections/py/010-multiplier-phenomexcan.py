@@ -18,7 +18,8 @@
 # # Description
 
 # %% [markdown] tags=[]
-# It projects the PhenomeXcan results into the MultiPLIER latent space.
+# It projects the PhenomeXcan results (S-MultiXcan) into the MultiPLIER latent space.
+# Before projecting, repeated gene symbols as well as genes with NaN are removed.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -33,26 +34,29 @@ from pathlib import Path
 from IPython.display import display
 import pandas as pd
 
+import rpy2.robjects as ro
+from rpy2.robjects import pandas2ri
+from rpy2.robjects.conversion import localconverter
+
 import conf
+from entity import Gene
 from data.cache import read_data
 from multiplier import MultiplierProjection
+
+# %% tags=[]
+readRDS = ro.r["readRDS"]
+
+# %% tags=[]
+saveRDS = ro.r["saveRDS"]
 
 # %% [markdown] tags=[]
 # # Settings
 
 # %% tags=[]
 RESULTS_PROJ_OUTPUT_DIR = Path(conf.RESULTS["PROJECTIONS_DIR"])
-
 RESULTS_PROJ_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 display(RESULTS_PROJ_OUTPUT_DIR)
-
-# %% [markdown] tags=[]
-# # Read gene mappings
-
-# %% tags=[]
-GENE_ID_TO_NAME_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"])
-GENE_NAME_TO_ID_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"])
 
 # %% [markdown] tags=[]
 # # Load PhenomeXcan data (S-MultiXcan)
@@ -79,7 +83,7 @@ smultixcan_results.head()
 # ## Gene IDs to Gene names
 
 # %% tags=[]
-smultixcan_results = smultixcan_results.rename(index=GENE_ID_TO_NAME_MAP)
+smultixcan_results = smultixcan_results.rename(index=Gene.GENE_ID_TO_NAME_MAP)
 
 # %% tags=[]
 smultixcan_results.shape
@@ -105,7 +109,7 @@ smultixcan_results.shape
 # ## Remove NaN values
 
 # %% [markdown] tags=[]
-# **TODO**: it might be better to try to impute this values
+# **TODO**: it might be better to try to impute these values
 
 # %% tags=[]
 smultixcan_results = smultixcan_results.dropna(how="any")
@@ -137,20 +141,101 @@ smultixcan_into_multiplier.head()
 # %% tags=[]
 (smultixcan_into_multiplier.loc["LV136"].sort_values(ascending=False).head(20))
 
+# %% tags=[]
+(smultixcan_into_multiplier.loc["LV844"].sort_values(ascending=False).head(20))
+
 # %% [markdown] tags=[]
 # # Save
 
+# %% tags=[]
+output_file = Path(
+    RESULTS_PROJ_OUTPUT_DIR, f"projection-{results_filename_stem}.pkl"
+).resolve()
+
+display(output_file)
+
+# %% tags=[]
+smultixcan_into_multiplier.to_pickle(output_file)
+
 # %% [markdown] tags=[]
-# We are not using this data version, so saving is commented out here.
+# ## RDS format
 
 # %% tags=[]
-# output_file = Path(
-#     RESULTS_PROJ_OUTPUT_DIR, f"projection-{results_filename_stem}.pkl"
-# ).resolve()
-
-# display(output_file)
+output_rds_file = output_file.with_suffix(".rds")
+display(output_rds_file)
 
 # %% tags=[]
-# smultixcan_into_multiplier.to_pickle(output_file)
+with localconverter(ro.default_converter + pandas2ri.converter):
+    data_r = ro.conversion.py2rpy(smultixcan_into_multiplier)
+
+# %% tags=[]
+data_r
+
+# %% tags=[]
+saveRDS(data_r, str(output_rds_file))
+
+# %% tags=[]
+# testing: load the rds file again
+data_r = readRDS(str(output_rds_file))
+
+# %% tags=[]
+with localconverter(ro.default_converter + pandas2ri.converter):
+    data_again = ro.conversion.rpy2py(data_r)
+#     data_again.index = data_again.index.astype(int)
+
+# %% tags=[]
+data_again.shape
+
+# %% tags=[]
+data_again.head()
+
+# %% tags=[]
+pd.testing.assert_frame_equal(
+    smultixcan_into_multiplier,
+    data_again,
+    check_names=False,
+    check_exact=True,
+    #     rtol=0.0,
+    #     atol=1e-50,
+    #     check_dtype=False,
+)
+
+# %% [markdown] tags=[]
+# ## Text format
+
+# %% tags=[]
+# tsv format
+output_text_file = output_file.with_suffix(".tsv.gz")
+display(output_text_file)
+
+# %% tags=[]
+smultixcan_into_multiplier.to_csv(
+    output_text_file, sep="\t", index=True, float_format="%.5e"
+)
+
+# %% tags=[]
+# testing
+# data2 = data.copy()
+# data2.index = list(range(0, data2.shape[0]))
+
+data_again = pd.read_csv(output_text_file, sep="\t", index_col=0)
+
+# data_again.index = list(data_again.index)
+# data_again["part_k"] = data_again["part_k"].astype(float)
+
+# %% tags=[]
+data_again.shape
+
+# %% tags=[]
+data_again.head()
+
+# %% tags=[]
+pd.testing.assert_frame_equal(
+    smultixcan_into_multiplier,
+    data_again,
+    check_exact=False,
+    rtol=0.0,
+    atol=5e-5,
+)
 
 # %% tags=[]
