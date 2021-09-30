@@ -71,7 +71,7 @@ OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
 OUTPUT_FILENAME = OUTPUT_DIR / "gls_phenotypes-emerge-asthma.pkl"
 display(OUTPUT_FILENAME)
 
-# %%
+# %% tags=[]
 PHENOMEXCAN_INPUT_FILE = conf.RESULTS["GLS"] / "gls_phenotypes-phenomexcan-asthma.pkl"
 display(PHENOMEXCAN_INPUT_FILE)
 
@@ -201,11 +201,16 @@ list(well_aligned_lv_codes)[:5]
 # %% [markdown] tags=[]
 # # Select LVs
 
-# %%
+# %% tags=[]
 gls_phenomexcan.sort_values("pvalue").head(10)
 
-# %%
-gls_phenomexcan_lvs = gls_phenomexcan[gls_phenomexcan["pvalue"] < 0.05].sort_values("pvalue")["lv"].drop_duplicates(keep="first").to_numpy()
+# %% tags=[]
+gls_phenomexcan_lvs = (
+    gls_phenomexcan[gls_phenomexcan["pvalue"] < 0.05]
+    .sort_values("pvalue")["lv"]
+    .drop_duplicates(keep="first")
+    .to_numpy()
+)
 display(gls_phenomexcan_lvs)
 
 # %% tags=[]
