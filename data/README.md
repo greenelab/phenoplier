@@ -16,19 +16,19 @@ Data is provided in both binary and text formats.
 We always used binary formats for the analyses described here. 
 Text formats are provided for convenience but always imply some loss of information, since decimal places are reduced.
 The files are:
-  * `input/phenomexcan/smultixcan-mashr-zscores.*`: this is one version of matrix **M** shown in Figure 1 in the [manuscript](https://greenelab.github.io/phenoplier_manuscript/) (genes *x* traits).
+  * `phenomexcan/smultixcan-mashr-zscores.*`: this is one version of matrix **M** shown in Figure 1 in the [manuscript](https://greenelab.github.io/phenoplier_manuscript/) (genes *x* traits).
 These are the original PhenomeXcan S-MultiXcan results but converted from p-values to z-scores.
 See Methods in manuscript for more details.
-  * `input/phenomexcan/smultixcan-efo_partial-mashr-zscores.*`: this is a modified version of matrix **M** (above) where traits were mapped to [EFO](https://www.ebi.ac.uk/efo) (Experimental Factor Ontology), combined and standardized (combining very similar traits and adjusting for highly polygenic ones).
+  * `phenomexcan/smultixcan-efo_partial-mashr-zscores.*`: this is a modified version of matrix **M** (above) where traits were mapped to [EFO](https://www.ebi.ac.uk/efo) (Experimental Factor Ontology), combined and standardized (combining very similar traits and adjusting for highly polygenic ones).
 It was used for the clustering of traits.
 See Methods in manuscript for more details, and associated jupyter notebooks in `nbs/01_preprocessing/`.
-  * `input/multiplier/multiplier_model_z.*`: Matrix **Z** from MultiPLIER model files (genes *x* latent variables).
+  * `multiplier/multiplier_model_z.*`: Matrix **Z** from MultiPLIER model files (genes *x* latent variables).
 A more end-user-friendly version of this file can be found in `input/multiplier/lv-gene_weights.xlsx` which contains one sheet per LV (987 in total) with the list of genes that belong to each one sorted by their weights.
-  * `input/multiplier/multiplier_model_b.*`: Matrix **B** from MultiPLIER model files (latent variables *x* samples/conditions).
-  * `input/multiplier/multiplier_model_summary.*`: contains information about pathways associated with each LV.
+  * `multiplier/multiplier_model_b.*`: Matrix **B** from MultiPLIER model files (latent variables *x* samples/conditions).
+  * `multiplier/multiplier_model_summary.*`: contains information about pathways associated with each LV.
 A more end-user-friendly version of this file can be found in `input/multiplier/lv-pathways.xlsx`, where data is sorted by LV identifier and then by FDR.
-  * `input/multiplier/*`: for the rest of the MultiPLIER files, you can check out the MultiPLIER paper to get an idea of the information they provide. 
-  * `input/lincs/lincs-data.*`: this is the drugs-related version of matrix **M** shown in Figure 1 of the manuscript.
+  * `multiplier/*`: for the rest of the MultiPLIER files, you can check out the MultiPLIER paper to get an idea of the information they provide. 
+  * `lincs/lincs-data.*`: this is the drugs-related version of matrix **M** shown in Figure 1 of the manuscript.
 It is the LINCS L1000 data downloaded from [here](https://doi.org/10.6084/m9.figshare.3085426.v1) (specifically, file `consensi-drugbank-tsv.bz2`), where gene Entrez IDs were mapped to Ensembl ID.
 
 * `projections/`: contains data projected into the MultiPLIER latent space, such as gene-trait associations (S-MultiXcan or S-PrediXcan) and drug-induced transcriptional profiles (LINCS L1000).
@@ -48,7 +48,10 @@ Only traits and drug pairs in this set are included in the predictions under thi
   * `phenomexcan/`: prediction files for all traits in PhenomeXcan and all drugs in LINCS L1000 separated by tissue.
 In the original manuscript, for each drug-disease pair, we took the maximum score across tissues, but other strategies (like computing the mean or median) could be used.
 
-* `clustering/cluster_lvs/`: contains the set of LVs that distinguish traits in each cluster (separated by partitions) from the rest.
+* `clustering/`: contains the clustering runs (both with base algorithms and consensus clustering approaches), and the interpretation analyses.
+  * `interpretation/cluster_lvs/`: contains the set of LVs that distinguish traits in each cluster (separated by partitions) from the rest.
 This was obtained by the decision tree model.
+  * `runs/`: runs with base/traditional clustering algorithms on different data transformations (standardized, PCA and UMAP).
+  * `consensus_clustering`: runs with consensus clustering algorithms.
 
 * `crispr/analyses/`: contains the fgsea analysis on our lipids-altering gene-sets found by a CRISPR screen.
