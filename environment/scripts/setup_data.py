@@ -12,24 +12,32 @@ logger = get_logger("setup")
 
 
 #
-# Methods names (that download files) which should only be included in testing
-# mode (see below).
+# These variables specify methods names (that download files) which should only
+# be executed in specific modes. For example, "testing" for unit testing, or
+# "demo" for data needed only for the demo.
 #
-DATA_IN_TESTING_MODE_ONLY = {
-    "download_phenomexcan_rapid_gwas_pheno_info",
-    "download_phenomexcan_rapid_gwas_data_dict_file",
-    "download_uk_biobank_coding_3",
-    "download_uk_biobank_coding_6",
-    "download_phenomexcan_gtex_gwas_pheno_info",
-    "download_gene_map_name_to_id",
-    "download_gene_map_id_to_name",
-    "download_biomart_genes_hg38",
-    "download_multiplier_model_z_pkl",
-    "download_multiplier_model_metadata_pkl",
-    "download_predixcan_mashr_prediction_models",
-    "download_precomputed_gene_correlations",
-    "download_phenomexcan_smultixcan_mashr_zscores",
-    "download_snps_covariance",
+
+MODES_ACTIONS = {
+    "testing": {
+        "download_phenomexcan_rapid_gwas_pheno_info",
+        "download_phenomexcan_rapid_gwas_data_dict_file",
+        "download_uk_biobank_coding_3",
+        "download_uk_biobank_coding_6",
+        "download_phenomexcan_gtex_gwas_pheno_info",
+        "download_gene_map_name_to_id",
+        "download_gene_map_id_to_name",
+        "download_biomart_genes_hg38",
+        "download_multiplier_model_z_pkl",
+        "download_multiplier_model_metadata_pkl",
+        "download_predixcan_mashr_prediction_models",
+        "download_precomputed_gene_correlations",
+        "download_phenomexcan_smultixcan_mashr_zscores",
+        "download_snps_covariance",
+    },
+    "demo": {
+
+    },
+    "full": {}  # empty means all actions/methods
 }
 
 
@@ -495,32 +503,16 @@ def download_multiplier_recount2_model(**kwargs):
     )
 
 
-# def download_multiplier_recount2_data(**kwargs):
-#     """
-#     This method downloads the recount2 data used in MultiPLIER.
-#     """
-#     _get_file_from_zip(
-#         zip_file_url="https://ndownloader.figshare.com/files/10881866",
-#         zip_file_path=Path(
-#             conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent, "recount2_PLIER_data.zip"
-#         ).resolve(),
-#         zip_file_md5="f084992c5d91817820a2782c9441b9f6",
-#         zip_internal_filename=Path(
-#             "recount2_PLIER_data", "recount_data_prep_PLIER.RDS"
-#         ),
-#         output_file=conf.RECOUNT2["PREPROCESSED_GENE_EXPRESSION_FILE"],
-#         output_file_md5="4f806e06069fd339f8fcff7c98cecff0",
-#     )
-
-
 if __name__ == "__main__":
     import argparse
     from collections import defaultdict
 
-    # create a list of available options:
-    #   --mode=full:  it downloads all the data.
+    # create a list of available options. For example:
+    #   --mode=full:    it downloads all the data.
     #   --mode=testing: it downloads a smaller set of the data. This is useful for
     #                   Github Action workflows.
+    #   --mode=demo:    it downloads the data needed for the demo
+    # (other modes might be specified in MODES_ACTION
     AVAILABLE_ACTIONS = defaultdict(dict)
 
     # Obtain all local attributes of this module and run functions to download files
@@ -534,23 +526,27 @@ if __name__ == "__main__":
         ):
             continue
 
-        if key in DATA_IN_TESTING_MODE_ONLY:
-            AVAILABLE_ACTIONS["testing"][key] = value
-
-        AVAILABLE_ACTIONS["full"][key] = value
+        for mode, mode_actions in MODES_ACTIONS.items():
+            if len(mode_actions) == 0:
+                # if modes_actions is empty, it means all actions should be
+                # added to that mode (e.g. "full" mode)
+                AVAILABLE_ACTIONS[mode][key] = value
+            elif key in mode_actions:
+                AVAILABLE_ACTIONS[mode][key] = value
 
     parser = argparse.ArgumentParser(description="PhenoPLIER data setup.")
     parser.add_argument(
         "--mode",
         choices=list(AVAILABLE_ACTIONS.keys()),
         default="full",
-        help="Specifies which kind of data should be downloaded. It "
-        "could be all the data (full) or a small subset (testing, which is "
+        help="Specifies which kind of data should be downloaded. For example, "
+        "it could be all the data (full) or a small subset (testing, which is "
         "used by unit tests).",
     )
     parser.add_argument(
-        "--action",
-        help="Specifies a single action to be executed. It could be any of "
+        "--actions",
+        nargs="+",
+        help="Specifies a list of actions to be executed. It could be any of "
         "the following: " + " ".join(AVAILABLE_ACTIONS["full"].keys()),
     )
     args = parser.parse_args()
@@ -559,14 +555,15 @@ if __name__ == "__main__":
 
     methods_to_run = {}
 
-    if args.action is not None:
-        if args.action not in AVAILABLE_ACTIONS["full"]:
-            import sys
+    if args.actions is not None:
+        for a in args.actions:
+            if a not in AVAILABLE_ACTIONS["full"]:
+                import sys
 
-            logger.error(f"The action does not exist: {args.action}")
-            sys.exit(1)
+                logger.error(f"The action does not exist: {a}")
+                sys.exit(1)
 
-        methods_to_run[args.action] = AVAILABLE_ACTIONS["full"][args.action]
+            methods_to_run[a] = AVAILABLE_ACTIONS["full"][a]
     else:
         methods_to_run = AVAILABLE_ACTIONS[args.mode]
 
