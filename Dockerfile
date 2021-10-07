@@ -29,10 +29,11 @@ SHELL ["/bin/bash", "--login", "-c"]
 ENV PYTHONPATH=${PHENOPLIER_CODE_DIR}/libs:${PYTHONPATH}
 
 RUN echo "Make sure packages can be loaded"
-RUN python -c "import rpy2.robjects as ro"
+RUN python -c "import papermill"
 
 COPY . ${PHENOPLIER_CODE_DIR}
 WORKDIR ${PHENOPLIER_CODE_DIR}
+RUN mkdir /.local /.config /.cache /.jupyter && chmod -R 0777 ./ /.config /.cache /.local /.jupyter
 
 RUN echo "Make sure modules can be loaded"
 RUN python -c "import conf"
