@@ -18,6 +18,9 @@
 # # Description
 
 # %% [markdown]
+# TODO
+
+# %% [markdown]
 # # Modules
 
 # %%
@@ -213,13 +216,13 @@ stats.pearsonr(
 )
 
 # %% [markdown]
-# Although the correlation is significant (`8.16e-10`) and the slope positive (we are interested only in genes at the top of the LV), we need to account of correlated predicted expression from the TWAS models. We have a class implemented in Python that computes this, as shown below.
+# Although the correlation is significant (`8.16e-10`) and the slope positive (we are interested only in genes at the top of the LV), we need to account for correlated predicted expression from the TWAS models (for example, if the expression of two genes at the top of the LV is correlated, results will not be as significant after accounting for this). We have a class implemented in Python that computes this, as shown below.
 
 # %% [markdown]
-# # Association between an LV and a trait using a generalized least squares (GLS) model
+# # Association between an LV and a trait
 
 # %% [markdown]
-# You can use our class `gls.GLSPhenoplier` to compute an association between an LV and a trait, in a similar way we did it in the previous cells by correlating LV603 gene weight's and neutrophil count gene associations (transformed to z-scores). However, `gls.GLSPhenoplier` takes into account correlations between the predicted expression of genes.
+# You can use our class `gls.GLSPhenoplier` to compute an association between an LV and a trait, in a similar way we did it in the previous cells by correlating LV603 gene weight's and neutrophil count gene associations (transformed to z-scores). However, `gls.GLSPhenoplier` takes into account correlations between the predicted expression of genes by using a generalized least squares (GLS) model.
 
 # %%
 from gls import GLSPhenoplier
@@ -264,7 +267,7 @@ print(res.summary())
 
 # %% [markdown]
 # This p-value (`3.76e-08`) is a two-sided test on the LV coefficient (`0.0698`).
-# You can see that the p-value is slightly less significant than the p-value from the Pearson correlation we computed before.
+# You can see that the p-value is slightly less significant than the p-value from the Pearson correlation that we computed before.
 
 # %% [markdown]
 # This is how you can access the model's estimated parameters.
