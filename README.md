@@ -7,6 +7,14 @@ Unit tests are disabled for now
 [![HTML Manuscript](https://img.shields.io/badge/manuscript-HTML-blue.svg)](https://greenelab.github.io/phenoplier_manuscript/)
 [![PDF Manuscript](https://img.shields.io/badge/manuscript-PDF-blue.svg)](https://greenelab.github.io/phenoplier_manuscript/manuscript.pdf)
 
+## Contents
+
+ * [Overview](#overview)
+ * [Code and data](#code-and-data)
+ * [Setup](#setup)
+ * [Quick demo](#quick-demo)
+ * [Running the code](#running-the-code)
+
 ## Overview
 
 ![](images/phenoplier_overview.png)
@@ -38,7 +46,17 @@ To prepare the environment to run the PhenoPLIER code, follow the steps in
 [environment](environment/). This will create a conda environment and download
 the necessary data. Alternatively, you can use our Docker image (see below).
 
-## Running code
+## Quick demo
+
+The fastest way to quickly test PhenoPLIER through an example is to [install Docker](https://docs.docker.com/get-docker/) and run the container:
+```bash
+docker pull miltondp/phenoplier
+docker run --rm \
+  miltondp/phenoplier \
+  python environment/scripts/setup_data.py --mode demo
+```
+
+## Running the code
 
 ### From command-line
 
