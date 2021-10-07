@@ -34,10 +34,8 @@ MODES_ACTIONS = {
         "download_phenomexcan_smultixcan_mashr_zscores",
         "download_snps_covariance",
     },
-    "demo": {
-
-    },
-    "full": {}  # empty means all actions/methods
+    "demo": {},
+    "full": {},  # empty means all actions/methods
 }
 
 
