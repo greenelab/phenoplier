@@ -1,4 +1,6 @@
 .git/lfs/
+.gitignore
+.github/
 data/
 images/
 base/
@@ -8,4 +10,7 @@ base/
 .pytest_cache/
 **/__pycache__
 *.py[cod]
+
+# other
+*.swp
 
