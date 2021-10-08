@@ -6,7 +6,7 @@ The fastest way to quickly test PhenoPLIER through an example is to [install Doc
 docker pull miltondp/phenoplier
 
 # download data to run the demo
-docker run --rm \
+docker run --name demo \
   miltondp/phenoplier \
   /bin/bash -c "python environment/scripts/setup_data.py --mode demo"
   
@@ -16,7 +16,7 @@ docker run --rm \
   miltondp/phenoplier
 ```
 
-and access the web interface by going to `http://localhost:8888`.
+and access the web interface by going to `http://localhost:8888/lab/tree/nbs/99_demo`.
 
 
 
