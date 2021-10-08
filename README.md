@@ -100,13 +100,21 @@ You can also run all the steps below using a Docker image instead of a local ins
 docker pull miltondp/phenoplier
 ```
 
-The image only contains the conda environment with the code in this repository, so after pulling the image you need to download the data as well:
+The image only contains the conda environment with the code in this repository, so after pulling the image you need to download the data as well.
+First, create a directory in your machine where data will be downloaded/saved:
+
+```bash
+# specify a directory in your computer where data will be stored
+export DATA_FOLDER="/tmp/phenoplier_data"
+mkdir -p ${DATA_FOLDER}
+```
 
 ```bash
 docker run --rm \
-  -v "/tmp/phenoplier_data:/opt/phenoplier_data" \
+  -v "${DATA_FOLDER}:/opt/phenoplier_data" \
+  --user "$(id -u):$(id -g)" \
   miltondp/phenoplier \
-  python environment/scripts/setup_data.py
+  /bin/bash -c "python environment/scripts/setup_data.py"
 ```
 
 The `-v` parameter allows to specify a local directory (`/tmp/phenoplier_data`) where the data will be downloaded.
@@ -116,7 +124,8 @@ You can run notebooks from the command line, for example:
 
 ```bash
 docker run --rm \
-  -v "/tmp/phenoplier_data:/opt/phenoplier_data" \
+  -v "${DATA_FOLDER}:/opt/phenoplier_data" \
+  --user "$(id -u):$(id -g)" \
   miltondp/phenoplier \
   /bin/bash -c "parallel -k --lb --halt 2 -j1 'bash nbs/run_nbs.sh {}' ::: nbs/01_preprocessing/*.ipynb"
 ```
@@ -126,7 +135,8 @@ or start a Jupyter Notebook server with:
 ```bash
 docker run --rm \
   -p 8888:8892 \
-  -v "/tmp/phenoplier_data:/opt/phenoplier_data" \
+  -v "${DATA_FOLDER}:/opt/phenoplier_data" \
+  --user "$(id -u):$(id -g)" \
   miltondp/phenoplier
 ```
 
