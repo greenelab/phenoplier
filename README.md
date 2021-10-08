@@ -10,9 +10,9 @@ Unit tests are disabled for now
 ## Contents
 
  * [Overview](#overview)
+ * [Quick demo](#quick-demo)
  * [Code and data](#code-and-data)
  * [Setup](#setup)
- * [Quick demo](#quick-demo)
  * [Running the code](#running-the-code)
 
 ## Overview
@@ -28,7 +28,7 @@ For more details, check out our manuscript in [bioRxiv](https://doi.org/10.1101/
 
 ## Quick demo
 
-You can go to the [`demo/`](nbs/99_demo) folder and run a small demo on real data to quickly see what you can do with PhenoPLIER. 
+You can follow the instructions in the [`demo/`](nbs/99_demo) folder to run a small demo on real data to quickly see what you can do with PhenoPLIER. 
 
 ## Code and data
 
@@ -92,7 +92,7 @@ bash scripts/run_nbs_server.sh
 Then, go to `http://localhost:8892`, browse the `nbs` folder, and run the
 notebooks in the specified order.
 
-## Using Docker
+### Using Docker
 
 You can also run all the steps below using a Docker image instead of a local installation.
 
