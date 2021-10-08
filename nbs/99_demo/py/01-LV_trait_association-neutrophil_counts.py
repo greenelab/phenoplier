@@ -9,7 +9,7 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.7.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -60,15 +60,6 @@ lv_metadata.shape
 
 # %%
 lv_metadata.head()
-
-# %% [markdown]
-# # Load GWAS information
-
-# %%
-gwas_info = pd.read_csv(conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"], sep="\t")
-
-# %%
-gwas_info.head()
 
 # %% [markdown]
 # # Load gene associations
