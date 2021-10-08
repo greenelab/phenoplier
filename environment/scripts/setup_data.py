@@ -259,7 +259,6 @@ def download_crispr_lipids_gene_sets_file(**kwargs):
 
 def download_pharmacotherapydb_indications(**kwargs):
     output_file = conf.PHARMACOTHERAPYDB["INDICATIONS_FILE"]
-    output_file.parent.mkdir(exist_ok=True, parents=True)
     curl(
         "https://ndownloader.figshare.com/files/4823950",
         output_file,
@@ -270,7 +269,6 @@ def download_pharmacotherapydb_indications(**kwargs):
 
 def download_lincs_consensus_signatures(**kwargs):
     output_file = conf.LINCS["CONSENSUS_SIGNATURES_FILE"]
-    output_file.parent.mkdir(exist_ok=True, parents=True)
     curl(
         "https://ndownloader.figshare.com/files/4797607",
         output_file,
@@ -281,7 +279,6 @@ def download_lincs_consensus_signatures(**kwargs):
 
 def download_precomputed_gene_correlations(**kwargs):
     output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_NAMES_CORR_AVG"]
-    output_file.parent.mkdir(exist_ok=True, parents=True)
     curl(
         "https://upenn.box.com/shared/static/xopvxtlj44t4tswz3zzz8uxr6z7dzk0w.pkl",
         output_file,
@@ -292,7 +289,6 @@ def download_precomputed_gene_correlations(**kwargs):
 
 def download_snps_covariance(**kwargs):
     output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["SNPS_COVARIANCE_FILE"]
-    output_file.parent.mkdir(exist_ok=True, parents=True)
     curl(
         "https://upenn.box.com/shared/static/cm9my5bo8jw6nawsxy5y6z0ceh9wnecv.h5",
         output_file,

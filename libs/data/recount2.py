@@ -114,7 +114,7 @@ class ExperimentDataReader(object):
         if self.srp_data_file.exists() and self.srp_data_file.stat().st_size > 0:
             return
 
-        self.srp_dir.mkdir(exist_ok=True)
+        self.srp_dir.mkdir(exist_ok=True, parents=True)
 
         import requests
 

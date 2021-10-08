@@ -54,12 +54,12 @@ assert SPREDIXCAN_H5_FOLDER.is_dir(), "The folder does not exist"
 
 # %% papermill={"duration": 0.028686, "end_time": "2021-04-23T03:19:24.621820", "exception": false, "start_time": "2021-04-23T03:19:24.593134", "status": "completed"} tags=[]
 spredixcan_pkl_output_folder = Path(SPREDIXCAN_H5_FOLDER.parent, "pkl").resolve()
-spredixcan_pkl_output_folder.mkdir(exist_ok=True)
+spredixcan_pkl_output_folder.mkdir(exist_ok=True, parents=True)
 display(spredixcan_pkl_output_folder)
 
 # %% papermill={"duration": 0.029585, "end_time": "2021-04-23T03:19:24.670272", "exception": false, "start_time": "2021-04-23T03:19:24.640687", "status": "completed"} tags=[]
 spredixcan_tsv_output_folder = Path(SPREDIXCAN_H5_FOLDER.parent, "tsv").resolve()
-spredixcan_tsv_output_folder.mkdir(exist_ok=True)
+spredixcan_tsv_output_folder.mkdir(exist_ok=True, parents=True)
 display(spredixcan_tsv_output_folder)
 
 # %% [markdown] papermill={"duration": 0.018906, "end_time": "2021-04-23T03:19:24.708770", "exception": false, "start_time": "2021-04-23T03:19:24.689864", "status": "completed"} tags=[]

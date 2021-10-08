@@ -33,7 +33,7 @@ print("This is the head of the sample:")
 print(smultixcan_results.head())
 
 output_dir = Path("data", "multiplier", "test_case5")
-output_dir.mkdir(exist_ok=True)
+output_dir.mkdir(exist_ok=True, parents=True)
 
 saveRDS = ro.r["saveRDS"]
 with localconverter(ro.default_converter + pandas2ri.converter):
