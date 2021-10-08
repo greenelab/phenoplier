@@ -31,7 +31,7 @@ docker run --rm \
 
 and access the web interface by going to `http://localhost:8888/lab/tree/nbs/99_demo`.
 From here, you should open the notebooks in the order presented: first `01-LV_trait_association-...`, then `02-LV_cell_types-...`, etc.
-You can run all the cells again by clicking on the "Play" icon or pressing Shift+Enter.
+Once a notebook is open in your browser, you can run all the cells by clicking on the "Play" icon or pressing Shift+Enter.
 Go through each cell and follow the instructions.
 
 Then you can also try it with your own GWAS/TWAS results (you can copy your files to the `${DATA_FOLDER}` you specified below, and it will be available to the container).
