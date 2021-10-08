@@ -34,7 +34,11 @@ MODES_ACTIONS = {
         "download_phenomexcan_smultixcan_mashr_zscores",
         "download_snps_covariance",
     },
-    "demo": {},
+    "demo": {
+        "download_multiplier_model_z_pkl",
+        "download_multiplier_model_summary_pkl",
+        "download_phenomexcan_smultixcan_mashr_pvalues",
+    },
     "full": {},  # empty means all actions/methods
 }
 
