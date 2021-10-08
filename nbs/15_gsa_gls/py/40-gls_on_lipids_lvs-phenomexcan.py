@@ -152,8 +152,7 @@ list(well_aligned_lv_codes)[:5]
 
 # %% tags=[]
 deg_enrich = pd.read_csv(
-    conf.RESULTS["CRISPR_ANALYSES"]["BASE_DIR"],
-    "fgsea-hi_conf-all_lvs.tsv",
+    conf.RESULTS["CRISPR_ANALYSES"]["BASE_DIR"] / "fgsea-hi_conf-all_lvs.tsv",
     sep="\t",
 )
 
