@@ -52,7 +52,7 @@ the necessary data. Alternatively, you can use our Docker image (see below).
 
 ## Running the code
 
-### From command-line
+### From the command-line
 
 First, activate your conda environment and export your settings to environmental variables so non-Python scripts can access them:
 ```bash
