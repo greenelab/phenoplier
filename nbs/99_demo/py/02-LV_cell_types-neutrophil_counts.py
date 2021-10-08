@@ -9,7 +9,7 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.7.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -58,6 +58,7 @@ display(OUTPUT_FIGURES_DIR)
 OUTPUT_FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 
 # %%
+# this is the path of the figure that we will generate, in case you want to export it
 OUTPUT_CELL_TYPE_FILEPATH = OUTPUT_FIGURES_DIR / f"{LV_NAME.lower()}-cell_types.svg"
 display(OUTPUT_CELL_TYPE_FILEPATH)
 
@@ -75,37 +76,6 @@ multiplier_model_summary.head()
 
 # %% [markdown] tags=[]
 # # Load data
-
-# %% [markdown] tags=[]
-# ## Original data
-
-# %% tags=[]
-# INPUT_SUBSET = "z_score_std"
-
-# %% tags=[]
-# INPUT_STEM = "projection-smultixcan-efo_partial-mashr-zscores"
-
-# %% tags=[]
-# input_filepath = Path(
-#     conf.RESULTS["DATA_TRANSFORMATIONS_DIR"],
-#     INPUT_SUBSET,
-#     f"{INPUT_SUBSET}-{INPUT_STEM}.pkl",
-# ).resolve()
-# display(input_filepath)
-
-# assert input_filepath.exists(), "Input file does not exist"
-
-# input_filepath_stem = input_filepath.stem
-# display(input_filepath_stem)
-
-# %% tags=[]
-# data = pd.read_pickle(input_filepath)
-
-# %% tags=[]
-# data.shape
-
-# %% tags=[]
-# data.head()
 
 # %% [markdown]
 # ## LV data
@@ -172,6 +142,7 @@ _tmp = lv_data.loc[
 _tmp_seq = list(chunker(_tmp.sort_values(LV_NAME, ascending=False), 25))
 
 # %%
+# if you change the number here you can paginate over the entire set of results; for example, with `_tmp_seq[1]` you'll see the next "page"
 _tmp_seq[0]
 
 # %%
