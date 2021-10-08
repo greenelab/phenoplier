@@ -8,7 +8,7 @@ from subprocess import run
 import conf
 
 output_dir = Path("data", "multiplier")
-output_dir.mkdir(exist_ok=True)
+output_dir.mkdir(exist_ok=True, parents=True)
 
 # take a small sample of the S-MultiXcan results from PhenomeXcan
 run(["python", "scripts/generate_phenomexcan_data_sample.py", output_dir])
