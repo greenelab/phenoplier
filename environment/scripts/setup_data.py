@@ -35,9 +35,19 @@ MODES_ACTIONS = {
         "download_snps_covariance",
     },
     "demo": {
+        "download_phenomexcan_rapid_gwas_pheno_info",
+        "download_phenomexcan_gtex_gwas_pheno_info",
+        "download_phenomexcan_rapid_gwas_data_dict_file",
+        "download_uk_biobank_coding_3",
+        "download_uk_biobank_coding_6",
+        "download_biomart_genes_hg38",
+        "download_gene_map_id_to_name",
+        "download_gene_map_name_to_id",
         "download_multiplier_model_z_pkl",
+        "download_multiplier_model_b_pkl",
         "download_multiplier_model_summary_pkl",
         "download_phenomexcan_smultixcan_mashr_pvalues",
+        "download_precomputed_gene_correlations",
     },
     "full": {},  # empty means all actions/methods
 }
