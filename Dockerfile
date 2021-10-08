@@ -33,7 +33,8 @@ RUN python -c "import papermill"
 
 COPY . ${PHENOPLIER_CODE_DIR}
 WORKDIR ${PHENOPLIER_CODE_DIR}
-RUN mkdir /.local /.config /.cache /.jupyter && chmod -R 0777 ./ /.config /.cache /.local /.jupyter
+RUN mkdir /.local /.config /.cache /.jupyter \
+  && chmod -R 0777 ./ /.config /.cache /.local /.jupyter
 
 RUN echo "Make sure modules can be loaded"
 RUN python -c "import conf"
