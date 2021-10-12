@@ -58,7 +58,7 @@ matrix_z.head()
 # # Load information about LV alignment with pathways
 
 # %% [markdown]
-# LV in matrix Z can represent a group of genes that align well with prior pahtways (or prior knowledge) or be "novel" in the sense that the combination of genes do not represent a known unit but was found the PLIER when factorizing the recount2 data (see the MultiPLIER article for more details).
+# LV in matrix Z can represent a group of genes that align well with prior pathways (or prior knowledge) or be "novel" in the sense that the combination of genes do not represent a known unit but was found the PLIER when factorizing the recount2 data (see the MultiPLIER article for more details).
 #
 # Here we load that information, where for each LV and pathway, we have a p-value and area under the curve (AUC) that indicate how well the LV aligns to that pathway.
 
