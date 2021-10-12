@@ -16,7 +16,7 @@ Data is provided in both binary and text formats.
 We always used binary formats for the analyses described here. 
 Text formats are provided for convenience but always imply some loss of information, since decimal places are reduced.
 The files are:
-  * `phenomexcan/smultixcan-mashr-zscores.*`: this is one version of matrix **M** shown in Figure 1 in the [manuscript](https://greenelab.github.io/phenoplier_manuscript/) (genes *x* traits).
+  * `phenomexcan/smultixcan-mashr-zscores.*`: this is one version of matrix **M** shown in Figure 1 in the [manuscript](https://greenelab.github.io/phenoplier_manuscript/#phenoplier-an-integration-framework-based-on-gene-co-expression-patterns) (genes *x* traits).
 These are the original PhenomeXcan S-MultiXcan results but converted from p-values to z-scores.
 See Methods in manuscript for more details.
   * `phenomexcan/smultixcan-efo_partial-mashr-zscores.*`: this is a modified version of matrix **M** (above) where traits were mapped to [EFO](https://www.ebi.ac.uk/efo) (Experimental Factor Ontology), combined and standardized (combining very similar traits and adjusting for highly polygenic ones).
