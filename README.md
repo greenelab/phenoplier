@@ -61,7 +61,7 @@ Alternatively, you can use our Docker image (see below), which will greatly simp
 
 The code was run with an Intel Core i5 (4 cores) and 64 GB of RAM (32 GB should be enough also).
 The setup will download ~70 GB of input data and generate ~45 GB of results files, so you would need to have at least 120 GB if you plan to run all the steps.
-Running all the step would take around a week under this hardware configuration.
+Running all the steps would take around a week under this hardware configuration.
 
 ## Running the code
 
