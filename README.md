@@ -29,6 +29,8 @@ For more details, check out our manuscript in [bioRxiv](https://doi.org/10.1101/
 ## Quick demo
 
 You can follow the instructions in the [`demo/`](nbs/99_demo) folder to run a small demo on real data to quickly see what you can do with PhenoPLIER. 
+Depending on your Internet connection, downloading the necessary data for the demo should take less than 5-10 minutes.
+Running the demo code should take between 2-5 minutes.
 
 ## Code and data
 
@@ -46,9 +48,20 @@ If you use any of these files, please carefully follow the [instructions for cit
 
 ## Setup
 
-To prepare the environment to run the PhenoPLIER code, follow the steps in
-[environment](environment/). This will create a conda environment and download
-the necessary data. Alternatively, you can use our Docker image (see below).
+### Software requirements
+
+To prepare the environment to run the PhenoPLIER code, follow the steps in [environment](environment/).
+This will create a conda environment and download the necessary data.
+Depending on your Internet speed, this shouldn't take more than 24 hours.
+
+We tested the code in Ubuntu 18.04+.
+Alternatively, you can use our Docker image (see below), which will greatly simplify running the code.
+
+### Hardware requirements
+
+The code was run with an Intel Core i5 (4 cores) and 64 GB of RAM (32 GB should be enough also).
+The setup will download ~70 GB of input data and generate ~45 GB of results files, so you would need to have at least 120 GB if you plan to run all the steps.
+Running all the step would take around a week under this hardware configuration.
 
 ## Running the code
 
