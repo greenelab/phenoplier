@@ -19,12 +19,14 @@
 
 # %% [markdown]
 # In the previous notebook, we found that LV603 gene weight's are predictive of gene associations for neutrophil counts.
-# In a real application, you would run the `GLSPhenoplier` for your trait of interested across all LVs in our models, and get the significant ones. Then you can see in which cell types the LVs' genes are expressed, and this is what we are going to do in this notebook for LV603.
+# In a real application, you would run the `GLSPhenoplier` for your trait of interest across all LVs in our models, and get the significant ones. Then you can see in which cell types the LVs' genes are expressed, and this is what we are going to do in this notebook for LV603.
 #
-# To find the cell types associated with an LV, we'll use matrix B (see our [manuscript](https://greenelab.github.io/phenoplier_manuscript/#phenoplier-an-integration-framework-based-on-gene-co-expression-patterns)).
+# To find the cell types associated with an LV, we'll use matrix **B** (see the figure below and our [manuscript](https://greenelab.github.io/phenoplier_manuscript/#phenoplier-an-integration-framework-based-on-gene-co-expression-patterns)).
 # We can link RNA-seq samples in matrix B with gene expression metadata and explore which cell types are associated with the LV.
 # However, metadata in gene expression datasets is usually hard to read, process and interpret, and many times important attributes (such as `tissue` or `cell type` are missing).
 # We'll show here what we can do to try to overcome this.
+#
+# ![](https://greenelab.github.io/phenoplier_manuscript/images/entire_process/entire_process.svg)
 
 # %% [markdown]
 # # Modules
