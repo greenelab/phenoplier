@@ -8,6 +8,9 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager", repos=default_repo)
 BiocManager::install(version = "3.10", update=TRUE, ask=FALSE)
 
+# styler
+BiocManager::install("styler", update = FALSE, ask = FALSE)
+
 # clusterProfiler
 BiocManager::install("clusterProfiler", update=FALSE, ask=FALSE)
 
