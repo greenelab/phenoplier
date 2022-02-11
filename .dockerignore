@@ -1,9 +1,12 @@
-.git/lfs/
-.gitignore
-.github/
+# project specific
 data/
 images/
 base/
+
+# git
+.git/lfs/
+.gitignore
+.github/
 
 # python
 .idea/
@@ -13,4 +16,3 @@ base/
 
 # other
 *.swp
-
