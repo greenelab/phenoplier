@@ -37,7 +37,7 @@ COPY . ${CODE_DIR}
 WORKDIR ${CODE_DIR}
 
 RUN echo "Make sure modules can be loaded"
-RUN python -c "import conf; assert hasattr('GENERAL', conf)"
+RUN python -c "import conf; assert hasattr(conf, 'GENERAL')"
 
 # setup user home directory
 RUN mkdir ${USER_HOME} && chmod -R 0777 ${USER_HOME}
