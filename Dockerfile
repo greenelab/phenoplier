@@ -4,13 +4,14 @@ EXPOSE 8892/tcp
 
 ENV CODE_DIR=/opt/code
 ENV CONDA_ENV_NAME="phenoplier"
-ENV N_JOBS=1
-ENV ROOT_DIR=/opt/data
-ENV USER_HOME=${ROOT_DIR}/user_home
-ENV MANUSCRIPT_DIR=/opt/manuscript
 
-VOLUME ${ROOT_DIR}
-VOLUME ${MANUSCRIPT_DIR}
+ENV PHENOPLIER_N_JOBS=1
+ENV PHENOPLIER_ROOT_DIR=/opt/data
+ENV PHENOPLIER_USER_HOME=${PHENOPLIER_ROOT_DIR}/user_home
+ENV PHENOPLIER_MANUSCRIPT_DIR=/opt/manuscript
+
+VOLUME ${PHENOPLIER_ROOT_DIR}
+VOLUME ${PHENOPLIER_MANUSCRIPT_DIR}
 
 # install gnu parallel
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
@@ -40,8 +41,8 @@ RUN echo "Make sure modules can be loaded"
 RUN python -c "import conf; assert hasattr(conf, 'GENERAL')"
 
 # setup user home directory
-RUN mkdir ${USER_HOME} && chmod -R 0777 ${USER_HOME}
-ENV HOME=${USER_HOME}
+RUN mkdir ${PHENOPLIER_USER_HOME} && chmod -R 0777 ${PHENOPLIER_USER_HOME}
+ENV HOME=${PHENOPLIER_USER_HOME}
 
 ENTRYPOINT ["/opt/code/entrypoint.sh"]
 CMD ["scripts/run_nbs_server.sh", "--container-mode"]
