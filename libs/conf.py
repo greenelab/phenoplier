@@ -43,7 +43,9 @@ GENERAL["LOG_CONFIG_FILE"] = Path(
 
 # CPU usage
 options = [
-    m if (m := os.environ.get("PHENOPLIER_N_JOBS")) is not None and m.strip() != "" else None,
+    m
+    if (m := os.environ.get("PHENOPLIER_N_JOBS")) is not None and m.strip() != ""
+    else None,
     getattr(settings, "N_JOBS", None),
     1,
 ]
@@ -321,7 +323,6 @@ LINCS["CONSENSUS_SIGNATURES_FILE"] = Path(
 # GWAS
 #
 GWAS_DIR = Path(DATA_DIR, "gwas").resolve()
-
 
 
 if __name__ == "__main__":
