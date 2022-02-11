@@ -167,7 +167,7 @@ with warnings.catch_warnings():
     # Transform the distance matrix (from the ensemble) into a similarity matrix
     # by applying a Gaussian kernel (the suggestion is taken from the Notes in
     # https://scikit-learn.org/0.23/modules/generated/sklearn.cluster.SpectralClustering.html
-    sim_matrix = np.exp(-(dist_matrix ** 2) / (2.0 * delta ** 2))
+    sim_matrix = np.exp(-(dist_matrix**2) / (2.0 * delta**2))
 
     clus = SpectralClustering(
         eigen_solver="arpack",
@@ -201,7 +201,7 @@ delta = 5.0
 with warnings.catch_warnings():
     warnings.filterwarnings("always")
 
-    sim_matrix = np.exp(-(dist_matrix ** 2) / (2.0 * delta ** 2))
+    sim_matrix = np.exp(-(dist_matrix**2) / (2.0 * delta**2))
 
     clus = SpectralClustering(
         eigen_solver="arpack",
@@ -234,7 +234,7 @@ delta = 0.20
 with warnings.catch_warnings():
     warnings.filterwarnings("always")
 
-    sim_matrix = np.exp(-(dist_matrix ** 2) / (2.0 * delta ** 2))
+    sim_matrix = np.exp(-(dist_matrix**2) / (2.0 * delta**2))
 
     clus = SpectralClustering(
         eigen_solver="arpack",
@@ -267,7 +267,7 @@ delta = 0.10
 with warnings.catch_warnings():
     warnings.filterwarnings("always")
 
-    sim_matrix = np.exp(-(dist_matrix ** 2) / (2.0 * delta ** 2))
+    sim_matrix = np.exp(-(dist_matrix**2) / (2.0 * delta**2))
 
     clus = SpectralClustering(
         eigen_solver="arpack",
