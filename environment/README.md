@@ -39,10 +39,23 @@ supported** now. If you want to run on Windows, use the Docker image instead.
     `readlink` might not work on macOS. In that case, simply replace it with
     the absolute path to the `../libs/` folder.
 
-1. Run `bash scripts/setup_environment.sh`.
-This will create a conda environment and download the data needed to run the analyses.
-This will download ~70 GB, so it will take a while to finish.
-If the `conda env create` command fails or if you find package errors later, try to set the channel priority in your conda installation to "strict" with `conda config --set channel_priority strict`.
+1. Create a conda environment and install main packages:
+
+    ```bash
+   conda env create --name phenoplier --file environment.yml
+   conda run -n phenoplier --no-capture-output bash scripts/install_other_packages.sh
+    ```
+If the `conda env create` command fails or if you find package errors later, try
+to set the channel priority in your conda installation to "strict" with
+`conda config --set channel_priority strict`.
+
+1. Download the data:
+
+   ```bash
+   conda run -n phenoplier --no-capture-output python scripts/setup_data.py
+   ```
+
+This will download ~70 GB of data needed to run the analyses.
 
 
 # Developer usage
