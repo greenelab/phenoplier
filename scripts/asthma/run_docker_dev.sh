@@ -77,4 +77,3 @@ docker run --rm ${PORT_ARG} \
   -v "${MANUSCRIPT_DIR}:/opt/manuscript" \
   --user "$(id -u):$(id -g)" \
   miltondp/phenoplier:${DOCKER_TAG} "${FULL_COMMAND[@]}"
-
