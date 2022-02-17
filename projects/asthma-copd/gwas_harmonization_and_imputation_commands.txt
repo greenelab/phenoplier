@@ -1,0 +1,65 @@
+HARMONIZATION
+
+python3 $GWAS_TOOLS/gwas_parsing.py \
+-gwas_file $DATA/GWAS_Asthma_only_GLM_SNPs_info0.7.txt \
+-snp_reference_metadata variant_metadata.txt.gz METADATA \
+--chromosome_format \
+-output_column_map ID variant_id \
+-output_column_map REF non_effect_allele \
+-output_column_map ALT effect_allele \
+-output_column_map Z_STAT zscore \
+-output_column_map P pvalue \
+-output_column_map "#CHROM" chromosome \
+-output_column_map POS position \
+-output_column_map OBS_CT sample_size \
+-output_order variant_id panel_variant_id chromosome position effect_allele non_effect_allele frequency pvalue zscore effect_size standard_error sample_size n_cases \
+-liftover hg19ToHg38.over.chain.gz \
+-output outputs/GWAS_Asthma_only_GLM_SNPs_info0.7.txt.g
+
+
+I STILL NEED TO FIX THE PROBLEMS IN THE INPUT GWAS, WHERE SOMETIMES THE A1 POINTS TO THE REF COLUMN!!
+
+OPTION TO USE different reference panels:
+-snp_reference_metadata gtex_v8_eur_filtered_maf0.01_monoallelic_variants.txt.gz METADATA \
+-snp_reference_metadata variant_metadata.txt.gz METADATA \
+
+
+
+
+
+
+IMPUTATION
+
+
+python3 $GWAS_TOOLS/gwas_summary_imputation.py \
+-by_region_file eur_ld.bed.gz \
+-gwas_file outputs/GWAS_Asthma_only_GLM_SNPs_info0.7.txt.g \
+-parquet_genotype chr22.variants.parquet \
+-parquet_genotype_metadata variant_metadata.parquet \
+-window 100000 \
+-parsimony 7 \
+-chromosome 22 \
+-regularization 0.1 \
+-frequency_filter 0.01 \
+-sub_batches 10 \
+-sub_batch 0 \
+--standardise_dosages \
+-output outputs/GWAS_Asthma_only_GLM_SNPs_info0.7-chr22_sb0_reg0.1_ff0.01_by_region.txt
+
+
+OPTION TO USE different reference panels:
+-parquet_genotype $DATA/reference/parquet_eur_maf0.01_biallelic/gtex_v8_eur_itm.chr1.variants.parquet \
+-parquet_genotype_metadata $DATA/reference/parquet_eur_maf0.01_biallelic/gtex_v8_eur_itm.variants_metadata.parquet \
+
+-parquet_genotype chr22.variants.parquet \
+-parquet_genotype_metadata variants_metadata.parquet \
+
+
+
+
+IMPORTANT
+
+many important files were downloaded from:
+https://uchicago.app.box.com/s/eku1me6pxkakm7nlf5a7ydpwe8j6849a
+
+
