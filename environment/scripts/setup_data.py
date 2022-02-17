@@ -49,6 +49,9 @@ MODES_ACTIONS = {
         "download_phenomexcan_smultixcan_mashr_pvalues",
         "download_precomputed_gene_correlations",
     },
+    "asthma-copd": {
+        "download_predixcan_mashr_prediction_models",
+    },
     "full": {},  # empty means all actions/methods
 }
 
