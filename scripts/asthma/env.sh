@@ -16,7 +16,7 @@ BASE_DIR=/home/miltondp/projects/labs/greenelab/phenoplier-asthma
 PROJECT_NAME=phenoplier-asthma
 
 # Number of CPUs to use
-export N_JOBS=3
+export PHENOPLIER_N_JOBS=3
 
 #
 # Do not edit below
@@ -27,6 +27,6 @@ echo "PHENOPLIER_ROOT_DIR=${PHENOPLIER_ROOT_DIR}"
 export PHENOPLIER_MANUSCRIPT_DIR=${BASE_DIR}/${PROJECT_NAME}-manuscript/
 echo "PHENOPLIER_MANUSCRIPT_DIR=${PHENOPLIER_MANUSCRIPT_DIR}"
 
-export PYTHONPATH=${BASE_DIR}/${PROJECT_NAME}/libs/
-echo "PYTHONPATH=${PYTHONPATH}"
+#export PYTHONPATH=${BASE_DIR}/${PROJECT_NAME}/libs/:${PYTHONPATH}
+#echo "PYTHONPATH=${PYTHONPATH}"
 
