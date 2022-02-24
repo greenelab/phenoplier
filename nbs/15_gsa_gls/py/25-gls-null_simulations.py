@@ -58,7 +58,7 @@ from gls import GLSPhenoplier
 # # Settings
 
 # %% tags=[]
-N_SIMULATED_PHENOTYPES = 10
+N_SIMULATED_PHENOTYPES = 50
 
 # %% tags=[]
 OUTPUT_DIR = conf.RESULTS["GLS"]
