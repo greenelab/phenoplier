@@ -67,7 +67,7 @@ display(OUTPUT_DIR)
 OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
 
 # %% tags=[]
-OUTPUT_FILENAME = OUTPUT_DIR / "gls-null_simulations.pkl"
+OUTPUT_FILENAME = OUTPUT_DIR / "gls-null_simulations-real_data.pkl"
 display(OUTPUT_FILENAME)
 
 # %% [markdown] tags=[]
@@ -122,8 +122,8 @@ phenotype_assocs.shape
 phenotype_assocs.head()
 
 # %%
-# phenotype_list = list(phenotype_assocs.columns)
-# display(phenotype_list[:5])
+phenotype_list = list(phenotype_assocs.columns)
+display(phenotype_list[:5])
 
 # %% tags=[]
 lv_weights.shape
@@ -138,17 +138,16 @@ lv_weights.head()
 rs = np.random.RandomState(0)
 
 # %%
+phenotype_codes = rs.choice(phenotype_list, size=N_SIMULATED_PHENOTYPES, replace=False)
+display(phenotype_codes[:3])
+display(len(phenotype_codes))
+assert len(phenotype_codes) == N_SIMULATED_PHENOTYPES
+
 simulated_phenotypes = {}
 
-for idx in range(N_SIMULATED_PHENOTYPES):
-    phenotype_code = f"random_normal-{idx}"
-
-    phenotype = pd.Series(
-        # use abs to simulate MultiPLIER z-scores (always positives)
-        np.abs(rs.normal(loc=0, scale=0.5, size=lv_weights.shape[0])),
-        index=lv_weights.index.copy(),
-        name=phenotype_code,
-    )
+for phenotype_code in phenotype_codes:
+    phenotype = phenotype_assocs[phenotype_code].copy()
+    rs.shuffle(phenotype)
 
     simulated_phenotypes[phenotype_code] = phenotype
 
