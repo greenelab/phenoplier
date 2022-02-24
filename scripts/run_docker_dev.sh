@@ -11,6 +11,8 @@
 # We assume the repo code is in the current directory, so the user has to make
 # sure this is right.
 
+DOCKER_TAG="latest"
+
 echo "Configuration:"
 
 CODE_DIR=`pwd`
@@ -74,4 +76,5 @@ docker run --rm ${PORT_ARG} \
   -v "${ROOT_DIR}:/opt/data" \
   -v "${MANUSCRIPT_DIR}:/opt/manuscript" \
   --user "$(id -u):$(id -g)" \
-  miltondp/clustermatch_gene_expr "${FULL_COMMAND[@]}"
+  miltondp/phenoplier:${DOCKER_TAG} "${FULL_COMMAND[@]}"
+
