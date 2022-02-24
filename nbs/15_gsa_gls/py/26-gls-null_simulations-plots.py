@@ -55,25 +55,25 @@ assert INPUT_FILENAME.exists()
 # %% [markdown] tags=[]
 # ## Null simulations
 
-# %%
+# %% tags=[]
 results = pd.read_pickle(INPUT_FILENAME)
 
-# %%
+# %% tags=[]
 results.shape
 
-# %%
+# %% tags=[]
 results.head()
 
 # %% [markdown] tags=[]
 # # Plots
 
-# %%
+# %% tags=[]
 # data = -np.log10(results["pvalue"].to_numpy())
 data = results["pvalue"].to_numpy()
 # uniform_data = -np.log10(uniform.rvs(size=data.shape[0]))
 uniform_data = np.linspace(data.min(), data.max(), num=data.shape[0])
 
-# %%
+# %% tags=[]
 uniform_data
 
 # %% tags=[]
@@ -85,4 +85,4 @@ ax.set_xlabel("-log10(expected pvalue)")
 ax.set_ylabel("-log10(observed pvalue)")
 ax.set_title("QQ-Plot")
 
-# %%
+# %% tags=[]

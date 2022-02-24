@@ -57,7 +57,7 @@ from gls import GLSPhenoplier
 # %% [markdown] tags=[]
 # # Settings
 
-# %%
+# %% tags=[]
 N_SIMULATED_PHENOTYPES = 10
 
 # %% tags=[]
@@ -76,16 +76,16 @@ display(OUTPUT_FILENAME)
 # %% [markdown] tags=[]
 # ## MultiPLIER Z matrix
 
-# %%
+# %% tags=[]
 multiplier_z_matrix = pd.read_pickle(conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"])
 
-# %%
+# %% tags=[]
 multiplier_z_matrix.shape
 
-# %%
+# %% tags=[]
 multiplier_z_matrix.head()
 
-# %%
+# %% tags=[]
 lv_codes = list(multiplier_z_matrix.columns)
 display(lv_codes[:5])
 
@@ -120,21 +120,21 @@ display(lv_codes[:5])
 # %% [markdown] tags=[]
 # ## Load `lv_weights`
 
-# %%
+# %% tags=[]
 lv_weights = GLSPhenoplier._get_data(
     conf.PHENOMEXCAN["SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE"]
 )[2]
 
-# %%
+# %% tags=[]
 lv_weights.shape
 
-# %%
+# %% tags=[]
 lv_weights.head()
 
 # %% [markdown] tags=[]
 # ## Run
 
-# %%
+# %% tags=[]
 rs = np.random.RandomState(0)
 
 # %% tags=[]
