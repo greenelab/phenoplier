@@ -101,7 +101,7 @@ with sns.plotting_context("paper", font_scale=1.3):
 
     ax.set_xlabel("$-\log_{10}$(expected pvalue)")
     ax.set_ylabel("$-\log_{10}$(observed pvalue)")
-    ax.set_title("QQ-Plot")
+    ax.set_title("QQ-Plot - Null model #1")
 
 # %% [markdown] tags=[]
 # # Null simulations - real gene-trait associations
@@ -151,6 +151,6 @@ with sns.plotting_context("paper", font_scale=1.3):
 
     ax.set_xlabel("$-\log_{10}$(expected pvalue)")
     ax.set_ylabel("$-\log_{10}$(observed pvalue)")
-    ax.set_title("QQ-Plot")
+    ax.set_title("QQ-Plot - Null model #2")
 
 # %% tags=[]
