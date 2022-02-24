@@ -6,7 +6,9 @@ branch, and those will be moved here in the future.
 
 This is reported in this issue: https://github.com/greenelab/phenoplier/issues/40
 """
+import numpy as np
 from scipy import stats
+import pandas as pd
 
 import conf
 from gls import GLSPhenoplier
@@ -65,6 +67,70 @@ def test_one_sided_pvalue_coef_negative():
     assert obs_pval_onesided > 0.99
     assert obs_pval_onesided < 1.0
     assert obs_pval_onesided == exp_pval_onesided
+
+
+def test_fit_with_phenotype_numpy_array():
+    model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
+
+    # get number of genes to simulated phenotype
+    lv_weights = GLSPhenoplier._get_data(model.smultixcan_result_set_filepath)[2]
+
+    np.random.seed(0)
+    phenotype_data = np.abs(np.random.normal(size=lv_weights.shape[0]))
+    model.fit_named("LV270", phenotype_data)
+
+    assert model.phenotype_code is None
+
+    # get observed two-sided pvalue
+    obs_pval_twosided = model.results.pvalues.loc["lv"]
+
+    # check that pvalue is greater than zero and sufficiently small
+    assert obs_pval_twosided is not None
+    assert obs_pval_twosided > 0.0
+    assert obs_pval_twosided < 1.0
+
+    # get observed one-sided pvalue
+    obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+
+    assert obs_pval_onesided is not None
+    assert obs_pval_onesided > 0.0
+    assert obs_pval_onesided < 1.0
+
+    assert obs_pval_onesided < obs_pval_twosided
+
+
+def test_fit_with_phenotype_pandas_series():
+    model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
+
+    # get number of genes to simulated phenotype
+    lv_weights = GLSPhenoplier._get_data(model.smultixcan_result_set_filepath)[2]
+
+    np.random.seed(0)
+    phenotype_data = pd.Series(
+        np.abs(np.random.normal(size=lv_weights.shape[0])),
+        index=lv_weights.index.copy(),
+        name="Random phenotype",
+    )
+    model.fit_named("LV270", phenotype_data)
+
+    assert model.phenotype_code == "Random phenotype"
+
+    # get observed two-sided pvalue
+    obs_pval_twosided = model.results.pvalues.loc["lv"]
+
+    # check that pvalue is greater than zero and sufficiently small
+    assert obs_pval_twosided is not None
+    assert obs_pval_twosided > 0.0
+    assert obs_pval_twosided < 1.0
+
+    # get observed one-sided pvalue
+    obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+
+    assert obs_pval_onesided is not None
+    assert obs_pval_onesided > 0.0
+    assert obs_pval_onesided < 1.0
+
+    assert obs_pval_onesided < obs_pval_twosided
 
 
 def test_gls_no_correlation_structure():
