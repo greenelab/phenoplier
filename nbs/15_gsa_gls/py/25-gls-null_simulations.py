@@ -154,7 +154,7 @@ for idx in range(N_SIMULATED_PHENOTYPES):
     )
 
     # compute an association for all LVs
-    for lv_code in lv_codes[:3]:
+    for lv_code in lv_codes:
         pbar.set_description(f"{phenotype_code} - {lv_code}")
 
         gls_model = GLSPhenoplier(
@@ -177,7 +177,7 @@ for idx in range(N_SIMULATED_PHENOTYPES):
         )
 
         # save results every 10 models trained
-        if (idx % 10) == 0:
+        if (len(results) % 10) == 0:
             pd.DataFrame(results).to_pickle(OUTPUT_FILENAME)
 
         pbar.update(1)
