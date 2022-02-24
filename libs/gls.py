@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+import numpy as np
 import pandas as pd
 from scipy import stats
 import statsmodels.api as sm
@@ -109,17 +110,18 @@ class GLSPhenoplier(object):
             lv_weights.loc[common_genes],
         )
 
-    def fit_named(self, lv_code: str, phenotype_code: str):
+    def fit_named(self, lv_code: str, phenotype):
         """
         Fits the GLS model with the given LV code/name and trait/phenotype
-        code/name.
+        name/code or data.
 
         Args:
             lv_code:
                 An LV code. For example: LV136
-            phenotype_code:
-                A phenotype code that has to be present in the columns of the
-                gene-trait association matrix.
+            phenotype:
+                Either a phenotype code (str) that has to be present in the
+                columns of the gene-trait association matrix; or the phenotype
+                data itself as a numpy array or pandas series.
 
         Returns:
             self
@@ -147,7 +149,18 @@ class GLSPhenoplier(object):
         # predictor
         x = lv_weights[lv_code]
         # dependent variable
-        y = phenotype_assocs[phenotype_code]
+        if isinstance(phenotype, str):
+            y = phenotype_assocs[phenotype]
+        elif isinstance(phenotype, np.ndarray):
+            y = phenotype
+        elif isinstance(phenotype, pd.Series):
+            # make sure genes are aligned in index
+            assert phenotype.index.equals(
+                lv_weights.index
+            ), "phenotype index is not aligned with genes in models"
+            y = phenotype
+        else:
+            raise ValueError("Wrong phenotype data type")
 
         # merge both variables plus contant (intercept) into one dataframe,
         # and scale them
@@ -171,7 +184,7 @@ class GLSPhenoplier(object):
 
         # save results
         self.lv_code = lv_code
-        self.phenotype_code = phenotype_code
+        self.phenotype_code = y.name if isinstance(y, pd.Series) else None
         self.model = gls_model
 
         self.results = gls_results
