@@ -69,6 +69,20 @@ results.shape
 results.head()
 
 # %% [markdown]
+# ## Proportion pvalue < 0.05
+
+# %%
+_pvalue_lt_005 = results[results["pvalue"] < 0.05]
+display(_pvalue_lt_005.head())
+
+# %%
+_pvalue_lt_005.shape
+
+# %%
+# show proportion
+_pvalue_lt_005.shape[0] / results.shape[0]
+
+# %% [markdown]
 # ## Plot
 
 # %% tags=[]
@@ -80,7 +94,7 @@ display(data[:5])
 display(uniform_data[:5])
 
 # %% tags=[]
-with sns.plotting_context("paper", font_scale=1.5):
+with sns.plotting_context("paper", font_scale=1.3):
     fig, ax = plt.subplots(figsize=(5, 5))
 
     fig = qqplot_2samples(-np.log10(uniform_data), -np.log10(data), line="45", ax=ax)
@@ -105,6 +119,20 @@ results.shape
 results.head()
 
 # %% [markdown]
+# ## Proportion pvalue < 0.05
+
+# %%
+_pvalue_lt_005 = results[results["pvalue"] < 0.05]
+display(_pvalue_lt_005.head())
+
+# %%
+_pvalue_lt_005.shape
+
+# %%
+# show proportion
+_pvalue_lt_005.shape[0] / results.shape[0]
+
+# %% [markdown]
 # ## Plot
 
 # %% tags=[]
@@ -116,7 +144,7 @@ display(data[:5])
 display(uniform_data[:5])
 
 # %% tags=[]
-with sns.plotting_context("paper", font_scale=1.5):
+with sns.plotting_context("paper", font_scale=1.3):
     fig, ax = plt.subplots(figsize=(5, 5))
 
     fig = qqplot_2samples(-np.log10(uniform_data), -np.log10(data), line="45", ax=ax)
