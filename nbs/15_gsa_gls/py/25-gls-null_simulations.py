@@ -143,18 +143,18 @@ results = []
 pbar = tqdm(total=int(N_SIMULATED_PHENOTYPES * len(lv_codes)))
 
 for idx in range(N_SIMULATED_PHENOTYPES):
-    # generate a random phenotype
-    phenotype_code = f"random_normal-{idx}"
-
-    phenotype = pd.Series(
-        # use abs to simulate MultiPLIER z-scores (always positives)
-        np.abs(rs.normal(size=lv_weights.shape[0])),
-        index=lv_weights.index.copy(),
-        name=phenotype_code,
-    )
-
     # compute an association for all LVs
     for lv_code in lv_codes:
+        # generate a random phenotype
+        phenotype_code = f"random_normal-{idx}"
+
+        phenotype = pd.Series(
+            # use abs to simulate MultiPLIER z-scores (always positives)
+            np.abs(rs.normal(size=lv_weights.shape[0])),
+            index=lv_weights.index.copy(),
+            name=phenotype_code,
+        )
+        
         pbar.set_description(f"{phenotype_code} - {lv_code}")
 
         gls_model = GLSPhenoplier(
