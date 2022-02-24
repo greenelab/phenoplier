@@ -1,7 +1,7 @@
 #/bin/bash
 
 PROJECT_NAME="phenoplier"
-VERSION="dev"
+VERSION="1.2"
 
 docker build -t miltondp/${PROJECT_NAME}:${VERSION} -t miltondp/${PROJECT_NAME}:latest .
 
