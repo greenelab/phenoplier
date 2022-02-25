@@ -46,11 +46,11 @@ from entity import Gene
 # %%
 # mashr
 EQTL_MODEL = "MASHR"
-EQTL_MODEL_FILES_SUFFIX = "mashr_"
+EQTL_MODEL_FILES_PREFIX = "mashr_"
 
 # # elastic net
 # EQTL_MODEL = "ELASTIC_NET"
-# EQTL_MODEL_FILES_SUFFIX = "en_"
+# EQTL_MODEL_FILES_PREFIX = "en_"
 
 # %% tags=["parameters"]
 # specifies a single chromosome value
@@ -130,7 +130,7 @@ db_files = list(conf.PHENOMEXCAN["PREDICTION_MODELS"][EQTL_MODEL].glob("*.db"))
 assert len(db_files) == 49
 
 # %% tags=[]
-tissues = [str(f).split(EQTL_MODEL_FILES_SUFFIX)[1].split(".db")[0] for f in db_files]
+tissues = [str(f).split(EQTL_MODEL_FILES_PREFIX)[1].split(".db")[0] for f in db_files]
 
 # %% tags=[]
 tissues[:5]
@@ -204,7 +204,11 @@ for chr_num in all_chrs:
         print(f"Tissue {tissue}", flush=True)
 
         # check if results exist
-        output_dir = conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "gene_corrs" / tissue
+        output_dir = (
+            conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
+            / f"{EQTL_MODEL_FILES_PREFIX}gene_corrs"
+            / tissue
+        )
         output_file = output_dir / f"gene_corrs-{tissue}-chr{chr_num}.pkl"
 
         if output_file.exists():
