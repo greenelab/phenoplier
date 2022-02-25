@@ -53,6 +53,17 @@ INPUT_REAL_FILENAME = INPUT_DIR / "gls-null_simulations-real_data.pkl"
 display(INPUT_REAL_FILENAME)
 assert INPUT_REAL_FILENAME.exists()
 
+
+# %% [markdown] tags=[]
+# # Functions
+
+# %%
+def show_prop(data, frac=0.05):
+    _pvalue_lt_frac = data[data["pvalue"] < frac]
+#     display(_pvalue_lt_frac.head())
+    display(_pvalue_lt_frac.shape[0] / data.shape[0])
+
+
 # %% [markdown] tags=[]
 # # Null simulations - artificial gene-trait associations
 
@@ -72,15 +83,13 @@ results.head()
 # ## Proportion pvalue < 0.05
 
 # %%
-_pvalue_lt_005 = results[results["pvalue"] < 0.05]
-display(_pvalue_lt_005.head())
+show_prop(results, 0.01)
 
 # %%
-_pvalue_lt_005.shape
+show_prop(results, 0.05)
 
 # %%
-# show proportion
-_pvalue_lt_005.shape[0] / results.shape[0]
+show_prop(results, 0.10)
 
 # %% [markdown]
 # ## Plot
@@ -122,15 +131,13 @@ results.head()
 # ## Proportion pvalue < 0.05
 
 # %%
-_pvalue_lt_005 = results[results["pvalue"] < 0.05]
-display(_pvalue_lt_005.head())
+show_prop(results, 0.01)
 
 # %%
-_pvalue_lt_005.shape
+show_prop(results, 0.05)
 
 # %%
-# show proportion
-_pvalue_lt_005.shape[0] / results.shape[0]
+show_prop(results, 0.10)
 
 # %% [markdown]
 # ## Plot
@@ -153,4 +160,4 @@ with sns.plotting_context("paper", font_scale=1.3):
     ax.set_ylabel("$-\log_{10}$(observed pvalue)")
     ax.set_title("QQ-Plot - Null model #2")
 
-# %% tags=[]
+# %%
