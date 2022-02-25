@@ -60,7 +60,7 @@ assert INPUT_REAL_FILENAME.exists()
 # %%
 def show_prop(data, frac=0.05):
     _pvalue_lt_frac = data[data["pvalue"] < frac]
-#     display(_pvalue_lt_frac.head())
+    #     display(_pvalue_lt_frac.head())
     display(_pvalue_lt_frac.shape[0] / data.shape[0])
 
 
