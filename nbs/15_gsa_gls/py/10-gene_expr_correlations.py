@@ -9,7 +9,7 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.7.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -42,6 +42,15 @@ from entity import Gene
 
 # %% [markdown] tags=[]
 # # Settings
+
+# %%
+# mashr
+EQTL_MODEL = "MASHR"
+EQTL_MODEL_FILES_SUFFIX = "mashr_"
+
+# # elastic net
+# EQTL_MODEL = "ELASTIC_NET"
+# EQTL_MODEL_FILES_SUFFIX = "en_"
 
 # %% tags=["parameters"]
 # specifies a single chromosome value
@@ -115,13 +124,13 @@ genes_info.head()
 # ## Get tissues names
 
 # %% tags=[]
-db_files = list(conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"].glob("*.db"))
+db_files = list(conf.PHENOMEXCAN["PREDICTION_MODELS"][EQTL_MODEL].glob("*.db"))
 
 # %% tags=[]
 assert len(db_files) == 49
 
 # %% tags=[]
-tissues = [str(f).split("mashr_")[1].split(".db")[0] for f in db_files]
+tissues = [str(f).split(EQTL_MODEL_FILES_SUFFIX)[1].split(".db")[0] for f in db_files]
 
 # %% tags=[]
 tissues[:5]
