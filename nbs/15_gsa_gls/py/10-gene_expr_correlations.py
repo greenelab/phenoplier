@@ -43,7 +43,7 @@ from entity import Gene
 # %% [markdown] tags=[]
 # # Settings
 
-# %%
+# %% tags=["parameters"]
 # mashr
 EQTL_MODEL = "MASHR"
 EQTL_MODEL_FILES_PREFIX = "mashr_"
@@ -51,6 +51,9 @@ EQTL_MODEL_FILES_PREFIX = "mashr_"
 # # elastic net
 # EQTL_MODEL = "ELASTIC_NET"
 # EQTL_MODEL_FILES_PREFIX = "en_"
+
+# %%
+display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
 
 # %% tags=["parameters"]
 # specifies a single chromosome value
