@@ -7,7 +7,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.13.8
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -52,9 +52,16 @@ EQTL_MODEL_FILES_PREFIX = "mashr_"
 # EQTL_MODEL = "ELASTIC_NET"
 # EQTL_MODEL_FILES_PREFIX = "en_"
 
+# make it read the prefix from conf.py
+EQTL_MODEL_FILES_PREFIX = None
+
 # specifies a single chromosome value
 # by default, run on all chromosomes
 chromosome = "all"
+
+# %%
+if EQTL_MODEL_FILES_PREFIX is None:
+    EQTL_MODEL_FILES_PREFIX = PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
 
 # %%
 display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
