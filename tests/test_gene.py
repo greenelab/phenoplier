@@ -63,7 +63,7 @@ def test_gene_obj_chromosome(gene_id, gene_name, gene_chr):
     ],
 )
 def test_gene_get_tissue_connection(tissue):
-    con = Gene._get_tissue_connection(tissue)
+    con = Gene._get_tissue_connection(tissue, model_type="MASHR")
     df = pd.read_sql(sql="select * from weights", con=con)
     assert df is not None
     assert df.shape[0] > 100
@@ -72,7 +72,7 @@ def test_gene_get_tissue_connection(tissue):
 
 def test_gene_get_tissue_connection_tissue_does_not_exist():
     with pytest.raises(ValueError) as e:
-        Gene._get_tissue_connection("NonExistent")
+        Gene._get_tissue_connection("NonExistent", model_type="MASHR")
 
 
 @pytest.mark.parametrize(
@@ -96,7 +96,7 @@ def test_gene_get_tissue_connection_tissue_does_not_exist():
     ],
 )
 def test_gene_get_prediction_weights(gene_id, tissue, expected_snps_weights):
-    w = Gene(ensembl_id=gene_id).get_prediction_weights(tissue)
+    w = Gene(ensembl_id=gene_id).get_prediction_weights(tissue, model_type="MASHR")
     assert w is not None
     assert w.shape[0] == len(expected_snps_weights)
 
@@ -110,7 +110,9 @@ def test_gene_get_prediction_weights(gene_id, tissue, expected_snps_weights):
 
 
 def test_gene_get_prediction_weights_empty():
-    w = Gene(ensembl_id="ENSG00000183087").get_prediction_weights("Whole_Blood")
+    w = Gene(ensembl_id="ENSG00000183087").get_prediction_weights(
+        "Whole_Blood", model_type="MASHR"
+    )
     assert w is None
 
 
@@ -153,8 +155,8 @@ def test_gene_get_snps_cov_genes_same_chromosome(
     g1 = Gene(ensembl_id=gene_pair[0])
     g2 = Gene(ensembl_id=gene_pair[1])
 
-    g1_snps = g1.get_prediction_weights(tissue)["varID"]
-    g2_snps = g2.get_prediction_weights(tissue)["varID"]
+    g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR")["varID"]
+    g2_snps = g2.get_prediction_weights(tissue, model_type="MASHR")["varID"]
 
     df = Gene._get_snps_cov(g1_snps, g2_snps)
     assert df is not None
@@ -191,8 +193,8 @@ def test_gene_get_snps_cov_genes_same_chromosome_some_snps_missing_cov(
     g1 = Gene(ensembl_id=gene_pair[0])
     g2 = Gene(ensembl_id=gene_pair[1])
 
-    g1_snps = g1.get_prediction_weights(tissue)["varID"]
-    g2_snps = g2.get_prediction_weights(tissue)["varID"]
+    g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR")["varID"]
+    g2_snps = g2.get_prediction_weights(tissue, model_type="MASHR")["varID"]
 
     df = Gene._get_snps_cov(g1_snps, g2_snps)
     assert df is not None
@@ -231,7 +233,7 @@ def test_gene_get_snps_cov_genes_same_chromosome_some_snps_missing_cov(
 def test_gene_get_snps_cov_one_gene(gene_pair, expected_snps1, tissue):
     g1 = Gene(ensembl_id=gene_pair[0])
 
-    g1_snps = g1.get_prediction_weights(tissue)["varID"]
+    g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR")["varID"]
 
     df = Gene._get_snps_cov(g1_snps)
     assert df is not None
@@ -258,8 +260,8 @@ def test_gene_get_snps_cov_genes_different_chromosomes():
     g1 = Gene(ensembl_id="ENSG00000123200")
     g2 = Gene(ensembl_id="ENSG00000133065")
 
-    g1_snps = g1.get_prediction_weights(tissue)["varID"]
-    g2_snps = g2.get_prediction_weights(tissue)["varID"]
+    g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR")["varID"]
+    g2_snps = g2.get_prediction_weights(tissue, model_type="MASHR")["varID"]
 
     with pytest.raises(Exception) as e:
         Gene._get_snps_cov(g1_snps, g2_snps)
@@ -293,7 +295,7 @@ def test_gene_get_snps_cov_genes_different_chromosomes():
 )
 def test_gene_get_pred_expression_variance(gene_id, tissue, expected_var):
     g = Gene(ensembl_id=gene_id)
-    g_var = g.get_pred_expression_variance(tissue)
+    g_var = g.get_pred_expression_variance(tissue, model_type="MASHR")
     assert g_var is not None
     assert isinstance(g_var, float)
 
@@ -302,7 +304,9 @@ def test_gene_get_pred_expression_variance(gene_id, tissue, expected_var):
 
 def test_gene_get_pred_expression_variance_gene_not_in_tissue():
     g = Gene(ensembl_id="ENSG00000183087")
-    g_var = g.get_pred_expression_variance("Brain_Cerebellar_Hemisphere")
+    g_var = g.get_pred_expression_variance(
+        "Brain_Cerebellar_Hemisphere", model_type="MASHR"
+    )
     assert g_var is None
 
 
