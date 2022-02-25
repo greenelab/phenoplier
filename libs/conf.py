@@ -292,6 +292,7 @@ PHENOMEXCAN["PREDICTION_MODELS"] = {}
 PHENOMEXCAN["PREDICTION_MODELS"]["BASE_DIR"] = Path(
     PHENOMEXCAN["BASE_DIR"], "prediction_models"
 ).resolve()
+## mashr models
 PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"] = Path(
     PHENOMEXCAN["PREDICTION_MODELS"]["BASE_DIR"], "mashr"
 ).resolve()
@@ -306,6 +307,17 @@ PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_SMULTIXCAN_COV_FILE"] = Path(
     PHENOMEXCAN["PREDICTION_MODELS"]["BASE_DIR"],
     "gtex_v8_expression_mashr_snp_covariance.txt.gz",
 ).resolve()
+## elastic net models
+PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET"] = Path(
+    PHENOMEXCAN["PREDICTION_MODELS"]["BASE_DIR"], "elastic_net_models"
+).resolve()
+PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET_PREFIX"] = "en_"
+PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET_TISSUES"] = " ".join(
+    tissue_file.name.split(PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET_PREFIX"])[1].split(
+        ".db"
+    )[0]
+    for tissue_file in PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET"].glob("*.db")
+)
 
 
 #
