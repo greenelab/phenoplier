@@ -7,9 +7,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.13.8
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -37,6 +37,28 @@ from tqdm import tqdm
 import conf
 from entity import Gene
 
+# %% [markdown]
+# # Settings
+
+# %% tags=["parameters"]
+# mashr
+EQTL_MODEL = "MASHR"
+EQTL_MODEL_FILES_PREFIX = "mashr_"
+
+# # elastic net
+# EQTL_MODEL = "ELASTIC_NET"
+# EQTL_MODEL_FILES_PREFIX = "en_"
+
+# make it read the prefix from conf.py
+EQTL_MODEL_FILES_PREFIX = None
+
+# %%
+if EQTL_MODEL_FILES_PREFIX is None:
+    EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
+
+# %%
+display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
+
 # %% [markdown] tags=[]
 # # Load data
 
@@ -45,7 +67,7 @@ from entity import Gene
 
 # %% tags=[]
 mashr_models_db_files = list(
-    conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"].glob("*.db")
+    conf.PHENOMEXCAN["PREDICTION_MODELS"][EQTL_MODEL].glob("*.db")
 )
 
 # %% tags=[]
@@ -56,7 +78,7 @@ all_variants_ids = []
 
 for m in mashr_models_db_files:
     print(f"Processing {m.name}")
-    tissue = m.name.split("mashr_")[1].split(".db")[0]
+    tissue = m.name.split(EQTL_MODEL_FILES_PREFIX)[1].split(".db")[0]
 
     with sqlite3.connect(m) as conn:
         df = pd.read_sql("select gene, varID from weights", conn)
@@ -283,7 +305,7 @@ assert not _tmp.isna().any().any()
 # ## Compute covariance and save
 
 # %% tags=[]
-output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["SNPS_COVARIANCE_FILE"]
+output_file = conf.PHENOMEXCAN["LD_BLOCKS"][EQTL_MODEL]["SNPS_COVARIANCE_FILE"]
 display(output_file)
 
 # %% tags=[]
