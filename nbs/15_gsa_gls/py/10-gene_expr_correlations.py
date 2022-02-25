@@ -43,7 +43,7 @@ from entity import Gene
 # %% [markdown] tags=[]
 # # Settings
 
-# %%
+# %% tags=["parameters"]
 # mashr
 EQTL_MODEL = "MASHR"
 EQTL_MODEL_FILES_PREFIX = "mashr_"
@@ -52,10 +52,12 @@ EQTL_MODEL_FILES_PREFIX = "mashr_"
 # EQTL_MODEL = "ELASTIC_NET"
 # EQTL_MODEL_FILES_PREFIX = "en_"
 
-# %% tags=["parameters"]
 # specifies a single chromosome value
 # by default, run on all chromosomes
 chromosome = "all"
+
+# %%
+display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
 
 # %%
 if chromosome == "all":
