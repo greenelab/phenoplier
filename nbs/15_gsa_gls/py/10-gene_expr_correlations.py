@@ -61,7 +61,7 @@ chromosome = "all"
 
 # %%
 if EQTL_MODEL_FILES_PREFIX is None:
-    EQTL_MODEL_FILES_PREFIX = PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
+    EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
 
 # %%
 display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
@@ -238,7 +238,9 @@ for chr_num in all_chrs:
                 gene_obj2 = gene_chr_objs[gene_idx2]
 
                 gene_corrs.append(
-                    gene_obj1.get_expression_correlation(gene_obj2, tissue)
+                    gene_obj1.get_expression_correlation(
+                        gene_obj2, tissue, model_type=EQTL_MODEL
+                    )
                 )
 
                 pbar.update(1)
