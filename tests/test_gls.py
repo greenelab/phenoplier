@@ -73,7 +73,7 @@ def test_fit_with_phenotype_numpy_array():
     model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
 
     # get number of genes to simulated phenotype
-    lv_weights = GLSPhenoplier._get_data(model.smultixcan_result_set_filepath)[2]
+    lv_weights = GLSPhenoplier._get_data(model.smultixcan_result_set_filepath, model_type="MASHR")[2]
 
     np.random.seed(0)
     phenotype_data = np.abs(np.random.normal(size=lv_weights.shape[0]))
@@ -103,7 +103,7 @@ def test_fit_with_phenotype_pandas_series():
     model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
 
     # get number of genes to simulated phenotype
-    lv_weights = GLSPhenoplier._get_data(model.smultixcan_result_set_filepath)[2]
+    lv_weights = GLSPhenoplier._get_data(model.smultixcan_result_set_filepath, model_type="MASHR")[2]
 
     np.random.seed(0)
     phenotype_data = pd.Series(
