@@ -9,7 +9,7 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.7.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -41,7 +41,27 @@ from entity import Gene
 # # Settings
 
 # %% tags=["parameters"]
-INPUT_DIR = conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "gene_corrs"
+# mashr
+EQTL_MODEL = "MASHR"
+EQTL_MODEL_FILES_PREFIX = "mashr_"
+
+# # elastic net
+# EQTL_MODEL = "ELASTIC_NET"
+# EQTL_MODEL_FILES_PREFIX = "en_"
+
+EQTL_MODEL_FILES_PREFIX = None
+
+# %%
+if EQTL_MODEL_FILES_PREFIX is None:
+    EQTL_MODEL_FILES_PREFIX = PHENOMEXCAN["PREDICTION_MODELS_PREFIXES"][EQTL_MODEL]
+
+# %%
+display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
+
+# %%
+INPUT_DIR = (
+    conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / f"{EQTL_MODEL_FILES_PREFIX}gene_corrs"
+)
 display(INPUT_DIR)
 
 # %% [markdown] tags=[]
@@ -148,13 +168,13 @@ genes_info.head()
 # ## Get tissues names
 
 # %% tags=[]
-db_files = list(conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"].glob("*.db"))
+db_files = list(conf.PHENOMEXCAN["PREDICTION_MODELS"][EQTL_MODEL].glob("*.db"))
 
 # %% tags=[]
 assert len(db_files) == 49
 
 # %% tags=[]
-tissues = [str(f).split("mashr_")[1].split(".db")[0] for f in db_files]
+tissues = [str(f).split(EQTL_MODEL_FILES_PREFIX)[1].split(".db")[0] for f in db_files]
 
 # %% tags=[]
 tissues[:5]
@@ -306,7 +326,7 @@ assert gene_corrs_df.loc[gene1, gene2] == _gene_values.mean()
 # ## With ensemble ids
 
 # %% tags=[]
-output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_IDS_CORR_AVG"]
+output_file = conf.PHENOMEXCAN["LD_BLOCKS"][EQTL_MODEL]["GENE_IDS_CORR_AVG"]
 display(output_file)
 
 # %% tags=[]
@@ -316,7 +336,7 @@ gene_corrs_df.to_pickle(output_file)
 # ## With gene symbols
 
 # %% tags=[]
-output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_NAMES_CORR_AVG"]
+output_file = conf.PHENOMEXCAN["LD_BLOCKS"][EQTL_MODEL]["GENE_NAMES_CORR_AVG"]
 display(output_file)
 
 # %% tags=[]
