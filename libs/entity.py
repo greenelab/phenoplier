@@ -673,7 +673,7 @@ class Gene(object):
 
     @staticmethod
     @lru_cache(maxsize=1)
-    def _read_snps_cov(snps_chr):
+    def _read_snps_cov(snps_chr, model_type: str):
         """
         Returns the covariance matrix for all SNPs (in the predictions models)
         in a chromosome. lru_cache / maxsize is 1 because the idea is call
@@ -682,17 +682,23 @@ class Gene(object):
         Args:
             snps_chr:
                 A string specifying the chromosome in format "chr{num}".
+            model_type:
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
         Returns:
             A square pandas dataframe with SNPs covariances.
         """
-        snps_cov_file = conf.PHENOMEXCAN["LD_BLOCKS"]["SNPS_COVARIANCE_FILE"]
+        snps_cov_file = conf.PHENOMEXCAN["LD_BLOCKS"][model_type][
+            "SNPS_COVARIANCE_FILE"
+        ]
 
         # go to disk and read the data
         with pd.HDFStore(snps_cov_file, mode="r") as store:
             return store[snps_chr]
 
     @staticmethod
-    def _get_snps_cov(snps_ids_list1, snps_ids_list2=None, check=True):
+    def _get_snps_cov(
+        snps_ids_list1, snps_ids_list2=None, check=True, model_type="MASHR"
+    ):
         """
         Given one or (optionally) two lists of SNPs IDs, it returns the
         covariance matrix for
@@ -705,6 +711,8 @@ class Gene(object):
                 generally the SNPs from a second gene.
             check:
                 If should be checked that all SNPs are from the same chromosome.
+            model_type:
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
 
         Returns:
             Return a pandas dataframe with the SNPs specified in the arguments
@@ -734,7 +742,7 @@ class Gene(object):
                 raise ValueError("Only snps from the same chromosome are supported")
 
         # read the entire covariance matrix for this chromosome
-        snps_cov = Gene._read_snps_cov(snps_chr)
+        snps_cov = Gene._read_snps_cov(snps_chr, model_type)
 
         # from the specified SNP lists, only keep those for which we have
         # genotypes
@@ -768,7 +776,7 @@ class Gene(object):
             return None
 
         # LD of snps in gene model
-        gene_snps_cov = Gene._get_snps_cov(w["varID"])
+        gene_snps_cov = Gene._get_snps_cov(w["varID"], model_type=model_type)
         if gene_snps_cov is None:
             return None
 
@@ -834,7 +842,9 @@ class Gene(object):
             return 0.0
 
         try:
-            snps_cov = self._get_snps_cov(gene_w.index, other_gene_w.index)
+            snps_cov = self._get_snps_cov(
+                gene_w.index, other_gene_w.index, model_type=model_type
+            )
         except ValueError:
             # if genes are from different chromosomes, correlation is zero
             return 0.0
