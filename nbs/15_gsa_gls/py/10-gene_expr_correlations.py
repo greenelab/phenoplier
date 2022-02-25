@@ -52,13 +52,12 @@ EQTL_MODEL_FILES_PREFIX = "mashr_"
 # EQTL_MODEL = "ELASTIC_NET"
 # EQTL_MODEL_FILES_PREFIX = "en_"
 
-# %%
-display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
-
-# %% tags=["parameters"]
 # specifies a single chromosome value
 # by default, run on all chromosomes
 chromosome = "all"
+
+# %%
+display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
 
 # %%
 if chromosome == "all":
