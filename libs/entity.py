@@ -605,7 +605,7 @@ class Gene(object):
         return f"{chrom}{band}"
 
     @staticmethod
-    def _get_tissue_connection(tissue: str, model_type: str = "MASHR"):
+    def _get_tissue_connection(tissue: str, model_type: str):
         """
         Returns an SQLite connection to the prediction models of PrediXcan for
         a specified tissue. The caller is responsible of closing this connection
@@ -615,14 +615,17 @@ class Gene(object):
             tissue:
                 The tissue name to get the connection from.
             model_type:
-                The model type. Right now there is only one: "MASHR".
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
 
         Returns:
             An read-only SQLite connection object.
         """
         # check that the file for the tissue exists
+        model_prefix = conf.PHENOMEXCAN["PREDICTION_MODELS_PREFIXES"][model_type]
+
         tissue_weights_file = (
-            conf.PHENOMEXCAN["PREDICTION_MODELS"][model_type] / f"mashr_{tissue}.db"
+            conf.PHENOMEXCAN["PREDICTION_MODELS"][model_type]
+            / f"{model_prefix}{tissue}.db"
         )
 
         if not tissue_weights_file.exists():
@@ -636,7 +639,7 @@ class Gene(object):
         return sqlite3.connect(db_uri, uri=True)
 
     @lru_cache(maxsize=None)
-    def get_prediction_weights(self, tissue: str, model_type: str = "MASHR"):
+    def get_prediction_weights(self, tissue: str, model_type: str):
         """
         Given a tissue and model type, it returns the prediction weights for
         this gene. The prediction weights are a list of SNPs with the weights
@@ -646,7 +649,7 @@ class Gene(object):
             tissue:
                 The tissue name.
             model_type:
-                The model type. Right now there is only one: "MASHR".
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
 
         Returns:
             A pandas DataFrame with the variants' weight for the prediction of
@@ -747,7 +750,7 @@ class Gene(object):
         return snps_cov
 
     @lru_cache(maxsize=None)
-    def get_pred_expression_variance(self, tissue: str, model_type: str = "MASHR"):
+    def get_pred_expression_variance(self, tissue: str, model_type: str):
         """
         Given a tissue, it computes the covariance of the predicted gene
         expression.
@@ -755,6 +758,8 @@ class Gene(object):
         Args:
             tissue:
                 The tissue name.
+            model_type:
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
         Returns:
             A float with the covariance of the gene predicted expression.
         """
@@ -786,7 +791,9 @@ class Gene(object):
         #   - MultiXcan paper: https://doi.org/10.1371/journal.pgen.1007889
         return (w.T @ r @ w).squeeze()
 
-    def get_expression_correlation(self, other_gene, tissue: str):
+    def get_expression_correlation(
+        self, other_gene, tissue: str, model_type: str = "MASHR"
+    ):
         """
         Given another Gene object and a tissue, it computes the correlation
         between their predicted expression.
@@ -796,11 +803,13 @@ class Gene(object):
                 Another Gene object.
             tissue:
                 The tissue name.
+            model_type:
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
 
         Returns:
             A float with the correlation of the two genes' predicted expression.
         """
-        gene_w = self.get_prediction_weights(tissue)
+        gene_w = self.get_prediction_weights(tissue, model_type)
         if gene_w is None:
             return 0.0
         gene_w = gene_w.set_index("varID")
@@ -808,7 +817,7 @@ class Gene(object):
             # some genes in the models have weight equal to zero (weird)
             return 0.0
 
-        other_gene_w = other_gene.get_prediction_weights(tissue)
+        other_gene_w = other_gene.get_prediction_weights(tissue, model_type)
         if other_gene_w is None:
             return 0.0
         other_gene_w = other_gene_w.set_index("varID")
@@ -816,11 +825,11 @@ class Gene(object):
             return 0.0
 
         # get genes' variances
-        gene_var = self.get_pred_expression_variance(tissue)
+        gene_var = self.get_pred_expression_variance(tissue, model_type)
         if gene_var is None or gene_var == 0.0:
             return 0.0
 
-        other_gene_var = other_gene.get_pred_expression_variance(tissue)
+        other_gene_var = other_gene.get_pred_expression_variance(tissue, model_type)
         if other_gene_var is None or other_gene_var == 0.0:
             return 0.0
 
