@@ -52,9 +52,16 @@ EQTL_MODEL_FILES_PREFIX = "mashr_"
 # EQTL_MODEL = "ELASTIC_NET"
 # EQTL_MODEL_FILES_PREFIX = "en_"
 
+# make it read the prefix from conf.py
+EQTL_MODEL_FILES_PREFIX = None
+
 # specifies a single chromosome value
 # by default, run on all chromosomes
 chromosome = "all"
+
+# %%
+if EQTL_MODEL_FILES_PREFIX is None:
+    EQTL_MODEL_FILES_PREFIX = PHENOMEXCAN["PREDICTION_MODELS_PREFIXES"][EQTL_MODEL]
 
 # %%
 display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
