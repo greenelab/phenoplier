@@ -45,6 +45,7 @@ class GLSPhenoplier(object):
     def __init__(
         self,
         smultixcan_result_set_filepath: str = None,
+        model_type: str = "MASHR",
         sigma=None,
     ):
         self.smultixcan_result_set_filepath = conf.PHENOMEXCAN[
@@ -53,6 +54,7 @@ class GLSPhenoplier(object):
         if smultixcan_result_set_filepath is not None:
             self.smultixcan_result_set_filepath = smultixcan_result_set_filepath
 
+        self.model_type = model_type
         self.sigma = sigma
 
         self.lv_code = None
@@ -63,7 +65,7 @@ class GLSPhenoplier(object):
 
     @staticmethod
     @lru_cache(maxsize=None)
-    def _get_data(smultixcan_result_set_filepath):
+    def _get_data(smultixcan_result_set_filepath, model_type: str):
         """
         Given a filepath pointing to the gene-trait associations file, it
         loads that one and also the gene correlations and MultiPLIER Z matrix
@@ -76,12 +78,16 @@ class GLSPhenoplier(object):
                 We expect to have either gene symbols or Ensembl IDs in the rows
                 to represent the genes. If Ensembl IDs are given, they will be
                 converted to gene symbols.
+            model_type:
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
         Returns:
             A tuple with three matrices in this order: gene correlations,
             gene-trait associations and gene loadings (Z).
         """
         # load gene correlations (with gene symbols)
-        input_filepath = conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_NAMES_CORR_AVG"]
+        input_filepath = conf.PHENOMEXCAN["LD_BLOCKS"][model_type][
+            "GENE_NAMES_CORR_AVG"
+        ]
         gene_corrs = pd.read_pickle(input_filepath)
 
         # load gene-trait associations
@@ -128,7 +134,8 @@ class GLSPhenoplier(object):
         """
         # obtain the needed matrices
         gene_corrs, phenotype_assocs, lv_weights = GLSPhenoplier._get_data(
-            self.smultixcan_result_set_filepath
+            self.smultixcan_result_set_filepath,
+            model_type=self.model_type,
         )
 
         if self.sigma is not None:
