@@ -288,7 +288,7 @@ def download_precomputed_gene_correlations(**kwargs):
 
 
 def download_snps_covariance(**kwargs):
-    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["SNPS_COVARIANCE_FILE"]
+    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["SNPS_COVARIANCE_FILE"]
     curl(
         "https://upenn.box.com/shared/static/cm9my5bo8jw6nawsxy5y6z0ceh9wnecv.h5",
         output_file,
