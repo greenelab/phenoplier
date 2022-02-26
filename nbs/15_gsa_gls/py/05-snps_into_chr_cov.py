@@ -40,6 +40,9 @@ from entity import Gene
 # %% [markdown]
 # # Settings
 
+# %%
+COV_DTYPE = np.float32
+
 # %% tags=["parameters"]
 # mashr
 EQTL_MODEL = "MASHR"
@@ -265,9 +268,41 @@ variants_ld_block_df.dtypes
 # %% [markdown] tags=[]
 # ## Functions
 
+# %%
+def covariance(df, dtype):
+    n = df.shape[0]
+    _tmp = df.sub(df.mean(), axis=1).astype(dtype)
+    return _tmp.T.dot(_tmp) / (n - 1)
+
+
+# %%
+# testing
+rs = np.random.RandomState(0)
+
+_test_data = pd.DataFrame(rs.normal(size=(50, 5)), columns=[f"c{i}" for i in range(5)])
+
+# float64
+pd.testing.assert_frame_equal(
+    covariance(_test_data, np.float64),
+    _test_data.cov(),
+    rtol=1e-10,
+    atol=1e-10,
+    check_dtype=True,
+)
+
+# float32
+pd.testing.assert_frame_equal(
+    covariance(_test_data, np.float32),
+    _test_data.cov(),
+    rtol=1e-5,
+    atol=1e-8,
+    check_dtype=False,
+)
+
+
 # %% tags=[]
 def compute_snps_cov(snps_df):
-    assert snps_df["chr"].unique().shape[0]
+    assert snps_df["chr"].unique().shape[0] == 1
     chromosome = snps_df["chr"].unique()[0]
 
     # keep variants only present in genotype
@@ -279,7 +314,7 @@ def compute_snps_cov(snps_df):
     )
     snps_genotypes = pd.read_parquet(chromosome_file, columns=snps_ids)
 
-    return snps_genotypes.cov()
+    return covariance(snps_genotypes, COV_DTYPE)
 
 
 # %% tags=[]
@@ -320,7 +355,7 @@ with pd.HDFStore(output_file, mode="w", complevel=4) as store:
 
     for grp_name, grp_data in pbar:
         pbar.set_description(f"{grp_name} {grp_data.shape}")
-        snps_cov = compute_snps_cov(grp_data).astype(np.float32)
+        snps_cov = compute_snps_cov(grp_data)  # .astype(COV_DTYPE)
         assert not snps_cov.isna().any().any()
         store[f"chr{grp_name}"] = snps_cov
 
