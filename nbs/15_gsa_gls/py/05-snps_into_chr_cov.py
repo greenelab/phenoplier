@@ -271,8 +271,8 @@ variants_ld_block_df.dtypes
 # %%
 def covariance(df, dtype):
     n = df.shape[0]
-    _tmp = df.sub(df.mean(), axis=1).astype(dtype)
-    return _tmp.T.dot(_tmp) / (n - 1)
+    df = df.sub(df.mean(), axis=1).astype(dtype)
+    return df.T.dot(df) / (n - 1)
 
 
 # %%
@@ -298,6 +298,8 @@ pd.testing.assert_frame_equal(
     atol=1e-8,
     check_dtype=False,
 )
+
+del _test_data
 
 
 # %% tags=[]
@@ -338,6 +340,9 @@ _tmp = compute_snps_cov(_tmp_snps)
 # %% tags=[]
 assert _tmp.shape == (n_expected, n_expected)
 assert not _tmp.isna().any().any()
+
+# %%
+del _tmp_snps, _tmp
 
 # %% [markdown] tags=[]
 # ## Compute covariance and save
