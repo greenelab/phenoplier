@@ -1,10 +1,38 @@
 # Gene expression correlations
 
+Two notebooks need to be run to compute correlations of gene predicted expression:
+1. `05-snps_into_chr_cov.ipynb`
+1. `10-gene_expr_correlations.ipynb`
+
+For both, it's necessary to specify the prediction models of gene expression (see the referenced notebook above to see the accepted values for parameter `EQTL_MODEL`).
+
+## `05-snps_into_chr_cov.ipynb`
+
+Examples for two predictions models (mashr and elastic net):
+
+mashr:
+
+```bash
+mkdir -p nbs/15_gsa_gls/mashr_gene_corrs
+rm -f nbs/15_gsa_gls/mashr_gene_corrs/*
+bash nbs/run_nbs.sh nbs/15_gsa_gls/05-snps_into_chr_cov.ipynb mashr_gene_corrs/05-snps_into_chr_cov.ipynb -p EQTL_MODEL MASHR
+```
+
+elastic net:
+
+```bash
+mkdir -p nbs/15_gsa_gls/en_gene_corrs
+rm -f nbs/15_gsa_gls/en_gene_corrs/*
+bash nbs/run_nbs.sh nbs/15_gsa_gls/05-snps_into_chr_cov.ipynb en_gene_corrs/05-snps_into_chr_cov.ipynb -p EQTL_MODEL ELASTIC_NET
+```
+
+## `10-gene_expr_correlations.ipynb`
+
 The notebook `10-gene_expr_correlations.ipynb` allows to compute correlations among predicted gene expression.
 
 These commands allow to run this notebook per chromosome in parallel.
 Adjust the parameter `-jX` with X as the number of cores to use.
-You can also change the prediction models used (see the referenced notebook above to see the accepted values for parameter `EQTL_MODEL`.
+You can also change the prediction models used.
 
 For example, for mashr models you can use this command:
 
