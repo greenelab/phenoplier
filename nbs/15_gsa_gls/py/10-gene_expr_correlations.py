@@ -139,7 +139,10 @@ db_files = list(conf.PHENOMEXCAN["PREDICTION_MODELS"][EQTL_MODEL].glob("*.db"))
 assert len(db_files) == 49
 
 # %% tags=[]
-tissues = [str(f).split(EQTL_MODEL_FILES_PREFIX)[1].split(".db")[0] for f in db_files]
+tissues = [
+    str(f).split(EQTL_MODEL_FILES_PREFIX, maxsplit=1)[1].split(".db")[0]
+    for f in db_files
+]
 
 # %% tags=[]
 tissues[:5]
