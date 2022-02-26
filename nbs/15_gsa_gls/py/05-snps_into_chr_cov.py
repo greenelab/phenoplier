@@ -28,6 +28,7 @@
 # %autoreload 2
 
 # %% tags=[]
+import gc
 import sqlite3
 
 import numpy as np
@@ -57,7 +58,9 @@ EQTL_MODEL_FILES_PREFIX = None
 
 # %%
 if EQTL_MODEL_FILES_PREFIX is None:
-    EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
+    EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][
+        f"{EQTL_MODEL}_PREFIX"
+    ]
 
 # %%
 display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
@@ -363,6 +366,11 @@ with pd.HDFStore(output_file, mode="w", complevel=4) as store:
         snps_cov = compute_snps_cov(grp_data)  # .astype(COV_DTYPE)
         assert not snps_cov.isna().any().any()
         store[f"chr{grp_name}"] = snps_cov
+
+        del snps_cov
+        store.flush()
+
+        gc.collect()
 
 # %% [markdown] tags=[]
 # # Testing
