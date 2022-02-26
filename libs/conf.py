@@ -275,14 +275,20 @@ PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"] = Path(
     PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "reference_panel_1000G"
 ).resolve()
 PHENOMEXCAN["LD_BLOCKS"]["MASHR"] = {
-    "SNPS_COVARIANCE_FILE": PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "mashr_snps_chr_blocks_cov.h5",
-    "GENE_IDS_CORR_AVG": PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "mashr_multiplier_genes-pred_expression_corr_avg.pkl",
-    "GENE_NAMES_CORR_AVG": PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "mashr_multiplier_genes-pred_expression_corr_avg-gene_names.pkl",
+    "SNPS_COVARIANCE_FILE": PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
+    / "mashr_snps_chr_blocks_cov.h5",
+    "GENE_IDS_CORR_AVG": PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
+    / "mashr_multiplier_genes-pred_expression_corr_avg.pkl",
+    "GENE_NAMES_CORR_AVG": PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
+    / "mashr_multiplier_genes-pred_expression_corr_avg-gene_names.pkl",
 }
 PHENOMEXCAN["LD_BLOCKS"]["ELASTIC_NET"] = {
-    "SNPS_COVARIANCE_FILE": PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "en_snps_chr_blocks_cov.h5",
-    "GENE_IDS_CORR_AVG": PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "en_multiplier_genes-pred_expression_corr_avg.pkl",
-    "GENE_NAMES_CORR_AVG": PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "en_multiplier_genes-pred_expression_corr_avg-gene_names.pkl",
+    "SNPS_COVARIANCE_FILE": PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
+    / "en_snps_chr_blocks_cov.h5",
+    "GENE_IDS_CORR_AVG": PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
+    / "en_multiplier_genes-pred_expression_corr_avg.pkl",
+    "GENE_NAMES_CORR_AVG": PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
+    / "en_multiplier_genes-pred_expression_corr_avg-gene_names.pkl",
 }
 
 # predictions models
