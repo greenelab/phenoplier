@@ -3,10 +3,13 @@
 Two notebooks need to be run to compute correlations of gene predicted expression:
 1. `05-snps_into_chr_cov.ipynb`
 1. `10-gene_expr_correlations.ipynb`
+1. `15-preprocess_gene_expr_correlations.ipynb`
 
-For both, it's necessary to specify the prediction models of gene expression (see the referenced notebook above to see the accepted values for parameter `EQTL_MODEL`).
+For all of them, it's necessary to specify the prediction models of gene expression (see the referenced notebook above to see the accepted values for parameter `EQTL_MODEL`).
 
 ## `05-snps_into_chr_cov.ipynb`
+
+This notebook computes the covariance for each chromosome of all variants present in prediction models.
 
 Examples for two predictions models (mashr and elastic net):
 
@@ -37,8 +40,6 @@ You can also change the prediction models used.
 For example, for mashr models you can use this command:
 
 ```bash
-mkdir -p nbs/15_gsa_gls/mashr_gene_corrs
-rm -f nbs/15_gsa_gls/mashr_gene_corrs/*
 parallel -k --lb --halt 2 -j3 'bash nbs/run_nbs.sh nbs/15_gsa_gls/10-gene_expr_correlations.ipynb mashr_gene_corrs/10-gene_expr_correlations-chr{}.run.ipynb -p chromosome {} -p EQTL_MODEL MASHR' ::: {1..22}
 ```
 
@@ -46,10 +47,10 @@ parallel -k --lb --halt 2 -j3 'bash nbs/run_nbs.sh nbs/15_gsa_gls/10-gene_expr_c
 And for elastic net models, you can use this one:
 
 ```bash
-mkdir -p nbs/15_gsa_gls/en_gene_corrs
-rm -f nbs/15_gsa_gls/en_gene_corrs/*
 parallel -k --lb --halt 2 -j3 'bash nbs/run_nbs.sh nbs/15_gsa_gls/10-gene_expr_correlations.ipynb en_gene_corrs/10-gene_expr_correlations-chr{}.run.ipynb -p chromosome {} -p EQTL_MODEL ELASTIC_NET' ::: {1..22}
 ```
+
+## `15-preprocess_gene_expr_correlations.ipynb`
 
 After computing the correlations, you need also to preprocess the results to generate a single correlations file.
 If you want to run it via command line, these are the commands for both prediction models:
