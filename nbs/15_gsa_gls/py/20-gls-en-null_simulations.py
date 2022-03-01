@@ -63,7 +63,7 @@ from gls import GLSPhenoplier
 # # Settings
 
 # %% tags=[]
-N_SIMULATED_PHENOTYPES = 3
+N_SIMULATED_PHENOTYPES = 10
 CHUNK_SIZE = 50
 EQTL_MODEL = "ELASTIC_NET"
 
