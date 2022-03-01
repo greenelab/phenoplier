@@ -17,6 +17,7 @@ mkdir -p nbs/15_gsa_gls/mashr_gene_corrs
 rm -f nbs/15_gsa_gls/en_gene_corrs/*
 ```
 
+
 elastic net:
 ```bash
 mkdir -p nbs/15_gsa_gls/en_gene_corrs
@@ -36,6 +37,7 @@ mashr:
 ```bash
 bash nbs/run_nbs.sh nbs/15_gsa_gls/05-snps_into_chr_cov.ipynb mashr_gene_corrs/05-snps_into_chr_cov.ipynb -p EQTL_MODEL MASHR
 ```
+
 
 elastic net:
 
@@ -69,12 +71,15 @@ parallel -k --lb --halt 2 -j3 'bash nbs/run_nbs.sh nbs/15_gsa_gls/10-gene_expr_c
 After computing the correlations, you need also to preprocess the results to generate a single correlations file.
 If you want to run it via command line, these are the commands for both prediction models:
 
+mashr:
+
 ```bash
-# mashr models
 bash nbs/run_nbs.sh nbs/15_gsa_gls/15-preprocess_gene_expr_correlations.ipynb mashr_gene_corrs/15-preprocess_gene_expr_correlations.ipynb -p EQTL_MODEL MASHR
 ```
 
+
+elastic net:
+
 ```bash
-# elastic net models
 bash nbs/run_nbs.sh nbs/15_gsa_gls/15-preprocess_gene_expr_correlations.ipynb en_gene_corrs/15-preprocess_gene_expr_correlations.ipynb -p EQTL_MODEL ELASTIC_NET
 ```
