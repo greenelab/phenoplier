@@ -127,7 +127,8 @@ class GLSPhenoplier(object):
             phenotype:
                 Either a phenotype code (str) that has to be present in the
                 columns of the gene-trait association matrix; or the phenotype
-                data itself as a numpy array or pandas series.
+                data itself as a pandas series (with gene symbols in index, and
+                trait associations as values).
 
         Returns:
             self
@@ -155,19 +156,30 @@ class GLSPhenoplier(object):
 
         # predictor
         x = lv_weights[lv_code]
+
         # dependent variable
         if isinstance(phenotype, str):
             y = phenotype_assocs[phenotype]
-        elif isinstance(phenotype, np.ndarray):
-            y = phenotype
         elif isinstance(phenotype, pd.Series):
-            # make sure genes are aligned in index
-            assert phenotype.index.equals(
-                lv_weights.index
-            ), "phenotype index is not aligned with genes in models"
-            y = phenotype
+            # align genes in models with genes in phenotype
+            n_genes_orig_phenotype = phenotype.shape[0]
+
+            # keep genes in model only
+            y = phenotype.loc[phenotype.index.intersection(x.index)]
+            # ... and align predictor variable and sigma/gene correlations also
+            x = x.loc[y.index]
+            gene_corrs = gene_corrs.loc[y.index, y.index]
+
+            if y.shape[0] < n_genes_orig_phenotype:
+                import warnings
+
+                warnings.warn(
+                    f"{n_genes_orig_phenotype} in phenotype, but only {y.shape[0]} were found in LV models"
+                )
         else:
-            raise ValueError("Wrong phenotype data type")
+            raise ValueError(
+                "Wrong phenotype data type. Should be str or pandas.Series (with gene symbols as index)"
+            )
 
         # merge both variables plus contant (intercept) into one dataframe,
         # and scale them
