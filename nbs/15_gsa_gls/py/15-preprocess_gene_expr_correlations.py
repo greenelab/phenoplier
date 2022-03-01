@@ -317,7 +317,9 @@ assert _gene_values.shape[0] == 49
 
 # %% tags=[]
 display(_gene_values.mean())
-assert gene_corrs_df.loc[gene1, gene2] == _gene_values.mean()
+assert gene_corrs_df.loc[gene1, gene2].round(5) == _gene_values.mean().round(
+    5
+), gene_corrs_df.loc[gene1, gene2]
 
 # %% [markdown] tags=[]
 # # Save
