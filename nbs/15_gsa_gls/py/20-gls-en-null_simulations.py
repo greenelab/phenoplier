@@ -63,7 +63,7 @@ from gls import GLSPhenoplier
 # # Settings
 
 # %% tags=[]
-N_SIMULATED_PHENOTYPES = 10
+N_SIMULATED_PHENOTYPES = 1  # disable generation of derived random phenotypes
 CHUNK_SIZE = 50
 EQTL_MODEL = "ELASTIC_NET"
 
