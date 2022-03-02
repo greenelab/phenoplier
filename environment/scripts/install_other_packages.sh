@@ -9,6 +9,8 @@ jupyter nbextension enable --py widgetsnbextension
 
 jupyter labextension install @jupyter-widgets/jupyterlab-manager
 
+jupyter labextension install @jupyterlab/toc
+
 #
 # R dependencies
 #
