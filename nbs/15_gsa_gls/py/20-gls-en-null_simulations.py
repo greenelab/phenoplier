@@ -418,7 +418,7 @@ with tqdm(total=run_confs.shape[0]) as pbar:
             pbar.update(res.shape[0])
 
 # %%
-pd.concat(all_results, ignore_index=True)
+all_results = pd.concat(all_results, ignore_index=True)
 
 # %% tags=[]
 # results = get_df_from_results(results)
