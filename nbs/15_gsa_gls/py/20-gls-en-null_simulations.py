@@ -89,31 +89,31 @@ display(OUTPUT_FILENAME)
 # %% [markdown] tags=[]
 # This result was downloaded from the MultiXcan paper here: https://github.com/hakyimlab/multixcan-paper
 
-# %%
+# %% tags=[]
 multixcan_random_phenotype = pd.read_csv(
     conf.PHENOMEXCAN["BASE_DIR"] / "random__ccn30__mt_results.txt",
     sep="\t",
     usecols=["gene", "pvalue"],
 )
 
-# %%
+# %% tags=[]
 multixcan_random_phenotype.shape
 
-# %%
+# %% tags=[]
 multixcan_random_phenotype.head()
 
-# %%
+# %% tags=[]
 multixcan_random_phenotype["gene"] = multixcan_random_phenotype["gene"].str.split(
     ".", n=1, expand=True
 )[0]
 
-# %%
+# %% tags=[]
 multixcan_random_phenotype = multixcan_random_phenotype.set_index("gene")
 
-# %%
+# %% tags=[]
 multixcan_random_phenotype.head()
 
-# %%
+# %% tags=[]
 assert multixcan_random_phenotype.index.is_unique
 
 # %% [markdown] tags=[]
@@ -132,7 +132,7 @@ assert multixcan_random_phenotype.index.is_unique
 # lv_codes = list(multiplier_z_matrix.columns)
 # display(lv_codes[:5])
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Preprocess MultiXcan results
 
 # %% [markdown] tags=[]
@@ -157,18 +157,18 @@ assert _tmp.shape[0] == 0
 # %% [markdown] tags=[]
 # ## Convert p-values to z-scores
 
-# %%
+# %% tags=[]
 smultixcan_results = smultixcan_results.assign(
     zscore=np.abs(stats.norm.ppf(smultixcan_results["pvalue"].to_numpy() / 2))
 )
 
-# %%
+# %% tags=[]
 smultixcan_results = smultixcan_results.drop(columns="pvalue").squeeze()
 
-# %%
+# %% tags=[]
 smultixcan_results.head()
 
-# %%
+# %% tags=[]
 smultixcan_results.describe()
 
 # %% [markdown] tags=[]
@@ -190,36 +190,36 @@ en_gene_corr = GLSPhenoplier._get_data(
     model_type="ELASTIC_NET",
 )[0]
 
-# %%
+# %% tags=[]
 _comm_genes = en_gene_corr.index.intersection(smultixcan_results.index)
 
-# %%
+# %% tags=[]
 en_gene_corr = en_gene_corr.loc[_comm_genes, _comm_genes]
 
-# %%
+# %% tags=[]
 en_gene_corr.shape
 
-# %%
+# %% tags=[]
 en_gene_corr.head()
 
-# %%
+# %% tags=[]
 from sklearn.cluster import AgglomerativeClustering
 
-# %%
+# %% tags=[]
 en_gene_dist = en_gene_corr.abs().copy()
 np.fill_diagonal(en_gene_dist.values, 0.0)
 
-# %%
+# %% tags=[]
 en_gene_dist
 
-# %%
+# %% tags=[]
 _tmp = en_gene_dist.unstack()
 _tmp = _tmp[(_tmp > 0.0) & (_tmp < 1.0)]
 
-# %%
+# %% tags=[]
 _tmp.sort_values()
 
-# %%
+# %% tags=[]
 ac = AgglomerativeClustering(
     n_clusters=None,
     compute_full_tree=True,
@@ -228,33 +228,33 @@ ac = AgglomerativeClustering(
     distance_threshold=1e-100,
 )
 
-# %%
+# %% tags=[]
 ac.fit(en_gene_dist)
 
-# %%
+# %% tags=[]
 gene_part = pd.Series(ac.labels_)
 display(gene_part.value_counts())
 
-# %%
+# %% tags=[]
 en_gene_dist.loc[(ac.labels_ == 141), (ac.labels_ == 141)]
 
-# %%
+# %% tags=[]
 phenotype_gene_clusters = {
     cluster_id: smultixcan_results.loc[en_gene_dist.index[gene_part == cluster_id]]
     for cluster_id in gene_part.value_counts().index
 }
 
-# %%
+# %% tags=[]
 phenotype_gene_clusters[141]
 
 # %% [markdown] tags=[]
 # ## Functions
 
-# %%
+# %% tags=[]
 rs = np.random.RandomState(0)
 
 
-# %%
+# %% tags=[]
 def get_shuffled_phenotype():
     shuffled_gene_clusters = []
     for cluster_id, gene_assoc_cluster in phenotype_gene_clusters.items():
@@ -265,7 +265,7 @@ def get_shuffled_phenotype():
     return pd.concat(shuffled_gene_clusters)
 
 
-# %%
+# %% tags=[]
 def get_df_from_results(results_list):
     df = pd.DataFrame(results_list).astype(
         {
@@ -295,7 +295,7 @@ lv_weights.head()
 # %% [markdown] tags=[]
 # ## Generate simulated phenotypes
 
-# %%
+# %% tags=[]
 # phenotype_codes = rs.choice(phenotype_list, size=N_SIMULATED_PHENOTYPES, replace=False)
 # display(phenotype_codes[:3])
 # display(len(phenotype_codes))
@@ -308,50 +308,50 @@ simulated_phenotypes = {
 for idx in tqdm(range(1, N_SIMULATED_PHENOTYPES)):
     simulated_phenotypes[f"smultixcan phenotype {idx}"] = get_shuffled_phenotype()
 
-# %%
+# %% tags=[]
 display(len(simulated_phenotypes))
 assert len(simulated_phenotypes) == N_SIMULATED_PHENOTYPES
 
-# %%
+# %% tags=[]
 simulated_phenotypes[list(simulated_phenotypes.keys())[0]]
 
-# %%
+# %% tags=[]
 simulated_phenotypes = pd.DataFrame(simulated_phenotypes)
 
-# %%
+# %% tags=[]
 simulated_phenotypes.shape
 
-# %%
+# %% tags=[]
 simulated_phenotypes.head()
 
-# %%
+# %% tags=[]
 simulated_phenotypes.describe()
 
 # %% [markdown] tags=[]
 # ## Merge simulated phenotypes and LVs into one dataframe
 
-# %%
+# %% tags=[]
 # smultixcan_results = smultixcan_results.loc[smultixcan_results.index.intersection(lv_weights.index)]
 
-# %%
+# %% tags=[]
 # smultixcan_results.shape
 
-# %%
+# %% tags=[]
 # smultixcan_results.head()
 
-# %%
+# %% tags=[]
 # assert not smultixcan_results.isna().any()
 
-# %%
+# %% tags=[]
 # simulated_phenotypes = pd.DataFrame({"smultixcan_random_phenotype": smultixcan_results})
 
-# %%
+# %% tags=[]
 # simulated_phenotypes.shape
 
-# %%
+# %% tags=[]
 # simulated_phenotypes.head()
 
-# %%
+# %% tags=[]
 run_confs = pd.DataFrame(
     data=itertools.product(
         list(simulated_phenotypes.columns), list(lv_weights.columns)
@@ -359,20 +359,20 @@ run_confs = pd.DataFrame(
     columns=["phenotype", "lv"],
 )
 
-# %%
+# %% tags=[]
 run_confs
 
 # %% [markdown] tags=[]
 # ## Split run configurations
 
-# %%
+# %% tags=[]
 run_confs_chunks = chunker(run_confs.sample(frac=1, random_state=rs), CHUNK_SIZE)
 
 
 # %% [markdown] tags=[]
 # ## Run
 
-# %%
+# %% tags=[]
 def run(run_confs_subset):
     results = []
 
@@ -417,7 +417,7 @@ with tqdm(total=run_confs.shape[0]) as pbar:
 
             pbar.update(res.shape[0])
 
-# %%
+# %% tags=[]
 all_results = pd.concat(all_results, ignore_index=True)
 
 # %% tags=[]
