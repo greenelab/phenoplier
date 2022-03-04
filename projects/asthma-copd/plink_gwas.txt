@@ -1,0 +1,153 @@
+MANY OF THESE STEPS COULD BE SIMPLIFIED
+
+export PLINK=/home/miltondp/Documents/plink/plink
+
+$PLINK --bfile all_phase3 --missing
+
+/tmp/ns/plink/plink --vcf ALL.chr22.shapeit2_integrated_snvindels_v2a_27022019.GRCh38.phased.vcf.gz --geno 0.02 --make-bed --out 1000g.chr22.1
+
+/tmp/ns/plink/plink --bfile 1000g.chr22.1 --mind 0.02 --make-bed --out 1000g.chr22.2
+
+/tmp/ns/plink/plink --bfile 1000g.chr22.2 --maf 0.01 --make-bed --out 1000g.chr22.3
+
+/tmp/ns/plink/plink --bfile 1000g.chr22.3 --hardy
+
+/tmp/ns/plink/plink --bfile 1000g.chr22.3 --hwe 1e-6 --make-bed --out 1000g.chr22.4
+
+/tmp/ns/plink/plink --bfile 1000g.chr22.4 --pca 10
+
+mkdir -p gwas
+
+/tmp/ns/plink/plink --bfile 1000g.chr22.4 \
+    --allow-no-sex \
+    --linear \
+    --covar plink.eigenvec \
+    --pheno random_phenotype0001.phen \
+    --out gwas/random_phenotype0001
+
+
+
+
+
+
+/tmp/ns/plink/plink --vcf ALL.chr22.shapeit2_integrated_snvindels_v2a_27022019.GRCh38.phased.vcf.gz \
+    --allow-no-sex \
+    --geno 0.02 \
+    --mind 0.02 \
+    --maf 0.05 \
+    --linear \
+    --covar plink.eigenvec \
+    --pheno random_phenotype0001.phen \
+    --out gwas/random_phenotype0001
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
+working below in pcgreen machine and directory:
+/home/miltondp/Documents/1000g
+    
+    
+download 1000 genomes data from plink2 website: https://www.cog-genomics.org/plink/2.0/resources#1kg_phase3
+specifically:
+(COMPLETE FOR ALL FILES):
+wget https://www.dropbox.com/s/yozrzsdrwqej63q/phase3_corrected.psam?dl=1 -O all_phase3.psam
+
+download all the boldface links
+rename files so that all have prefix all_phase3:
+# for example I had to do:
+mv phase3_corrected.psam all_phase3.psam
+
+then i took these commands from this website: https://cran.r-project.org/web/packages/plinkQC/vignettes/Genomes1000.pdf
+
+/tmp/ns/plink2/plink2 --zst-decompress all_phase3.pgen.zst > all_phase3.pgen
+
+/tmp/ns/plink2/plink2 --pfile all_phase3 vzs --max-alleles 2 --make-bed --out all_phase3
+
+mkdir subsets
+
+# apply several filters: missingness, maf, hwe...
+# another option could be --mac 20 (for a minimum allele count)
+$PLINK --bfile all_phase3 --allow-extra-chr --geno 0.02 --mind 0.02 --maf 0.05 --make-bed --out subsets/all_phase3.1
+
+# sex discrepancy
+$PLINK --bfile subsets/all_phase3.1 --allow-extra-chr --check-sex
+grep "PROBLEM" plink.sexcheck | awk '{print$1,$2}'> sex_discrepancy.txt
+$PLINK --bfile subsets/all_phase3.1 --allow-extra-chr --remove sex_discrepancy.txt --make-bed --out subsets/all_phase3.2
+
+# keep snps in chr 1 to 22 only
+$PLINK --bfile subsets/all_phase3.2 --allow-extra-chr --chr 1-22 --make-bed --out subsets/all_phase3.3
+
+# hwe
+$PLINK --bfile subsets/all_phase3.3 --hwe 1e-10 --hwe-all --make-bed --out subsets/all_phase3.4
+
+# heterozygosity
+$PLINK --bfile subsets/all_phase3.4 --exclude inversion.txt --range --indep-pairwise 50 5 0.2 --out subsets/indepSNP
+$PLINK --bfile subsets/all_phase3.4 --extract subsets/indepSNP.prune.in --het --out subsets/R_check
+Rscript het_outliers.list.R
+sed 's/"// g' subsets/fail-het-qc.txt | awk '{print$1, $2}'> subsets/het_fail_ind.txt
+$PLINK --bfile subsets/all_phase3.4 --remove subsets/het_fail_ind.txt --make-bed --out subsets/all_phase3.5
+
+# crypted relatedness
+$PLINK --bfile subsets/all_phase3.5 --extract subsets/indepSNP.prune.in --genome --min 0.2 --out subsets/pihat_min0.2
+awk '{ if ($8 >0.9) print $0 }' subsets/pihat_min0.2.genome > subsets/zoom_pihat.genome
+$PLINK --bfile subsets/all_phase3.5 --filter-founders --make-bed --out subsets/all_phase3.6
+$PLINK --bfile subsets/all_phase3.6 --extract subsets/indepSNP.prune.in --genome --min 0.2 --out subsets/pihat_min0.2_in_founders
+$PLINK --bfile subsets/all_phase3.6 --missing
+
+# europeans
+# select europeans only
+# python code
+import pandas as pd
+
+sample_data = pd.read_csv("all_phase3.psam", sep="\s+")
+european_samples = sample_data[sample_data["SuperPop"] == "EUR"]
+assert european_samples.shape[0] == 503
+samples_fam = pd.DataFrame({"FID": 0, "IID": european_samples["#IID"].to_numpy()})
+samples_fam.to_csv("european_samples.txt", sep="\t", header=False, index=False)
+
+
+# plink command
+$PLINK --bfile subsets/all_phase3.6 --keep european_samples.txt --make-bed --out subsets/all_phase3.7
+
+# pca
+$PLINK --bfile subsets/all_phase3.7 --extract subsets/indepSNP.prune.in --make-bed --out subsets/all_phase3.pca.input
+$PLINK --bfile subsets/all_phase3.pca.input --pca 10 --out subsets/all_phase.pca_covar
+
+
+# generate random phenotype with python
+N_PHENOTYPES=100
+
+import pandas as pd
+import numpy as np
+
+data = pd.read_csv("subsets/all_phase3.7.fam", sep="\s+", header=None)
+data = data.iloc[:,0:2]
+data = data.rename(columns={0: "FID", 1: "IID"})
+n_samples = data.shape[0]
+
+rs = np.random.RandomState(0)
+random_phenos = {}
+for i in range(N_PHENOTYPES):
+    random_phenos[f"pheno{i}"] = rs.normal(size=n_samples)
+
+data = data.assign(**random_phenos)
+data.to_csv(f"phenotypes/random_phenotypes.phen", sep="\t", index=False, header=True, float_format="%.4f")
+
+
+# run gwas
+mkdir -p gwas
+
+#parallel -j1 -k --lb '$PLINK --bfile subsets/all_phase3.7 --threads 3 --glm hide-covar sex --ci 0.95 --covar subsets/all_phase.pca_covar.eigenvec --pheno phenotypes/random_phenotypes.phen --pheno-name pheno{} --out gwas/gwas_pheno{}' ::: {0..99}
+
+# plink2 (all phenotypes at the same time, super fast)
+export PLINK2=/home/miltondp/Documents/plink2/plink2
+
+$PLINK2 --bfile subsets/all_phase3.7 --threads 3 --glm hide-covar sex --ci 0.95 --covar subsets/all_phase.pca_covar.eigenvec --pheno phenotypes/random_phenotypes.phen --out gwas/random_phenotypes 
+
