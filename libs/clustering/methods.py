@@ -199,6 +199,6 @@ class DeltaSpectralClustering(SpectralClustering):
         # This Gaussian kernel is suggested in the sklearn documentation for
         # SpectralClustering. It converts a distance matrix to a similarity
         # matrix.
-        X = np.exp(-(X ** 2) / (2.0 * self.delta ** 2))
+        X = np.exp(-(X**2) / (2.0 * self.delta**2))
 
         return super().fit(X, y)
