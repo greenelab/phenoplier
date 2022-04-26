@@ -43,14 +43,18 @@ GENERAL["LOG_CONFIG_FILE"] = Path(
 
 # CPU usage
 options = [
-    os.environ.get("PHENOPLIER_N_JOBS"),
+    m
+    if (m := os.environ.get("PHENOPLIER_N_JOBS")) is not None and m.strip() != ""
+    else None,
     getattr(settings, "N_JOBS", None),
-    int(cpu_count() / 2),
+    1,
 ]
 GENERAL["N_JOBS"] = next(int(opt) for opt in options if opt is not None)
 
 options = [
-    os.environ.get("PHENOPLIER_N_JOBS_HIGH"),
+    m
+    if (m := os.environ.get("PHENOPLIER_N_JOBS_HIGH")) is not None and m.strip() != ""
+    else None,
     getattr(settings, "N_JOBS_HIGH", None),
     GENERAL["N_JOBS"],
 ]
