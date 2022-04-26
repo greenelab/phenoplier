@@ -1,7 +1,8 @@
 #/bin/bash
+set -e
 
 PROJECT_NAME="phenoplier"
-VERSION="1.2"
+VERSION="1.3"
 
 CURRENT_IMAGE_ID=$(docker images --filter=reference=miltondp/${PROJECT_NAME}:latest --format "{{.ID}}")
 
