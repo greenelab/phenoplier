@@ -40,18 +40,8 @@ import conf
 # # Settings
 
 # %% tags=[]
-INPUT_DIR = conf.RESULTS["GLS"]
+INPUT_DIR = conf.RESULTS["GLS"] / "null_simulations"
 display(INPUT_DIR)
-
-# %% tags=[]
-INPUT_FILENAME = INPUT_DIR / "gls-null_simulations.pkl"
-display(INPUT_FILENAME)
-assert INPUT_FILENAME.exists()
-
-# %% tags=[]
-INPUT_REAL_FILENAME = INPUT_DIR / "gls-null_simulations-real_data.pkl"
-display(INPUT_REAL_FILENAME)
-assert INPUT_REAL_FILENAME.exists()
 
 
 # %% [markdown] tags=[]
@@ -65,7 +55,12 @@ def show_prop(data, frac=0.05):
 
 
 # %% [markdown] tags=[]
-# # Null simulations - artificial gene-trait associations
+# # Null simulations - Elastic net models
+
+# %% tags=[]
+INPUT_FILENAME = INPUT_DIR / "en-null_simulations.pkl"
+display(INPUT_FILENAME)
+assert INPUT_FILENAME.exists()
 
 # %% [markdown]
 # ## Load data
@@ -91,53 +86,11 @@ show_prop(results, 0.05)
 # %%
 show_prop(results, 0.10)
 
-# %% [markdown]
-# ## Plot
-
-# %% tags=[]
-data = results["pvalue"].to_numpy()
-uniform_data = np.linspace(data.min(), data.max(), num=data.shape[0])
-
-# %% tags=[]
-display(data[:5])
-display(uniform_data[:5])
-
-# %% tags=[]
-with sns.plotting_context("paper", font_scale=1.3):
-    fig, ax = plt.subplots(figsize=(5, 5))
-
-    fig = qqplot_2samples(-np.log10(uniform_data), -np.log10(data), line="45", ax=ax)
-
-    ax.set_xlabel("$-\log_{10}$(expected pvalue)")
-    ax.set_ylabel("$-\log_{10}$(observed pvalue)")
-    ax.set_title("QQ-Plot - Null model #1")
-
-# %% [markdown] tags=[]
-# # Null simulations - real gene-trait associations
-
-# %% [markdown]
-# ## Load data
-
-# %% tags=[]
-results = pd.read_pickle(INPUT_REAL_FILENAME)
-
-# %% tags=[]
-results.shape
-
-# %% tags=[]
-results.head()
-
-# %% [markdown]
-# ## Proportion pvalue < 0.05
+# %%
+show_prop(results, 0.15)
 
 # %%
-show_prop(results, 0.01)
-
-# %%
-show_prop(results, 0.05)
-
-# %%
-show_prop(results, 0.10)
+show_prop(results, 0.20)
 
 # %% [markdown]
 # ## Plot
@@ -151,13 +104,13 @@ display(data[:5])
 display(uniform_data[:5])
 
 # %% tags=[]
-with sns.plotting_context("paper", font_scale=1.3):
-    fig, ax = plt.subplots(figsize=(5, 5))
+with sns.plotting_context("paper", font_scale=1.8):
+    fig, ax = plt.subplots(figsize=(8, 8))
 
     fig = qqplot_2samples(-np.log10(uniform_data), -np.log10(data), line="45", ax=ax)
 
     ax.set_xlabel("$-\log_{10}$(expected pvalue)")
     ax.set_ylabel("$-\log_{10}$(observed pvalue)")
-    ax.set_title("QQ-Plot - Null model #2")
+    ax.set_title("QQ-Plot - Null with Elastic Net models")
 
 # %%
