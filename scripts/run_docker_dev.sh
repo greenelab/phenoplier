@@ -11,7 +11,19 @@
 # We assume the repo code is in the current directory, so the user has to make
 # sure this is right.
 
+# general settings
+DOCKER_IMAGE_NAMESPACE="miltondp"
+DOCKER_IMAGE_NAME="phenoplier"
 DOCKER_TAG="latest"
+DOCKER_PUBLISH_HOST="127.0.0.1"
+DOCKER_CONTAINER_PORT="8892"
+DOCKER_HOST_PORT="8889"
+
+# project-specific environment variables
+ROOT_DIR="${PHENOPLIER_ROOT_DIR}"
+MANUSCRIPT_DIR="${PHENOPLIER_MANUSCRIPT_DIR}"
+N_JOBS_VARNAME="PHENOPLIER_N_JOBS"
+N_JOBS=${!N_JOBS_VARNAME}
 
 echo "Configuration:"
 
@@ -19,24 +31,18 @@ CODE_DIR=`pwd`
 echo "  Code dir: ${CODE_DIR}"
 
 # root dir
-if [ -z "${PHENOPLIER_ROOT_DIR}" ]; then
+if [ -z "${MANUSCRIPT_DIR}" ]; then
   ROOT_DIR="${CODE_DIR}/base"
-else
-  ROOT_DIR="${PHENOPLIER_ROOT_DIR}"
 fi
 
 # manuscript dir
-if [ -z "${PHENOPLIER_MANUSCRIPT_DIR}" ]; then
-  MANUSCRIPT_DIR="/tmp/phenoplier_manuscript"
+if [ -z "${MANUSCRIPT_DIR}" ]; then
+  MANUSCRIPT_DIR="/tmp/${DOCKER_IMAGE_NAME}_manuscript"
   mkdir -p ${MANUSCRIPT_DIR}
-else
-  MANUSCRIPT_DIR="${PHENOPLIER_MANUSCRIPT_DIR}"
 fi
 
-if [ -z "${PHENOPLIER_N_JOBS}" ]; then
+if [ -z "${N_JOBS}" ]; then
   N_JOBS=1
-else
-  N_JOBS=${PHENOPLIER_N_JOBS}
 fi
 
 echo "  Root dir: ${ROOT_DIR}"
@@ -51,7 +57,7 @@ sleep 2
 mkdir -p ${ROOT_DIR}
 
 COMMAND="$@"
-PORT_ARG="-p 8888:8892"
+PORT_ARG="-p ${DOCKER_PUBLISH_HOST}:${DOCKER_HOST_PORT}:${DOCKER_CONTAINER_PORT}"
 if [ -z "${COMMAND}" ]; then
   FULL_COMMAND=()
 else
@@ -66,7 +72,7 @@ set -x
 
 # run
 docker run --rm ${PORT_ARG} \
-  -e PHENOPLIER_N_JOBS=${N_JOBS} \
+  -e ${N_JOBS_VARNAME}=${N_JOBS} \
   -e NUMBA_NUM_THREADS=${N_JOBS} \
   -e MKL_NUM_THREADS=${N_JOBS} \
   -e OPEN_BLAS_NUM_THREADS=${N_JOBS} \
@@ -76,5 +82,5 @@ docker run --rm ${PORT_ARG} \
   -v "${ROOT_DIR}:/opt/data" \
   -v "${MANUSCRIPT_DIR}:/opt/manuscript" \
   --user "$(id -u):$(id -g)" \
-  miltondp/phenoplier:${DOCKER_TAG} "${FULL_COMMAND[@]}"
+  ${DOCKER_IMAGE_NAMESPACE}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG} "${FULL_COMMAND[@]}"
 
