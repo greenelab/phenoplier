@@ -534,6 +534,14 @@ def download_1000g_genotype_data_from_plink(**kwargs):
         logger=logger,
     )
 
+    output_file = conf.A1000G["GENOTYPES_DIR"] / "deg2_phase3.king.cutoff.out.id"
+    curl(
+        "https://www.dropbox.com/s/zj8d14vv9mp6x3c/deg2_phase3.king.cutoff.out.id?dl=1",
+        output_file,
+        "9b047ac7ffb14a5e2be2ee7a68a95f8a",
+        logger=logger,
+    )
+
 
 def download_plink2(**kwargs):
     import platform
