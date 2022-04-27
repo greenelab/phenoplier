@@ -1,3 +1,10 @@
+Some useful links:
+
+These scripts are to generate the reference panels:
+https://github.com/hakyimlab/summary-gwas-imputation/wiki/Reference-Data-Set-Compilation
+I will need it after getting the GTEx genotype data.
+
+
 HARMONIZATION
 
 python3 $GWAS_TOOLS/gwas_parsing.py \
