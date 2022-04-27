@@ -8,4 +8,9 @@ mkdir -p ${SUBSETS_DIR}
 
 # decompress genotype data
 $PLINK2 --zst-decompress ${INPUT_DIR}/all_phase3.pgen.zst > ${INPUT_DIR}/all_phase3.pgen
-$PLINK2 --pfile ${INPUT_DIR}/all_phase3 vzs --max-alleles 2 --make-bed --out ${SUBSETS_DIR}/all_phase3
+
+# convert to plink 1 binary format
+$PLINK2 --pfile ${INPUT_DIR}/all_phase3 vzs \
+    --max-alleles 2 \
+    --make-bed \
+    --out ${SUBSETS_DIR}/all_phase3
