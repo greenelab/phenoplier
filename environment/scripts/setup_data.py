@@ -543,27 +543,27 @@ def download_1000g_genotype_data_from_plink(**kwargs):
     )
 
 
-def download_plink2(**kwargs):
+def _download_plink_generic(
+    plink_zip_file,
+    plink_executable_filename,
+    output_file,
+    platform_parameters,
+):
     import platform
 
     current_system = platform.system()
+    if current_system not in platform_parameters:
+        raise ValueError("plink download for your platform was not added")
 
-    zip_file_path = Path(conf.PLINK2["BASE_DIR"], "plink2.zip").resolve()
-    zip_internal_filename = Path("plink2")
-    output_file = conf.PLINK2["EXECUTABLE"]
+    platform_parameters = platform_parameters[current_system]
+    zip_file_url = platform_parameters["zip_file_url"]
+    zip_file_md5 = platform_parameters["zip_file_md5"]
+    output_file_md5 = platform_parameters["output_file_md5"]
 
-    if current_system == "Linux":
-        zip_file_url = (
-            "https://s3.amazonaws.com/plink2-assets/plink2_linux_x86_64_20220426.zip"
-        )
-        zip_file_md5 = "2e8e5d134a583f9f869a94fb11477208"
-        output_file_md5 = "064529cc22083c44e4c6beeff33c206d"
-    elif current_system == "Darwin":
-        zip_file_url = "https://s3.amazonaws.com/plink2-assets/plink2_mac_20220426.zip"
-        zip_file_md5 = "51729ba53ccba1fb0de10158df289e45"
-        output_file_md5 = "b62cbb4841d1bf062952f279f167fb2b"
-    else:
-        raise ValueError("plink2 for Windows was not added")
+    # generic parameters
+    zip_file_path = plink_zip_file
+    zip_internal_filename = plink_executable_filename
+    output_file = output_file
 
     _get_file_from_zip(
         zip_file_url=zip_file_url,
@@ -574,12 +574,52 @@ def download_plink2(**kwargs):
         output_file_md5=output_file_md5,
     )
 
-    # make plink2 executable
+    # make plink executable
     import os
     import stat
 
     st = os.stat(output_file)
     os.chmod(output_file, st.st_mode | stat.S_IEXEC)
+
+
+def download_plink19(**kwargs):
+    _download_plink_generic(
+        plink_zip_file=Path(conf.PLINK["BASE_DIR"], "plink.zip").resolve(),
+        plink_executable_filename=Path("plink"),
+        output_file=conf.PLINK["EXECUTABLE_VERSION_1_9"],
+        platform_parameters={
+            "Linux": {
+                "zip_file_url": "https://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20220402.zip",
+                "zip_file_md5": "446600c3930997a031476b5961ed372f",
+                "output_file_md5": "f285ab12811ab3063952a2e20adf9860",
+            },
+            "Darwin": {
+                "zip_file_url": "https://s3.amazonaws.com/plink1-assets/plink_mac_20220402.zip",
+                "zip_file_md5": "f5e78f0f4f8da2b60cfa77dc60d5847f",
+                "output_file_md5": "626fb1c3452de35d2365715e16c03034",
+            },
+        },
+    )
+
+
+def download_plink2(**kwargs):
+    _download_plink_generic(
+        plink_zip_file=Path(conf.PLINK["BASE_DIR"], "plink2.zip").resolve(),
+        plink_executable_filename=Path("plink2"),
+        output_file=conf.PLINK["EXECUTABLE_VERSION_2"],
+        platform_parameters={
+            "Linux": {
+                "zip_file_url": "https://s3.amazonaws.com/plink2-assets/plink2_linux_x86_64_20220426.zip",
+                "zip_file_md5": "2e8e5d134a583f9f869a94fb11477208",
+                "output_file_md5": "064529cc22083c44e4c6beeff33c206d",
+            },
+            "Darwin": {
+                "zip_file_url": "https://s3.amazonaws.com/plink2-assets/plink2_mac_20220426.zip",
+                "zip_file_md5": "51729ba53ccba1fb0de10158df289e45",
+                "output_file_md5": "b62cbb4841d1bf062952f279f167fb2b",
+            },
+        },
+    )
 
 
 if __name__ == "__main__":

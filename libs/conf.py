@@ -74,9 +74,10 @@ GENERAL["EFO_ONTOLOGY_OBO_FILE"] = Path(DATA_DIR, "efo.obo").resolve()
 #
 # Software
 #
-PLINK2 = {}
-PLINK2["BASE_DIR"] = Path(SOFTWARE_DIR, "plink2").resolve()
-PLINK2["EXECUTABLE"] = Path(PLINK2["BASE_DIR"], "plink2")
+PLINK = {}
+PLINK["BASE_DIR"] = Path(SOFTWARE_DIR, "plink").resolve()
+PLINK["EXECUTABLE_VERSION_1_9"] = Path(PLINK["BASE_DIR"], "plink")
+PLINK["EXECUTABLE_VERSION_2"] = Path(PLINK["BASE_DIR"], "plink2")
 
 
 #
