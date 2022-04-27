@@ -2,24 +2,24 @@ name: phenoplier
 channels:
   - conda-forge
 dependencies:
-  - ipython=7.*
+  - ipython
   - ipywidgets
-  - jupyterlab=2.2.*
-  - jupytext=1.7.*
+  - jupyterlab=3.3.*
+  - jupytext=1.13.*
   - matplotlib=3.3.*
-  - nodejs=14.*
+  - nodejs
   # fix for umap errors:
   - numba=0.52.*
   - numpy=1.19.*
   - pandas=1.1.*
-  - papermill=2.2.*
+  - papermill=2.3.*
   - pip
   - fastparquet=0.5.*
   - openpyxl=3.0.*
   - pytables=3.6
   - pytest=6.1.*
   - python=3.8.*
-  - python-snappy=0.6
+  - python-snappy=0.6.*
   - pyyaml=5.3.*
   - requests=2.*
   - r-base=3.6.*
@@ -32,7 +32,7 @@ dependencies:
   - scipy=1.5.*
   - seaborn=0.11.*
   - tabulate=0.8.*
-  - tqdm=4.54.*
+  - tqdm=4.64.*
   - umap-learn=0.4.*
   # obonet deps:
   - networkx=2.5.*
