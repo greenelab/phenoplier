@@ -537,6 +537,38 @@ def download_1000g_genotype_data_from_plink(**kwargs):
     )
 
 
+def download_plink2(**kwargs):
+    import platform
+
+    current_system = platform.system()
+
+    zip_file_path = Path(conf.PLINK2["BASE_DIR"], "plink2.zip").resolve()
+    zip_internal_filename = Path("plink2")
+    output_file = conf.PLINK2["EXECUTABLE"]
+
+    if current_system == "Linux":
+        zip_file_url = (
+            "https://s3.amazonaws.com/plink2-assets/plink2_linux_x86_64_20220426.zip"
+        )
+        zip_file_md5 = "fbaa6d010ab0137dbca01900d2a4860c"
+        output_file_md5 = "59cfeebf292f9e0b66dc88e572c83ad5"
+    elif current_system == "Darwin":
+        zip_file_url = "https://s3.amazonaws.com/plink2-assets/plink2_mac_20220426.zip"
+        zip_file_md5 = "51729ba53ccba1fb0de10158df289e45"
+        output_file_md5 = "b62cbb4841d1bf062952f279f167fb2b"
+    else:
+        raise ValueError("plink2 for Windows was not added")
+
+    _get_file_from_zip(
+        zip_file_url=zip_file_url,
+        zip_file_path=zip_file_path,
+        zip_file_md5=zip_file_md5,
+        zip_internal_filename=zip_internal_filename,
+        output_file=output_file,
+        output_file_md5=output_file_md5,
+    )
+
+
 if __name__ == "__main__":
     import argparse
     from collections import defaultdict

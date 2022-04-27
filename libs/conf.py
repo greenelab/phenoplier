@@ -28,6 +28,10 @@ DATA_DIR = Path(ROOT_DIR, "data").resolve()
 # RESULTS_DIR stores newly generated data
 RESULTS_DIR = Path(ROOT_DIR, "results").resolve()
 
+# SOFTWARE_DIR stores third-party applications
+SOFTWARE_DIR = Path(ROOT_DIR, "software").resolve()
+
+
 #
 # General
 #
@@ -65,6 +69,15 @@ GENERAL["TERM_ID_XREFS_FILE"] = Path(DATA_DIR, "term_id_xrefs.tsv.gz").resolve()
 
 # Experimental Factor Ontology (EFO)
 GENERAL["EFO_ONTOLOGY_OBO_FILE"] = Path(DATA_DIR, "efo.obo").resolve()
+
+
+#
+# Software
+#
+PLINK2 = {}
+PLINK2["BASE_DIR"] = Path(SOFTWARE_DIR, "plink2").resolve()
+PLINK2["EXECUTABLE"] = Path(PLINK2["BASE_DIR"], "plink2")
+
 
 #
 # Results
