@@ -469,8 +469,6 @@ def _get_file_from_zip(
 
     # download zip file
     parent_dir = output_file.parent
-    # parent_dir = conf.MULTIPLIER["RECOUNT2_MODEL_FILE"].parent
-    # zip_file_path = Path(parent_dir, "recount2_PLIER_data.zip").resolve()
 
     curl(
         zip_file_url,
@@ -480,7 +478,6 @@ def _get_file_from_zip(
     )
 
     # extract model from zip file
-    # zip_internal_filename = Path("recount2_PLIER_data", "recount_PLIER_model.RDS")
     logger.info(f"Extracting {zip_internal_filename}")
     import zipfile
 
@@ -489,7 +486,8 @@ def _get_file_from_zip(
 
     # rename file
     Path(parent_dir, zip_internal_filename).rename(output_file)
-    Path(parent_dir, zip_internal_filename.parent).rmdir()
+    if zip_internal_filename.parent != Path("."):
+        Path(parent_dir, zip_internal_filename.parent).rmdir()
 
     # delete zip file
     # zip_file_path.unlink()
@@ -530,7 +528,7 @@ def download_1000g_genotype_data_from_plink(**kwargs):
 
     output_file = conf.A1000G["GENOTYPES_DIR"] / "all_phase3.psam"
     curl(
-        "https://www.dropbox.com/s/yozrzsdrwqej63q/phase3_corrected.psam?dl=1",
+        "https://www.dropbox.com/s/6ppo144ikdzery5/phase3_corrected.psam?dl=1",
         output_file,
         "b9a6d22dbf794f335ed122e465faef1d",
         logger=logger,
@@ -550,8 +548,8 @@ def download_plink2(**kwargs):
         zip_file_url = (
             "https://s3.amazonaws.com/plink2-assets/plink2_linux_x86_64_20220426.zip"
         )
-        zip_file_md5 = "fbaa6d010ab0137dbca01900d2a4860c"
-        output_file_md5 = "59cfeebf292f9e0b66dc88e572c83ad5"
+        zip_file_md5 = "2e8e5d134a583f9f869a94fb11477208"
+        output_file_md5 = "064529cc22083c44e4c6beeff33c206d"
     elif current_system == "Darwin":
         zip_file_url = "https://s3.amazonaws.com/plink2-assets/plink2_mac_20220426.zip"
         zip_file_md5 = "51729ba53ccba1fb0de10158df289e45"
@@ -567,6 +565,13 @@ def download_plink2(**kwargs):
         output_file=output_file,
         output_file_md5=output_file_md5,
     )
+
+    # make plink2 executable
+    import os
+    import stat
+
+    st = os.stat(output_file)
+    os.chmod(output_file, st.st_mode | stat.S_IEXEC)
 
 
 if __name__ == "__main__":
