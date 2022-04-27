@@ -12,7 +12,7 @@ mkdir -p ${SUBSETS_DIR}
 $PLINK2 --zst-decompress ${INPUT_DIR}/all_phase3.pgen.zst > ${INPUT_DIR}/all_phase3.pgen
 
 # convert to plink 1 binary format
-$PLINK19 --pfile ${INPUT_DIR}/all_phase3 vzs \
+$PLINK2 --pfile ${INPUT_DIR}/all_phase3 vzs \
     --threads ${N_JOBS} \
     --max-alleles 2 \
     --make-bed \
