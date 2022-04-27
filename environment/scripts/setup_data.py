@@ -511,6 +511,32 @@ def download_multiplier_recount2_model(**kwargs):
     )
 
 
+def download_1000g_genotype_data_from_plink(**kwargs):
+    output_file = conf.A1000G["GENOTYPES_DIR"] / "all_phase3.pgen.zst"
+    curl(
+        "https://www.dropbox.com/s/y6ytfoybz48dc0u/all_phase3.pgen.zst?dl=1",
+        output_file,
+        "a52dcc2ad7ee09b29895df8fa044012e",
+        logger=logger,
+    )
+
+    output_file = conf.A1000G["GENOTYPES_DIR"] / "all_phase3.pvar.zst"
+    curl(
+        "https://www.dropbox.com/s/odlexvo8fummcvt/all_phase3.pvar.zst?dl=1",
+        output_file,
+        "aa99c03e3fd9c5fe702239d07161a153",
+        logger=logger,
+    )
+
+    output_file = conf.A1000G["GENOTYPES_DIR"] / "all_phase3.psam"
+    curl(
+        "https://www.dropbox.com/s/yozrzsdrwqej63q/phase3_corrected.psam?dl=1",
+        output_file,
+        "b9a6d22dbf794f335ed122e465faef1d",
+        logger=logger,
+    )
+
+
 if __name__ == "__main__":
     import argparse
     from collections import defaultdict
