@@ -5,7 +5,6 @@ This file IS NOT intended to be modified by the user.
 """
 import os
 import tempfile
-from multiprocessing import cpu_count
 from pathlib import Path
 
 import settings
