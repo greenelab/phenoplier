@@ -13,93 +13,93 @@
 #     name: ir
 # ---
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Description
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Read the missing info computed previously (by individual and variant) and plots some histograms.
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Modules
 
-# %%
+# %% tags=[]
 library(tidyverse)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Paths
 
-# %%
+# %% tags=[]
 A1000G_GENOTYPES_DIR <- Sys.getenv("PHENOPLIER_A1000G_GENOTYPES_DIR")
 
-# %%
+# %% tags=[]
 A1000G_GENOTYPES_DIR
 
-# %%
+# %% tags=[]
 SUBSETS_DIR <- file.path(A1000G_GENOTYPES_DIR, "subsets")
 
-# %%
+# %% tags=[]
 SUBSETS_DIR
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Load data
 
-# %%
-indmiss <- as.data.frame(read_table(file.path(SUBSETS_DIR, "missingness.imiss"), col_types = cols_only(F_MISS = "n")))
+# %% tags=[]
+indmiss <- as.data.frame(read_table(file.path(SUBSETS_DIR, "all_phase3.missingness.imiss"), col_types = cols_only(F_MISS = "n")))
 
-# %%
+# %% tags=[]
 dim(indmiss)
 
-# %%
+# %% tags=[]
 head(indmiss)
 
-# %%
-snpmiss <- as.data.frame(read_table(file.path(SUBSETS_DIR, "missingness.lmiss"), col_types = cols_only(F_MISS = "n")))
+# %% tags=[]
+snpmiss <- as.data.frame(read_table(file.path(SUBSETS_DIR, "all_phase3.missingness.lmiss"), col_types = cols_only(F_MISS = "n")))
 
-# %%
+# %% tags=[]
 dim(snpmiss)
 
-# %%
+# %% tags=[]
 head(snpmiss)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Individuals
 
-# %%
+# %% tags=[]
 hist(indmiss[, 1], main = "Histogram individual missingness")
 
-# %%
+# %% tags=[]
 indmiss %>% summarise(mean = mean(F_MISS), sd = sd(F_MISS), max = max(F_MISS), min = min(F_MISS))
 
-# %%
+# %% tags=[]
 indmiss %>%
   filter(F_MISS > 0) %>%
   dim_desc()
 
-# %%
+# %% tags=[]
 indmiss %>%
   filter(F_MISS > 0.01) %>%
   dim_desc()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Variants
 
-# %%
+# %% tags=[]
 hist(snpmiss[, 1], main = "Histogram SNP missingness")
 
-# %%
+# %% tags=[]
 snpmiss %>% summarise(mean = mean(F_MISS), sd = sd(F_MISS), max = max(F_MISS), min = min(F_MISS))
 
-# %%
+# %% tags=[]
 snpmiss %>%
   filter(F_MISS > 0) %>%
   dim_desc()
 
-# %%
+# %% tags=[]
 snpmiss %>%
   filter(F_MISS > 0.01) %>%
   dim_desc()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # Only remove variants with missingness > 0.01
 
-# %%
+# %% tags=[]

@@ -11,4 +11,4 @@ $PLINK19 --bfile ${SUBSETS_DIR}/all_phase3 \
     --threads ${N_JOBS} \
     --allow-extra-chr \
     --missing \
-    --out ${SUBSETS_DIR}/missing
+    --out ${SUBSETS_DIR}/all_phase3.missing
