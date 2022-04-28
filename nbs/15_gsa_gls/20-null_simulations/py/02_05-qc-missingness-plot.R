@@ -99,6 +99,11 @@ snpmiss %>%
   filter(F_MISS > 0.01) %>%
   dim_desc()
 
+# %% tags=[]
+snpmiss %>%
+  filter(F_MISS > 0.02) %>%
+  dim_desc()
+
 # %% [markdown] tags=[]
 # Only remove variants with missingness > 0.01
 
