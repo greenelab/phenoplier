@@ -44,7 +44,7 @@ SUBSETS_DIR
 # # Load data
 
 # %%
-het <- read.table(file.path(SUBSETS_DIR, "all_phase3.4.indepSNP.R_check.het"), head=TRUE)
+het <- read.table(file.path(SUBSETS_DIR, "all_phase3.4.indepSNP.R_check.het"), head = TRUE)
 
 # %%
 dim(het)
@@ -53,20 +53,18 @@ dim(het)
 head(het)
 
 # %%
-het$HET_RATE = (het$"N.NM." - het$"O.HOM.")/het$"N.NM."
+het$HET_RATE <- (het$"N.NM." - het$"O.HOM.") / het$"N.NM."
 
 # %%
 head(het)
 
 # %%
-het %>% summarise(mean= mean(HET_RATE), sd= sd(HET_RATE), max = max(HET_RATE),min = min(HET_RATE))
+het %>% summarise(mean = mean(HET_RATE), sd = sd(HET_RATE), max = max(HET_RATE), min = min(HET_RATE))
 
 # %%
-het_fail = subset(het, (het$HET_RATE < mean(het$HET_RATE)-1.5*sd(het$HET_RATE)) | (het$HET_RATE > mean(het$HET_RATE)+1.5*sd(het$HET_RATE)));
-
+het_fail <- subset(het, (het$HET_RATE < mean(het$HET_RATE) - 1.5 * sd(het$HET_RATE)) | (het$HET_RATE > mean(het$HET_RATE) + 1.5 * sd(het$HET_RATE)))
 # %%
-het_fail$HET_DST = (het_fail$HET_RATE-mean(het$HET_RATE))/sd(het$HET_RATE);
-
+het_fail$HET_DST <- (het_fail$HET_RATE - mean(het$HET_RATE)) / sd(het$HET_RATE)
 # %%
 dim(het_fail)
 
@@ -74,6 +72,6 @@ dim(het_fail)
 head(het_fail)
 
 # %%
-write.table(het_fail, file.path(SUBSETS_DIR, "all_phase3.4.fail-het-qc.txt"), row.names=FALSE)
+write.table(het_fail, file.path(SUBSETS_DIR, "all_phase3.4.fail-het-qc.txt"), row.names = FALSE)
 
 # %%
