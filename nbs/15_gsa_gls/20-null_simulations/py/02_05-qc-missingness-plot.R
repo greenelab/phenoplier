@@ -44,7 +44,7 @@ SUBSETS_DIR
 # # Load data
 
 # %%
-indmiss <- as.data.frame(read_table(file.path(SUBSETS_DIR, "missingness.imiss"), col_types = cols_only(F_MISS = 'n')))
+indmiss <- as.data.frame(read_table(file.path(SUBSETS_DIR, "missingness.imiss"), col_types = cols_only(F_MISS = "n")))
 
 # %%
 dim(indmiss)
@@ -53,7 +53,7 @@ dim(indmiss)
 head(indmiss)
 
 # %%
-snpmiss <- as.data.frame(read_table(file.path(SUBSETS_DIR, "missingness.lmiss"), col_types = cols_only(F_MISS = 'n')))
+snpmiss <- as.data.frame(read_table(file.path(SUBSETS_DIR, "missingness.lmiss"), col_types = cols_only(F_MISS = "n")))
 
 # %%
 dim(snpmiss)
@@ -65,31 +65,39 @@ head(snpmiss)
 # # Individuals
 
 # %%
-hist(indmiss[,1],main="Histogram individual missingness")
+hist(indmiss[, 1], main = "Histogram individual missingness")
 
 # %%
-indmiss %>% summarise(mean= mean(F_MISS), sd= sd(F_MISS), max = max(F_MISS),min = min(F_MISS))
+indmiss %>% summarise(mean = mean(F_MISS), sd = sd(F_MISS), max = max(F_MISS), min = min(F_MISS))
 
 # %%
-indmiss %>% filter(F_MISS > 0) %>% dim_desc
+indmiss %>%
+  filter(F_MISS > 0) %>%
+  dim_desc()
 
 # %%
-indmiss %>% filter(F_MISS > 0.01) %>% dim_desc
+indmiss %>%
+  filter(F_MISS > 0.01) %>%
+  dim_desc()
 
 # %% [markdown]
 # # Variants
 
 # %%
-hist(snpmiss[,1],main="Histogram SNP missingness")  
+hist(snpmiss[, 1], main = "Histogram SNP missingness")
 
 # %%
-snpmiss %>% summarise(mean= mean(F_MISS), sd= sd(F_MISS), max = max(F_MISS),min = min(F_MISS))
+snpmiss %>% summarise(mean = mean(F_MISS), sd = sd(F_MISS), max = max(F_MISS), min = min(F_MISS))
 
 # %%
-snpmiss %>% filter(F_MISS > 0) %>% dim_desc
+snpmiss %>%
+  filter(F_MISS > 0) %>%
+  dim_desc()
 
 # %%
-snpmiss %>% filter(F_MISS > 0.01) %>% dim_desc
+snpmiss %>%
+  filter(F_MISS > 0.01) %>%
+  dim_desc()
 
 # %% [markdown]
 # Only remove variants with missingness > 0.01
