@@ -56,7 +56,7 @@ data.shape
 data.head()
 
 # %%
-data = data.iloc[:,0:2]
+data = data.iloc[:, 0:2]
 
 # %%
 data.head()
@@ -93,6 +93,8 @@ random_data.head()
 output_filename = SUBSETS_DIR / f"{SUBSET_FILE_PREFIX}.random_pheno.txt"
 display(output_filename)
 
-random_data.to_csv(output_filename, sep=" ", index=False, header=True, float_format="%.5f")
+random_data.to_csv(
+    output_filename, sep=" ", index=False, header=True, float_format="%.5f"
+)
 
 # %%
