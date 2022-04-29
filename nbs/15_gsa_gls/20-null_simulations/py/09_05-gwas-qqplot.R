@@ -56,7 +56,10 @@ GWAS_DIR <- file.path(A1000G_GENOTYPES_DIR, "gwas")
 GWAS_DIR
 
 # %% [markdown] tags=[]
-# # Load data
+# # Random pheno 0
+
+# %% [markdown] tags=[]
+# ## Load data
 
 # %% tags=[]
 gwas <- as.data.frame(read_table(file.path(GWAS_DIR, "random.pheno0.glm.linear")))
@@ -74,7 +77,7 @@ gwas <- gwas %>% filter(P >= 0 & P <= 1)
 dim(gwas)
 
 # %% [markdown]
-# # Manhattan plot
+# ## Manhattan plot
 
 # %%
 options(repr.plot.width=20, repr.plot.height=10)
@@ -94,7 +97,59 @@ manhattan(
 )
 
 # %% [markdown]
-# # QQ-plot
+# ## QQ-plot
+
+# %%
+options(repr.plot.width=10, repr.plot.height=10)
+
+qq(gwas$P, main = "Q-Q plot of GWAS p-values : log")
+
+# %% [markdown] tags=[]
+# # Random pheno 28
+
+# %% [markdown] tags=[]
+# Random phenotype 28 has the largest inflation factor (although within the acceptable limits).
+
+# %% [markdown] tags=[]
+# ## Load data
+
+# %% tags=[]
+gwas <- as.data.frame(read_table(file.path(GWAS_DIR, "random.pheno28.glm.linear")))
+
+# %% tags=[]
+dim(gwas)
+
+# %% tags=[]
+head(gwas)
+
+# %%
+gwas <- gwas %>% filter(P >= 0 & P <= 1)
+
+# %%
+dim(gwas)
+
+# %% [markdown]
+# ## Manhattan plot
+
+# %%
+options(repr.plot.width=20, repr.plot.height=10)
+
+manhattan(
+    gwas,
+    chr="#CHROM",
+    bp="POS",
+    p="P",
+    snp="ID",
+    main = "Manhattan plot: logistic",
+    suggestiveline = F,
+    genomewideline = -log10(5e-08),
+    cex = 0.6,
+    cex.axis = 0.9,
+    ylim = c(0, 10),
+)
+
+# %% [markdown]
+# ## QQ-plot
 
 # %%
 options(repr.plot.width=10, repr.plot.height=10)
