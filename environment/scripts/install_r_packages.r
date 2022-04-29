@@ -20,6 +20,9 @@ BiocManager::install("org.Hs.eg.db", update=FALSE, ask=FALSE)
 # clustree
 BiocManager::install("clustree", update=FALSE, ask=FALSE)
 
+# qqman
+BiocManager::install("qqman", update=FALSE, ask=FALSE)
+
 library(devtools)
 
 # fgsea
