@@ -62,7 +62,7 @@ head(het)
 het %>% summarise(mean = mean(HET_RATE), sd = sd(HET_RATE), max = max(HET_RATE), min = min(HET_RATE))
 
 # %%
-het_fail <- subset(het, (het$HET_RATE < mean(het$HET_RATE) - 1.5 * sd(het$HET_RATE)) | (het$HET_RATE > mean(het$HET_RATE) + 1.5 * sd(het$HET_RATE)))
+het_fail <- subset(het, (het$HET_RATE < mean(het$HET_RATE) - 2 * sd(het$HET_RATE)) | (het$HET_RATE > mean(het$HET_RATE) + 2 * sd(het$HET_RATE)))
 # %%
 het_fail$HET_DST <- (het_fail$HET_RATE - mean(het$HET_RATE)) / sd(het$HET_RATE)
 # %%
