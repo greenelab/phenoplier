@@ -8,6 +8,7 @@ PLINK19="${PHENOPLIER_PLINK_EXECUTABLE_VERSION_1_9}"
 
 # hwe
 $PLINK19 --bfile ${SUBSETS_DIR}/all_phase3.3 \
+    --threads ${N_JOBS} \
     --hwe 1e-6 'include-nonctrl' \
     --make-bed \
     --out ${SUBSETS_DIR}/all_phase3.4

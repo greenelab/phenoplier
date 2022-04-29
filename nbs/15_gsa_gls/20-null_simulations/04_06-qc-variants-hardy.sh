@@ -8,5 +8,6 @@ PLINK19="${PHENOPLIER_PLINK_EXECUTABLE_VERSION_1_9}"
 
 # hardy
 $PLINK19 --bfile ${SUBSETS_DIR}/all_phase3.3 \
+    --threads ${N_JOBS} \
     --hardy \
     --out ${SUBSETS_DIR}/all_phase3.3
