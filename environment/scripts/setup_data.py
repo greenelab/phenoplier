@@ -2,6 +2,8 @@
 It sets up the file/folder structure by downloading the necessary files.
 """
 import os
+import sys
+import subprocess
 from pathlib import Path
 
 import conf
@@ -464,7 +466,11 @@ def _get_file_from_zip(
     _internal_file = str(zip_internal_filename)
 
     # do not download file again if it exists and MD5 matches the expected one
-    if not _internal_file.endswith("/") and output_file.exists() and (output_file_md5 is not None or md5_matches(output_file_md5, output_file)):
+    if (
+        not _internal_file.endswith("/")
+        and output_file.exists()
+        and (output_file_md5 is not None or md5_matches(output_file_md5, output_file))
+    ):
         logger.info(f"File already downloaded: {output_file}")
         return
 
@@ -486,7 +492,13 @@ def _get_file_from_zip(
 
         if _internal_file.endswith("/"):
             # it's a folder
+            # in this case, output_file points to the output folder
             output_folder = output_file
+            if output_folder.exists():
+                logger.warning(
+                    f"Output folder exists, skipping: '{str(output_folder)}'"
+                )
+                return
 
             for i in z.namelist():
                 if i.startswith(_internal_file):
@@ -635,17 +647,51 @@ def download_plink2(**kwargs):
     )
 
 
-def download_github_summary_gwas_imputation(**kwargs):
+def _create_conda_environment(environment_folder: Path, environment_spec: Path):
+    """
+    TODO
+
+    Args:
+        environment_folder:
+        environment_spec: yaml file with conda specification
+    """
+    # make sure parent folder exists
+    environment_folder.parent.mkdir(parents=True, exist_ok=True)
+
+    logger.info(
+        f"Creating conda environment in '{environment_folder}' using specification in '{environment_spec}'"
+    )
+
+    cmd = subprocess.check_call(
+        [
+            "conda",
+            "env",
+            "create",
+            "-f",
+            str(environment_spec),
+            "-p",
+            str(environment_folder),
+        ],
+        stdout=sys.stdout,
+        stderr=subprocess.STDOUT,
+    )
+
+
+def download_setup_summary_gwas_imputation(**kwargs):
     _get_file_from_zip(
         zip_file_url="https://github.com/hakyimlab/summary-gwas-imputation/archive/206dac587824a6f207e137ce8c2d7b15d81d5869.zip",
-        zip_file_path=Path(
-            conf.SOFTWARE_DIR, "summary-gwas-imputation.zip"
-        ).resolve(),
+        zip_file_path=Path(conf.SOFTWARE_DIR, "summary-gwas-imputation.zip").resolve(),
         zip_file_md5="b2e9ea5587c7cf35d42e7e16411efeb5",
         zip_internal_filename="summary-gwas-imputation-206dac587824a6f207e137ce8c2d7b15d81d5869/",
         output_file=conf.GWAS_IMPUTATION["BASE_DIR"],
         # output_file_md5="fc7446ff989d0bd0f1aae1851d192dc6",
     )
+
+    if not conf.GWAS_IMPUTATION["CONDA_ENV"].exists():
+        _create_conda_environment(
+            environment_folder=conf.GWAS_IMPUTATION["CONDA_ENV"],
+            environment_spec=conf.GWAS_IMPUTATION["BASE_DIR"] / "src/conda_env.yaml",
+        )
 
 
 if __name__ == "__main__":
