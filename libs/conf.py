@@ -74,10 +74,16 @@ GENERAL["EFO_ONTOLOGY_OBO_FILE"] = Path(DATA_DIR, "efo.obo").resolve()
 #
 # Software
 #
+
+# PLINK
 PLINK = {}
 PLINK["BASE_DIR"] = Path(SOFTWARE_DIR, "plink").resolve()
 PLINK["EXECUTABLE_VERSION_1_9"] = Path(PLINK["BASE_DIR"], "plink")
 PLINK["EXECUTABLE_VERSION_2"] = Path(PLINK["BASE_DIR"], "plink2")
+
+# https://github.com/hakyimlab/summary-gwas-imputation
+GWAS_IMPUTATION = {}
+GWAS_IMPUTATION["BASE_DIR"] = Path(SOFTWARE_DIR, "summary-gwas-imputation").resolve()
 
 
 #
