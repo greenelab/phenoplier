@@ -442,7 +442,7 @@ def _get_file_from_zip(
     zip_file_md5,
     zip_internal_filename,
     output_file,
-    output_file_md5,
+    output_file_md5=None,
 ):
     """
     This method downloads a zip file and extracts a particular file inside
@@ -454,16 +454,17 @@ def _get_file_from_zip(
         zip_file_url:
         zip_file_path:
         zip_file_md5:
-        zip_internal_filename:
+        zip_internal_filename: if it ends with "/", then it is treated as a folder and all members will be extracted
         output_file:
         output_file_md5:
     """
     from utils import md5_matches
 
     # output_file = conf.MULTIPLIER["RECOUNT2_MODEL_FILE"]
+    _internal_file = str(zip_internal_filename)
 
     # do not download file again if it exists and MD5 matches the expected one
-    if output_file.exists() and md5_matches(output_file_md5, output_file):
+    if not _internal_file.endswith("/") and output_file.exists() and (output_file_md5 is not None or md5_matches(output_file_md5, output_file)):
         logger.info(f"File already downloaded: {output_file}")
         return
 
@@ -478,16 +479,28 @@ def _get_file_from_zip(
     )
 
     # extract model from zip file
-    logger.info(f"Extracting {zip_internal_filename}")
+    logger.info(f"Extracting {_internal_file}")
     import zipfile
 
     with zipfile.ZipFile(zip_file_path, "r") as z:
-        z.extract(str(zip_internal_filename), path=parent_dir)
 
-    # rename file
-    Path(parent_dir, zip_internal_filename).rename(output_file)
-    if zip_internal_filename.parent != Path("."):
-        Path(parent_dir, zip_internal_filename.parent).rmdir()
+        if _internal_file.endswith("/"):
+            # it's a folder
+            output_folder = output_file
+
+            for i in z.namelist():
+                if i.startswith(_internal_file):
+                    z.extract(i, parent_dir)
+        else:
+            # it's a file
+            z.extract(_internal_file, path=parent_dir)
+
+            # TODO: check output_file_md5 ?
+
+        # rename file
+        Path(parent_dir, zip_internal_filename).rename(output_file)
+        if Path(zip_internal_filename).parent != Path("."):
+            Path(parent_dir, zip_internal_filename.parent).rmdir()
 
     # delete zip file
     # zip_file_path.unlink()
@@ -619,6 +632,19 @@ def download_plink2(**kwargs):
                 "output_file_md5": "b62cbb4841d1bf062952f279f167fb2b",
             },
         },
+    )
+
+
+def download_github_summary_gwas_imputation(**kwargs):
+    _get_file_from_zip(
+        zip_file_url="https://github.com/hakyimlab/summary-gwas-imputation/archive/206dac587824a6f207e137ce8c2d7b15d81d5869.zip",
+        zip_file_path=Path(
+            conf.SOFTWARE_DIR, "summary-gwas-imputation.zip"
+        ).resolve(),
+        zip_file_md5="b2e9ea5587c7cf35d42e7e16411efeb5",
+        zip_internal_filename="summary-gwas-imputation-206dac587824a6f207e137ce8c2d7b15d81d5869/",
+        output_file=conf.GWAS_IMPUTATION["BASE_DIR"],
+        # output_file_md5="fc7446ff989d0bd0f1aae1851d192dc6",
     )
 
 
