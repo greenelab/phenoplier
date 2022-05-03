@@ -30,6 +30,7 @@ RESULTS_DIR = Path(ROOT_DIR, "results").resolve()
 
 # SOFTWARE_DIR stores third-party applications
 SOFTWARE_DIR = Path(ROOT_DIR, "software").resolve()
+CONDA_ENVS_DIR = Path(SOFTWARE_DIR, "conda_envs").resolve()
 
 
 #
@@ -84,6 +85,7 @@ PLINK["EXECUTABLE_VERSION_2"] = Path(PLINK["BASE_DIR"], "plink2")
 # https://github.com/hakyimlab/summary-gwas-imputation
 GWAS_IMPUTATION = {}
 GWAS_IMPUTATION["BASE_DIR"] = Path(SOFTWARE_DIR, "summary-gwas-imputation").resolve()
+GWAS_IMPUTATION["CONDA_ENV"] = Path(CONDA_ENVS_DIR, "summary_gwas_imputation").resolve()
 
 
 #
