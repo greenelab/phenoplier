@@ -85,7 +85,7 @@ OUTPUT_FILENAME=${INPUT_GWAS_FILENAME%.*}
 
 ${PYTHON_EXECUTABLE} ${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}/src/gwas_parsing.py \
     -gwas_file ${INPUT_GWAS_FILE} \
-    -separator " " \
+    -separator $'\t' \
     -snp_reference_metadata ${A1000G_VARIANTS_METADATA_FILE} METADATA \
     --chromosome_format \
     -output_column_map "#CHROM" chromosome \
@@ -97,7 +97,7 @@ ${PYTHON_EXECUTABLE} ${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}/src/gwas_parsing.py 
     -output_column_map SE standard_error \
     -output_column_map P pvalue \
     -output_column_map POS position \
-    --insert_value OBS_CT sample_size \
+    -output_column_map OBS_CT sample_size \
     -output_order variant_id panel_variant_id chromosome position effect_allele non_effect_allele frequency pvalue zscore effect_size standard_error sample_size n_cases \
     ${LIFTOVER_ARG} -output ${OUTPUT_DIR}/${OUTPUT_FILENAME}-harmonized.txt
 
