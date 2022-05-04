@@ -1,6 +1,7 @@
 name: phenoplier
 channels:
   - conda-forge
+  - defaults
 dependencies:
   - ipython
   - ipywidgets
