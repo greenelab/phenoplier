@@ -32,7 +32,7 @@ import conf
 # # Paths
 
 # %% tags=[]
-GWAS_DIR = conf.A1000G["GENOTYPES_DIR"] / "gwas"
+GWAS_DIR = conf.RESULTS["GLS_NULL_SIMS"] / "gwas"
 display(GWAS_DIR)
 
 # %% tags=[]
