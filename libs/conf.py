@@ -133,6 +133,8 @@ RESULTS["CRISPR_ANALYSES"]["BASE_DIR"] = Path(
 ).resolve()
 
 RESULTS["GLS"] = Path(RESULTS["BASE_DIR"], "gls").resolve()
+RESULTS["GLS_NULL_SIMS"] = Path(RESULTS["GLS"], "null_sims").resolve()
+
 
 #
 # Manuscript
@@ -359,6 +361,7 @@ A1000G["BASE_DIR"] = Path(DATA_DIR, "1000g").resolve()
 
 # genotypes
 A1000G["GENOTYPES_DIR"] = Path(A1000G["BASE_DIR"], "genotypes").resolve()
+
 
 
 if __name__ == "__main__":
