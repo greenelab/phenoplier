@@ -22,6 +22,9 @@ if ROOT_DIR is None and hasattr(settings, "ROOT_DIR"):
 if ROOT_DIR is None:
     ROOT_DIR = str(Path(tempfile.gettempdir(), "phenoplier").resolve())
 
+# CODE_DIR points to the base directory where the code is
+CODE_DIR = Path(__file__).parent.parent.resolve()
+
 # DATA_DIR stores input data
 DATA_DIR = Path(ROOT_DIR, "data").resolve()
 
