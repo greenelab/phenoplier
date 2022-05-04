@@ -71,6 +71,16 @@ GENERAL["TERM_ID_XREFS_FILE"] = Path(DATA_DIR, "term_id_xrefs.tsv.gz").resolve()
 # Experimental Factor Ontology (EFO)
 GENERAL["EFO_ONTOLOGY_OBO_FILE"] = Path(DATA_DIR, "efo.obo").resolve()
 
+# Liftover chain files
+GENERAL["LIFTOVER"] = {}
+GENERAL["LIFTOVER"]["BASE_DIR"] = Path(DATA_DIR, "liftover").resolve()
+GENERAL["LIFTOVER"]["CHAINS_DIR"] = Path(
+    GENERAL["LIFTOVER"]["BASE_DIR"], "chains"
+).resolve()
+GENERAL["LIFTOVER"]["HG19_TO_HG38"] = Path(
+    GENERAL["LIFTOVER"]["CHAINS_DIR"], "hg19ToHg38.over.chain.gz"
+).resolve()
+
 
 #
 # Software

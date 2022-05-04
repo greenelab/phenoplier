@@ -694,6 +694,16 @@ def download_setup_summary_gwas_imputation(**kwargs):
         )
 
 
+def download_liftover_hg19tohg38_chain(**kwargs):
+    output_file = conf.GENERAL["LIFTOVER"]["HG19_TO_HG38"]
+    curl(
+        "http://hgdownload.cse.ucsc.edu/goldenpath/hg19/liftOver/hg19ToHg38.over.chain.gz",
+        output_file,
+        "35887f73fe5e2231656504d1f6430900",
+        logger=logger,
+    )
+
+
 if __name__ == "__main__":
     import argparse
     from collections import defaultdict
