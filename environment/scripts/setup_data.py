@@ -704,6 +704,16 @@ def download_liftover_hg19tohg38_chain(**kwargs):
     )
 
 
+def download_eur_ld_regions(**kwargs):
+    output_file = conf.GENERAL["EUR_LD_REGIONS_FILE"]
+    curl(
+        "https://upenn.box.com/shared/static/yo25wpoct6vl8fk2s1rgxrs2wym7k1yb.gz",
+        output_file,
+        "900e4a7d3a14ae87de25ee48f7083dba",
+        logger=logger,
+    )
+
+
 if __name__ == "__main__":
     import argparse
     from collections import defaultdict
