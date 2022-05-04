@@ -32,25 +32,13 @@ library(qqman)
 # # Paths
 
 # %% tags=[]
-DATA_DIR <- Sys.getenv("PHENOPLIER_DATA_DIR")
-
-# %%
-DATA_DIR
+GLS_NULL_SIMS_DIR <- Sys.getenv("PHENOPLIER_RESULTS_GLS_NULL_SIMS")
 
 # %% tags=[]
-A1000G_GENOTYPES_DIR <- Sys.getenv("PHENOPLIER_A1000G_GENOTYPES_DIR")
+GLS_NULL_SIMS_DIR
 
 # %% tags=[]
-A1000G_GENOTYPES_DIR
-
-# %% tags=[]
-SUBSETS_DIR <- file.path(A1000G_GENOTYPES_DIR, "subsets")
-
-# %% tags=[]
-SUBSETS_DIR
-
-# %% tags=[]
-GWAS_DIR <- file.path(A1000G_GENOTYPES_DIR, "gwas")
+GWAS_DIR <- file.path(GLS_NULL_SIMS_DIR, "gwas")
 
 # %% tags=[]
 GWAS_DIR
