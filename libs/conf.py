@@ -84,6 +84,9 @@ GENERAL["LIFTOVER"]["HG19_TO_HG38"] = Path(
     GENERAL["LIFTOVER"]["CHAINS_DIR"], "hg19ToHg38.over.chain.gz"
 ).resolve()
 
+# LD regions
+GENERAL["EUR_LD_REGIONS_FILE"] = Path(DATA_DIR, "eur_ld.bed.gz").resolve()
+
 
 #
 # Software
