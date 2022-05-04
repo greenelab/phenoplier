@@ -363,7 +363,6 @@ A1000G["BASE_DIR"] = Path(DATA_DIR, "1000g").resolve()
 A1000G["GENOTYPES_DIR"] = Path(A1000G["BASE_DIR"], "genotypes").resolve()
 
 
-
 if __name__ == "__main__":
     # if this script is run, then it exports the configuration as environment
     # variables (for bash/R, etc)
