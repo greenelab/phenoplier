@@ -1,0 +1,11 @@
+name: phenoplier_light
+channels:
+  - conda-forge
+dependencies:
+  - numpy=1.19.*
+  - pandas=1.1.*
+  - pip
+  - python=3.8.*
+  - pyyaml=5.3.*
+  - scikit-learn=0.23.*
+  - scipy=1.5.*
