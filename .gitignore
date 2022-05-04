@@ -130,3 +130,4 @@ dmypy.json
 
 # PhenoPLIER-speciric
 _tmp/
+*.swp
