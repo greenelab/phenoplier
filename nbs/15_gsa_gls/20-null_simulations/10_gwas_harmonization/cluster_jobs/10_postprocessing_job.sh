@@ -6,9 +6,9 @@
 #-#BSUB -u miltondp@gmail.com
 #-#BSUB -N
 #BSUB -n 1
-#BSUB -R "rusage[mem=5GB]"
-#BSUB -M 5GB
-#BSUB -W 0:15
+#BSUB -R "rusage[mem=10GB]"
+#BSUB -M 10GB
+#BSUB -W 0:30
 
 # make sure we use the number of CPUs specified
 export CM_N_JOBS=1
