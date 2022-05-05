@@ -28,6 +28,6 @@ GWAS_JOBINDEX=`expr $LSB_JOBINDEX - 1`
 bash ${CODE_DIR}/10_postprocess.sh \
   --input-gwas-file ${HARMONIZED_GWAS_DIR}/random.pheno${GWAS_JOBINDEX}.glm-harmonized.txt \
   --imputed-gwas-folder ${IMPUTED_GWAS_DIR} \
-  --phenotype-name random.pheno${GWAS_JOBINDEX} \
+  --phenotype-name random.pheno${GWAS_JOBINDEX}.glm \
   --output-dir ${OUTPUT_DIR}
 

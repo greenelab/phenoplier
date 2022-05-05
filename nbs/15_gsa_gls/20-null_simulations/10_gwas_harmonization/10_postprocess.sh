@@ -43,22 +43,22 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 # check arguments
 #
 if [ -z "${INPUT_GWAS_FILE}" ]; then
-    echo "Error, --input-gwas-file <value> not provided"
+    >&2 echo "Error, --input-gwas-file <value> not provided"
     exit 1
 fi
 
 if [ -z "${IMPUTED_GWAS_FOLDER}" ]; then
-    echo "Error, --imputed-gwas-folder <value> not provided"
+    >&2 echo "Error, --imputed-gwas-folder <value> not provided"
     exit 1
 fi
 
 if [ -z "${PHENOTYPE_NAME}" ]; then
-    echo "Error, --phenotype-name <value> not provided"
+    >&2 echo "Error, --phenotype-name <value> not provided"
     exit 1
 fi
 
 if [ -z "${OUTPUT_DIR}" ]; then
-    echo "Error, --output-dir <value> not provided"
+    >&2 echo "Error, --output-dir <value> not provided"
     exit 1
 fi
 
@@ -69,13 +69,13 @@ fi
 
 # make sure we have environment variables with configuration
 if [ -z "${PHENOPLIER_ROOT_DIR}" ] || [ -z "${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}" ]; then
-    echo "PhenoPLIER configuration was not loaded"
+    >&2 echo "PhenoPLIER configuration was not loaded"
     exit 1
 fi
 
 PYTHON_EXECUTABLE="${PHENOPLIER_GWAS_IMPUTATION_CONDA_ENV}/bin/python"
 if [ ! -f ${PYTHON_EXECUTABLE} ]; then
-    echo "The python executable does not exist: ${PYTHON_EXECUTABLE}"
+    >&2 echo "The python executable does not exist: ${PYTHON_EXECUTABLE}"
     exit 1
 fi
 
@@ -83,14 +83,14 @@ fi
 # make sure the the input gwas file is for the phenotype name given
 INPUT_GWAS_FILENAME=$(basename ${INPUT_GWAS_FILE})
 if [[ ! "${INPUT_GWAS_FILENAME}" == *"${PHENOTYPE_NAME}"* ]]; then
-  echo "Phenotype name given (${PHENOTYPE_NAME}) is not present in input GWAS file name (${INPUT_GWAS_FILENAME})."
+  >&2 echo "Phenotype name given (${PHENOTYPE_NAME}) is not present in input GWAS file name (${INPUT_GWAS_FILENAME})."
   exit 1
 fi
 
 # make sure the number of files with imputed variants is 22 * 10 = 220
 N_FILES_IMP_VARIANTS=`ls -dq ${IMPUTED_GWAS_FOLDER}/${PHENOTYPE_NAME}* | wc -l`
 if [ "${N_FILES_IMP_VARIANTS}" -ne "220" ]; then
-  echo "Number of expected files with imputed variants (220) does not match expected value (${N_FILES_IMP_VARIANTS}). Check your phenotype name."
+  >&2 echo "Number of expected files with imputed variants (220) does not match expected value (${N_FILES_IMP_VARIANTS}). Check your phenotype name."
   exit 1
 fi
 
