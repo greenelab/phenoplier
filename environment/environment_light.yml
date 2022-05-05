@@ -2,6 +2,7 @@ name: phenoplier_light
 channels:
   - conda-forge
 dependencies:
+  - ipython
   - numpy=1.19.*
   - pandas=1.1.*
   - pip
