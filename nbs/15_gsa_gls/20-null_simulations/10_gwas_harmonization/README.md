@@ -49,6 +49,9 @@ mkdir -p _tmp/harmonization
 cat cluster_jobs/01_harmonization_job.sh | bsub
 ```
 
+The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
+`bash check_job.sh -i _tmp/harmonization/`
+
 There should be 100 files in the output directory: 100 random phenotypes.
 
 ## Imputation
@@ -69,6 +72,8 @@ for pheno_id in {0..99}; do
   done
 done
 ```
+
+Check logs with: `bash check_job.sh -i _tmp/imputation/`
 
 There should be 22,000 files in the output directory: 22 chromosomes * 10 batches * 100 random phenotypes.
 If there are less than that number, some jobs might have failed.
@@ -126,8 +131,12 @@ Try to increment the maximum time limit for the job (in the job template file) a
 
 ```bash
 mkdir -p _tmp/postprocessing
-cat cluster_jobs/10_postprocessing.sh | bsub
+cat cluster_jobs/10_postprocessing_job.sh | bsub
 ```
+
+Check logs with: `bash check_job.sh -i _tmp/postprocessing`
+
+There should be 100 files in the output directory, one for each random phenotype.
 
 
 # Monitoring jobs
