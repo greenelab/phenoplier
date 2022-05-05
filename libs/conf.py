@@ -296,6 +296,12 @@ PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"] = Path(
     PHENOMEXCAN["PREDICTION_MODELS"]["BASE_DIR"], "mashr"
 ).resolve()
 PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_PREFIX"] = "mashr_"
+PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_TISSUES"] = " ".join(
+    tissue_file.name.split(PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_PREFIX"])[1].split(
+        ".db"
+    )[0]
+    for tissue_file in PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"].glob("*.db")
+)
 
 
 #
