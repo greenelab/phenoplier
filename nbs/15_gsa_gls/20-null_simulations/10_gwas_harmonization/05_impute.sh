@@ -73,6 +73,7 @@ if [ -z "${OUTPUT_DIR}" ]; then
     exit 1
 fi
 
+
 #
 # Global PhenoPLIER environmental variables
 #
@@ -82,13 +83,6 @@ if [ -z "${PHENOPLIER_ROOT_DIR}" ] || [ -z "${PHENOPLIER_GWAS_IMPUTATION_BASE_DI
     echo "PhenoPLIER configuration was not loaded"
     exit 1
 fi
-
-# Global parameters
-#SOFTWARE_DIR="/home/miltondp/projects/labs/greenelab/phenoplier/nbs/15_gsa_gls/20-null_simulations/10_gwas_harmonization/_software/summary-gwas-imputation"
-#DATA_DIR="/home/miltondp/projects/labs/greenelab/phenoplier/nbs/15_gsa_gls/20-null_simulations/10_gwas_harmonization/_data"
-#GWAS_DIR="/home/miltondp/projects/labs/greenelab/phenoplier/base/data/1000g/genotypes/gwas"
-#A1000G_REFERENCE_DATA_DIR="/home/miltondp/projects/labs/greenelab/phenoplier/base/data/phenomexcan/ld_blocks/reference_panel_1000G"
-#A1000G_VARIANTS_METADATA_FILE="${A1000G_REFERENCE_DATA_DIR}/variant_metadata.parquet"
 
 PYTHON_EXECUTABLE="${PHENOPLIER_GWAS_IMPUTATION_CONDA_ENV}/bin/python"
 if [ ! -f ${PYTHON_EXECUTABLE} ]; then
@@ -105,16 +99,6 @@ fi
 
 # Create output directory
 mkdir -p ${OUTPUT_DIR}
-
-#INPUT_FILE="random_pheno0.glm.linear.harmo.txt"
-#CHROMOSOME=$1
-#N_BATCHES=$2
-#BATCH_ID=$3
-
-#INPUT_FILE_PREFIX=${INPUT_FILE%.txt}
-
-#INPUT_GWAS_FILENAME=$(basename ${INPUT_GWAS_FILE})
-#OUTPUT_FILENAME_PREFIX="${INPUT_GWAS_FILENAME%.*}-imputed"
 
 INPUT_GWAS_FILENAME=$(basename ${INPUT_GWAS_FILE})
 OUTPUT_FILENAME_PREFIX=${INPUT_GWAS_FILENAME%.*}-imputed
