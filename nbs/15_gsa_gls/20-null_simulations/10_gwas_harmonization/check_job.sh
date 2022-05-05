@@ -28,7 +28,7 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 # check arguments
 #
 if [ -z "${INPUT_DIR}" ]; then
-    echo "Error, --input-dir <value> not provided"
+    >&2 echo "Error, --input-dir <value> not provided"
     exit 1
 fi
 
