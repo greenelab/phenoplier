@@ -118,6 +118,10 @@ for pheno_id, chromosome, batch_id in missing_jobs:
   )
 ```
 
+If jobs keep failing, inspect the logs.
+A reason is that the maximum time limit set in the job template is too low, exclusively in HLA regions (chromosome 6, batch id 2).
+Try to increment the maximum time limit for the job (in the job template file) and then run the jobs again using the code above.
+
 ## Post-processing
 
 ```bash
