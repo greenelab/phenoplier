@@ -139,7 +139,7 @@ Check logs with: `bash check_job.sh -i _tmp/postprocessing`
 There should be 100 files in the output directory, one for each random phenotype.
 
 
-# Monitoring jobs
+## Monitoring jobs
 
 Check jobs with command `bjobs`.
 Or, for a constantly-updated monitoring (refreshing every 2 seconds):
@@ -149,3 +149,7 @@ watch -n 2 bjobs
 
 Logs for `random_pheno0` are in `random_pheno1.*` (indexes are different because LPC arrays cannot start with zero).
 
+
+# Manhattan and QQ plots
+
+Notebook `15-gwas-qqplot.ipynb` checks that the distribution of pvalues is as expected.
