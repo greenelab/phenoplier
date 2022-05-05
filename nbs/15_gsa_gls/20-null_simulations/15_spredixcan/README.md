@@ -50,7 +50,7 @@ mkdir -p _tmp/spredixcan
 # iterate over all random phenotype ids and tissues
 # and submit a job for each combination
 for pheno_id in {0..99}; do
-  for tissue in COMPLETE; do
+  for tissue in ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_TISSUES}; do
     export pheno_id tissue
     cat cluster_jobs/01_spredixcan_job-template.sh | envsubst '${pheno_id} ${tissue}' | bsub
   done
