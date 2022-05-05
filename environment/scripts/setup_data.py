@@ -694,6 +694,23 @@ def download_setup_summary_gwas_imputation(**kwargs):
         )
 
 
+def download_setup_metaxcan(**kwargs):
+    _get_file_from_zip(
+        zip_file_url="https://github.com/hakyimlab/MetaXcan/archive/cfc9e369bbf5630e0c9488993cd877f231c5d02e.zip",
+        zip_file_path=Path(conf.SOFTWARE_DIR, "metaxcan.zip").resolve(),
+        zip_file_md5="ba377831c279002ea8dbb260b0f20880",
+        zip_internal_filename="MetaXcan-cfc9e369bbf5630e0c9488993cd877f231c5d02e/",
+        output_file=conf.METAXCAN["BASE_DIR"],
+        # output_file_md5="fc7446ff989d0bd0f1aae1851d192dc6",
+    )
+
+    if not conf.METAXCAN["CONDA_ENV"].exists():
+        _create_conda_environment(
+            environment_folder=conf.METAXCAN["CONDA_ENV"],
+            environment_spec=conf.METAXCAN["BASE_DIR"] / "software/conda_env.yaml",
+        )
+
+
 def download_liftover_hg19tohg38_chain(**kwargs):
     output_file = conf.GENERAL["LIFTOVER"]["HG19_TO_HG38"]
     curl(
