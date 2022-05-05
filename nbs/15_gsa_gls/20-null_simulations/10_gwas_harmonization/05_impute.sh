@@ -49,27 +49,27 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 # check arguments
 #
 if [ -z "${INPUT_GWAS_FILE}" ]; then
-    echo "Error, --input-gwas-file <value> not provided"
+    >&2 echo "Error, --input-gwas-file <value> not provided"
     exit 1
 fi
 
 if [ -z "${CHROMOSOME}" ]; then
-    echo "Error, --chromosome <value> not provided"
+    >&2 echo "Error, --chromosome <value> not provided"
     exit 1
 fi
 
 if [ -z "${N_BATCHES}" ]; then
-    echo "Error, --n-batches <value> not provided"
+    >&2 echo "Error, --n-batches <value> not provided"
     exit 1
 fi
 
 if [ -z "${BATCH_ID}" ]; then
-    echo "Error, --batch-id <value> not provided"
+    >&2 echo "Error, --batch-id <value> not provided"
     exit 1
 fi
 
 if [ -z "${OUTPUT_DIR}" ]; then
-    echo "Error, --output-dir <value> not provided"
+    >&2 echo "Error, --output-dir <value> not provided"
     exit 1
 fi
 
@@ -80,19 +80,19 @@ fi
 
 # make sure we have environment variables with configuration
 if [ -z "${PHENOPLIER_ROOT_DIR}" ] || [ -z "${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}" ]; then
-    echo "PhenoPLIER configuration was not loaded"
+    >&2 echo "PhenoPLIER configuration was not loaded"
     exit 1
 fi
 
 PYTHON_EXECUTABLE="${PHENOPLIER_GWAS_IMPUTATION_CONDA_ENV}/bin/python"
 if [ ! -f ${PYTHON_EXECUTABLE} ]; then
-    echo "The python executable does not exist: ${PYTHON_EXECUTABLE}"
+    >&2 echo "The python executable does not exist: ${PYTHON_EXECUTABLE}"
     exit 1
 fi
 
 A1000G_VARIANTS_METADATA_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_1000G_GENOTYPE_DIR}/variant_metadata.parquet"
 if [ ! -f ${A1000G_VARIANTS_METADATA_FILE} ]; then
-    echo "The 1000 Genomes variants metadata file does not exist: ${A1000G_VARIANTS_METADATA_FILE}"
+    >&2 echo "The 1000 Genomes variants metadata file does not exist: ${A1000G_VARIANTS_METADATA_FILE}"
     exit 1
 fi
 
