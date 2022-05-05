@@ -88,7 +88,7 @@ ${PYTHON_EXECUTABLE} ${PHENOPLIER_METAXCAN_BASE_DIR}/software/SPrediXcan.py \
     --model_db_path ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR=}/${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_PREFIX}${TISSUE}.db \
     --covariance ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR=}/${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_PREFIX}${TISSUE}.txt.gz \
     --gwas_folder ${INPUT_GWAS_DIR} \
-    --gwas_file_pattern "${PHENOTYPE_NAME}.*.txt.gz" \
+    --gwas_file_pattern "${PHENOTYPE_NAME}.glm.*.txt.gz" \
     --separator $'\t' \
     --non_effect_allele_column "non_effect_allele" \
     --effect_allele_column "effect_allele" \
