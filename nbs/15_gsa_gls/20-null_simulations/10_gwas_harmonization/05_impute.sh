@@ -44,12 +44,51 @@ done
 
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
+
+#
+# check arguments
+#
+if [ -z "${INPUT_GWAS_FILE}" ]; then
+    echo "Error, --input-gwas-file <value> not provided"
+    exit 1
+fi
+
+if [ -z "${CHROMOSOME}" ]; then
+    echo "Error, --chromosome <value> not provided"
+    exit 1
+fi
+
+if [ -z "${N_BATCHES}" ]; then
+    echo "Error, --n-batches <value> not provided"
+    exit 1
+fi
+
+if [ -z "${BATCH_ID}" ]; then
+    echo "Error, --batch-id <value> not provided"
+    exit 1
+fi
+
+if [ -z "${OUTPUT_DIR}" ]; then
+    echo "Error, --output-dir <value> not provided"
+    exit 1
+fi
+
+#
+# Global PhenoPLIER environmental variables
+#
+
+# make sure we have environment variables with configuration
+if [ -z "${PHENOPLIER_ROOT_DIR}" ] || [ -z "${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}" ]; then
+    echo "PhenoPLIER configuration was not loaded"
+    exit 1
+fi
+
 # Global parameters
-SOFTWARE_DIR="/home/miltondp/projects/labs/greenelab/phenoplier/nbs/15_gsa_gls/20-null_simulations/10_gwas_harmonization/_software/summary-gwas-imputation"
-DATA_DIR="/home/miltondp/projects/labs/greenelab/phenoplier/nbs/15_gsa_gls/20-null_simulations/10_gwas_harmonization/_data"
+#SOFTWARE_DIR="/home/miltondp/projects/labs/greenelab/phenoplier/nbs/15_gsa_gls/20-null_simulations/10_gwas_harmonization/_software/summary-gwas-imputation"
+#DATA_DIR="/home/miltondp/projects/labs/greenelab/phenoplier/nbs/15_gsa_gls/20-null_simulations/10_gwas_harmonization/_data"
 #GWAS_DIR="/home/miltondp/projects/labs/greenelab/phenoplier/base/data/1000g/genotypes/gwas"
-A1000G_REFERENCE_DATA_DIR="/home/miltondp/projects/labs/greenelab/phenoplier/base/data/phenomexcan/ld_blocks/reference_panel_1000G"
-A1000G_VARIANTS_METADATA_FILE="${A1000G_REFERENCE_DATA_DIR}/variant_metadata.parquet"
+#A1000G_REFERENCE_DATA_DIR="/home/miltondp/projects/labs/greenelab/phenoplier/base/data/phenomexcan/ld_blocks/reference_panel_1000G"
+#A1000G_VARIANTS_METADATA_FILE="${A1000G_REFERENCE_DATA_DIR}/variant_metadata.parquet"
 
 PYTHON_EXECUTABLE="${PHENOPLIER_GWAS_IMPUTATION_CONDA_ENV}/bin/python"
 if [ ! -f ${PYTHON_EXECUTABLE} ]; then
@@ -57,7 +96,7 @@ if [ ! -f ${PYTHON_EXECUTABLE} ]; then
     exit 1
 fi
 
-A1000G_VARIANTS_METADATA_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_1000G_GENOTYPE_DIR}/variant_metadata.txt.gz"
+A1000G_VARIANTS_METADATA_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_1000G_GENOTYPE_DIR}/variant_metadata.parquet"
 if [ ! -f ${A1000G_VARIANTS_METADATA_FILE} ]; then
     echo "The 1000 Genomes variants metadata file does not exist: ${A1000G_VARIANTS_METADATA_FILE}"
     exit 1
@@ -74,11 +113,14 @@ mkdir -p ${OUTPUT_DIR}
 
 #INPUT_FILE_PREFIX=${INPUT_FILE%.txt}
 
+#INPUT_GWAS_FILENAME=$(basename ${INPUT_GWAS_FILE})
+#OUTPUT_FILENAME_PREFIX="${INPUT_GWAS_FILENAME%.*}-imputed"
+
 INPUT_GWAS_FILENAME=$(basename ${INPUT_GWAS_FILE})
-OUTPUT_FILENAME_PREFIX="${INPUT_GWAS_FILENAME%.*}-imputed"
+OUTPUT_FILENAME_PREFIX=${INPUT_GWAS_FILENAME%.*}-imputed
 
 ${PYTHON_EXECUTABLE} ${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}/src/gwas_summary_imputation.py \
-    -by_region_file ${DATA_DIR}/eur_ld.bed.gz \
+    -by_region_file ${PHENOPLIER_GENERAL_EUR_LD_REGIONS_FILE} \
     -gwas_file ${INPUT_GWAS_FILE} \
     -parquet_genotype ${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_1000G_GENOTYPE_DIR}/chr${CHROMOSOME}.variants.parquet \
     -parquet_genotype_metadata ${A1000G_VARIANTS_METADATA_FILE} \

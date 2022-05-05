@@ -31,6 +31,7 @@ python ~/projects/phenoplier/environment/scripts/setup_data.py \
   --actions \
     download_1000g_genotype_data \
     download_liftover_hg19tohg38_chain \
+    download_eur_ld_regions \
     download_setup_summary_gwas_imputation
 ```
 
@@ -41,19 +42,91 @@ The `cluster_jobs/` folder has the job scripts to run on Penn's LPC cluster.
 To run the jobs in order, you need to execute the command below.
 The `_tmp` folder stores logs and needs to be created.
 
+
+## Harmonization
 ```bash
-# harmonization
 mkdir -p _tmp/harmonization
 cat cluster_jobs/01_harmonization_job.sh | bsub
+```
 
-# imputation
-mkdir -p _tmp/imputations
-cat cluster_jobs/05_imputation_job.sh | bsub
+There should be 100 files in the output directory: 100 random phenotypes.
 
-# postprocessing
+## Imputation
+
+Here we need to use some templating, because we impute across random phenotypes, chromosomes and batch ids.
+
+```bash
+mkdir -p _tmp/imputation
+
+# iterate over all random phenotype ids, chromosomes and
+# batch ids and submit a job for each combination
+for pheno_id in {0..99}; do
+  for chromosome in {1..22}; do
+    for batch_id in {0..9}; do
+      export pheno_id chromosome batch_id
+      cat cluster_jobs/05_imputation_job-template.sh | envsubst '${pheno_id} ${chromosome} ${batch_id}' | bsub
+    done
+  done
+done
+```
+
+There should be 22,000 files in the output directory: 22 chromosomes * 10 batches * 100 random phenotypes.
+If there are less than that number, some jobs might have failed.
+To see which ones failed and run them again, you can use the following python code:
+
+```python
+import os
+import re
+from pathlib import Path
+
+IMPUTATION_OUTPUT_DIR = Path(
+  os.environ["PHENOPLIER_RESULTS_GLS_NULL_SIMS"],
+  "imputed_gwas"
+).resolve()
+assert IMPUTATION_OUTPUT_DIR.exists(), IMPUTATION_OUTPUT_DIR
+
+output_files = list(f.name for f in IMPUTATION_OUTPUT_DIR.glob("*.txt"))
+len(output_files)
+
+# expected list of files
+OUTPUT_FILE_TEMPLATE = "random.pheno{pheno_id}.glm-harmonized-imputed-chr{chromosome}-batch{batch_id}_{n_batches}.txt"
+
+expected_output_files = [
+  OUTPUT_FILE_TEMPLATE.format(pheno_id=p, chromosome=c, batch_id=bi, n_batches=10)
+  for p in range(0,100)
+  for c in range(1, 23)
+  for bi in range(0, 10)
+]
+assert len(expected_output_files) == 100 * 10 * 22
+
+# get files that are expected but not there
+missing_files = set(expected_output_files).difference(set(output_files))
+
+# extract pheno id, chromosome and batch id from missing files
+pheno_pattern = re.compile(r"random.pheno(?P<pheno_id>[0-9]+).glm-harmonized-imputed-chr(?P<chromosome>[0-9]+)-batch(?P<batch_id>[0-9]+)_[0-9]+.txt")
+missing_jobs = [pheno_pattern.search(mf).groups() for mf in missing_files]
+assert len(missing_jobs) == len(missing_files)
+
+# these are the pheno id, chromosome and batch id combinations that are missing
+missing_jobs[:10]
+
+# submit those missing jobs
+for pheno_id, chromosome, batch_id in missing_jobs:
+  os.system(
+    f"export pheno_id={pheno_id} chromosome={chromosome} batch_id={batch_id}; " +
+    "cat cluster_jobs/05_imputation_job-template.sh | envsubst '${pheno_id} ${chromosome} ${batch_id}' | bsub"
+  )
+```
+
+## Post-processing
+
+```bash
 mkdir -p _tmp/postprocessing
 cat cluster_jobs/10_postprocessing.sh | bsub
 ```
+
+
+# Monitoring jobs
 
 Check jobs with command `bjobs`.
 Or, for a constantly-updated monitoring (refreshing every 2 seconds):
