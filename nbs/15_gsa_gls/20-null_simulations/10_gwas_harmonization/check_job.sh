@@ -39,7 +39,7 @@ not_finished_jobs=0
 for logfile in $(find ${INPUT_DIR} -name "*.error"); do
     ((total_count++))
 
-    count=`grep -c "INFO - Finished converting GWAS" ${logfile}`
+    count=`grep -c "INFO - Finished " ${logfile}`
     if [ "${count}" -ne "1" ]; then
         echo "WARNING, not finished yet: ${logfile}"
         ((not_finished_jobs++))
