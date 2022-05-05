@@ -57,11 +57,10 @@ for pheno_id in {0..99}; do
 done
 ```
 
-
 The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
-`bash check_job.sh -i _tmp/harmonization/`
+`bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/spredixcan`
 
-There should be 100 files in the output directory: 100 random phenotypes.
+There should be 4900 files (100 random phenotypes and 49 tissues) in the output directory.
 
 
 
