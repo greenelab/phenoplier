@@ -103,6 +103,11 @@ GWAS_IMPUTATION = {}
 GWAS_IMPUTATION["BASE_DIR"] = Path(SOFTWARE_DIR, "summary-gwas-imputation").resolve()
 GWAS_IMPUTATION["CONDA_ENV"] = Path(CONDA_ENVS_DIR, "summary_gwas_imputation").resolve()
 
+# MetaXcan family of methods: https://github.com/hakyimlab/MetaXcan
+METAXCAN = {}
+METAXCAN["BASE_DIR"] = Path(SOFTWARE_DIR, "metaxcan").resolve()
+METAXCAN["CONDA_ENV"] = Path(CONDA_ENVS_DIR, "metaxcan").resolve()
+
 
 #
 # Results
