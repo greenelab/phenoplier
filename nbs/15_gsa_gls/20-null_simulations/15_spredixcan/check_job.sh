@@ -10,6 +10,11 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -p|--success-pattern)
+      SUCCESS_PATTERN="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -*|--*)
       echo "Unknown option $1"
       exit 1
@@ -32,6 +37,11 @@ if [ -z "${INPUT_DIR}" ]; then
     exit 1
 fi
 
+if [ -z "${SUCCESS_PATTERN}" ]; then
+    >&2 echo "Error, --success-pattern <value> not provided"
+    exit 1
+fi
+
 
 total_count=0
 not_finished_jobs=0
@@ -39,7 +49,7 @@ not_finished_jobs=0
 for logfile in $(find ${INPUT_DIR} -name "*.log"); do
     ((total_count++))
 
-    count=`grep -c "INFO - Sucessfully processed metaxcan association" ${logfile}`
+    count=`grep -c "${SUCCESS_PATTERN}" ${logfile}`
     if [ "${count}" -ne "1" ]; then
         echo "WARNING, not finished yet: ${logfile}"
         ((not_finished_jobs++))
