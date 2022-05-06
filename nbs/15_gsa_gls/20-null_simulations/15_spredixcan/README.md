@@ -30,7 +30,8 @@ echo $PHENOPLIER_ROOT_DIR
 python ~/projects/phenoplier/environment/scripts/setup_data.py \
   --actions \
     download_setup_metaxcan \
-    download_predixcan_mashr_prediction_models
+    download_predixcan_mashr_prediction_models \
+    download_mashr_expression_smultixcan_snp_covariance
 ```
 
 
@@ -58,7 +59,7 @@ done
 ```
 
 The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
-`bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/spredixcan`
+`bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/spredixcan -p "INFO - Sucessfully processed metaxcan association"`
 
 There should be 4900 files (100 random phenotypes and 49 tissues) in the output directory.
 
@@ -73,14 +74,9 @@ cat cluster_jobs/05_smultixcan_job.sh | bsub
 ```
 
 The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
-`bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan`
+`bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan -p "INFO - Ran multi tissue"`
 
 There should be 100 files in the output directory: 100 random phenotypes.
-
-
-
-
-
 
 
 ## Monitoring jobs
