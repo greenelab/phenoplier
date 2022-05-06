@@ -335,6 +335,16 @@ def download_predixcan_mashr_prediction_models(**kwargs):
         (output_folder.parent / "eqtl").rmdir()
 
 
+def download_mashr_expression_smultixcan_snp_covariance(**kwargs):
+    output_file = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_SMULTIXCAN_COV_FILE"]
+    curl(
+        "https://zenodo.org/record/3518299/files/gtex_v8_expression_mashr_snp_smultixcan_covariance.txt.gz?download=1",
+        output_file,
+        "dda0eedeb842cfc272e76ad432753d73",
+        logger=logger,
+    )
+
+
 def download_spredixcan_hdf5_results(**kwargs):
     output_folder = conf.PHENOMEXCAN["SPREDIXCAN_MASHR_ZSCORES_FOLDER"] / "hdf5"
     if output_folder.exists():

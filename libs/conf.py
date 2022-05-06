@@ -302,6 +302,10 @@ PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_TISSUES"] = " ".join(
     )[0]
     for tissue_file in PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"].glob("*.db")
 )
+PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_SMULTIXCAN_COV_FILE"] = Path(
+    PHENOMEXCAN["PREDICTION_MODELS"]["BASE_DIR"],
+    "gtex_v8_expression_mashr_snp_covariance.txt.gz",
+).resolve()
 
 
 #
