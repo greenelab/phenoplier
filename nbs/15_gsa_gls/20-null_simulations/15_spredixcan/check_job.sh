@@ -50,7 +50,7 @@ for logfile in $(find ${INPUT_DIR} -name "*.log"); do
     ((total_count++))
 
     count=`grep -c "${SUCCESS_PATTERN}" ${logfile}`
-    if [ "${count}" -ne "1" ]; then
+    if [ "${count}" -lt "1" ]; then
         echo "WARNING, not finished yet: ${logfile}"
         ((not_finished_jobs++))
         continue
