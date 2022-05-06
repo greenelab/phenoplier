@@ -59,7 +59,19 @@ done
 ```
 
 The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
-`bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/spredixcan -p "INFO - Sucessfully processed metaxcan association"`
+* Check whether jobs finished successfully:
+```bash
+bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/spredixcan -p "INFO - Sucessfully processed metaxcan association"
+```
+
+* Check that at least 90% of SNPs in models were used:
+```bash
+bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/spredixcan -p "INFO - 90 % of model's snps"
+
+# success output:
+# Finished checking 4900 logs:
+#  All jobs finished successfully
+```
 
 There should be 4900 files (100 random phenotypes and 49 tissues) in the output directory.
 
