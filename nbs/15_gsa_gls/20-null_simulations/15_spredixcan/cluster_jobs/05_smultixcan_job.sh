@@ -1,6 +1,6 @@
 #!/bin/bash
 # BSUB -J random_pheno[1-100]
-# BSUB -cwd _tmp/harmonization
+# BSUB -cwd _tmp/smultixcan
 # BSUB -oo random_pheno%I.%J.out
 # BSUB -eo random_pheno%I.%J.error
 # -#BSUB -u miltondp@gmail.com
@@ -8,7 +8,7 @@
 # BSUB -n 1
 # BSUB -R "rusage[mem=8GB]"
 # BSUB -M 8GB
-# BSUB -W 0:15
+# BSUB -W 1:00
 
 # make sure we use the number of CPUs specified
 export CM_N_JOBS=1
