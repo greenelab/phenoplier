@@ -17,7 +17,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# Read the missing info computed previously (by individual and variant) and plots some histograms.
+# It plots the PC on Europeans only.
 
 # %% [markdown] tags=[]
 # # Modules

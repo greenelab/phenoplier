@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# It removes samples with high heterozygosity. In this case, code is commented out since no such samples were found
+# in this data.
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 N_JOBS="${PHENOPLIER_GENERAL_N_JOBS}"
 INPUT_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}"

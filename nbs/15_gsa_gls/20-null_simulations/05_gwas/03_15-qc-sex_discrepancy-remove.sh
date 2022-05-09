@@ -1,7 +1,8 @@
 #!/bin/bash
-# +
 
-# -
+# It runs a check-sex again using the values analyzed in the previous notebook. This writes an output file that is
+# used to remove samples with high sex-discrepancy.
+
 N_JOBS="${PHENOPLIER_GENERAL_N_JOBS}"
 INPUT_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}"
 SUBSETS_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}/subsets"

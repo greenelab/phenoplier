@@ -17,7 +17,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# Read the missing info computed previously (by individual and variant) and plots some histograms.
+# It reads outputs from sex discrepancy previosly computed, and plots the inbreeding coefficient (https://www.cog-genomics.org/plink/1.9/formats#sexcheck) for samples to know whether self-reported sex and imputed sex from X chromosome match.
 
 # %% [markdown] tags=[]
 # # Modules

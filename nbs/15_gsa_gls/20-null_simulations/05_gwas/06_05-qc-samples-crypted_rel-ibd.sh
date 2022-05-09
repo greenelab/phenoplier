@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# It analyzes samples that might be related. But it's not run in this data, kept here just for future reference.
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 N_JOBS="${PHENOPLIER_GENERAL_N_JOBS}"
 INPUT_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}"

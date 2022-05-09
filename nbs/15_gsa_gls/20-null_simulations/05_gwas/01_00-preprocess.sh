@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# It reads genotype data from 1000 Genomes downloaded from the PLINK web site () and converts it to the PLINK 1 binary
+# format.
+
 N_JOBS="${PHENOPLIER_GENERAL_N_JOBS}"
 INPUT_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}"
 SUBSETS_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}/subsets"

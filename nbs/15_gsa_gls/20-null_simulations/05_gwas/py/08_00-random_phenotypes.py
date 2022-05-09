@@ -17,6 +17,9 @@
 # # Description
 
 # %% [markdown]
+# It reads the final set of samples in genotype data and generates random phenotypes for them.
+
+# %% [markdown]
 # # Modules
 
 # %%

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# It computes the Hardy-Weinberg equilibrium (HWE) exact test statistics on variants. This will be used to remove variants
+# later.
+
 N_JOBS="${PHENOPLIER_GENERAL_N_JOBS}"
 INPUT_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}"
 SUBSETS_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}/subsets"

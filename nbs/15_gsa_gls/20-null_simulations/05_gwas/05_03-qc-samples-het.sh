@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Using a set of independent variants (not highly correlated), it computes observed and expected autosomal homozygous
+# genotypes. This can be used later to perform QC on samples.
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 N_JOBS="${PHENOPLIER_GENERAL_N_JOBS}"
 INPUT_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}"

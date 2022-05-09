@@ -17,7 +17,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# TODO
+# Explores allele frequencies for later removal of rare variants.
 
 # %% [markdown] tags=[]
 # # Modules

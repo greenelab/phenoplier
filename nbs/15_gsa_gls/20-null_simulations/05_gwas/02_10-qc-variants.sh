@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Removes variants with a specific proportion of missing values (--geno parameter).
+
 N_JOBS="${PHENOPLIER_GENERAL_N_JOBS}"
 INPUT_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}"
 SUBSETS_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}/subsets"

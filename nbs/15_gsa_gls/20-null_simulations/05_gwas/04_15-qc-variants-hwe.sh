@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# It uses the HWE stats to remove variants that deviate too much from this test.
+
 N_JOBS="${PHENOPLIER_GENERAL_N_JOBS}"
 INPUT_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}"
 SUBSETS_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}/subsets"
