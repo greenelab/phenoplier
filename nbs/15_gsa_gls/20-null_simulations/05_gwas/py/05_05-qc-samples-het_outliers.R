@@ -17,7 +17,7 @@
 # # Description
 
 # %% [markdown]
-# TODO
+# It analyzes the heterozygosity of samples.
 
 # %% [markdown]
 # # Modules
@@ -67,6 +67,9 @@ het_fail <- subset(het, (het$HET_RATE < mean(het$HET_RATE) - 2 * sd(het$HET_RATE
 het_fail$HET_DST <- (het_fail$HET_RATE - mean(het$HET_RATE)) / sd(het$HET_RATE)
 # %%
 dim(het_fail)
+
+# %% [markdown]
+# There are no samples that deviate too much.
 
 # %%
 head(het_fail)

@@ -17,7 +17,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# TODO
+# It analyses the results of the Hardy-Weingberg equilibrium tests run previously.
 
 # %% [markdown] tags=[]
 # # Modules

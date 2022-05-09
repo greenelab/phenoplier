@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# It uses the correlations computed previously on the sex-chromosomes to check sex discrepancy on a set of
+# independent SNPs.
+
 N_JOBS="${PHENOPLIER_GENERAL_N_JOBS}"
 INPUT_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}"
 SUBSETS_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}/subsets"

@@ -17,7 +17,9 @@
 # # Description
 
 # %% [markdown]
-# TODO
+# It analyzes samples that might be related and their missingness values.
+#
+# This notebook is kept here just for future reference, in case it's useful for other analyses.
 
 # %% [markdown]
 # # Modules

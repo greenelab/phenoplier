@@ -17,7 +17,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# Read the missing info computed previously (by individual and variant) and plots some histograms.
+# It plots the PCA computed previously on samples. It checks that samples from the European ancestry group are homogeneous, and writes a file to exclude later those that are not.
 
 # %% [markdown] tags=[]
 # # Modules
@@ -55,10 +55,6 @@ data <- rename(data, FID = X1, IID = X2)
 
 # %% tags=[]
 head(data)
-
-# %%
-
-# %%
 
 # %%
 race <- as.data.frame(read_table(file.path(A1000G_GENOTYPES_DIR, "all_phase3.psam")))
@@ -100,6 +96,9 @@ datafile %>%
 
 # %% [markdown] tags=[]
 # # Select
+
+# %% [markdown]
+# Here I manually select threshold for the first two principal components to exclude those samples that are further away from the European ancestry clusters.
 
 # %%
 options(repr.plot.width=12, repr.plot.height=12)

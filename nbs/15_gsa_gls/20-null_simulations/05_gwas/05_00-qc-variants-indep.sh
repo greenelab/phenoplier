@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Computes correlation between SNPs across the entire genome, excluding some areas.
+# It writes a file with those variants that are highly correlated.
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 N_JOBS="${PHENOPLIER_GENERAL_N_JOBS}"
 INPUT_DIR="${PHENOPLIER_A1000G_GENOTYPES_DIR}"
