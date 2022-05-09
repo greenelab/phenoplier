@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# Runs the imputation step.
+# Runs the post-processing step of the pipeline here: https://github.com/hakyimlab/summary-gwas-imputation
+
+# read arguments
 
 POSITIONAL_ARGS=()
 

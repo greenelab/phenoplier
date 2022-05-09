@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Runs the harmonization step.
+# Runs the harmonization step of the pipeline here: https://github.com/hakyimlab/summary-gwas-imputation
 
 # read arguments
 POSITIONAL_ARGS=()
