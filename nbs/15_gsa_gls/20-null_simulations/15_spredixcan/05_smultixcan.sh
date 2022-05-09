@@ -2,6 +2,7 @@
 
 # Runs S-MultiXcan.
 
+# read arguments
 POSITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
