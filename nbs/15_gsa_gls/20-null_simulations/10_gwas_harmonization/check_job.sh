@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Given an input folder, it checks that jobs submitted in a cluster (Penn PMACS) finished correctly.
+
 # read arguments
 POSITIONAL_ARGS=()
 
