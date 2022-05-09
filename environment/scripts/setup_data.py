@@ -1,8 +1,6 @@
 """
 It sets up the file/folder structure by downloading the necessary files.
 """
-import os
-import sys
 import subprocess
 from pathlib import Path
 
@@ -449,26 +447,25 @@ def download_1000g_genotype_data(**kwargs):
 
 
 def _get_file_from_zip(
-    zip_file_url,
-    zip_file_path,
-    zip_file_md5,
+    zip_file_url: str,
+    zip_file_path: str,
+    zip_file_md5: str,
     zip_internal_filename,
-    output_file,
-    output_file_md5=None,
+    output_file: Path,
+    output_file_md5: str = None,
 ):
     """
     This method downloads a zip file and extracts a particular file inside
     it.
 
-    TODO: finish documentation of arguments
-
     Args:
-        zip_file_url:
-        zip_file_path:
-        zip_file_md5:
-        zip_internal_filename: if it ends with "/", then it is treated as a folder and all members will be extracted
-        output_file:
-        output_file_md5:
+        zip_file_url: URL pointing to a zip file.
+        zip_file_path: path where the zip file will be downloaded to.
+        zip_file_md5: MD5 hash of the zip file. It will be used to check if the file was already downloaded.
+        zip_internal_filename: this is the internal file path that should be extracted. If it ends with "/",
+          then it is treated as a folder and all members of it will be extracted.
+        output_file: this is a path where the zip_internal_filename will be saved to.
+        output_file_md5: MD5 hash of the internal zip file (the one being extracted). Ignored if a folder is extracted.
     """
     from utils import md5_matches
 
@@ -524,6 +521,7 @@ def _get_file_from_zip(
         if Path(zip_internal_filename).parent != Path("."):
             Path(parent_dir, zip_internal_filename.parent).rmdir()
 
+    # TODO: add optional parameter to delete the downloaded zip file?
     # delete zip file
     # zip_file_path.unlink()
 
@@ -579,11 +577,23 @@ def download_1000g_genotype_data_from_plink(**kwargs):
 
 
 def _download_plink_generic(
-    plink_zip_file,
+    plink_zip_file: str,
     plink_executable_filename,
     output_file,
-    platform_parameters,
+    platform_parameters: dict,
 ):
+    """
+    Generic function that downloads a specific PLINK version.
+
+    Args:
+        plink_zip_file: zip_file_path argument of function _get_file_from_zip
+        plink_executable_filename: zip_internal_filename argument of function _get_file_from_zip
+        output_file: output_file argument of function _get_file_from_zip
+        platform_parameters: platform-specific (Linux, macOS, etc) parameters to download a plink version. They keys
+          must be strings returned by the platform.system() function (such as "Linux" or "Darwin"). Values are dictionaries
+          with strings as keys and values, and mandatory keys are "zip_file_url", "zip_file_md5" and "output_file_md5",
+          which are all given to function _get_file_from_zip
+    """
     import platform
 
     current_system = platform.system()
@@ -659,11 +669,11 @@ def download_plink2(**kwargs):
 
 def _create_conda_environment(environment_folder: Path, environment_spec: Path):
     """
-    TODO
+    It runs the commands to create a conda environment, given an environment specification (YAML file) and folder.
 
     Args:
-        environment_folder:
-        environment_spec: yaml file with conda specification
+        environment_folder: the output folder where the conda environment will be created.
+        environment_spec: YAML file with conda specification.
     """
     # make sure parent folder exists
     environment_folder.parent.mkdir(parents=True, exist_ok=True)
@@ -685,6 +695,8 @@ def _create_conda_environment(environment_folder: Path, environment_spec: Path):
         stdout=sys.stdout,
         stderr=subprocess.STDOUT,
     )
+
+    # TODO: check if cmd.returncode is different than zero
 
 
 def download_setup_summary_gwas_imputation(**kwargs):
