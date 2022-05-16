@@ -101,4 +101,7 @@ gender %>%
   filter(STATUS == "PROBLEM") %>%
   dim_desc()
 
-# %% tags=[]
+# %% [markdown] tags=[]
+# In the next script (`03_15-qc-sex_discrepancy-remove.sh`) I choose a cutoff for `F` based on these analyses.
+
+# %%

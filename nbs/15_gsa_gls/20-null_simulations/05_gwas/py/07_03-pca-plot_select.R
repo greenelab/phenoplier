@@ -94,6 +94,9 @@ datafile %>%
     geom_point(size=2.5) +
     theme(text = element_text(size = 25), legend.key.size = unit(1.5, 'cm'))
 
+# %% [markdown]
+# Here there seems to be two European clusters. I take the biggest one at the very lower left corner.
+
 # %% [markdown] tags=[]
 # # Select
 

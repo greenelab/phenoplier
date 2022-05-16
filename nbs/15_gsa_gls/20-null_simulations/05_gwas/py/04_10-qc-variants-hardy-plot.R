@@ -52,6 +52,9 @@ dim(hwe)
 # %% tags=[]
 head(hwe)
 
+# %% [markdown]
+# Here `P` are the p-values of the HWE test. Lower p-values mean variants that deviate more from the HWE.
+
 # %% [markdown] tags=[]
 # # Histogram on all SNPs
 

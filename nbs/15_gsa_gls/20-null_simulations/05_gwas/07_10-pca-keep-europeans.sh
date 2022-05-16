@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Removes individuals that are not close to the European ancestry cluster
+# Removes individuals that are not close to the main European ancestry cluster
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 N_JOBS="${PHENOPLIER_GENERAL_N_JOBS}"

@@ -53,6 +53,7 @@ dim(het)
 head(het)
 
 # %%
+# add the heterozygous rate as a new columnt
 het$HET_RATE <- (het$"N.NM." - het$"O.HOM.") / het$"N.NM."
 
 # %%
