@@ -359,11 +359,11 @@ def test_gene_get_expression_correlation(gene_id1, gene_id2, tissue, expected_co
 
     # correlation should be asymmetric
     genes_corr_2 = gene2.get_expression_correlation(gene1, tissue)
-    assert genes_corr_2 == genes_corr
+    assert round(genes_corr_2, 4) == round(genes_corr, 4)
 
     # correlation with itself should be 1.0
-    assert gene1.get_expression_correlation(gene1, tissue) == 1.0
-    assert gene2.get_expression_correlation(gene2, tissue) == 1.0
+    assert round(gene1.get_expression_correlation(gene1, tissue), 4) == 1.0
+    assert round(gene2.get_expression_correlation(gene2, tissue), 4) == 1.0
 
     assert round(genes_corr, 4) == round(expected_corr, 4)
 
