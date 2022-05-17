@@ -317,9 +317,9 @@ PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET"] = Path(
 ).resolve()
 PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET_PREFIX"] = "en_"
 PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET_TISSUES"] = " ".join(
-    tissue_file.name.split(PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET_PREFIX"])[1].split(
-        ".db"
-    )[0]
+    tissue_file.name.split(PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET_PREFIX"])[
+        1
+    ].split(".db")[0]
     for tissue_file in PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET"].glob("*.db")
 )
 
