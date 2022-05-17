@@ -9,7 +9,7 @@ your `PYTHONPATH` and `PHENOPLIER_ROOT_DIR` variables are adjusted appropriately
 Execute these commands to run the unit tests:
 
 ```bash
-pytest -rs --color=yes
+pytest -rs --color=yes tests/
 ```
 
 ## Generate data for test cases
