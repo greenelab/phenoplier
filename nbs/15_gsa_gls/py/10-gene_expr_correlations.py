@@ -61,7 +61,9 @@ chromosome = "all"
 
 # %%
 if EQTL_MODEL_FILES_PREFIX is None:
-    EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
+    EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][
+        f"{EQTL_MODEL}_PREFIX"
+    ]
 
 # %%
 display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
@@ -133,16 +135,13 @@ genes_info.head()
 # ## Get tissues names
 
 # %% tags=[]
-db_files = list(conf.PHENOMEXCAN["PREDICTION_MODELS"][EQTL_MODEL].glob("*.db"))
-
-# %% tags=[]
-assert len(db_files) == 49
-
-# %% tags=[]
-tissues = [str(f).split(EQTL_MODEL_FILES_PREFIX)[1].split(".db")[0] for f in db_files]
+tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_TISSUES"].split(" ")
 
 # %% tags=[]
 tissues[:5]
+
+# %% tags=[]
+assert len(tissues) == 49
 
 # %% [markdown] tags=[]
 # # Test
