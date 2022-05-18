@@ -5,3 +5,8 @@ data = pd.read_csv("random.pheno0-smultixcan-full.txt", sep="\t", dtype=str)
 data.drop(columns=["gene_name"]).to_csv("random.pheno0-smultixcan-no_gene_name_column.txt", sep="\t", na_rep="NA", index=False)
 
 data.drop(columns=["pvalue"]).to_csv("random.pheno0-smultixcan-no_pvalue_column.txt", sep="\t", na_rep="NA", index=False)
+
+
+# to generate a sample of the LV model
+z = pd.read_pickle("base/data/multiplier/multiplier_model_z.pkl")
+z.iloc[:, :5].astype("float32").to_pickle("tests/data/gls/sample-lv-model.pkl")
