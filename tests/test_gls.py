@@ -74,9 +74,7 @@ def test_fit_with_phenotype_pandas_series():
     model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
 
     # get number of genes to simulated phenotype
-    lv_weights = GLSPhenoplier._get_data(
-        model.smultixcan_result_set_filepath, model_type="MASHR"
-    )[2]
+    lv_weights = GLSPhenoplier._get_lv_weights()
 
     np.random.seed(0)
     phenotype_data = pd.Series(
@@ -109,10 +107,9 @@ def test_fit_with_phenotype_pandas_series():
 def test_fit_with_phenotype_pandas_series_genes_not_aligned():
     model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
 
-    # get number of genes to simulated phenotype
-    lv_weights = GLSPhenoplier._get_data(
-        model.smultixcan_result_set_filepath, model_type="MASHR"
-    )[2]
+    # get data and simulate phenotype
+    lv_weights = GLSPhenoplier._get_lv_weights()
+    gene_corrs = GLSPhenoplier._get_gene_corrs("MASHR")
 
     np.random.seed(0)
     phenotype_data = pd.Series(
@@ -120,6 +117,12 @@ def test_fit_with_phenotype_pandas_series_genes_not_aligned():
         index=lv_weights.index.copy(),
         name="Random phenotype",
     )
+
+    # match all genes and align
+    phenotype_data, lv_weights = GLSPhenoplier.match_and_align_genes(
+        phenotype_data, lv_weights, gene_corrs
+    )[0:2]
+
     model.fit_named("LV270", phenotype_data)
     assert model.results.df_resid == phenotype_data.shape[0] - 2
     expected_results = model.results
@@ -144,10 +147,9 @@ def test_fit_with_phenotype_pandas_series_genes_not_aligned():
 def test_fit_with_phenotype_pandas_series_less_genes():
     model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
 
-    # get number of genes to simulated phenotype
-    lv_weights = GLSPhenoplier._get_data(
-        model.smultixcan_result_set_filepath, model_type="MASHR"
-    )[2]
+    # get data and simulate phenotype
+    lv_weights = GLSPhenoplier._get_lv_weights()
+    gene_corrs = GLSPhenoplier._get_gene_corrs("MASHR")
 
     np.random.seed(0)
     n_genes = 3000
@@ -156,8 +158,14 @@ def test_fit_with_phenotype_pandas_series_less_genes():
         index=lv_weights.sample(n=n_genes, random_state=0).index.copy(),
         name="Random phenotype",
     )
+
+    # match all genes and align
+    phenotype_data_aligned, lv_weights = GLSPhenoplier.match_and_align_genes(
+        phenotype_data, lv_weights, gene_corrs
+    )[0:2]
+
     model.fit_named("LV270", phenotype_data)
-    assert model.results.df_resid == phenotype_data.shape[0] - 2
+    assert model.results.df_resid == phenotype_data_aligned.shape[0] - 2
     expected_results = model.results
 
     # run again with genes reordered in the phenotype
@@ -167,7 +175,7 @@ def test_fit_with_phenotype_pandas_series_less_genes():
     # np.random.shuffle(phenotype_data)
     phenotype_data = phenotype_data.sample(frac=1, random_state=0)
     model.fit_named("LV270", phenotype_data)
-    assert model.results.df_resid == phenotype_data.shape[0] - 2
+    assert model.results.df_resid == phenotype_data_aligned.shape[0] - 2
 
     assert model.phenotype_code == "Random phenotype"
 
@@ -180,10 +188,9 @@ def test_fit_with_phenotype_pandas_series_less_genes():
 def test_fit_with_phenotype_pandas_series_more_genes():
     model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
 
-    # get number of genes to simulated phenotype
-    lv_weights = GLSPhenoplier._get_data(
-        model.smultixcan_result_set_filepath, model_type="MASHR"
-    )[2]
+    # get data and simulate phenotype
+    lv_weights = GLSPhenoplier._get_lv_weights()
+    gene_corrs = GLSPhenoplier._get_gene_corrs("MASHR")
 
     np.random.seed(0)
     # add a gene (I made up a name: AGENE) that does not exist in LV models
@@ -192,9 +199,15 @@ def test_fit_with_phenotype_pandas_series_more_genes():
         index=lv_weights.index.tolist() + ["AGENE"],
         name="Random phenotype",
     )
+
+    # match all genes and align
+    phenotype_data_aligned, lv_weights = GLSPhenoplier.match_and_align_genes(
+        phenotype_data, lv_weights, gene_corrs
+    )[0:2]
+
     with pytest.warns(UserWarning):
         model.fit_named("LV270", phenotype_data)
-    assert model.results.df_resid == phenotype_data.shape[0] - 2 - 1  # AGENE
+    assert model.results.df_resid == phenotype_data_aligned.shape[0] - 2
     expected_results = model.results
 
     # run again with genes reordered in the phenotype
@@ -205,7 +218,7 @@ def test_fit_with_phenotype_pandas_series_more_genes():
     phenotype_data = phenotype_data.sample(frac=1, random_state=0)
     with pytest.warns(UserWarning):
         model.fit_named("LV270", phenotype_data)
-    assert model.results.df_resid == phenotype_data.shape[0] - 2 - 1  # AGENE
+    assert model.results.df_resid == phenotype_data_aligned.shape[0] - 2
 
     assert model.phenotype_code == "Random phenotype"
 
@@ -215,16 +228,114 @@ def test_fit_with_phenotype_pandas_series_more_genes():
     )
 
 
+def test_fit_with_phenotype_pandas_series_with_nan_extra_genes_not_in_lv_models():
+    model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
+
+    # original run
+    # get data and simulate phenotype
+    lv_weights = GLSPhenoplier._get_lv_weights()
+    gene_corrs = GLSPhenoplier._get_gene_corrs("MASHR")
+
+    np.random.seed(0)
+    phenotype_data = pd.Series(
+        np.abs(np.random.normal(size=lv_weights.shape[0])),
+        index=lv_weights.index.copy(),
+        name="Random phenotype",
+    )
+
+    # match all genes and align
+    phenotype_data_aligned, lv_weights = GLSPhenoplier.match_and_align_genes(
+        phenotype_data, lv_weights, gene_corrs
+    )[0:2]
+
+    model.fit_named("LV270", phenotype_data)
+    assert model.results.df_resid == phenotype_data_aligned.shape[0] - 2
+    expected_results = model.results
+
+    # run again with extra genes with missing data
+    # results should be the same
+    model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
+
+    # generate same phenotype plus three genes with missing data
+    phenotype_data = phenotype_data.append(
+        pd.Series(
+            np.full(3, np.nan),
+            index=["SIMGENE1", "SIMGENE2", "SIMGENE3"],
+            name="Random phenotype",
+        )
+    )
+    assert phenotype_data.shape[0] > 5
+    assert phenotype_data.isna().sum() == 3
+
+    model.fit_named("LV270", phenotype_data)
+    assert model.results.df_resid == phenotype_data_aligned.shape[0] - 2
+
+    assert model.phenotype_code == "Random phenotype"
+
+    pd.testing.assert_series_equal(expected_results.pvalues, model.results.pvalues)
+    pd.testing.assert_series_equal(
+        expected_results.pvalues_onesided, model.results.pvalues_onesided
+    )
+
+
+def test_fit_with_phenotype_pandas_series_with_nan():
+    model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
+
+    # original run
+    # get data and simulate phenotype
+    lv_weights = GLSPhenoplier._get_lv_weights()
+    gene_corrs = GLSPhenoplier._get_gene_corrs("MASHR")
+
+    np.random.seed(0)
+    phenotype_data = pd.Series(
+        np.abs(np.random.normal(size=lv_weights.shape[0])),
+        index=lv_weights.index.copy(),
+        name="Random phenotype",
+    )
+
+    # match all genes and align
+    phenotype_data_aligned, lv_weights = GLSPhenoplier.match_and_align_genes(
+        phenotype_data, lv_weights, gene_corrs
+    )[0:2]
+
+    model.fit_named("LV270", phenotype_data)
+    assert model.results.df_resid == phenotype_data_aligned.shape[0] - 2
+    expected_results = model.results
+
+    # run again with _existing_ genes with missing data
+    # results should be the same
+    model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
+
+    # generate same phenotype plus three genes with missing data
+    phenotype_data.iloc[10] = np.nan
+    phenotype_data.iloc[100] = np.nan
+    phenotype_data.iloc[500] = np.nan
+    assert phenotype_data.isna().sum() == 3
+
+    model.fit_named("LV270", phenotype_data)
+    assert (
+        model.results.df_resid == phenotype_data_aligned.shape[0] - 2 - 3
+    )  # remove nan genes
+
+    assert model.phenotype_code == "Random phenotype"
+
+    assert not np.allclose(
+        expected_results.pvalues.to_numpy(),
+        model.results.pvalues.to_numpy(),
+    )
+
+    assert not np.allclose(
+        expected_results.pvalues_onesided.to_numpy(),
+        model.results.pvalues_onesided.to_numpy(),
+    )
+
+
 def test_gls_different_prediction_models_get_data_gene_corr():
     # model 1 (mashr)
-    model1_gene_corrs = GLSPhenoplier._get_data(
-        conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"], model_type="MASHR"
-    )[0]
+    model1_gene_corrs = GLSPhenoplier._get_gene_corrs("MASHR")
 
     # model 1 (elastic net)
-    model2_gene_corrs = GLSPhenoplier._get_data(
-        conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"], model_type="ELASTIC_NET"
-    )[0]
+    model2_gene_corrs = GLSPhenoplier._get_gene_corrs("ELASTIC_NET")
 
     assert model1_gene_corrs.shape == model2_gene_corrs.shape
     assert not np.allclose(
@@ -239,18 +350,21 @@ def test_gls_different_prediction_models_gls_fit_named():
         model_type="MASHR",
     )
 
-    # get number of genes to simulated phenotype
-    lv_weights = GLSPhenoplier._get_data(
-        model.smultixcan_result_set_filepath, model_type="MASHR"
-    )[2]
+    # get data and simulate phenotype
+    lv_weights = GLSPhenoplier._get_lv_weights()
+    gene_corrs = GLSPhenoplier._get_gene_corrs("MASHR")
 
     np.random.seed(0)
-    # add a gene (I made up a name: AGENE) that does not exist in LV models
     phenotype_data = pd.Series(
         np.abs(np.random.normal(size=lv_weights.shape[0])),
         index=lv_weights.index.tolist(),
         name="Random phenotype",
     )
+
+    # match all genes and align
+    phenotype_data, lv_weights = GLSPhenoplier.match_and_align_genes(
+        phenotype_data, lv_weights, gene_corrs
+    )[0:2]
 
     # fit with mashr
     model.fit_named("LV270", phenotype_data)
