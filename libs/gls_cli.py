@@ -8,6 +8,7 @@ import logging
 
 import numpy as np
 import pandas as pd
+from scipy import stats
 
 from gls import GLSPhenoplier
 
@@ -53,8 +54,6 @@ def run():
     # FIXME: check output file parent DOES exist
 
     args = parser.parse_args()
-
-    print(args.predixcan_model_type)
 
     # check input file
     logger.info(f"Reading input file {args.input_file}")
@@ -106,7 +105,11 @@ def run():
         logger.warning("Some p-values are greater than 1.0")
 
     # TODO: convert to -log10 or z-score
-    data = -np.log10(data)
+    data = pd.Series(
+        data=np.abs(stats.norm.ppf(data / 2)),
+        index=data.index.copy()
+    )
+    # data = -np.log10(data)
 
     logger.info(f"Prediction models used: {args.predixcan_model_type}")
 
