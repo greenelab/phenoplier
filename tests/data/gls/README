@@ -1,0 +1,7 @@
+# to generate custom data from the full file
+data = pd.read_csv("random.pheno0-smultixcan-full.txt", sep="\t", dtype=str)
+
+# remove one column
+data.drop(columns=["gene_name"]).to_csv("random.pheno0-smultixcan-no_gene_name_column.txt", sep="\t", na_rep="NA", index=False)
+
+data.drop(columns=["pvalue"]).to_csv("random.pheno0-smultixcan-no_pvalue_column.txt", sep="\t", na_rep="NA", index=False)
