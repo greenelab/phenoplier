@@ -39,12 +39,27 @@ def run():
         help="File path where results will be written to.",
     )
     parser.add_argument(
+        "-p",
+        "--lv-model-file",
+        required=False,
+        type=str,
+        help="A file containing the LV model. It has to be in pickle format, with gene symbols in rows and LVs in columns.",
+    )
+    parser.add_argument(
         "-m",
         "--predixcan-model-type",
         required=False,
         choices=["MASHR", "ELASTIC_NET"],
         default="MASHR",
         help="TODO",
+    )
+    parser.add_argument(
+        "-l",
+        "--lv-list",
+        required=False,
+        nargs="+",
+        default=[],
+        help="List of LV identifiers on which an association will be computed.",
     )
     # FIXME: add debug level
     # FIXME: add z-score or -log10(p) transformations
@@ -105,30 +120,55 @@ def run():
         logger.warning("Some p-values are greater than 1.0")
 
     # TODO: convert to -log10 or z-score
-    data = pd.Series(
-        data=np.abs(stats.norm.ppf(data / 2)),
-        index=data.index.copy()
-    )
+    data = pd.Series(data=np.abs(stats.norm.ppf(data / 2)), index=data.index.copy())
     # data = -np.log10(data)
 
     logger.info(f"Prediction models used: {args.predixcan_model_type}")
 
-    # FIXME: if lv weights is a filepath given in arguments, use that filepath
-    lvs_subset = GLSPhenoplier._get_lv_weights().columns.tolist()
+    if args.lv_model_file is not None:
+        lv_model_file = Path(args.lv_model_file)
+        # FIXME: check that file exists
+        logger.info(f"Reading LV model file: {str(lv_model_file)}")
+        full_lvs_set = GLSPhenoplier._get_lv_weights(lv_model_file).columns
+    else:
+        full_lvs_set = GLSPhenoplier._get_lv_weights().columns
+
+    full_lvs_set = set(full_lvs_set)
+    logger.info(f"{len(full_lvs_set)} gene modules in LV models")
+
+    if len(args.lv_list) > 0:
+        selected_lvs = [lv for lv in args.lv_list if lv in full_lvs_set]
+        logger.info(
+            f"A list of {len(args.lv_list)} LVs was provided, and {len(selected_lvs)} are present in LV models"
+        )
+    else:
+        selected_lvs = list(full_lvs_set)
+        logger.info("All LVs in models will be used")
+
+    if len(selected_lvs) == 0:
+        logger.error("No LVs were selected")
+        sys.exit(1)
 
     model = GLSPhenoplier(
         model_type=args.predixcan_model_type,
-        warnings_logger=logger,
+        logger=logger,
     )
 
     results = []
 
-    # FIXME: add tqdm?
+    # TODO: add tqdm?
 
-    # FIXME: remove top 5 lvs here, this is just for debugging
-    for lv_code in lvs_subset[:5]:
+    for lv_idx, lv_code in enumerate(selected_lvs):
         logger.info(f"Computing for {lv_code}")
+
+        # show warnings or logs only in the first run
+        if lv_idx == 0:
+            model.set_logger(logger)
+        else:
+            model.set_logger(None)
+
         model.fit_named(lv_code, data)
+
         res = model.results
 
         results.append(
@@ -143,11 +183,9 @@ def run():
             }
         )
 
-    results = pd.DataFrame(results)
-    logger.info(f"Writing to {args.output_file}")
+    results = pd.DataFrame(results).set_index("lv")
+    logger.info(f"Writing results to {args.output_file}")
     results.to_csv(args.output_file, sep="\t", na_rep="NA")
-
-    # FIXME: when saving to a file, use input_phenotype_name
 
 
 if __name__ == "__main__":
