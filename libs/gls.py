@@ -40,6 +40,9 @@ class GLSPhenoplier(object):
             GLS class (the weighting matrix of the covariance). Internally, the
             gene predicted expression correlation matrix is provided as this
             argument, and this parameter allows to override that.
+        warning_logger:
+            A Logger instance (with a 'warning' method) or None (in that case warnings
+            will be printed using the warnings module).
     """
 
     def __init__(
@@ -47,6 +50,7 @@ class GLSPhenoplier(object):
         smultixcan_result_set_filepath: str = None,
         model_type: str = "MASHR",
         sigma=None,
+        warnings_logger=None,
     ):
         self.smultixcan_result_set_filepath = conf.PHENOMEXCAN[
             "SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE"
@@ -55,13 +59,50 @@ class GLSPhenoplier(object):
             self.smultixcan_result_set_filepath = smultixcan_result_set_filepath
 
         self.model_type = model_type
-        self.sigma = sigma
+        # sigma is disabled, but left here for future reference (debugging)
+        # self.sigma = sigma
+        if warnings_logger is None:
+            import warnings
+
+            self.logger = lambda x: warnings.warn(x)
+        else:
+            self.logger = warnings_logger.warning
 
         self.lv_code = None
         self.phenotype_code = None
         self.model = None
         self.results = None
         self.results_summary = None
+
+    @staticmethod
+    @lru_cache(maxsize=None)
+    def _get_lv_weights(gene_loadings_file: str = None):
+        # load gene loadings
+        if gene_loadings_file is None:
+            gene_loadings_file = conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]
+
+        return pd.read_pickle(gene_loadings_file)
+
+    @staticmethod
+    @lru_cache(maxsize=None)
+    def _get_gene_corrs(model_type: str = None, gene_corrs_file: str = None):
+        if model_type is None and gene_corrs_file is None:
+            raise ValueError("Either model_type or gene_corrs_file has to be provided")
+
+        if model_type is not None and gene_corrs_file is not None:
+            raise ValueError(
+                "Only one of the following parameters has to be provided: model_type or gene_corrs_file"
+            )
+
+        # load gene correlations
+        if model_type is not None:
+            input_filepath = conf.PHENOMEXCAN["LD_BLOCKS"][model_type][
+                "GENE_NAMES_CORR_AVG"
+            ]
+        else:
+            input_filepath = gene_corrs_file
+
+        return pd.read_pickle(input_filepath)
 
     @staticmethod
     @lru_cache(maxsize=None)
@@ -85,10 +126,7 @@ class GLSPhenoplier(object):
             gene-trait associations and gene loadings (Z).
         """
         # load gene correlations (with gene symbols)
-        input_filepath = conf.PHENOMEXCAN["LD_BLOCKS"][model_type][
-            "GENE_NAMES_CORR_AVG"
-        ]
-        gene_corrs = pd.read_pickle(input_filepath)
+        gene_corrs = GLSPhenoplier._get_gene_corrs(model_type=model_type)
 
         # load gene-trait associations
         input_filepath = smultixcan_result_set_filepath
@@ -101,8 +139,9 @@ class GLSPhenoplier(object):
         assert not phenotype_assocs.isna().any().any()
 
         # load gene loadings
-        input_filepath = conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]
-        lv_weights = pd.read_pickle(input_filepath)
+        lv_weights = GLSPhenoplier._get_lv_weights(
+            conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]
+        )
 
         # get common genes and align all three matrices
         # all common genes IDs will be gene symbols at this point
@@ -116,19 +155,18 @@ class GLSPhenoplier(object):
             lv_weights.loc[common_genes],
         )
 
-    def fit_named(self, lv_code: str, phenotype):
+    def _fit_named_internal(self, lv_code: str, phenotype: str):
         """
         Fits the GLS model with the given LV code/name and trait/phenotype
-        name/code or data.
+        name/code. Intended to be used internally, where phenotype is read from
+        a results file (S-MultiXcan z-scores).
 
         Args:
             lv_code:
                 An LV code. For example: LV136
             phenotype:
-                Either a phenotype code (str) that has to be present in the
-                columns of the gene-trait association matrix; or the phenotype
-                data itself as a pandas series (with gene symbols in index, and
-                trait associations as values).
+                A phenotype code that has to be present in the
+                columns of the gene-trait association matrix.
 
         Returns:
             self
@@ -139,50 +177,83 @@ class GLSPhenoplier(object):
             model_type=self.model_type,
         )
 
-        if self.sigma is not None:
-            import warnings
-
-            warnings.warn(
-                "Using user-provided sigma matrix. It's the user's "
-                "responsibility to make sure it is aligned with gene "
-                "associations and module loadings."
-            )
-            assert self.sigma.shape[0] == self.sigma.shape[1]
-            assert (
-                self.sigma.shape[0] == phenotype_assocs.shape[0] == lv_weights.shape[0]
-            )
-
-            gene_corrs = self.sigma
+        # I leave this code here for future reference (debugging)
+        #
+        # if self.sigma is not None:
+        #     import warnings
+        #
+        #     warnings.warn(
+        #         "Using user-provided sigma matrix. It's the user's "
+        #         "responsibility to make sure it is aligned with gene "
+        #         "associations and module loadings."
+        #     )
+        #     assert self.sigma.shape[0] == self.sigma.shape[1]
+        #     assert (
+        #         self.sigma.shape[0] == phenotype_assocs.shape[0] == lv_weights.shape[0]
+        #     )
+        #
+        #     gene_corrs = self.sigma
 
         # predictor
         x = lv_weights[lv_code]
 
         # dependent variable
-        if isinstance(phenotype, str):
-            y = phenotype_assocs[phenotype]
-        elif isinstance(phenotype, pd.Series):
-            # align genes in models with genes in phenotype
-            n_genes_orig_phenotype = phenotype.shape[0]
+        y = phenotype_assocs[phenotype]
 
-            # keep genes in model only
-            y = phenotype.loc[phenotype.index.intersection(x.index)]
-            # ... and align predictor variable and sigma/gene correlations also
-            x = x.loc[y.index]
-            gene_corrs = gene_corrs.loc[y.index, y.index]
+        return self._fit_general(x, y, gene_corrs)
 
-            if y.shape[0] < n_genes_orig_phenotype:
-                import warnings
+    def _fit_named_cli(
+        self, lv_code: str, phenotype: pd.Series, lv_weights_file: str = None
+    ):
+        """
+        TODO
+        """
+        lv_weights = GLSPhenoplier._get_lv_weights(lv_weights_file)
+        gene_corrs = GLSPhenoplier._get_gene_corrs(self.model_type)
 
-                warnings.warn(
-                    f"{n_genes_orig_phenotype} in phenotype, but only {y.shape[0]} were found in LV models"
-                )
-        else:
-            raise ValueError(
-                "Wrong phenotype data type. Should be str or pandas.Series (with gene symbols as index)"
+        x = lv_weights[lv_code]
+
+        # align genes in models with genes in phenotype
+        n_genes_orig_phenotype = phenotype.shape[0]
+
+        # keep genes in model only
+        y = phenotype.loc[phenotype.index.intersection(x.index)]
+        # ... and align predictor variable and sigma/gene correlations also
+        x = x.loc[y.index]
+        gene_corrs = gene_corrs.loc[y.index, y.index]
+
+        if y.shape[0] < n_genes_orig_phenotype:
+            self.logger(
+                f"{n_genes_orig_phenotype} genes in phenotype, but only {y.shape[0]} were found in LV models"
+            )
+        elif y.shape[0] > n_genes_orig_phenotype:
+            self.logger(
+                f"{y.shape[0]} genes in LV models, but only {n_genes_orig_phenotype.shape[0]} were found in phenotype"
             )
 
-        # merge both variables plus contant (intercept) into one dataframe,
-        # and scale them
+        return self._fit_general(x, y, gene_corrs)
+
+    def _fit_general(self, x: pd.Series, y: pd.Series, gene_corrs: pd.DataFrame):
+        """
+        - x and y are assumed to be aligned!!
+
+        Args:
+            x: MUST HAVE a valid LV name
+            y: MUST HAVE a valid name
+            gene_corrs:
+        """
+        lv_code = x.name
+        assert lv_code is not None
+        assert isinstance(lv_code, str)
+        assert lv_code.startswith("LV")
+
+        # make sure data is aligned
+        assert x.index.intersection(y.index).shape[0] == x.shape[0] == y.shape[0]
+        assert gene_corrs.shape[0] == x.shape[0] == y.shape[0]
+        assert x.index.intersection(gene_corrs.index).shape[0] == x.shape[0]
+        assert x.index.intersection(gene_corrs.columns).shape[0] == x.shape[0]
+
+        # create training data
         data = pd.DataFrame({"i": 1.0, "lv": x, "phenotype": y})
         data = data.apply(lambda d: scale(d) if d.name != "i" else d)
 
@@ -210,3 +281,29 @@ class GLSPhenoplier(object):
         self.results_summary = gls_results.summary()
 
         return self
+
+    def fit_named(self, lv_code: str, phenotype):
+        """
+        Fits the GLS model with the given LV code/name and trait/phenotype
+        name/code or data.
+
+        Args:
+            lv_code:
+                An LV code. For example: LV136
+            phenotype:
+                Either a phenotype code (str) that has to be present in the
+                columns of the gene-trait association matrix; or the phenotype
+                data itself as a pandas series (with gene symbols in index, and
+                trait associations as values).
+
+        Returns:
+            self
+        """
+        if isinstance(phenotype, str):
+            return self._fit_named_internal(lv_code, phenotype)
+        elif isinstance(phenotype, pd.Series):
+            return self._fit_named_cli(lv_code, phenotype)
+        else:
+            raise ValueError(
+                "Wrong phenotype data type. Should be str or pandas.Series (with gene symbols as index)"
+            )
