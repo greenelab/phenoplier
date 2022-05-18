@@ -40,9 +40,9 @@ class GLSPhenoplier(object):
             GLS class (the weighting matrix of the covariance). Internally, the
             gene predicted expression correlation matrix is provided as this
             argument, and this parameter allows to override that.
-        warning_logger:
-            A Logger instance (with a 'warning' method) or None (in that case warnings
-            will be printed using the warnings module).
+        logger:
+            A Logger instance or None (in that case, warnings
+            will be printed using the warnings module and info message not displayed).
     """
 
     def __init__(
@@ -50,7 +50,7 @@ class GLSPhenoplier(object):
         smultixcan_result_set_filepath: str = None,
         model_type: str = "MASHR",
         sigma=None,
-        warnings_logger=None,
+        logger=None,
     ):
         self.smultixcan_result_set_filepath = conf.PHENOMEXCAN[
             "SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE"
@@ -61,12 +61,14 @@ class GLSPhenoplier(object):
         self.model_type = model_type
         # sigma is disabled, but left here for future reference (debugging)
         # self.sigma = sigma
-        if warnings_logger is None:
+        if logger is None:
             import warnings
 
-            self.logger = lambda x: warnings.warn(x)
+            self.log_warning = lambda x: warnings.warn(x)
+            self.log_info = lambda x: None
         else:
-            self.logger = warnings_logger.warning
+            self.log_warning = logger.warning
+            self.log_info = logger.info
 
         self.lv_code = None
         self.phenotype_code = None
@@ -76,7 +78,12 @@ class GLSPhenoplier(object):
 
     @staticmethod
     @lru_cache(maxsize=None)
-    def _get_lv_weights(gene_loadings_file: str = None):
+    def _get_lv_weights(gene_loadings_file: str = None) -> pd.DataFrame:
+        """
+        It returns the gene loadings matrix from MultiPLIER. It contains genes in rows and LVs in columns.
+        It accepts an optional file path, in that case it will load it from there. Otherwise, it returns the
+        default MultiPLIER Z matrix.
+        """
         # load gene loadings
         if gene_loadings_file is None:
             gene_loadings_file = conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]
@@ -86,6 +93,10 @@ class GLSPhenoplier(object):
     @staticmethod
     @lru_cache(maxsize=None)
     def _get_gene_corrs(model_type: str = None, gene_corrs_file: str = None):
+        """
+        Returns a matrix with correlations between predicted gene expression. It
+        accepts only of parameter: either a model type or gene correlation file.
+        """
         if model_type is None and gene_corrs_file is None:
             raise ValueError("Either model_type or gene_corrs_file has to be provided")
 
@@ -106,12 +117,11 @@ class GLSPhenoplier(object):
 
     @staticmethod
     @lru_cache(maxsize=None)
-    def _get_data(smultixcan_result_set_filepath, model_type: str):
+    def _get_phenotype_assoc(smultixcan_result_set_filepath: str) -> pd.DataFrame:
         """
         Given a filepath pointing to the gene-trait associations file, it
-        loads that one and also the gene correlations and MultiPLIER Z matrix
-        (gene loadings). Then it aligns genes (rows) in all three matrices, so
-        it is ready to run GLS.
+        loads that one, rename gene IDs to symbols, remove duplicated gene symbols
+        and returns it.
 
         Args:
             smultixcan_result_set_filepath:
@@ -119,14 +129,9 @@ class GLSPhenoplier(object):
                 We expect to have either gene symbols or Ensembl IDs in the rows
                 to represent the genes. If Ensembl IDs are given, they will be
                 converted to gene symbols.
-            model_type:
-                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
         Returns:
-            A tuple with three matrices in this order: gene correlations,
-            gene-trait associations and gene loadings (Z).
+            A pandas dataframe with gene-trait associations
         """
-        # load gene correlations (with gene symbols)
-        gene_corrs = GLSPhenoplier._get_gene_corrs(model_type=model_type)
 
         # load gene-trait associations
         input_filepath = smultixcan_result_set_filepath
@@ -138,43 +143,58 @@ class GLSPhenoplier(object):
         assert phenotype_assocs.index.is_unique
         assert not phenotype_assocs.isna().any().any()
 
-        # load gene loadings
-        lv_weights = GLSPhenoplier._get_lv_weights(
-            conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]
-        )
+        return phenotype_assocs
 
-        # get common genes and align all three matrices
-        # all common genes IDs will be gene symbols at this point
-        common_genes = gene_corrs.index.intersection(
-            phenotype_assocs.index
-        ).intersection(lv_weights.index)
+    @staticmethod
+    def match_and_align_genes(
+        gene_phenotype_assoc: pd.Series,
+        gene_lv_weights: pd.Series,
+        gene_correlations: pd.DataFrame,
+    ):
+        """
+        Given the gene-trait associations, gene-lv weights and gene correlation matrices, it returns a version of all
+        them with the same genes (present in all of them) and aligned (same order). This is used to prefer data for
+        fitting the GLS model.
+
+        Args:
+            gene_phenotype_assoc: gene IDs in index
+            gene_lv_weights: gene IDs in index
+            gene_correlations: gene IDs in index and column
+
+        Returns:
+            A tuple with three elements: gene-trait associations, gene-lv weights and gene correlations, all
+            aligned with the same genes.
+        """
+        common_genes = gene_phenotype_assoc.index.intersection(
+            gene_lv_weights.index
+        ).intersection(gene_correlations.index)
 
         return (
-            gene_corrs.loc[common_genes, common_genes],
-            phenotype_assocs.loc[common_genes],
-            lv_weights.loc[common_genes],
+            gene_phenotype_assoc.loc[common_genes],
+            gene_lv_weights.loc[common_genes],
+            gene_correlations.loc[common_genes, common_genes],
         )
 
     def _fit_named_internal(self, lv_code: str, phenotype: str):
         """
         Fits the GLS model with the given LV code/name and trait/phenotype
-        name/code. Intended to be used internally, where phenotype is read from
+        name/code. Intended to be used internally, where phenotype associations are read from
         a results file (S-MultiXcan z-scores).
 
         Args:
             lv_code:
                 An LV code. For example: LV136
             phenotype:
-                A phenotype code that has to be present in the
-                columns of the gene-trait association matrix.
+                A phenotype code that has to be present in the columns of the gene-trait association matrix.
 
         Returns:
             self
         """
         # obtain the needed matrices
-        gene_corrs, phenotype_assocs, lv_weights = GLSPhenoplier._get_data(
-            self.smultixcan_result_set_filepath,
-            model_type=self.model_type,
+        lv_weights = GLSPhenoplier._get_lv_weights()
+        gene_corrs = GLSPhenoplier._get_gene_corrs(self.model_type)
+        phenotype_assocs = GLSPhenoplier._get_phenotype_assoc(
+            self.smultixcan_result_set_filepath
         )
 
         # I leave this code here for future reference (debugging)
@@ -213,49 +233,50 @@ class GLSPhenoplier(object):
 
         x = lv_weights[lv_code]
 
-        # align genes in models with genes in phenotype
-        n_genes_orig_phenotype = phenotype.shape[0]
-
-        # keep genes in model only
-        y = phenotype.loc[phenotype.index.intersection(x.index)]
-        # ... and align predictor variable and sigma/gene correlations also
-        x = x.loc[y.index]
-        gene_corrs = gene_corrs.loc[y.index, y.index]
-
-        if y.shape[0] < n_genes_orig_phenotype:
-            self.logger(
-                f"{n_genes_orig_phenotype} genes in phenotype, but only {y.shape[0]} were found in LV models"
-            )
-        elif y.shape[0] > n_genes_orig_phenotype:
-            self.logger(
-                f"{y.shape[0]} genes in LV models, but only {n_genes_orig_phenotype.shape[0]} were found in phenotype"
-            )
-
-        return self._fit_general(x, y, gene_corrs)
+        return self._fit_general(x, phenotype, gene_corrs)
 
     def _fit_general(self, x: pd.Series, y: pd.Series, gene_corrs: pd.DataFrame):
         """
-        - x and y are assumed to be aligned!!
+        General function to fit a GLS model given the gene-trait associations, gene-LV weights and gene correlations
+        matrices. It performs a series of standard steps, like removing missing data from input parameters, aligning
+        genes in all three matrices and logging warnings and other checks. Then it add the results in the GLSPhenoplier
+        object.
 
         Args:
             x: MUST HAVE a valid LV name
             y: MUST HAVE a valid name
             gene_corrs:
+
+        Returns:
+            self
         """
         lv_code = x.name
         assert lv_code is not None
-        assert isinstance(lv_code, str)
-        assert lv_code.startswith("LV")
+        assert isinstance(
+            lv_code, str
+        ), "The name property of x has to have a valid LV identifier (str starting with 'LV')"
+        assert lv_code.startswith(
+            "LV"
+        ), "The name property of x has to have a valid LV identifier (str starting with 'LV')"
+
+        # remove missing values from gene-trait associations
+        y = y.dropna()
 
         # make sure data is aligned
-        assert x.index.intersection(y.index).shape[0] == x.shape[0] == y.shape[0]
-        assert gene_corrs.shape[0] == x.shape[0] == y.shape[0]
-        assert x.index.intersection(gene_corrs.index).shape[0] == x.shape[0]
-        assert x.index.intersection(gene_corrs.columns).shape[0] == x.shape[0]
+        n_genes_orig_phenotype = y.shape[0]
+        y, x, gene_corrs = GLSPhenoplier.match_and_align_genes(y, x, gene_corrs)
+
+        if n_genes_orig_phenotype > y.shape[0]:
+            self.log_warning(
+                f"{n_genes_orig_phenotype} genes in phenotype associations, but only {y.shape[0]} were found in LV models"
+            )
 
         # create training data
         data = pd.DataFrame({"i": 1.0, "lv": x, "phenotype": y})
         data = data.apply(lambda d: scale(d) if d.name != "i" else d)
+        assert not data.isna().any().any(), "Data contains NaN"
+
+        self.log_info(f"Final number of genes in training data: {data.shape[0]}")
 
         # create GLS model and fit
         gls_model = sm.GLS(data["phenotype"], data[["i", "lv"]], sigma=gene_corrs)
@@ -285,7 +306,8 @@ class GLSPhenoplier(object):
     def fit_named(self, lv_code: str, phenotype):
         """
         Fits the GLS model with the given LV code/name and trait/phenotype
-        name/code or data.
+        name/code or data. According to the type of the 'phenotype' parameter, it calls either
+        '_fit_named_internal' (str) or '_fit_named_cli' (pd.Series).
 
         Args:
             lv_code:
