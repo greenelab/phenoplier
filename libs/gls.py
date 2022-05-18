@@ -1,6 +1,5 @@
 from functools import lru_cache
 
-import numpy as np
 import pandas as pd
 from scipy import stats
 import statsmodels.api as sm
@@ -41,8 +40,10 @@ class GLSPhenoplier(object):
             gene predicted expression correlation matrix is provided as this
             argument, and this parameter allows to override that.
         logger:
-            A Logger instance or None (in that case, warnings
-            will be printed using the warnings module and info message not displayed).
+            A Logger instance, the string "warnings_only" or None. If None, all logging and warning is disabled.
+            If "warnings_only", then warnings will be raised as python warnings using the warnings module.
+            If a Logger instance is provided, then the logger is used for everything (warnings and log messages).
+            Default: "warnings_only"
     """
 
     def __init__(
@@ -50,7 +51,7 @@ class GLSPhenoplier(object):
         smultixcan_result_set_filepath: str = None,
         model_type: str = "MASHR",
         sigma=None,
-        logger=None,
+        logger="warnings_only",
     ):
         self.smultixcan_result_set_filepath = conf.PHENOMEXCAN[
             "SMULTIXCAN_EFO_PARTIAL_MASHR_ZSCORES_FILE"
@@ -61,20 +62,28 @@ class GLSPhenoplier(object):
         self.model_type = model_type
         # sigma is disabled, but left here for future reference (debugging)
         # self.sigma = sigma
-        if logger is None:
-            import warnings
-
-            self.log_warning = lambda x: warnings.warn(x)
-            self.log_info = lambda x: None
-        else:
-            self.log_warning = logger.warning
-            self.log_info = logger.info
+        self.log_warning = None
+        self.log_info = None
+        self.set_logger(logger)
 
         self.lv_code = None
         self.phenotype_code = None
         self.model = None
         self.results = None
         self.results_summary = None
+
+    def set_logger(self, logger=None):
+        if logger == "warnings_only":
+            import warnings
+
+            self.log_warning = lambda x: warnings.warn(x)
+            self.log_info = lambda x: None
+        elif logger is None:
+            self.log_warning = lambda x: None
+            self.log_info = lambda x: None
+        else:
+            self.log_warning = logger.warning
+            self.log_info = logger.info
 
     @staticmethod
     @lru_cache(maxsize=None)
