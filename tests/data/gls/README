@@ -10,3 +10,5 @@ data.drop(columns=["pvalue"]).to_csv("random.pheno0-smultixcan-no_pvalue_column.
 # to generate a sample of the LV model
 z = pd.read_pickle("base/data/multiplier/multiplier_model_z.pkl")
 z.iloc[:, :5].astype("float32").to_pickle("tests/data/gls/sample-lv-model.pkl")
+
+z.iloc[:, :9].astype("float32").to_pickle("tests/data/gls/sample-lv-model-n9.pkl")

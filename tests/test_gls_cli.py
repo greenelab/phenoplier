@@ -1255,3 +1255,171 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_is_1(
     assert "LV4" in _lvs
     assert "LV5" in _lvs
     assert not output_data.isna().any().any()
+
+
+def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problematic_with_9_lvs(
+    output_file,
+):
+    # if the chuncker of LVs is not doing it right, here it wont separate the list of LVs into exactly the same
+    # number of chunks requested by --batch-n-splits
+
+    # batch 1
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model-n9.pkl"),
+            "--batch-id",
+            "1",
+            "--batch-n-splits",
+            "4",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using batch 1 out of 4" in r_output
+
+    assert output_file.exists()
+    output_data = pd.read_csv(output_file, sep="\t")
+    assert output_data.shape[0] == 3
+    assert "lv" in output_data.columns
+    assert "coef" in output_data.columns
+    assert "pvalue" in output_data.columns
+    _lvs = set(output_data["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not output_data.isna().any().any()
+    output_file.unlink()
+
+    # batch 2
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model-n9.pkl"),
+            "--batch-id",
+            "2",
+            "--batch-n-splits",
+            "4",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using batch 2 out of 4" in r_output
+
+    assert output_file.exists()
+    output_data = pd.read_csv(output_file, sep="\t")
+    assert output_data.shape[0] == 2  # 1 lvs tested
+    assert "lv" in output_data.columns
+    assert "coef" in output_data.columns
+    assert "pvalue" in output_data.columns
+    _lvs = set(output_data["lv"].tolist())
+    assert "LV4" in _lvs
+    assert "LV5" in _lvs
+    assert not output_data.isna().any().any()
+    output_file.unlink()
+
+    # batch 3
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model-n9.pkl"),
+            "--batch-id",
+            "3",
+            "--batch-n-splits",
+            "4",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using batch 3 out of 4" in r_output
+
+    assert output_file.exists()
+    output_data = pd.read_csv(output_file, sep="\t")
+    assert output_data.shape[0] == 2  # 1 lvs tested
+    assert "lv" in output_data.columns
+    assert "coef" in output_data.columns
+    assert "pvalue" in output_data.columns
+    _lvs = set(output_data["lv"].tolist())
+    assert "LV6" in _lvs
+    assert "LV7" in _lvs
+    assert not output_data.isna().any().any()
+    output_file.unlink()
+
+    # batch 4
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model-n9.pkl"),
+            "--batch-id",
+            "4",
+            "--batch-n-splits",
+            "4",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using batch 4 out of 4" in r_output
+
+    assert output_file.exists()
+    output_data = pd.read_csv(output_file, sep="\t")
+    assert output_data.shape[0] == 2  # 1 lvs tested
+    assert "lv" in output_data.columns
+    assert "coef" in output_data.columns
+    assert "pvalue" in output_data.columns
+    _lvs = set(output_data["lv"].tolist())
+    assert "LV8" in _lvs
+    assert "LV9" in _lvs
+    assert not output_data.isna().any().any()
+    output_file.unlink()
