@@ -61,7 +61,7 @@ def run():
         required=False,
         nargs="+",
         default=[],
-        help="List of LV identifiers on which an association will be computed.",
+        help="List of LV (gene modules) identifiers on which an association will be computed.",
     )
     parser.add_argument(
         "--batch-id",
@@ -123,6 +123,18 @@ def run():
     ):
         logger.error("--batch-id must be <= --batch-n-splits")
         sys.exit(2)
+
+    # check output file (should not exist)
+    output_file = Path(args.output_file)
+    if output_file.exists():
+        logger.warning(f"Skipping, output file exists: {str(output_file)}")
+        sys.exit(0)
+
+    if not output_file.parent.exists():
+        logger.error(
+            f"Parent directory of output file does not exist: {str(output_file.parent)}"
+        )
+        sys.exit(1)
 
     # check input file
     logger.info(f"Reading input file {args.input_file}")
@@ -213,7 +225,7 @@ def run():
         sys.exit(2)
 
     full_lvs_set = set(full_lvs_list)
-    logger.info(f"{len(full_lvs_set)} gene modules were found in LV model")
+    logger.info(f"{len(full_lvs_set)} LVs (gene modules) were found in LV model")
 
     if len(args.lv_list) > 0:
         selected_lvs = [lv for lv in args.lv_list if lv in full_lvs_set]
@@ -271,8 +283,8 @@ def run():
         )
 
     results = pd.DataFrame(results).set_index("lv")
-    logger.info(f"Writing results to {args.output_file}")
-    results.to_csv(args.output_file, sep="\t", na_rep="NA")
+    logger.info(f"Writing results to {str(output_file)}")
+    results.to_csv(output_file, sep="\t", na_rep="NA")
 
 
 if __name__ == "__main__":
