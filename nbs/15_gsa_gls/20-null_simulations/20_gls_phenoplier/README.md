@@ -36,13 +36,9 @@ python ~/projects/phenoplier/environment/scripts/setup_data.py \
     download_phenomexcan_gtex_gwas_pheno_info \
     download_gene_map_id_to_name \
     download_gene_map_name_to_id \
-    download_biomart_genes_hg38
+    download_biomart_genes_hg38 \
+    download_multiplier_model_z_pkl
 ```
-
-
-
-
-
 
 
 # Run cluster jobs
@@ -51,22 +47,30 @@ The `cluster_jobs/` folder has the job scripts to run on Penn's LPC cluster.
 To run the jobs in order, you need to execute the command below.
 The `_tmp` folder stores logs and needs to be created.
 
-## S-PrediXcan
+## GLS PhenoPLIER
 
-Here we need to use some templating, because we run across random phenotypes and tissues.
+Here we need to use some templating, because we run across random phenotypes and batches.
 
 ```bash
-mkdir -p _tmp/spredixcan
+mkdir -p _tmp/gls_phenoplier
 
-# iterate over all random phenotype ids and tissues
+# iterate over all random phenotype ids and batches
 # and submit a job for each combination
+export batch_n_splits=10
+
 for pheno_id in {0..99}; do
-  for tissue in ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_TISSUES}; do
-    export pheno_id tissue
-    cat cluster_jobs/01_spredixcan_job-template.sh | envsubst '${pheno_id} ${tissue}' | bsub
+  for ((batch_id=1; batch_id<=${batch_n_splits}; batch_id++)); do
+    export pheno_id batch_id
+    cat cluster_jobs/01_gls_phenoplier_job-template.sh | envsubst '${pheno_id} ${batch_id} ${batch_n_splits}' | bsub
   done
 done
 ```
+
+
+
+CONTINUE HERE
+
+
 
 The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
 * Check whether jobs finished successfully:
@@ -86,6 +90,17 @@ bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/spredixcan -p "INF
 There should be 4900 files (100 random phenotypes and 49 tissues) in the output directory.
 
 If any job failed, check `../10_gwas_harmonization/README.md`, which has python code to get a list of unfinished jobs.
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## S-MultiXcan
