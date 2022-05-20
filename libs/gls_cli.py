@@ -3,6 +3,7 @@ TODO
 """
 from pathlib import Path
 import sys
+import math
 import argparse
 import logging
 
@@ -11,6 +12,7 @@ import pandas as pd
 from scipy import stats
 
 from gls import GLSPhenoplier
+from utils import chunker
 
 LOG_FORMAT = "[%(asctime)s] %(levelname)s: %(message)s"
 logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
@@ -61,6 +63,18 @@ def run():
         default=[],
         help="List of LV identifiers on which an association will be computed.",
     )
+    parser.add_argument(
+        "--batch-id",
+        required=False,
+        type=int,
+        help="TODO",
+    )
+    parser.add_argument(
+        "--batch-n-splits",
+        required=False,
+        type=int,
+        help="TODO",
+    )
     # FIXME: add debug level
     # FIXME: add z-score or -log10(p) transformations
     # FIXME: covariates
@@ -70,12 +84,29 @@ def run():
 
     args = parser.parse_args()
 
+    # check compatibility of parameteres
+    if len(args.lv_list) > 0 and (args.batch_id is not None or args.batch_n_splits is not None):
+        logger.error("Incompatible parameters: LV list and batches cannot be used together")
+        sys.exit(2)
+
+    if (args.batch_id is not None and args.batch_n_splits is None) or (args.batch_id is None and args.batch_n_splits is not None):
+        logger.error("Both --batch-id and --batch-n-splits have to be provided (not only one of them)")
+        sys.exit(2)
+
+    if args.batch_id is not None and args.batch_id < 1:
+        logger.error("--batch-id must be >= 1")
+        sys.exit(2)
+
+    if args.batch_id is not None and args.batch_n_splits is not None and args.batch_id > args.batch_n_splits:
+        logger.error("--batch-id must be <= --batch-n-splits")
+        sys.exit(2)
+
     # check input file
     logger.info(f"Reading input file {args.input_file}")
     input_file = Path(args.input_file).resolve()
     if not input_file.exists():
         logger.error("Input file does not exist")
-        sys.exit(1)
+        sys.exit(2)
 
     # read
     data = pd.read_csv(input_file, sep="\t")
@@ -129,12 +160,16 @@ def run():
         lv_model_file = Path(args.lv_model_file)
         # FIXME: check that file exists
         logger.info(f"Reading LV model file: {str(lv_model_file)}")
-        full_lvs_set = GLSPhenoplier._get_lv_weights(lv_model_file).columns
+        full_lvs_list = GLSPhenoplier._get_lv_weights(lv_model_file).columns.tolist()
     else:
-        full_lvs_set = GLSPhenoplier._get_lv_weights().columns
+        full_lvs_list = GLSPhenoplier._get_lv_weights().columns.tolist()
 
-    full_lvs_set = set(full_lvs_set)
-    logger.info(f"{len(full_lvs_set)} gene modules in LV models")
+    if args.batch_n_splits is not None and args.batch_n_splits > len(full_lvs_list):
+        logger.error(f"--batch-n-splits cannot be greater than LVs in the model ({len(full_lvs_list)} LVs)")
+        sys.exit(2)
+
+    full_lvs_set = set(full_lvs_list)
+    logger.info(f"{len(full_lvs_set)} gene modules were found in LV model")
 
     if len(args.lv_list) > 0:
         selected_lvs = [lv for lv in args.lv_list if lv in full_lvs_set]
@@ -142,8 +177,14 @@ def run():
             f"A list of {len(args.lv_list)} LVs was provided, and {len(selected_lvs)} are present in LV models"
         )
     else:
-        selected_lvs = list(full_lvs_set)
+        selected_lvs = full_lvs_list
         logger.info("All LVs in models will be used")
+
+    if args.batch_id is not None and args.batch_n_splits is not None:
+        chunk_size = int(math.ceil(len(selected_lvs) / args.batch_n_splits))
+        selected_lvs_chunks = list(chunker(selected_lvs, chunk_size))
+        selected_lvs = selected_lvs_chunks[args.batch_id - 1]
+        logger.info(f"Using batch {args.batch_id} out of {args.batch_n_splits} ({len(selected_lvs)} LVs selected)")
 
     if len(selected_lvs) == 0:
         logger.error("No LVs were selected")
