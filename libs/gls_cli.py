@@ -171,7 +171,7 @@ def run():
     # unique index (gene names)
     if not data.index.is_unique:
         logger.error(
-            "Duplicated genes in input data. Use option --remove-duplicated-genes if you want to skip them."
+            "Duplicated genes in input data. Use option --duplicated-genes-action if you want to skip them."
         )
         sys.exit(1)
 
