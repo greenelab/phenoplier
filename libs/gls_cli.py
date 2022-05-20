@@ -3,7 +3,6 @@ TODO
 """
 from pathlib import Path
 import sys
-import math
 import argparse
 import logging
 
@@ -12,7 +11,6 @@ import pandas as pd
 from scipy import stats
 
 from gls import GLSPhenoplier
-from utils import chunker
 
 LOG_FORMAT = "[%(asctime)s] %(levelname)s: %(message)s"
 logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
@@ -237,8 +235,9 @@ def run():
         logger.info("All LVs in models will be used")
 
     if args.batch_id is not None and args.batch_n_splits is not None:
-        chunk_size = int(math.ceil(len(selected_lvs) / args.batch_n_splits))
-        selected_lvs_chunks = list(chunker(selected_lvs, chunk_size))
+        selected_lvs_chunks = [
+            ar.tolist() for ar in np.array_split(selected_lvs, args.batch_n_splits)
+        ]
         selected_lvs = selected_lvs_chunks[args.batch_id - 1]
         logger.info(
             f"Using batch {args.batch_id} out of {args.batch_n_splits} ({len(selected_lvs)} LVs selected)"
