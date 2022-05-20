@@ -280,9 +280,9 @@ def download_lincs_consensus_signatures(**kwargs):
 def download_precomputed_gene_correlations(**kwargs):
     output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["GENE_NAMES_CORR_AVG"]
     curl(
-        "https://upenn.box.com/shared/static/xopvxtlj44t4tswz3zzz8uxr6z7dzk0w.pkl",
+        "https://upenn.box.com/shared/static/g5chmoodx7fet50o1uqnxclugzpu2cdm.pkl",
         output_file,
-        "cb2f7cabc1aa399a80699076b162a261",
+        "4ed7c44c897a330799d62a1c2f676168",
         logger=logger,
     )
 
