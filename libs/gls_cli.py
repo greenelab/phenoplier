@@ -75,6 +75,13 @@ def run():
         type=int,
         help="TODO",
     )
+    parser.add_argument(
+        "--duplicated-genes-action",
+        required=False,
+        choices=["keep-first", "keep-last", "remove-all"],
+        # default="keep-first",
+        help="TODO",
+    )
     # FIXME: add debug level
     # FIXME: add z-score or -log10(p) transformations
     # FIXME: covariates
@@ -82,22 +89,38 @@ def run():
     # FIXME: check output file does not exist
     # FIXME: check output file parent DOES exist
 
+    # FIXME: when building the files related to a prediction model (mashr, etc), cnosider this:
+    #  - a file with lv weights (independent of predixcan prediction model type)
+    #  - gene corrs (dependent on prediction model type, because it uses weights)
+
     args = parser.parse_args()
 
     # check compatibility of parameteres
-    if len(args.lv_list) > 0 and (args.batch_id is not None or args.batch_n_splits is not None):
-        logger.error("Incompatible parameters: LV list and batches cannot be used together")
+    if len(args.lv_list) > 0 and (
+        args.batch_id is not None or args.batch_n_splits is not None
+    ):
+        logger.error(
+            "Incompatible parameters: LV list and batches cannot be used together"
+        )
         sys.exit(2)
 
-    if (args.batch_id is not None and args.batch_n_splits is None) or (args.batch_id is None and args.batch_n_splits is not None):
-        logger.error("Both --batch-id and --batch-n-splits have to be provided (not only one of them)")
+    if (args.batch_id is not None and args.batch_n_splits is None) or (
+        args.batch_id is None and args.batch_n_splits is not None
+    ):
+        logger.error(
+            "Both --batch-id and --batch-n-splits have to be provided (not only one of them)"
+        )
         sys.exit(2)
 
     if args.batch_id is not None and args.batch_id < 1:
         logger.error("--batch-id must be >= 1")
         sys.exit(2)
 
-    if args.batch_id is not None and args.batch_n_splits is not None and args.batch_id > args.batch_n_splits:
+    if (
+        args.batch_id is not None
+        and args.batch_n_splits is not None
+        and args.batch_id > args.batch_n_splits
+    ):
         logger.error("--batch-id must be <= --batch-n-splits")
         sys.exit(2)
 
@@ -128,9 +151,28 @@ def run():
         .rename(input_phenotype_name)
     )
 
+    # remove duplicated gene entries
+    if args.duplicated_genes_action is not None:
+        keep_action = None
+
+        if args.duplicated_genes_action.startswith("keep"):
+            keep_action = args.duplicated_genes_action.split("-")[1]
+        elif args.duplicated_genes_action == "remove-all":
+            keep_action = False
+        else:
+            raise ValueError("Wrong --duplicated-genes-action value")
+
+        data = data.loc[~data.index.duplicated(keep=keep_action)]
+
+        logger.info(
+            f"Removed duplicated genes symbols using '{args.duplicated_genes_action}'. Data now has {data.shape[0]} genes"
+        )
+
     # unique index (gene names)
     if not data.index.is_unique:
-        logger.error("Duplicated gene names in input data")
+        logger.error(
+            "Duplicated genes in input data. Use option --remove-duplicated-genes if you want to skip them."
+        )
         sys.exit(1)
 
     # pvalues stats
@@ -150,7 +192,7 @@ def run():
     if max_pval > 1.0:
         logger.warning("Some p-values are greater than 1.0")
 
-    # TODO: convert to -log10 or z-score
+    # TODO: add optional parameter to convert using either -log10 or z-score
     data = pd.Series(data=np.abs(stats.norm.ppf(data / 2)), index=data.index.copy())
     # data = -np.log10(data)
 
@@ -165,7 +207,9 @@ def run():
         full_lvs_list = GLSPhenoplier._get_lv_weights().columns.tolist()
 
     if args.batch_n_splits is not None and args.batch_n_splits > len(full_lvs_list):
-        logger.error(f"--batch-n-splits cannot be greater than LVs in the model ({len(full_lvs_list)} LVs)")
+        logger.error(
+            f"--batch-n-splits cannot be greater than LVs in the model ({len(full_lvs_list)} LVs)"
+        )
         sys.exit(2)
 
     full_lvs_set = set(full_lvs_list)
@@ -184,7 +228,9 @@ def run():
         chunk_size = int(math.ceil(len(selected_lvs) / args.batch_n_splits))
         selected_lvs_chunks = list(chunker(selected_lvs, chunk_size))
         selected_lvs = selected_lvs_chunks[args.batch_id - 1]
-        logger.info(f"Using batch {args.batch_id} out of {args.batch_n_splits} ({len(selected_lvs)} LVs selected)")
+        logger.info(
+            f"Using batch {args.batch_id} out of {args.batch_n_splits} ({len(selected_lvs)} LVs selected)"
+        )
 
     if len(selected_lvs) == 0:
         logger.error("No LVs were selected")

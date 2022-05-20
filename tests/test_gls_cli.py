@@ -124,6 +124,8 @@ def test_gls_cli_single_smultixcan_repeated_gene_names():
             str(DATA_DIR / "random.pheno0-smultixcan-repeated_gene_names.txt"),
             "-o",
             Path(TEMP_DIR) / "out.tsv",
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -133,9 +135,202 @@ def test_gls_cli_single_smultixcan_repeated_gene_names():
     r_output = r.stdout.decode("utf-8")
     assert r_output is not None
     assert len(r_output) > 1, r_output
+
+    print(r_output)
     assert "Reading input file" in r_output
     assert "ERROR:" in r_output
-    assert "Duplicated gene names" in r_output
+    assert "Duplicated genes" in r_output
+
+
+def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_first():
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-repeated_gene_names.txt"),
+            "-o",
+            Path(TEMP_DIR) / "out.tsv",
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
+            "--duplicated-genes-action",
+            "keep-first",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    assert r_output is not None
+
+    print(r_output)
+    assert r.returncode == 0
+    assert len(r_output) > 1, r_output
+    assert "Reading input file" in r_output
+    assert "Input file has 54 genes" in r_output
+    assert "Removed duplicated genes symbols using 'keep-first'. Data now has 53 genes" in r_output
+
+
+def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last():
+    output_file = Path(TEMP_DIR) / "out.tsv"
+
+    # run keep-first first, and then check that results are not the same with keep-last
+
+    # with keep-first
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-repeated_gene_names.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
+            "--duplicated-genes-action",
+            "keep-first",
+            "-l",
+            "LV1",
+            "LV5",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    assert r_output is not None
+    print (r_output)
+    assert r.returncode == 0
+
+    assert output_file.exists()
+    output_data = pd.read_csv(output_file, sep="\t")
+    assert not output_data.isna().any().any()
+    keep_first_results = output_data
+
+    # with keep-last
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-repeated_gene_names.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
+            "--duplicated-genes-action",
+            "keep-last",
+            "-l",
+            "LV1",
+            "LV5",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    assert r_output is not None
+
+    print(r_output)
+    assert r.returncode == 0
+    assert len(r_output) > 1, r_output
+    assert "Removed duplicated genes symbols using 'keep-last'. Data now has 53 genes" in r_output
+
+    assert output_file.exists()
+    output_data = pd.read_csv(output_file, sep="\t")
+    assert not output_data.isna().any().any()
+    keep_last_results = output_data
+
+    # results should be different across batches
+    assert not np.allclose(
+        keep_first_results["coef"].to_numpy(),
+        keep_last_results["coef"].to_numpy(),
+    )
+    assert not np.allclose(
+        keep_first_results["pvalue"].to_numpy(),
+        keep_last_results["pvalue"].to_numpy(),
+    )
+
+
+def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_all():
+    output_file = Path(TEMP_DIR) / "out.tsv"
+
+    # run keep-last first, and then check that results with remove-all are different
+
+    # with keep-last
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-repeated_gene_names.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
+            "--duplicated-genes-action",
+            "keep-last",
+            "-l",
+            "LV1",
+            "LV5",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    assert r_output is not None
+    print (r_output)
+    assert r.returncode == 0
+
+    assert output_file.exists()
+    output_data = pd.read_csv(output_file, sep="\t")
+    assert not output_data.isna().any().any()
+    keep_last_results = output_data
+
+    # with remove-all
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-repeated_gene_names.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
+            "--duplicated-genes-action",
+            "remove-all",
+            "-l",
+            "LV1",
+            "LV5",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    assert r_output is not None
+
+    print(r_output)
+    assert r.returncode == 0
+    assert len(r_output) > 1, r_output
+    assert "Removed duplicated genes symbols using 'remove-all'. Data now has 52 genes" in r_output
+
+    assert output_file.exists()
+    output_data = pd.read_csv(output_file, sep="\t")
+    assert not output_data.isna().any().any()
+    remove_all_results = output_data
+
+    # results should be different across batches
+    assert not np.allclose(
+        keep_last_results["coef"].to_numpy(),
+        remove_all_results["coef"].to_numpy(),
+    )
+    assert not np.allclose(
+        keep_last_results["pvalue"].to_numpy(),
+        remove_all_results["pvalue"].to_numpy(),
+    )
 
 
 def test_gls_cli_single_smultixcan_input_full_subset_of_lvs():
