@@ -35,7 +35,7 @@ def chunker(seq, size):
 
         [0,1,2,3,4,5,6,7]
 
-    and size 3, it will return
+    and size is 3, it will return
 
         [[0, 1, 2], [3, 4, 5], [6, 7]]
     """
