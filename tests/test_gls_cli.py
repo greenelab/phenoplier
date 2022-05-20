@@ -4,6 +4,7 @@ import tempfile
 
 import numpy as np
 import pandas as pd
+import pytest
 
 import gls_cli
 
@@ -15,6 +16,15 @@ DATA_DIR = (Path(__file__).parent / "data" / "gls").resolve()
 assert DATA_DIR.exists()
 
 TEMP_DIR = tempfile.mkdtemp()
+
+
+@pytest.fixture()
+def output_file():
+    # print("setup")
+    out_file = Path(TEMP_DIR) / "out.tsv"
+    yield out_file
+    if out_file.exists():
+        out_file.unlink()
 
 
 def test_gls_cli_without_parameters():
@@ -48,7 +58,7 @@ def test_gls_cli_help():
     assert "PhenoPLIER command line tool" in r_output
 
 
-def test_gls_cli_input_file_does_not_exist():
+def test_gls_cli_input_file_does_not_exist(output_file):
     r = subprocess.run(
         [
             "python",
@@ -56,7 +66,7 @@ def test_gls_cli_input_file_does_not_exist():
             "-i",
             str(DATA_DIR / "does_not_exist.txt"),
             "-o",
-            Path(TEMP_DIR) / "out.tsv",
+            output_file,
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -66,10 +76,76 @@ def test_gls_cli_input_file_does_not_exist():
     r_output = r.stdout.decode("utf-8")
     assert r_output is not None
     assert len(r_output) > 1, r_output
+    assert "ERROR" in r_output
     assert "Input file does not exist" in r_output
 
 
-def test_gls_cli_single_smultixcan_no_gene_name_column():
+def test_gls_cli_output_file_does_exist(output_file):
+    # create output file
+    with open(output_file, "a"):
+        pass
+
+    assert output_file.exists()
+
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    assert r.returncode == 0
+    r_output = r.stdout.decode("utf-8")
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "WARNING" in r_output
+    assert "Skipping, output file exists" in r_output
+
+    import os
+
+    assert os.stat(output_file).st_size == 0, "Output file size is not empty"
+
+
+def test_gls_cli_parent_of_output_file_does_not_exist():
+    output_file = Path(TEMP_DIR) / "some_dir" / "out.tsv"
+
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    assert r.returncode == 1
+    r_output = r.stdout.decode("utf-8")
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    print(r_output)
+    assert "ERROR" in r_output
+    assert "Parent directory of output file does not exist" in r_output
+
+    assert not output_file.exists()
+
+
+def test_gls_cli_single_smultixcan_no_gene_name_column(output_file):
     r = subprocess.run(
         [
             "python",
@@ -77,7 +153,7 @@ def test_gls_cli_single_smultixcan_no_gene_name_column():
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-no_gene_name_column.txt"),
             "-o",
-            Path(TEMP_DIR) / "out.tsv",
+            output_file,
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -92,7 +168,7 @@ def test_gls_cli_single_smultixcan_no_gene_name_column():
     assert "'gene_name'" in r_output
 
 
-def test_gls_cli_single_smultixcan_no_pvalue_column():
+def test_gls_cli_single_smultixcan_no_pvalue_column(output_file):
     r = subprocess.run(
         [
             "python",
@@ -100,7 +176,7 @@ def test_gls_cli_single_smultixcan_no_pvalue_column():
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-no_pvalue_column.txt"),
             "-o",
-            Path(TEMP_DIR) / "out.tsv",
+            output_file,
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -115,7 +191,7 @@ def test_gls_cli_single_smultixcan_no_pvalue_column():
     assert "'pvalue'" in r_output
 
 
-def test_gls_cli_single_smultixcan_repeated_gene_names():
+def test_gls_cli_single_smultixcan_repeated_gene_names(output_file):
     r = subprocess.run(
         [
             "python",
@@ -123,7 +199,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names():
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-repeated_gene_names.txt"),
             "-o",
-            Path(TEMP_DIR) / "out.tsv",
+            output_file,
             "-p",
             str(DATA_DIR / "sample-lv-model.pkl"),
         ],
@@ -142,7 +218,9 @@ def test_gls_cli_single_smultixcan_repeated_gene_names():
     assert "Duplicated genes" in r_output
 
 
-def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_first():
+def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_first(
+    output_file,
+):
     r = subprocess.run(
         [
             "python",
@@ -150,7 +228,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_firs
             "-i",
             str(DATA_DIR / "random.pheno0-smultixcan-repeated_gene_names.txt"),
             "-o",
-            Path(TEMP_DIR) / "out.tsv",
+            output_file,
             "-p",
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--duplicated-genes-action",
@@ -174,9 +252,9 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_firs
     )
 
 
-def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last():
-    output_file = Path(TEMP_DIR) / "out.tsv"
-
+def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last(
+    output_file,
+):
     # run keep-first first, and then check that results are not the same with keep-last
 
     # with keep-first
@@ -209,6 +287,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
     output_data = pd.read_csv(output_file, sep="\t")
     assert not output_data.isna().any().any()
     keep_first_results = output_data
+    output_file.unlink()
 
     # with keep-last
     r = subprocess.run(
@@ -258,9 +337,9 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
     )
 
 
-def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_all():
-    output_file = Path(TEMP_DIR) / "out.tsv"
-
+def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_all(
+    output_file,
+):
     # run keep-last first, and then check that results with remove-all are different
 
     # with keep-last
@@ -293,6 +372,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
     output_data = pd.read_csv(output_file, sep="\t")
     assert not output_data.isna().any().any()
     keep_last_results = output_data
+    output_file.unlink()
 
     # with remove-all
     r = subprocess.run(
@@ -342,9 +422,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
     )
 
 
-def test_gls_cli_single_smultixcan_input_full_subset_of_lvs():
-    output_file = Path(TEMP_DIR) / "out.tsv"
-
+def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
     r = subprocess.run(
         [
             "python",
@@ -389,9 +467,9 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs():
     assert not output_data.isna().any().any()
 
 
-def test_gls_cli_single_smultixcan_input_full_subset_of_lvs_none_exist_in_models():
-    output_file = Path(TEMP_DIR) / "out.tsv"
-
+def test_gls_cli_single_smultixcan_input_full_subset_of_lvs_none_exist_in_models(
+    output_file,
+):
     r = subprocess.run(
         [
             "python",
@@ -419,9 +497,7 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs_none_exist_in_models
     assert "No LVs were selected" in r_output
 
 
-def test_gls_cli_single_smultixcan_input_full_all_lvs_in_model_file():
-    output_file = Path(TEMP_DIR) / "out.tsv"
-
+def test_gls_cli_single_smultixcan_input_full_all_lvs_in_model_file(output_file):
     r = subprocess.run(
         [
             "python",
@@ -465,9 +541,7 @@ def test_gls_cli_single_smultixcan_input_full_all_lvs_in_model_file():
     assert not output_data.isna().any().any()
 
 
-def test_gls_cli_use_incompatible_parameters_batch_and_lv_list():
-    output_file = Path(TEMP_DIR) / "out.tsv"
-
+def test_gls_cli_use_incompatible_parameters_batch_and_lv_list(output_file):
     # batch 1
     r = subprocess.run(
         [
@@ -501,9 +575,7 @@ def test_gls_cli_use_incompatible_parameters_batch_and_lv_list():
     assert "Incompatible parameters" in r_output
 
 
-def test_gls_cli_batch_parameters_batch_n_splits_missing():
-    output_file = Path(TEMP_DIR) / "out.tsv"
-
+def test_gls_cli_batch_parameters_batch_n_splits_missing(output_file):
     # batch 1
     r = subprocess.run(
         [
@@ -531,9 +603,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_missing():
     assert "Both --batch-id and --batch-n-splits" in r_output
 
 
-def test_gls_cli_batch_parameters_batch_id_missing():
-    output_file = Path(TEMP_DIR) / "out.tsv"
-
+def test_gls_cli_batch_parameters_batch_id_missing(output_file):
     # batch 1
     r = subprocess.run(
         [
@@ -561,9 +631,7 @@ def test_gls_cli_batch_parameters_batch_id_missing():
     assert "Both --batch-id and --batch-n-splits" in r_output
 
 
-def test_gls_cli_batch_parameters_batch_id_value_invalid():
-    output_file = Path(TEMP_DIR) / "out.tsv"
-
+def test_gls_cli_batch_parameters_batch_id_value_invalid(output_file):
     # batch id is not an integer
     r = subprocess.run(
         [
@@ -677,9 +745,7 @@ def test_gls_cli_batch_parameters_batch_id_value_invalid():
     assert "ERROR: --batch-id must be <= --batch-n-splits" in r_output
 
 
-def test_gls_cli_batch_parameters_batch_n_splits_value_invalid():
-    output_file = Path(TEMP_DIR) / "out.tsv"
-
+def test_gls_cli_batch_parameters_batch_n_splits_value_invalid(output_file):
     # batch n splits is not an integer
     r = subprocess.run(
         [
@@ -796,9 +862,7 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid():
     )
 
 
-def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits():
-    output_file = Path(TEMP_DIR) / "out.tsv"
-
+def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_file):
     # batch 1
     r = subprocess.run(
         [
@@ -838,6 +902,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits():
     assert "LV2" in _lvs
     assert not output_data.isna().any().any()
     batch1_values = output_data
+    output_file.unlink()
 
     # batch 2
     r = subprocess.run(
@@ -878,6 +943,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits():
     assert "LV4" in _lvs
     assert not output_data.isna().any().any()
     batch2_values = output_data
+    output_file.unlink()
 
     # batch 3
     r = subprocess.run(
@@ -947,9 +1013,9 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits():
     )
 
 
-def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_same_size_of_1():
-    output_file = Path(TEMP_DIR) / "out.tsv"
-
+def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_same_size_of_1(
+    output_file,
+):
     # batch 1
     r = subprocess.run(
         [
@@ -987,6 +1053,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert not output_data.isna().any().any()
+    output_file.unlink()
 
     # batch 2
     r = subprocess.run(
@@ -1025,6 +1092,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     _lvs = set(output_data["lv"].tolist())
     assert "LV2" in _lvs
     assert not output_data.isna().any().any()
+    output_file.unlink()
 
     # batch 3
     r = subprocess.run(
@@ -1063,6 +1131,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     _lvs = set(output_data["lv"].tolist())
     assert "LV3" in _lvs
     assert not output_data.isna().any().any()
+    output_file.unlink()
 
     # batch 4
     r = subprocess.run(
@@ -1101,6 +1170,7 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     _lvs = set(output_data["lv"].tolist())
     assert "LV4" in _lvs
     assert not output_data.isna().any().any()
+    output_file.unlink()
 
     # batch 5
     r = subprocess.run(
@@ -1141,9 +1211,9 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     assert not output_data.isna().any().any()
 
 
-def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_is_1():
-    output_file = Path(TEMP_DIR) / "out.tsv"
-
+def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_is_1(
+    output_file,
+):
     # batch 1
     r = subprocess.run(
         [
