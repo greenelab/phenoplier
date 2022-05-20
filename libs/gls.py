@@ -269,7 +269,13 @@ class GLSPhenoplier(object):
         ), "The name property of x has to have a valid LV identifier (str starting with 'LV')"
 
         # remove missing values from gene-trait associations
+        n_genes_orig = y.shape[0]
         y = y.dropna()
+        n_genes_without_nan = y.shape[0]
+        if n_genes_orig != n_genes_without_nan:
+            self.log_warning(
+                f"{n_genes_orig- n_genes_without_nan} genes with missing values have been removed"
+            )
 
         # make sure data is aligned
         n_genes_orig_phenotype = y.shape[0]

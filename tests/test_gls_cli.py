@@ -168,7 +168,10 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_firs
     assert len(r_output) > 1, r_output
     assert "Reading input file" in r_output
     assert "Input file has 54 genes" in r_output
-    assert "Removed duplicated genes symbols using 'keep-first'. Data now has 53 genes" in r_output
+    assert (
+        "Removed duplicated genes symbols using 'keep-first'. Data now has 53 genes"
+        in r_output
+    )
 
 
 def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last():
@@ -199,7 +202,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
     assert r is not None
     r_output = r.stdout.decode("utf-8")
     assert r_output is not None
-    print (r_output)
+    print(r_output)
     assert r.returncode == 0
 
     assert output_file.exists()
@@ -234,7 +237,10 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
     print(r_output)
     assert r.returncode == 0
     assert len(r_output) > 1, r_output
-    assert "Removed duplicated genes symbols using 'keep-last'. Data now has 53 genes" in r_output
+    assert (
+        "Removed duplicated genes symbols using 'keep-last'. Data now has 53 genes"
+        in r_output
+    )
 
     assert output_file.exists()
     output_data = pd.read_csv(output_file, sep="\t")
@@ -280,7 +286,7 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
     assert r is not None
     r_output = r.stdout.decode("utf-8")
     assert r_output is not None
-    print (r_output)
+    print(r_output)
     assert r.returncode == 0
 
     assert output_file.exists()
@@ -315,7 +321,10 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
     print(r_output)
     assert r.returncode == 0
     assert len(r_output) > 1, r_output
-    assert "Removed duplicated genes symbols using 'remove-all'. Data now has 52 genes" in r_output
+    assert (
+        "Removed duplicated genes symbols using 'remove-all'. Data now has 52 genes"
+        in r_output
+    )
 
     assert output_file.exists()
     output_data = pd.read_csv(output_file, sep="\t")
@@ -361,6 +370,7 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs():
     assert len(r_output) > 1, r_output
     assert "Reading input file" in r_output
     assert "Input file has 54 genes" in r_output
+    assert "3 genes with missing values have been removed" in r_output
     assert (
         "p-values statistics: min=3.2e-05 | mean=2.2e-03 | max=6.3e-03 | # missing=3 (5.6%)"
         in r_output
@@ -780,7 +790,10 @@ def test_gls_cli_batch_parameters_batch_n_splits_value_invalid():
     assert r.returncode == 2
     assert r_output is not None
     assert len(r_output) > 1, r_output
-    assert "ERROR: --batch-n-splits cannot be greater than LVs in the model (5 LVs)" in r_output
+    assert (
+        "ERROR: --batch-n-splits cannot be greater than LVs in the model (5 LVs)"
+        in r_output
+    )
 
 
 def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits():
