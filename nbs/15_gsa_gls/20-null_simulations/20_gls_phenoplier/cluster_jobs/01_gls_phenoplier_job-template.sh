@@ -6,8 +6,8 @@
 # -#BSUB -u miltondp@gmail.com
 # -#BSUB -N
 # BSUB -n 2
-# BSUB -R "rusage[mem=8GB]"
-# BSUB -M 8GB
+# BSUB -R "rusage[mem=3GB]"
+# BSUB -M 3GB
 # BSUB -W 1:00
 
 # IMPORTANT: this is not a ready-for-submission script, it's a template.
