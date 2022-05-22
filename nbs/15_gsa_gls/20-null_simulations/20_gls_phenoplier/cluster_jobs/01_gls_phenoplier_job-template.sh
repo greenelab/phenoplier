@@ -32,5 +32,5 @@ bash ${CODE_DIR}/01_gls_phenoplier.sh \
   --input-file ${INPUT_SMULTIXCAN_DIR}/random.pheno${pheno_id}-gtex_v8-mashr-smultixcan.txt \
   --batch-id ${batch_id} \
   --batch-n-splits ${batch_n_splits} \
-  --output-file ${OUTPUT_DIR}/random.pheno${pheno_id}-batch${batch_id}_${batch_n_splits}-gls_phenomexcan.tsv.gz
+  --output-file ${OUTPUT_DIR}/random.pheno${pheno_id}-batch${batch_id}_${batch_n_splits}-gls_phenoplier.tsv.gz
 
