@@ -65,55 +65,21 @@ for pheno_id in {0..99}; do
   done
 done
 ```
-
-
-
-CONTINUE HERE
-
-
-
 The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
 * Check whether jobs finished successfully:
 ```bash
-bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/spredixcan -p "INFO - Sucessfully processed metaxcan association"
+bash check_job.sh -i _tmp/gls_phenoplier/ -p "INFO: Writing results to" -f '*.error'
+
+# A success output would look like this:
+
+Finished checking 1000 logs:
+  All jobs finished successfully
 ```
 
-* Check that at least 90% of SNPs in models were used:
-```bash
-bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/spredixcan -p "INFO - 90 % of model's snps"
-
-# success output:
-# Finished checking 4900 logs:
-#  All jobs finished successfully
-```
-
-There should be 4900 files (100 random phenotypes and 49 tissues) in the output directory.
+There should be 1000 files (100 random phenotypes and 10 batch splits) in the output directory.
 
 If any job failed, check `../10_gwas_harmonization/README.md`, which has python code to get a list of unfinished jobs.
-
-
-
-
-
-
-
-
-
-
-
-
-
-## S-MultiXcan
-
-```bash
-mkdir -p _tmp/smultixcan
-cat cluster_jobs/05_smultixcan_job.sh | bsub
-```
-
-The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
-`bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan -p "INFO - Ran multi tissue"`
-
-There should be 100 files in the output directory: 100 random phenotypes.
+It will need to be adapted for these tasks.
 
 
 ## Monitoring jobs
@@ -124,9 +90,7 @@ Or, for a constantly-updated monitoring (refreshing every 2 seconds):
 watch -n 2 bjobs
 ```
 
-Logs for `random_pheno0` are in `random_pheno1.*` (indexes are different because LPC arrays cannot start with zero).
-
-
 # QQ plots
 
-Notebook `15-twas-qqplot.ipynb` checks that the distribution of pvalues is as expected.
+Notebook `05-twas-qqplot.ipynb` checks that the distribution of pvalues is as expected.
+
