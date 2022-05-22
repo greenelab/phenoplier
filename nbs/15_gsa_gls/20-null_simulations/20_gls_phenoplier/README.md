@@ -81,6 +81,26 @@ There should be 1000 files (100 random phenotypes and 10 batch splits) in the ou
 If any job failed, check `../10_gwas_harmonization/README.md`, which has python code to get a list of unfinished jobs.
 It will need to be adapted for these tasks.
 
+## Combine batches
+
+```python
+import itertools
+from pathlib import Path
+
+import pandas as pd
+
+RESULTS_DIR = Path(os.environ["PHENOPLIER_RESULTS_GLS_NULL_SIMS"]) / "phenoplier/gls/"
+all_results_files = sorted(list(f.name for f in RESULTS_DIR.glob("*.tsv.gz")))
+
+all_dfs = []
+for key, group in itertools.groupby(all_results_files, lambda x: x.split("-")[0]):
+    all_dfs = [pd.read_csv(RESULTS_DIR / gf, sep="\t", index_col="lv") for gf in group]
+    all_dfs = pd.concat(all_dfs, axis=0)
+    assert all_dfs.shape == (987, 2)
+    all_dfs = all_dfs.sort_index()
+    all_dfs.to_csv(RESULTS_DIR / f"{key}-gls_phenoplier.tsv.gz", sep="\t")
+```
+
 
 ## Monitoring jobs
 
