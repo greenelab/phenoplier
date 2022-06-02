@@ -6,8 +6,8 @@
 # -#BSUB -u miltondp@gmail.com
 # -#BSUB -N
 # BSUB -n 1
-# BSUB -R "rusage[mem=8GB]"
-# BSUB -M 8GB
+# BSUB -R "rusage[mem=1GB]"
+# BSUB -M 1GB
 # BSUB -W 0:10
 
 # make sure we use the number of CPUs specified
@@ -18,6 +18,9 @@ export OPEN_BLAS_NUM_THREADS=1
 export NUMEXPR_NUM_THREADS=1
 export OMP_NUM_THREADS=1
 
+CODE_DIR=${PHENOPLIER_CODE_DIR}/nbs/15_gsa_gls/03_gtex_v8
+
+# Generate the GTEx ancestry file
 python << END
 import pandas as pd
 
@@ -34,4 +37,7 @@ assert _tmp.shape == (866, 2)
 # save
 _tmp.to_csv(OUTPUT_DIR / "GTEx_ethnicity.txt", sep="\t", index=False)
 END
+
+# Separate samples by ancestry
+Rscript ${CODE_DIR}/01_10-samples_by_ethnicity.r
 
