@@ -15,7 +15,7 @@
 
 # make sure we use the number of CPUs specified
 export n_jobs=2
-export CM_N_JOBS=${n_jobs}
+export PHENOPLIER_N_JOBS=${n_jobs}
 export NUMBA_NUM_THREADS=${n_jobs}
 export MKL_NUM_THREADS=${n_jobs}
 export OPEN_BLAS_NUM_THREADS=${n_jobs}
