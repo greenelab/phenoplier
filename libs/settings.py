@@ -26,6 +26,11 @@ ROOT_DIR = None
 # Environment variable: PHENOPLIER_MANUSCRIPT_DIR
 MANUSCRIPT_DIR = None
 
+# GTEx v8 data directory: it contains protected data files
+#
+# Environment variable: PHENOPLIER_GTEX_V8_DIR
+GTEX_V8_DIR = None
+
 
 #
 # CPU usage

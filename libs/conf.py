@@ -385,6 +385,19 @@ A1000G["BASE_DIR"] = Path(DATA_DIR, "1000g").resolve()
 A1000G["GENOTYPES_DIR"] = Path(A1000G["BASE_DIR"], "genotypes").resolve()
 
 
+#
+# External paths (outside ROOT_DIR)
+#
+EXTERNAL = {}
+
+# GTEx v8
+EXTERNAL["GTEX_V8_DIR"] = os.environ.get("PHENOPLIER_GTEX_V8_DIR")
+if EXTERNAL["GTEX_V8_DIR"] is None and hasattr(settings, "GTEX_V8_DIR"):
+    EXTERNAL["GTEX_V8_DIR"] = settings.GTEX_V8_DIR
+if EXTERNAL["GTEX_V8_DIR"] is not None:
+    EXTERNAL["GTEX_V8_DIR"] = Path(EXTERNAL["GTEX_V8_DIR"]).resolve()
+
+
 if __name__ == "__main__":
     # if this script is run, then it exports the configuration as environment
     # variables (for bash/R, etc)
