@@ -55,3 +55,11 @@ bash 01_05-download.sh
 mkdir -p _tmp
 cat 01_10-samples_ancestry.sh | bsub
 ```
+
+## Genotype dosage
+
+```bash
+mkdir -p _tmp
+cat 03_05-genotype_dosage.sh | bsub
+```
+
