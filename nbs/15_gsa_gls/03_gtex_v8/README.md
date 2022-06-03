@@ -70,3 +70,10 @@ mkdir -p _tmp
 cat 05_05-variant_selection.sh | bsub
 ```
 
+## Genotype compilation
+
+```bash
+mkdir -p _tmp
+cat 07_05-genotype_compilation.sh | bsub
+```
+
