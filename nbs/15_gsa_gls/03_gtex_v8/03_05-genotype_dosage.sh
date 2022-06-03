@@ -8,7 +8,7 @@
 # BSUB -n 1
 # BSUB -R "rusage[mem=5GB]"
 # BSUB -M 5GB
-# BSUB -W 1:00
+# BSUB -W 10:00
 
 module load bcftools/1.12
 
