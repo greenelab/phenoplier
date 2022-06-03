@@ -63,3 +63,10 @@ mkdir -p _tmp
 cat 03_05-genotype_dosage.sh | bsub
 ```
 
+## Variant selection
+
+```bash
+mkdir -p _tmp
+cat 05_05-variant_selection.sh | bsub
+```
+
