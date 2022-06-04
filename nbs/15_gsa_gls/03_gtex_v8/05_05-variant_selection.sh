@@ -33,6 +33,7 @@ fi
 ${PYTHON_EXECUTABLE} ${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}/src/get_reference_metadata.py \
   -genotype ${GTEX_V8_DIR}/generated/gtex_v8_eur_filtered.txt.gz \
   -annotation ${GTEX_V8_DIR}/analysis_supplement/GTEx_Analysis_2017-06-05_v8_WholeGenomeSeq_838Indiv_Analysis_Freeze.lookup_table.txt.gz \
+  -rsid_column rs_id_dbSNP151_GRCh38p7 \
   -filter MAF 0.01 \
   -filter TOP_CHR_POS_BY_FREQ \
   -output ${GTEX_V8_DIR}/generated/gtex_v8_eur_filtered_maf0.01_monoallelic_variants.txt.gz
