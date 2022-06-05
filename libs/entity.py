@@ -673,7 +673,7 @@ class Gene(object):
 
     @staticmethod
     @lru_cache(maxsize=1)
-    def _read_snps_cov(snps_chr, model_type: str):
+    def _read_snps_cov(snps_chr, reference_panel: str, model_type: str):
         """
         Returns the covariance matrix for all SNPs (in the predictions models)
         in a chromosome. lru_cache / maxsize is 1 because the idea is call
@@ -682,14 +682,28 @@ class Gene(object):
         Args:
             snps_chr:
                 A string specifying the chromosome in format "chr{num}".
+            reference_panel:
+                The reference panel used to compute the SNP covariance matrix. either GTEX_V8
+                or 1000G.
             model_type:
                 The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
         Returns:
             A square pandas dataframe with SNPs covariances.
         """
-        snps_cov_file = conf.PHENOMEXCAN["LD_BLOCKS"][model_type][
-            "SNPS_COVARIANCE_FILE"
-        ]
+        snp_cov_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
+            "GENE_CORRS_FILE_NAME_TEMPLATES"
+        ]["SNPS_COVARIANCE"]
+        snp_cov_file_name = snp_cov_file_name_template.format(
+            prefix="",
+            suffix="",
+        )
+        input_dir = (
+            conf.PHENOMEXCAN["LD_BLOCKS"][f"GENE_CORRS_DIR"]
+            / reference_panel.lower()
+            / model_type.lower()
+        )
+        snps_cov_file = input_dir / snp_cov_file_name
+        assert snps_cov_file.exists(), f"Input file does not exist: {snps_cov_file}"
 
         # go to disk and read the data
         with pd.HDFStore(snps_cov_file, mode="r") as store:
@@ -697,7 +711,11 @@ class Gene(object):
 
     @staticmethod
     def _get_snps_cov(
-        snps_ids_list1, snps_ids_list2=None, check=True, model_type="MASHR"
+        snps_ids_list1,
+        snps_ids_list2=None,
+        check=True,
+        reference_panel="GTEX_V8",
+        model_type="MASHR",
     ):
         """
         Given one or (optionally) two lists of SNPs IDs, it returns the
@@ -711,6 +729,9 @@ class Gene(object):
                 generally the SNPs from a second gene.
             check:
                 If should be checked that all SNPs are from the same chromosome.
+            reference_panel:
+                Reference panel used to compute SNP covariance matrix. Either GTEX_V8
+                or 1000G.
             model_type:
                 The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
 
@@ -742,7 +763,7 @@ class Gene(object):
                 raise ValueError("Only snps from the same chromosome are supported")
 
         # read the entire covariance matrix for this chromosome
-        snps_cov = Gene._read_snps_cov(snps_chr, model_type)
+        snps_cov = Gene._read_snps_cov(snps_chr, reference_panel, model_type)
 
         # from the specified SNP lists, only keep those for which we have
         # genotypes
@@ -800,7 +821,11 @@ class Gene(object):
         return (w.T @ r @ w).squeeze()
 
     def get_expression_correlation(
-        self, other_gene, tissue: str, model_type: str = "MASHR"
+        self,
+        other_gene,
+        tissue: str,
+        reference_panel: str = "GTEX_V8",
+        model_type: str = "MASHR",
     ):
         """
         Given another Gene object and a tissue, it computes the correlation
@@ -811,6 +836,8 @@ class Gene(object):
                 Another Gene object.
             tissue:
                 The tissue name.
+            reference_panel:
+                A reference panel for the SNP covariance matrix. Either GTEX_V8 or 1000G.
             model_type:
                 The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
 
@@ -843,7 +870,10 @@ class Gene(object):
 
         try:
             snps_cov = self._get_snps_cov(
-                gene_w.index, other_gene_w.index, model_type=model_type
+                gene_w.index,
+                other_gene_w.index,
+                reference_panel=reference_panel,
+                model_type=model_type,
             )
         except ValueError:
             # if genes are from different chromosomes, correlation is zero
