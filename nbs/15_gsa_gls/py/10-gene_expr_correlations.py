@@ -18,6 +18,8 @@
 # # Description
 
 # %% [markdown] tags=[]
+# (Please, take a look at the README.md file in this directory for instructions on how to run this notebook)
+#
 # This notebook computes predicted expression correlations between all genes in the MultiPLIER models.
 #
 # It also has a parameter set for papermill to run on a single chromosome to run in parallel (see under `Settings` below).
@@ -44,11 +46,16 @@ from entity import Gene
 # # Settings
 
 # %% tags=["parameters"]
-# mashr
+# reference panel
+REFERENCE_PANEL = "GTEX_V8"
+# REFERENCE_PANEL = "1000G"
+
+# prediction models
+## mashr
 EQTL_MODEL = "MASHR"
 EQTL_MODEL_FILES_PREFIX = "mashr_"
 
-# # elastic net
+# ## elastic net
 # EQTL_MODEL = "ELASTIC_NET"
 # EQTL_MODEL_FILES_PREFIX = "en_"
 
@@ -67,6 +74,23 @@ if EQTL_MODEL_FILES_PREFIX is None:
 
 # %%
 display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
+
+# %%
+REFERENCE_PANEL_DIR = conf.PHENOMEXCAN["LD_BLOCKS"][f"{REFERENCE_PANEL}_GENOTYPE_DIR"]
+
+# %%
+display(f"Using reference panel folder: {str(REFERENCE_PANEL_DIR)}")
+
+# %%
+OUTPUT_DIR_BASE = (
+    conf.PHENOMEXCAN["LD_BLOCKS"][f"GENE_CORRS_DIR"]
+    / REFERENCE_PANEL.lower()
+    / EQTL_MODEL.lower()
+)
+OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
+
+# %%
+display(f"Using output dir base: {OUTPUT_DIR_BASE}")
 
 # %%
 if chromosome == "all":
@@ -212,11 +236,7 @@ for chr_num in all_chrs:
         print(f"Tissue {tissue}", flush=True)
 
         # check if results exist
-        output_dir = (
-            conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
-            / f"{EQTL_MODEL_FILES_PREFIX}gene_corrs"
-            / tissue
-        )
+        output_dir = OUTPUT_DIR_BASE / "by_tissue"
         output_file = output_dir / f"gene_corrs-{tissue}-chr{chr_num}.pkl"
 
         if output_file.exists():
@@ -238,7 +258,10 @@ for chr_num in all_chrs:
 
                 gene_corrs.append(
                     gene_obj1.get_expression_correlation(
-                        gene_obj2, tissue, model_type=EQTL_MODEL
+                        gene_obj2,
+                        tissue,
+                        reference_panel=REFERENCE_PANEL,
+                        model_type=EQTL_MODEL,
                     )
                 )
 
