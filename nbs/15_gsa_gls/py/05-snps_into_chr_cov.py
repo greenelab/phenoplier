@@ -71,6 +71,9 @@ if EQTL_MODEL_FILES_PREFIX is None:
     ]
 
 # %%
+display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
+
+# %%
 REFERENCE_PANEL_DIR = conf.PHENOMEXCAN["LD_BLOCKS"][f"{REFERENCE_PANEL}_GENOTYPE_DIR"]
 
 # %%
