@@ -77,7 +77,11 @@ REFERENCE_PANEL_DIR = conf.PHENOMEXCAN["LD_BLOCKS"][f"{REFERENCE_PANEL}_GENOTYPE
 display(f"Using reference panel folder: {str(REFERENCE_PANEL_DIR)}")
 
 # %%
-OUTPUT_DIR_BASE = conf.PHENOMEXCAN["LD_BLOCKS"][f"GENE_CORRS_DIR"] / REFERENCE_PANEL.lower() / EQTL_MODEL.lower()
+OUTPUT_DIR_BASE = (
+    conf.PHENOMEXCAN["LD_BLOCKS"][f"GENE_CORRS_DIR"]
+    / REFERENCE_PANEL.lower()
+    / EQTL_MODEL.lower()
+)
 OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 
 # %%
@@ -103,13 +107,19 @@ _tmp = get_reference_panel_file(
     conf.PHENOMEXCAN["LD_BLOCKS"]["GTEX_V8_GENOTYPE_DIR"], "chr1.variants"
 )
 assert _tmp is not None
-assert _tmp.name == "gtex_v8_eur_filtered_maf0.01_monoallelic_variants.chr1.variants.parquet"
+assert (
+    _tmp.name
+    == "gtex_v8_eur_filtered_maf0.01_monoallelic_variants.chr1.variants.parquet"
+)
 
 _tmp = get_reference_panel_file(
     conf.PHENOMEXCAN["LD_BLOCKS"]["GTEX_V8_GENOTYPE_DIR"], "_metadata"
 )
 assert _tmp is not None
-assert _tmp.name == "gtex_v8_eur_filtered_maf0.01_monoallelic_variants.variants_metadata.parquet"
+assert (
+    _tmp.name
+    == "gtex_v8_eur_filtered_maf0.01_monoallelic_variants.variants_metadata.parquet"
+)
 
 # 1000G
 _tmp = get_reference_panel_file(
@@ -186,9 +196,7 @@ multiplier_z.head()
 # ## Reference panel variants metadata
 
 # %% tags=[]
-input_file = (
-    get_reference_panel_file(REFERENCE_PANEL_DIR, "_metadata")
-)
+input_file = get_reference_panel_file(REFERENCE_PANEL_DIR, "_metadata")
 display(input_file)
 
 # %% tags=[]
@@ -378,7 +386,9 @@ def compute_snps_cov(snps_df):
     # keep variants only present in genotype
     snps_ids = list(set(snps_df["varID"]).intersection(variants_ids_with_genotype))
 
-    chromosome_file = get_reference_panel_file(REFERENCE_PANEL_DIR, f"chr{chromosome}.variants")
+    chromosome_file = get_reference_panel_file(
+        REFERENCE_PANEL_DIR, f"chr{chromosome}.variants"
+    )
     snps_genotypes = pd.read_parquet(chromosome_file, columns=snps_ids)
 
     return covariance(snps_genotypes, COV_DTYPE)
@@ -410,7 +420,9 @@ del _tmp_snps, _tmp
 # ## Compute covariance and save
 
 # %% tags=[]
-output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_CORRS_FILE_NAME_TEMPLATES"]["SNPS_COVARIANCE"]
+output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
+    "GENE_CORRS_FILE_NAME_TEMPLATES"
+]["SNPS_COVARIANCE"]
 
 output_file = OUTPUT_DIR_BASE / output_file_name_template.format(
     prefix="",
