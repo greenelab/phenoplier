@@ -6,9 +6,9 @@
 # -#BSUB -u miltondp@gmail.com
 # -#BSUB -N
 # BSUB -n 1
-# BSUB -R "rusage[mem=25GB]"
-# BSUB -M 25GB
-# BSUB -W 5:00
+# BSUB -R "rusage[mem=40GB]"
+# BSUB -M 40GB
+# BSUB -W 10:00
 
 # Code taken and adapted from:
 #  https://github.com/hakyimlab/summary-gwas-imputation/wiki/Reference-Data-Set-Compilation
