@@ -403,7 +403,7 @@ def test_gene_get_expression_correlation_no_prediction_models(
     gene2 = Gene(ensembl_id=gene_id2)
 
     genes_corr = gene1.get_expression_correlation(
-        gene2, tissue, reference_panel="1000g`"
+        gene2, tissue, reference_panel="1000g"
     )
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
