@@ -196,7 +196,7 @@ def test_gene_get_snps_cov_genes_same_chromosome_some_snps_missing_cov(
     g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR")["varID"]
     g2_snps = g2.get_prediction_weights(tissue, model_type="MASHR")["varID"]
 
-    df = Gene._get_snps_cov(g1_snps, g2_snps, reference_panel="en")
+    df = Gene._get_snps_cov(g1_snps, g2_snps, reference_panel="1000g")
     assert df is not None
     assert df.shape[0] == len(expected_snps1)
     assert df.shape[1] == len(expected_snps2)
@@ -296,7 +296,7 @@ def test_gene_get_snps_cov_genes_different_chromosomes():
 def test_gene_get_pred_expression_variance(gene_id, tissue, expected_var):
     g = Gene(ensembl_id=gene_id)
     g_var = g.get_pred_expression_variance(
-        tissue, reference_panel="en", model_type="MASHR"
+        tissue, reference_panel="1000g", model_type="MASHR"
     )
     assert g_var is not None
     assert isinstance(g_var, float)
@@ -307,7 +307,7 @@ def test_gene_get_pred_expression_variance(gene_id, tissue, expected_var):
 def test_gene_get_pred_expression_variance_gene_not_in_tissue():
     g = Gene(ensembl_id="ENSG00000183087")
     g_var = g.get_pred_expression_variance(
-        "Brain_Cerebellar_Hemisphere", reference_panel="en", model_type="MASHR"
+        "Brain_Cerebellar_Hemisphere", reference_panel="1000g", model_type="MASHR"
     )
     assert g_var is None
 
@@ -354,22 +354,30 @@ def test_gene_get_expression_correlation(gene_id1, gene_id2, tissue, expected_co
     gene1 = Gene(ensembl_id=gene_id1)
     gene2 = Gene(ensembl_id=gene_id2)
 
-    genes_corr = gene1.get_expression_correlation(gene2, tissue, reference_panel="en")
+    genes_corr = gene1.get_expression_correlation(
+        gene2, tissue, reference_panel="1000g"
+    )
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
     assert 0.0 <= genes_corr <= 1.0
 
     # correlation should be asymmetric
-    genes_corr_2 = gene2.get_expression_correlation(gene1, tissue, reference_panel="en")
+    genes_corr_2 = gene2.get_expression_correlation(
+        gene1, tissue, reference_panel="1000g"
+    )
     assert round(genes_corr_2, 4) == round(genes_corr, 4)
 
     # correlation with itself should be 1.0
     assert (
-        round(gene1.get_expression_correlation(gene1, tissue, reference_panel="en"), 4)
+        round(
+            gene1.get_expression_correlation(gene1, tissue, reference_panel="1000g"), 4
+        )
         == 1.0
     )
     assert (
-        round(gene2.get_expression_correlation(gene2, tissue, reference_panel="en"), 4)
+        round(
+            gene2.get_expression_correlation(gene2, tissue, reference_panel="1000g"), 4
+        )
         == 1.0
     )
 
@@ -394,13 +402,17 @@ def test_gene_get_expression_correlation_no_prediction_models(
     gene1 = Gene(ensembl_id=gene_id1)
     gene2 = Gene(ensembl_id=gene_id2)
 
-    genes_corr = gene1.get_expression_correlation(gene2, tissue, reference_panel="en")
+    genes_corr = gene1.get_expression_correlation(
+        gene2, tissue, reference_panel="1000g`"
+    )
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
     assert 0.0 <= genes_corr <= 1.0
 
     # correlation should be asymmetric
-    genes_corr_2 = gene2.get_expression_correlation(gene1, tissue, reference_panel="en")
+    genes_corr_2 = gene2.get_expression_correlation(
+        gene1, tissue, reference_panel="1000g"
+    )
     assert genes_corr_2 == genes_corr
 
     assert genes_corr == expected_corr
@@ -414,7 +426,9 @@ def test_gene_get_expression_correlation_gene_weights_are_zero():
 
     tissue = "Whole_Blood"
 
-    genes_corr = gene1.get_expression_correlation(gene2, tissue, reference_panel="en")
+    genes_corr = gene1.get_expression_correlation(
+        gene2, tissue, reference_panel="1000g"
+    )
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
     assert genes_corr == 0.0
