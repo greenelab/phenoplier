@@ -356,7 +356,7 @@ output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
 
 output_file = OUTPUT_DIR_BASE / output_file_name_template.format(
     prefix="",
-    suffix="gene_ensembl_ids",
+    suffix="-gene_ensembl_ids",
 )
 display(output_file)
 
@@ -373,7 +373,7 @@ output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
 
 output_file = OUTPUT_DIR_BASE / output_file_name_template.format(
     prefix="",
-    suffix="gene_symbols",
+    suffix="-gene_symbols",
 )
 display(output_file)
 
