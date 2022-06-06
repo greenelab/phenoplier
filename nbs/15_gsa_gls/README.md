@@ -1,49 +1,54 @@
 # Gene expression correlations
 
-Two notebooks need to be run to compute correlations of gene predicted expression:
+Three notebooks need to be run to compute correlations of gene predicted expression:
 1. `05-snps_into_chr_cov.ipynb`
 1. `10-gene_expr_correlations.ipynb`
 1. `15-preprocess_gene_expr_correlations.ipynb`
 
-For all of them, it's necessary to specify the prediction models of gene expression (see the referenced notebook above to see the accepted values for parameter `EQTL_MODEL`).
+For all of them, it's necessary to specify the prediction models of gene expression (see the referenced notebook above to see the accepted values for parameter `EQTL_MODEL`). For `05-snps_into_chr_cov.ipynb`, it is necessary to specify a reference panel (like 1000G or GTEx) to compute the SNP covariance matrix.
+
 
 ## Create output directories
-The three previously mentioned notebooks are run and the "output notebook" is written a prediction model-specific folder.
-To create these folders, run:
+The three previously mentioned notebooks are run and the "output notebook" is written to a reference and prediction model-specific folder. For instance, if `GTEX_V8` is the reference panel for the SNP covariance matrix, create the folders with the following commands:
 
-mashr:
+mashr-based prediction models:
 ```bash
-mkdir -p nbs/15_gsa_gls/mashr_gene_corrs
-rm -f nbs/15_gsa_gls/en_gene_corrs/*
+mkdir -p nbs/15_gsa_gls/gene_corrs/gtex_v8/mashr
 ```
 
 
-elastic net:
+Elastic net-based models:
 ```bash
-mkdir -p nbs/15_gsa_gls/en_gene_corrs
-rm -f nbs/15_gsa_gls/en_gene_corrs/*
+mkdir -p nbs/15_gsa_gls/gene_corrs/gtex_v8/en
 ```
 
-The `rm` command is optional, is to make sure you are not mixing different output notebooks from different steps.
 
 ## `05-snps_into_chr_cov.ipynb`
 
-This notebook computes the covariance for each chromosome of all variants present in prediction models.
+Given a reference panel (in this example it's GTEx v8), this notebook computes the covariance for each chromosome of all variants present in prediction models.
 
 Examples for two predictions models (mashr and elastic net):
 
 mashr:
 
 ```bash
-bash nbs/run_nbs.sh nbs/15_gsa_gls/05-snps_into_chr_cov.ipynb mashr_gene_corrs/05-snps_into_chr_cov.ipynb -p EQTL_MODEL MASHR
+bash nbs/run_nbs.sh \
+  nbs/15_gsa_gls/05-snps_into_chr_cov.ipynb \
+  gene_corrs/gtex_v8/mashr/05-snps_into_chr_cov.ipynb \
+  -p REFERENCE_PANEL GTEX_V8 \
+  -p EQTL_MODEL MASHR
 ```
-
 
 elastic net:
 
 ```bash
-bash nbs/run_nbs.sh nbs/15_gsa_gls/05-snps_into_chr_cov.ipynb en_gene_corrs/05-snps_into_chr_cov.ipynb -p EQTL_MODEL ELASTIC_NET
+bash nbs/run_nbs.sh \
+  nbs/15_gsa_gls/05-snps_into_chr_cov.ipynb \
+  gene_corrs/gtex_v8/en/05-snps_into_chr_cov.ipynb \
+  -p REFERENCE_PANEL GTEX_V8 \
+  -p EQTL_MODEL ELASTIC_NET
 ```
+
 
 ## `10-gene_expr_correlations.ipynb`
 
@@ -56,30 +61,42 @@ You can also change the prediction models used.
 For example, for mashr models you can use this command:
 
 ```bash
-parallel -k --lb --halt 2 -j3 'bash nbs/run_nbs.sh nbs/15_gsa_gls/10-gene_expr_correlations.ipynb mashr_gene_corrs/10-gene_expr_correlations-chr{}.run.ipynb -p chromosome {} -p EQTL_MODEL MASHR' ::: {1..22}
+parallel \
+  -k --lb --halt 2 -j3 \
+  'bash nbs/run_nbs.sh nbs/15_gsa_gls/10-gene_expr_correlations.ipynb gene_corrs/gtex_v8/mashr/10-gene_expr_correlations-chr{}.run.ipynb -p chromosome {} -p REFERENCE_PANEL GTEX_V8 -p EQTL_MODEL MASHR' ::: {1..22}
 ```
-
 
 And for elastic net models, you can use this one:
 
 ```bash
-parallel -k --lb --halt 2 -j3 'bash nbs/run_nbs.sh nbs/15_gsa_gls/10-gene_expr_correlations.ipynb en_gene_corrs/10-gene_expr_correlations-chr{}.run.ipynb -p chromosome {} -p EQTL_MODEL ELASTIC_NET' ::: {1..22}
+parallel \
+  -k --lb --halt 2 -j3 \
+  'bash nbs/run_nbs.sh nbs/15_gsa_gls/10-gene_expr_correlations.ipynb gene_corrs/gtex_v8/en/10-gene_expr_correlations-chr{}.run.ipynb -p chromosome {} -p REFERENCE_PANEL GTEX_V8 -p EQTL_MODEL ELASTIC_NET' ::: {1..22}
 ```
+
 
 ## `15-preprocess_gene_expr_correlations.ipynb`
 
-After computing the correlations, you need also to preprocess the results to generate a single correlations file.
-If you want to run it via command line, these are the commands for both prediction models:
+After computing the correlations, you also need to preprocess the results to generate a single correlations file.
+These are the commands for both prediction models:
 
 mashr:
 
 ```bash
-bash nbs/run_nbs.sh nbs/15_gsa_gls/15-preprocess_gene_expr_correlations.ipynb mashr_gene_corrs/15-preprocess_gene_expr_correlations.ipynb -p EQTL_MODEL MASHR
+bash nbs/run_nbs.sh \
+  nbs/15_gsa_gls/15-preprocess_gene_expr_correlations.ipynb \
+  gene_corrs/gtex_v8/mashr/15-preprocess_gene_expr_correlations.ipynb \
+  -p REFERENCE_PANEL GTEX_V8 \
+  -p EQTL_MODEL MASHR
 ```
 
 
 elastic net:
 
 ```bash
-bash nbs/run_nbs.sh nbs/15_gsa_gls/15-preprocess_gene_expr_correlations.ipynb en_gene_corrs/15-preprocess_gene_expr_correlations.ipynb -p EQTL_MODEL ELASTIC_NET
+bash nbs/run_nbs.sh \
+  nbs/15_gsa_gls/15-preprocess_gene_expr_correlations.ipynb \
+  gene_corrs/gtex_v8/en/15-preprocess_gene_expr_correlations.ipynb \
+  -p REFERENCE_PANEL GTEX_V8 \
+  -p EQTL_MODEL ELASTIC_NET
 ```
