@@ -18,6 +18,8 @@
 # # Description
 
 # %% [markdown] tags=[]
+# (Please, take a look at the README.md file in this directory for instructions on how to run this notebook)
+#
 # This notebook reads all gene correlations across all tissues and computes a single correlation matrix.
 
 # %% [markdown] tags=[]
@@ -32,8 +34,6 @@ import numpy as np
 from scipy.spatial.distance import squareform
 import pandas as pd
 
-# from tqdm import tqdm
-
 import conf
 from entity import Gene
 
@@ -41,11 +41,16 @@ from entity import Gene
 # # Settings
 
 # %% tags=["parameters"]
-# mashr
+# reference panel
+REFERENCE_PANEL = "GTEX_V8"
+# REFERENCE_PANEL = "1000G"
+
+# prediction models
+## mashr
 EQTL_MODEL = "MASHR"
 EQTL_MODEL_FILES_PREFIX = "mashr_"
 
-# # elastic net
+# ## elastic net
 # EQTL_MODEL = "ELASTIC_NET"
 # EQTL_MODEL_FILES_PREFIX = "en_"
 
@@ -62,10 +67,26 @@ if EQTL_MODEL_FILES_PREFIX is None:
 display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
 
 # %%
-INPUT_DIR = (
-    conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / f"{EQTL_MODEL_FILES_PREFIX}gene_corrs"
+REFERENCE_PANEL_DIR = conf.PHENOMEXCAN["LD_BLOCKS"][f"{REFERENCE_PANEL}_GENOTYPE_DIR"]
+
+# %%
+display(f"Using reference panel folder: {str(REFERENCE_PANEL_DIR)}")
+
+# %%
+OUTPUT_DIR_BASE = (
+    conf.PHENOMEXCAN["LD_BLOCKS"][f"GENE_CORRS_DIR"]
+    / REFERENCE_PANEL.lower()
+    / EQTL_MODEL.lower()
 )
+OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
+
+# %%
+display(f"Using output dir base: {OUTPUT_DIR_BASE}")
+
+# %%
+INPUT_DIR = OUTPUT_DIR_BASE / "by_tissue"
 display(INPUT_DIR)
+assert INPUT_DIR.exists()
 
 # %% [markdown] tags=[]
 # # Load data
@@ -317,6 +338,7 @@ assert _gene_values.shape[0] == 49
 
 # %% tags=[]
 display(_gene_values.mean())
+display(pd.Series(_gene_values).describe())
 assert gene_corrs_df.loc[gene1, gene2].round(5) == _gene_values.mean().round(
     5
 ), gene_corrs_df.loc[gene1, gene2]
@@ -327,8 +349,15 @@ assert gene_corrs_df.loc[gene1, gene2].round(5) == _gene_values.mean().round(
 # %% [markdown] tags=[]
 # ## With ensemble ids
 
-# %% tags=[]
-output_file = conf.PHENOMEXCAN["LD_BLOCKS"][EQTL_MODEL]["GENE_IDS_CORR_AVG"]
+# %%
+output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
+    "GENE_CORRS_FILE_NAME_TEMPLATES"
+]["GENE_CORR_AVG"]
+
+output_file = OUTPUT_DIR_BASE / output_file_name_template.format(
+    prefix="",
+    suffix="gene_ensembl_ids",
+)
 display(output_file)
 
 # %% tags=[]
@@ -337,8 +366,15 @@ gene_corrs_df.to_pickle(output_file)
 # %% [markdown] tags=[]
 # ## With gene symbols
 
-# %% tags=[]
-output_file = conf.PHENOMEXCAN["LD_BLOCKS"][EQTL_MODEL]["GENE_NAMES_CORR_AVG"]
+# %%
+output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
+    "GENE_CORRS_FILE_NAME_TEMPLATES"
+]["GENE_CORR_AVG"]
+
+output_file = OUTPUT_DIR_BASE / output_file_name_template.format(
+    prefix="",
+    suffix="gene_symbols",
+)
 display(output_file)
 
 # %% tags=[]
