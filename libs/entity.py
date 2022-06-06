@@ -779,7 +779,9 @@ class Gene(object):
         return snps_cov
 
     @lru_cache(maxsize=None)
-    def get_pred_expression_variance(self, tissue: str, model_type: str):
+    def get_pred_expression_variance(
+        self, tissue: str, reference_panel: str, model_type: str
+    ):
         """
         Given a tissue, it computes the covariance of the predicted gene
         expression.
@@ -797,7 +799,9 @@ class Gene(object):
             return None
 
         # LD of snps in gene model
-        gene_snps_cov = Gene._get_snps_cov(w["varID"], model_type=model_type)
+        gene_snps_cov = Gene._get_snps_cov(
+            w["varID"], reference_panel=reference_panel, model_type=model_type
+        )
         if gene_snps_cov is None:
             return None
 
@@ -860,11 +864,15 @@ class Gene(object):
             return 0.0
 
         # get genes' variances
-        gene_var = self.get_pred_expression_variance(tissue, model_type)
+        gene_var = self.get_pred_expression_variance(
+            tissue, reference_panel, model_type
+        )
         if gene_var is None or gene_var == 0.0:
             return 0.0
 
-        other_gene_var = other_gene.get_pred_expression_variance(tissue, model_type)
+        other_gene_var = other_gene.get_pred_expression_variance(
+            tissue, reference_panel, model_type
+        )
         if other_gene_var is None or other_gene_var == 0.0:
             return 0.0
 
