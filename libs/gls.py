@@ -1,3 +1,4 @@
+from pathlib import Path
 from functools import lru_cache
 
 import pandas as pd
@@ -27,12 +28,15 @@ class GLSPhenoplier(object):
       * `results_summary`: the object retuned by self.results.summary()
 
     Args:
+        TODO: finish docs
         smultixcan_result_set_filepath:
             Filepath where gene-trait associations will be loaded from. It has
             to be a python pickle file containing a pandas dataframe with gene
             Ensembl IDs in rows and traits in columns. Values are expected to
             be z-scores or -log10(p-values) (although this last one was not
             tested).
+        gene_corrs_file_path: path to file with gene corrs matrix; if not given, it loads the default gene correlation
+            matrix trained from GTEX_V8 and MASHR models
         sigma:
             (optional) This parameter should never be modified, it is here just
             for debugging purposes. It is the sigma parameter of statsmodels's
@@ -49,7 +53,7 @@ class GLSPhenoplier(object):
     def __init__(
         self,
         smultixcan_result_set_filepath: str = None,
-        model_type: str = "MASHR",
+        gene_corrs_file_path: Path = None,
         sigma=None,
         logger="warnings_only",
     ):
@@ -59,7 +63,24 @@ class GLSPhenoplier(object):
         if smultixcan_result_set_filepath is not None:
             self.smultixcan_result_set_filepath = smultixcan_result_set_filepath
 
-        self.model_type = model_type
+        if gene_corrs_file_path is None:
+            # by default, it loads gene correlations from GTEX_V8 and MASHR models
+            input_dir_base = (
+                conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_CORRS_DIR"]
+                / "GTEX_V8".lower()
+                / "MASHR".lower()
+            )
+
+            input_filename = conf.PHENOMEXCAN["LD_BLOCKS"][
+                "GENE_CORRS_FILE_NAME_TEMPLATES"
+            ]["GENE_CORR_AVG"].format(
+                prefix="",
+                suffix=f"-mean-gene_symbols",
+            )
+
+            self.gene_corrs_file_path = input_dir_base / input_filename
+        else:
+            self.gene_corrs_file_path = gene_corrs_file_path
         # sigma is disabled, but left here for future reference (debugging)
         # self.sigma = sigma
         self.log_warning = None
@@ -101,28 +122,12 @@ class GLSPhenoplier(object):
 
     @staticmethod
     @lru_cache(maxsize=None)
-    def _get_gene_corrs(model_type: str = None, gene_corrs_file: str = None):
+    def _get_gene_corrs(gene_corrs_file_path: str):
         """
-        Returns a matrix with correlations between predicted gene expression. It
-        accepts only of parameter: either a model type or gene correlation file.
+        Returns a matrix with correlations between predicted gene expression loaded from the
+        specified file.
         """
-        if model_type is None and gene_corrs_file is None:
-            raise ValueError("Either model_type or gene_corrs_file has to be provided")
-
-        if model_type is not None and gene_corrs_file is not None:
-            raise ValueError(
-                "Only one of the following parameters has to be provided: model_type or gene_corrs_file"
-            )
-
-        # load gene correlations
-        if model_type is not None:
-            input_filepath = conf.PHENOMEXCAN["LD_BLOCKS"][model_type][
-                "GENE_NAMES_CORR_AVG"
-            ]
-        else:
-            input_filepath = gene_corrs_file
-
-        return pd.read_pickle(input_filepath)
+        return pd.read_pickle(gene_corrs_file_path)
 
     @staticmethod
     @lru_cache(maxsize=None)
@@ -201,7 +206,7 @@ class GLSPhenoplier(object):
         """
         # obtain the needed matrices
         lv_weights = GLSPhenoplier._get_lv_weights()
-        gene_corrs = GLSPhenoplier._get_gene_corrs(self.model_type)
+        gene_corrs = GLSPhenoplier._get_gene_corrs(self.gene_corrs_file_path)
         phenotype_assocs = GLSPhenoplier._get_phenotype_assoc(
             self.smultixcan_result_set_filepath
         )
@@ -238,7 +243,7 @@ class GLSPhenoplier(object):
         TODO
         """
         lv_weights = GLSPhenoplier._get_lv_weights(lv_weights_file)
-        gene_corrs = GLSPhenoplier._get_gene_corrs(self.model_type)
+        gene_corrs = GLSPhenoplier._get_gene_corrs(self.gene_corrs_file_path)
 
         x = lv_weights[lv_code]
 

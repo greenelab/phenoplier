@@ -46,12 +46,10 @@ def run():
         help="A file containing the LV model. It has to be in pickle format, with gene symbols in rows and LVs in columns.",
     )
     parser.add_argument(
-        "-m",
-        "--predixcan-model-type",
+        "-g",
+        "--gene-corr-file",
         required=False,
-        choices=["MASHR", "ELASTIC_NET"],
-        default="MASHR",
-        help="TODO",
+        help="TODO; if not specified, it lets GLSPhenoplier to specify a default gene corrs file",
     )
     parser.add_argument(
         "-l",
@@ -83,9 +81,6 @@ def run():
     # FIXME: add debug level
     # FIXME: add z-score or -log10(p) transformations
     # FIXME: covariates
-
-    # FIXME: check output file does not exist
-    # FIXME: check output file parent DOES exist
 
     # FIXME: when building the files related to a prediction model (mashr, etc), cnosider this:
     #  - a file with lv weights (independent of predixcan prediction model type)
@@ -206,7 +201,10 @@ def run():
     data = pd.Series(data=np.abs(stats.norm.ppf(data / 2)), index=data.index.copy())
     # data = -np.log10(data)
 
-    logger.info(f"Prediction models used: {args.predixcan_model_type}")
+    if args.gene_corr_file is not None:
+        logger.info(f"Using gene correlation file: {args.gene_corr_file}")
+    else:
+        logger.warning("No gene correlations file specified. The default will be used")
 
     if args.lv_model_file is not None:
         lv_model_file = Path(args.lv_model_file)
@@ -248,7 +246,7 @@ def run():
         sys.exit(1)
 
     model = GLSPhenoplier(
-        model_type=args.predixcan_model_type,
+        gene_corrs_file_path=args.gene_corr_file,
         logger=logger,
     )
 

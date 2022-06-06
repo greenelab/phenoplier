@@ -447,6 +447,7 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Reading input file" in r_output
+    assert "No gene correlations file specified. The default will be used" in r_output
     assert "Input file has 54 genes" in r_output
     assert "3 genes with missing values have been removed" in r_output
     assert (
@@ -539,6 +540,84 @@ def test_gls_cli_single_smultixcan_input_full_all_lvs_in_model_file(output_file)
     assert "LV4" in _lvs
     assert "LV5" in _lvs
     assert not output_data.isna().any().any()
+
+
+def test_gls_cli_single_smultixcan_input_full_specify_gene_corrs(output_file):
+    # gtex v8 and mashr
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using gene correlation file:" in r_output
+    assert "sample-gene_corrs-gtex_v8-mashr.pkl" in r_output
+
+    assert output_file.exists()
+    output_data = pd.read_csv(output_file, sep="\t")
+    assert not output_data.isna().any().any()
+    gtex_mashr_results = output_data
+    output_file.unlink()
+
+    # 1000 genomes and elastic net
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-en.pkl"),
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using gene correlation file:" in r_output
+    assert "sample-gene_corrs-1000g-en.pkl" in r_output
+
+    assert output_file.exists()
+    output_data = pd.read_csv(output_file, sep="\t")
+    assert not output_data.isna().any().any()
+    a1000g_en_results = output_data
+    output_file.unlink()
+
+    # results should be different across batches
+    assert not np.allclose(
+        gtex_mashr_results["coef"].to_numpy(),
+        a1000g_en_results["coef"].to_numpy(),
+    )
+    assert not np.allclose(
+        gtex_mashr_results["pvalue"].to_numpy(),
+        a1000g_en_results["pvalue"].to_numpy(),
+    )
 
 
 def test_gls_cli_use_incompatible_parameters_batch_and_lv_list(output_file):
