@@ -6,6 +6,8 @@ branch, and those will be moved here in the future.
 
 This is reported in this issue: https://github.com/greenelab/phenoplier/issues/40
 """
+from pathlib import Path
+
 import numpy as np
 from scipy import stats
 import pandas as pd
@@ -13,6 +15,10 @@ import pytest
 
 import conf
 from gls import GLSPhenoplier
+
+
+DATA_DIR = (Path(__file__).parent / "data" / "gls").resolve()
+assert DATA_DIR.exists()
 
 
 def test_one_sided_pvalue_coef_positive():
@@ -109,7 +115,7 @@ def test_fit_with_phenotype_pandas_series_genes_not_aligned():
 
     # get data and simulate phenotype
     lv_weights = GLSPhenoplier._get_lv_weights()
-    gene_corrs = GLSPhenoplier._get_gene_corrs("MASHR")
+    gene_corrs = GLSPhenoplier._get_gene_corrs(model.gene_corrs_file_path)
 
     np.random.seed(0)
     phenotype_data = pd.Series(
@@ -149,7 +155,7 @@ def test_fit_with_phenotype_pandas_series_less_genes():
 
     # get data and simulate phenotype
     lv_weights = GLSPhenoplier._get_lv_weights()
-    gene_corrs = GLSPhenoplier._get_gene_corrs("MASHR")
+    gene_corrs = GLSPhenoplier._get_gene_corrs(model.gene_corrs_file_path)
 
     np.random.seed(0)
     n_genes = 3000
@@ -190,7 +196,7 @@ def test_fit_with_phenotype_pandas_series_more_genes():
 
     # get data and simulate phenotype
     lv_weights = GLSPhenoplier._get_lv_weights()
-    gene_corrs = GLSPhenoplier._get_gene_corrs("MASHR")
+    gene_corrs = GLSPhenoplier._get_gene_corrs(model.gene_corrs_file_path)
 
     np.random.seed(0)
     # add a gene (I made up a name: AGENE) that does not exist in LV models
@@ -234,7 +240,7 @@ def test_fit_with_phenotype_pandas_series_with_nan_extra_genes_not_in_lv_models(
     # original run
     # get data and simulate phenotype
     lv_weights = GLSPhenoplier._get_lv_weights()
-    gene_corrs = GLSPhenoplier._get_gene_corrs("MASHR")
+    gene_corrs = GLSPhenoplier._get_gene_corrs(model.gene_corrs_file_path)
 
     np.random.seed(0)
     phenotype_data = pd.Series(
@@ -284,7 +290,7 @@ def test_fit_with_phenotype_pandas_series_with_nan():
     # original run
     # get data and simulate phenotype
     lv_weights = GLSPhenoplier._get_lv_weights()
-    gene_corrs = GLSPhenoplier._get_gene_corrs("MASHR")
+    gene_corrs = GLSPhenoplier._get_gene_corrs(model.gene_corrs_file_path)
 
     np.random.seed(0)
     phenotype_data = pd.Series(
@@ -330,29 +336,15 @@ def test_fit_with_phenotype_pandas_series_with_nan():
     )
 
 
-def test_gls_different_prediction_models_get_data_gene_corr():
-    # model 1 (mashr)
-    model1_gene_corrs = GLSPhenoplier._get_gene_corrs("MASHR")
-
-    # model 1 (elastic net)
-    model2_gene_corrs = GLSPhenoplier._get_gene_corrs("ELASTIC_NET")
-
-    assert model1_gene_corrs.shape == model2_gene_corrs.shape
-    assert not np.allclose(
-        model1_gene_corrs.to_numpy(),
-        model2_gene_corrs.to_numpy(),
-    )
-
-
 def test_gls_different_prediction_models_gls_fit_named():
     model = GLSPhenoplier(
         conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"],
-        model_type="MASHR",
+        gene_corrs_file_path=DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl",
     )
 
     # get data and simulate phenotype
     lv_weights = GLSPhenoplier._get_lv_weights()
-    gene_corrs = GLSPhenoplier._get_gene_corrs("MASHR")
+    gene_corrs = GLSPhenoplier._get_gene_corrs(model.gene_corrs_file_path)
 
     np.random.seed(0)
     phenotype_data = pd.Series(
@@ -374,7 +366,7 @@ def test_gls_different_prediction_models_gls_fit_named():
     # fit with elastic net
     model = GLSPhenoplier(
         conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"],
-        model_type="ELASTIC_NET",
+        gene_corrs_file_path=DATA_DIR / "sample-gene_corrs-1000g-en.pkl",
     )
 
     model.fit_named("LV270", phenotype_data)
