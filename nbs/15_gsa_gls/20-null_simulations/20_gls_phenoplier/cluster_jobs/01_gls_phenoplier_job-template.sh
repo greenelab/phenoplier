@@ -26,11 +26,11 @@ CODE_DIR=${PHENOPLIER_CODE_DIR}/nbs/15_gsa_gls/20-null_simulations/20_gls_phenop
 INPUT_SMULTIXCAN_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan"
 
 # GTEx v8 / MASHR / mean gene expression across tissues
-GENE_CORR_FILE="${PHENOPLIER_LD_BLOCKS_GENE_CORRS_DIR}/gtex_v8/mashr/multiplier_genes-pred_expression_corr_avg-mean-gene_symbols.pkl"
+GENE_CORR_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_GENE_CORRS_DIR}/gtex_v8/mashr/multiplier_genes-pred_expression_corr_avg-mean-gene_symbols.pkl"
 OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-gtex-mashr-mean_gene_expr"
 
 # # GTEx v8 / MASHR / max gene expression across tissues
-# GENE_CORR_FILE="${PHENOPLIER_LD_BLOCKS_GENE_CORRS_DIR}/gtex_v8/mashr/multiplier_genes-pred_expression_corr_avg-max-gene_symbols.pkl"
+# GENE_CORR_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_GENE_CORRS_DIR}/gtex_v8/mashr/multiplier_genes-pred_expression_corr_avg-max-gene_symbols.pkl"
 # OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-gtex-mashr-max_gene_expr"
 
 mkdir -p ${OUTPUT_DIR}
