@@ -12,3 +12,42 @@ z = pd.read_pickle("base/data/multiplier/multiplier_model_z.pkl")
 z.iloc[:, :5].astype("float32").to_pickle("tests/data/gls/sample-lv-model.pkl")
 
 z.iloc[:, :9].astype("float32").to_pickle("tests/data/gls/sample-lv-model-n9.pkl")
+
+
+# to generate a sample of the gene correlations matrix
+import conf
+
+# load gene corrs computed with gtex v8 and mashr
+input_dir_base = (
+    conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_CORRS_DIR"]
+    / "GTEX_V8".lower()
+    / "MASHR".lower()
+)
+input_filename = conf.PHENOMEXCAN["LD_BLOCKS"][
+    "GENE_CORRS_FILE_NAME_TEMPLATES"
+]["GENE_CORR_AVG"].format(
+    prefix="",
+    suffix=f"-mean-gene_symbols",
+)
+gene_corrs = pd.read_pickle(input_dir_base / input_filename)
+
+gene_names = list(set(data["gene_name"].tolist()).intersection(set(gene_corrs.index)))
+gene_corrs.loc[gene_names, gene_names].to_pickle("sample-gene_corrs-gtex_v8-mashr.pkl")
+
+
+# load gene corrs computed with 1000 genomes and elastic net
+input_dir_base = (
+    conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_CORRS_DIR"]
+    / "1000g"
+    / "en"
+)
+input_filename = conf.PHENOMEXCAN["LD_BLOCKS"][
+    "GENE_CORRS_FILE_NAME_TEMPLATES"
+]["GENE_CORR_AVG"].format(
+    prefix="",
+    suffix=f"-mean-gene_symbols",
+)
+gene_corrs = pd.read_pickle(input_dir_base / input_filename)
+
+gene_names = list(set(data["gene_name"].tolist()).intersection(set(gene_corrs.index)))
+gene_corrs.loc[gene_names, gene_names].to_pickle("sample-gene_corrs-1000g-en.pkl")
