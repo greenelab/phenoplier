@@ -12,6 +12,11 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -g|--gene-corr-file)
+      GENE_CORR_FILE="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -b|--batch-id)
       BATCH_ID="$2"
       shift # past argument
@@ -46,6 +51,11 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 #
 if [ -z "${INPUT_FILE}" ]; then
     >&2 echo "Error, --input-file <value> not provided"
+    exit 1
+fi
+
+if [ -z "${GENE_CORR_FILE}" ]; then
+    >&2 echo "Error, --gene-corr-file <value> not provided"
     exit 1
 fi
 
@@ -87,6 +97,7 @@ fi
 python ${PHENOPLIER_CODE_DIR}/libs/gls_cli.py \
     -i ${INPUT_FILE} \
     -o ${OUTPUT_FILE} \
+    --gene-corr-file ${GENE_CORR_FILE} \
     --duplicated-genes-action keep-first \
     --batch-id ${BATCH_ID} \
     --batch-n-splits ${BATCH_N_SPLITS}
