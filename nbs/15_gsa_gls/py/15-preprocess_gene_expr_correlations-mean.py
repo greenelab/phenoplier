@@ -20,7 +20,7 @@
 # %% [markdown] tags=[]
 # (Please, take a look at the README.md file in this directory for instructions on how to run this notebook)
 #
-# This notebook reads all gene correlations across all tissues and computes a single correlation matrix.
+# This notebook reads all gene correlations across all tissues and computes a single correlation matrix using the mean of correlations across all tissues.
 
 # %% [markdown] tags=[]
 # # Modules
