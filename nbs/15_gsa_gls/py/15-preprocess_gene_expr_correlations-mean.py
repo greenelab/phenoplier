@@ -88,6 +88,9 @@ INPUT_DIR = OUTPUT_DIR_BASE / "by_tissue"
 display(INPUT_DIR)
 assert INPUT_DIR.exists()
 
+# %%
+OUTPUT_FILE_AGG_METHOD = "mean"
+
 # %% [markdown] tags=[]
 # # Load data
 
@@ -337,7 +340,7 @@ _gene_values = np.array(_gene_values)
 assert _gene_values.shape[0] == 49
 
 # %% tags=[]
-display(_gene_values.mean())
+# display(_gene_values.mean())
 display(pd.Series(_gene_values).describe())
 assert gene_corrs_df.loc[gene1, gene2].round(5) == _gene_values.mean().round(
     5
@@ -356,7 +359,7 @@ output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
 
 output_file = OUTPUT_DIR_BASE / output_file_name_template.format(
     prefix="",
-    suffix="-gene_ensembl_ids",
+    suffix=f"-{OUTPUT_FILE_AGG_METHOD}-gene_ensembl_ids",
 )
 display(output_file)
 
@@ -373,7 +376,7 @@ output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
 
 output_file = OUTPUT_DIR_BASE / output_file_name_template.format(
     prefix="",
-    suffix="-gene_symbols",
+    suffix=f"-{OUTPUT_FILE_AGG_METHOD}-gene_symbols",
 )
 display(output_file)
 
