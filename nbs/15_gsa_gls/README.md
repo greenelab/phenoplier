@@ -80,12 +80,13 @@ parallel \
 After computing the correlations, you also need to preprocess the results to generate a single correlations file.
 These are the commands for both prediction models:
 
+## Mean-based
 mashr:
 
 ```bash
 bash nbs/run_nbs.sh \
-  nbs/15_gsa_gls/15-preprocess_gene_expr_correlations.ipynb \
-  gene_corrs/gtex_v8/mashr/15-preprocess_gene_expr_correlations.ipynb \
+  nbs/15_gsa_gls/15-preprocess_gene_expr_correlations-mean.ipynb \
+  gene_corrs/gtex_v8/mashr/15-preprocess_gene_expr_correlations-mean.ipynb \
   -p REFERENCE_PANEL GTEX_V8 \
   -p EQTL_MODEL MASHR
 ```
@@ -96,7 +97,29 @@ elastic net:
 ```bash
 bash nbs/run_nbs.sh \
   nbs/15_gsa_gls/15-preprocess_gene_expr_correlations.ipynb \
-  gene_corrs/gtex_v8/en/15-preprocess_gene_expr_correlations.ipynb \
+  gene_corrs/gtex_v8/en/15-preprocess_gene_expr_correlations-mean.ipynb \
+  -p REFERENCE_PANEL GTEX_V8 \
+  -p EQTL_MODEL ELASTIC_NET
+```
+
+
+## Max-based
+
+```bash
+bash nbs/run_nbs.sh \
+  nbs/15_gsa_gls/16-preprocess_gene_expr_correlations-max.ipynb \
+  gene_corrs/gtex_v8/mashr/16-preprocess_gene_expr_correlations-max.ipynb \
+  -p REFERENCE_PANEL GTEX_V8 \
+  -p EQTL_MODEL MASHR
+```
+
+
+elastic net:
+
+```bash
+bash nbs/run_nbs.sh \
+  nbs/15_gsa_gls/16-preprocess_gene_expr_correlations-max.ipynb \
+  gene_corrs/gtex_v8/en/16-preprocess_gene_expr_correlations-max.ipynb \
   -p REFERENCE_PANEL GTEX_V8 \
   -p EQTL_MODEL ELASTIC_NET
 ```
