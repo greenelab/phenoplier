@@ -61,7 +61,7 @@ export batch_n_splits=10
 for pheno_id in {0..99}; do
   for ((batch_id=1; batch_id<=${batch_n_splits}; batch_id++)); do
     export pheno_id batch_id
-    cat cluster_jobs/01_gls_phenoplier_job-template.sh | envsubst '${pheno_id} ${batch_id} ${batch_n_splits}' | bsub
+    cat cluster_jobs/01_gls_phenoplier_mean_job-template.sh | envsubst '${pheno_id} ${batch_id} ${batch_n_splits}' | bsub
   done
 done
 ```
@@ -84,6 +84,7 @@ It will need to be adapted for these tasks.
 ## Combine batches
 
 ```python
+import os
 import itertools
 from pathlib import Path
 
