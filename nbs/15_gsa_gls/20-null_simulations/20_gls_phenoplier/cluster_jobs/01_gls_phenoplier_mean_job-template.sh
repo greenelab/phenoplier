@@ -1,6 +1,6 @@
 #!/bin/bash
 # BSUB -J random_pheno${pheno_id}-${batch_id}
-# BSUB -cwd _tmp/gls_phenoplier
+# BSUB -cwd _tmp/gls_phenoplier_mean
 # BSUB -oo random_pheno${pheno_id}.%J.out
 # BSUB -eo random_pheno${pheno_id}.%J.error
 # -#BSUB -u miltondp@gmail.com
