@@ -92,12 +92,11 @@ ${PYTHON_EXECUTABLE} ${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}/src/gwas_parsing.py 
     -output_column_map ID variant_id \
     -output_column_map A1 effect_allele \
     -output_column_map REF non_effect_allele \
-    -output_column_map T_STAT zscore \
     -output_column_map BETA effect_size \
     -output_column_map SE standard_error \
     -output_column_map P pvalue \
     -output_column_map POS position \
-    -output_column_map OBS_CT sample_size \
+    --insert_value sample_size 312 \
     -output_order variant_id panel_variant_id chromosome position effect_allele non_effect_allele frequency pvalue zscore effect_size standard_error sample_size n_cases \
     ${LIFTOVER_ARG} -output ${OUTPUT_DIR}/${OUTPUT_FILENAME}-harmonized.txt
 

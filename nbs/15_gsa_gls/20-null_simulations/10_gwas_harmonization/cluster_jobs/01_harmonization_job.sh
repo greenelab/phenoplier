@@ -1,5 +1,5 @@
 #!/bin/bash
-#BSUB -J random_pheno[1-100]
+#BSUB -J random_pheno[1-1000]
 #BSUB -cwd _tmp/harmonization
 #BSUB -oo random_pheno%I.%J.out
 #BSUB -eo random_pheno%I.%J.error
@@ -25,7 +25,7 @@ OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/harmonized_gwas"
 GWAS_JOBINDEX=`expr $LSB_JOBINDEX - 1`
 
 bash ${CODE_DIR}/01_harmonize.sh \
-  --input-gwas-file ${GWAS_DIR}/random.pheno${GWAS_JOBINDEX}.glm.linear \
+  --input-gwas-file ${GWAS_DIR}/random.pheno${GWAS_JOBINDEX}.glm.linear.tsv.gz \
   --liftover-chain-file /project/ritchie20/projects/phenoplier/base/data/liftover/chains/hg19ToHg38.over.chain.gz \
   --output-dir ${OUTPUT_DIR}
 
