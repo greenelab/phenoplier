@@ -27,7 +27,7 @@ HARMONIZED_GWAS_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/harmonized_gwas"
 OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/imputed_gwas"
 
 bash ${CODE_DIR}/05_impute.sh \
-  --input-gwas-file ${HARMONIZED_GWAS_DIR}/random.pheno${pheno_id}.glm-harmonized.txt \
+  --input-gwas-file ${HARMONIZED_GWAS_DIR}/random.pheno${pheno_id}.glm.linear.tsv-harmonized.txt \
   --chromosome ${chromosome} \
   --n-batches 10 \
   --batch-id ${batch_id} \
