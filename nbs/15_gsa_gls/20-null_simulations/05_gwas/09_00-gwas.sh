@@ -16,7 +16,6 @@ mkdir -p ${GWAS_DIR}
 $PLINK2 --bfile ${SUBSETS_DIR}/all_phase3.8 \
     --threads ${N_JOBS} \
     --glm hide-covar sex \
-    --ci 0.95 \
     --covar ${SUBSETS_DIR}/all_phase3.7.pca_covar.eigenvec \
     --pheno ${SUBSETS_DIR}/all_phase3.8.random_pheno.txt \
     --out ${GWAS_DIR}/random
