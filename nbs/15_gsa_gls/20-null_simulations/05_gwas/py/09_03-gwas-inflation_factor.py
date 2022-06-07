@@ -25,8 +25,16 @@
 # %% tags=[]
 import re
 import subprocess
+from pathlib import Path
+import tempfile
+import shutil
+from concurrent.futures import ProcessPoolExecutor, as_completed
+
+import numpy as np
+import pandas as pd
 
 import conf
+from utils import chunker
 
 # %% [markdown] tags=[]
 # # Paths
@@ -96,17 +104,87 @@ m = PAT.search(input_text)
 display(m.group("inf_factor"))
 assert m.group("inf_factor") == "1"
 
+
+# %%
+def _compute_inflation_factor(gwas_files_group):
+    res = {}
+    for gwas_file in gwas_files_group:
+        output_dir = Path(tempfile.mkdtemp(prefix="plink-adjust-"))
+        output_file = output_dir / "outfile"
+        result = subprocess.run(
+            [
+                PLINK2,
+                "--adjust-file",
+                str(gwas_file),
+                "test=ADD",
+                "--out",
+                str(output_file),
+            ],
+            stdout=subprocess.PIPE,
+        )
+
+        assert result.returncode == 0
+
+        result_output = result.stdout.decode("utf-8")
+        inf_factor = float(PAT.search(result_output).group("inf_factor"))
+        res[gwas_file.name] = inf_factor
+
+        # delete temporary folder
+        shutil.rmtree(output_dir)
+
+    return res
+
+
+# %%
+# testing
+_gwas_file = gwas_files[0]
+display(_gwas_file)
+
+_tmp = _compute_inflation_factor([_gwas_file])
+assert _tmp is not None
+assert _gwas_file.name in _tmp
+display(_tmp)
+assert 1.005 >= _tmp[_gwas_file.name] >= 1.0
+
+# %%
+gwas_files_chunks = list(chunker(gwas_files, 10))
+
+# %%
+len(gwas_files_chunks)
+
+# %%
+all_results = {}
+with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
+    tasks = [
+        executor.submit(_compute_inflation_factor, chunk) for chunk in gwas_files_chunks
+    ]
+    for future in as_completed(tasks):
+        res = future.result()
+        all_results.update(res)
+
+# %%
+assert len(all_results) == len(gwas_files)
+
+# %% [markdown]
+# # Create dataframe
+
 # %% tags=[]
-for gwas_file in gwas_files:
-    result = subprocess.run(
-        [PLINK2, "--adjust-file", str(gwas_file), "test=ADD"], stdout=subprocess.PIPE
-    )
+all_results_df = pd.Series(all_results, name="inflation_factor")
 
-    assert result.returncode == 0
+# %%
+all_results_df.shape
 
-    result_output = result.stdout.decode("utf-8")
-    inf_factor = float(PAT.search(result_output).group("inf_factor"))
-    display(f"{gwas_file.name}: {inf_factor}")
-    assert 1.015 >= inf_factor >= 1.0
+# %%
+all_results_df.head()
 
-# %% tags=[]
+# %% [markdown]
+# # Checks
+
+# %%
+all_results.describe()
+
+# %%
+assert all_results.min() >= 1.0
+assert all_results.max() <= 1.015
+
+# %%
