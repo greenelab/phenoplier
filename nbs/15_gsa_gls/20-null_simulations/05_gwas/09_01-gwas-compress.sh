@@ -19,7 +19,3 @@ removecols() {
 export -f removecols
 parallel -j${N_JOBS} removecols {} ::: \
   ${GWAS_DIR}/*.glm.linear
-
-# remove original files
-# this step is dangerous; make sure the previous steps worked before removing original files
-# rm ${GWAS_DIR}/*.glm.linear
