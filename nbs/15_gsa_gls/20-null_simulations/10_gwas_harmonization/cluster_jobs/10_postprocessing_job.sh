@@ -1,5 +1,5 @@
 #!/bin/bash
-#BSUB -J random_pheno[1-100]
+#BSUB -J random_pheno[1-1000]
 #BSUB -cwd _tmp/postprocessing
 #BSUB -oo random_pheno%I.%J.out
 #BSUB -eo random_pheno%I.%J.error
@@ -26,7 +26,7 @@ OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/final_imputed_gwas"
 GWAS_JOBINDEX=`expr $LSB_JOBINDEX - 1`
 
 bash ${CODE_DIR}/10_postprocess.sh \
-  --input-gwas-file ${HARMONIZED_GWAS_DIR}/random.pheno${GWAS_JOBINDEX}.glm-harmonized.txt \
+  --input-gwas-file ${HARMONIZED_GWAS_DIR}/random.pheno${GWAS_JOBINDEX}.glm.linear.tsv-harmonized.txt \
   --imputed-gwas-folder ${IMPUTED_GWAS_DIR} \
   --phenotype-name random.pheno${GWAS_JOBINDEX}.glm \
   --output-dir ${OUTPUT_DIR}
