@@ -43,7 +43,10 @@ import conf
 # # Settings
 
 # %% tags=[]
-INPUT_DIR = conf.RESULTS["GLS_NULL_SIMS"] / "phenoplier" / "gls"
+# INPUT_DIR = conf.RESULTS["GLS_NULL_SIMS"] / "phenoplier" / "gls"
+INPUT_DIR = (
+    conf.RESULTS["GLS_NULL_SIMS"] / "phenoplier" / "gls-gtex-mashr-mean_gene_expr"
+)
 display(INPUT_DIR)
 
 
@@ -134,9 +137,6 @@ summary_df[summary_df["5"] < 0.08]
 summary_df[summary_df["5"] == 0.30]
 
 # %%
-summary_df[summary_df["lv"] == "LV704"]
-
-# %%
 dfs[dfs["lv"] == "LV704"].sort_values("pvalue").head(40)
 
 # %%
@@ -148,7 +148,7 @@ summary_df[summary_df["lv"] != "LV704"].quantile(
 # # Some QQ-plots
 
 # %%
-results = dfs[dfs["phenotype"] == "random.pheno1"]  # .sample(n=100)
+results = dfs[dfs["phenotype"] == "random.pheno6"]  # .sample(n=100)
 
 # %%
 results.shape
