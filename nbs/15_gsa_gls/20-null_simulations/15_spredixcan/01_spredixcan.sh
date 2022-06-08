@@ -100,3 +100,4 @@ ${PYTHON_EXECUTABLE} ${PHENOPLIER_METAXCAN_BASE_DIR}/software/SPrediXcan.py \
     --zscore_column "zscore" \
     --keep_non_rsid --additional_output --model_db_snp_key varID \
     --output_file ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.csv >> ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.log 2>&1
+
