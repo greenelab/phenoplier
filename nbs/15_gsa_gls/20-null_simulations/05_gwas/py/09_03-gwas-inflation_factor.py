@@ -105,7 +105,7 @@ display(m.group("inf_factor"))
 assert m.group("inf_factor") == "1"
 
 
-# %%
+# %% tags=[]
 def _compute_inflation_factor(gwas_files_group):
     res = {}
     for gwas_file in gwas_files_group:
@@ -117,6 +117,8 @@ def _compute_inflation_factor(gwas_files_group):
                 "--adjust-file",
                 str(gwas_file),
                 "test=ADD",
+                "--threads",
+                str(conf.GENERAL["N_JOBS"]),
                 "--out",
                 str(output_file),
             ],
@@ -135,7 +137,7 @@ def _compute_inflation_factor(gwas_files_group):
     return res
 
 
-# %%
+# %% tags=[]
 # testing
 _gwas_file = gwas_files[0]
 display(_gwas_file)
@@ -146,14 +148,20 @@ assert _gwas_file.name in _tmp
 display(_tmp)
 assert 1.005 >= _tmp[_gwas_file.name] >= 1.0
 
-# %%
-gwas_files_chunks = list(chunker(gwas_files, 10))
+# %% tags=[]
+gwas_files_chunks = list(
+    chunker(
+        gwas_files,
+        int(min(10, len(gwas_files) / conf.GENERAL["N_JOBS"])),
+    )
+)
 
-# %%
+# %% tags=[]
 len(gwas_files_chunks)
 
-# %%
+# %% tags=[]
 all_results = {}
+
 with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
     tasks = [
         executor.submit(_compute_inflation_factor, chunk) for chunk in gwas_files_chunks
@@ -162,29 +170,40 @@ with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
         res = future.result()
         all_results.update(res)
 
-# %%
+# %% tags=[]
 assert len(all_results) == len(gwas_files)
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Create dataframe
 
 # %% tags=[]
-all_results_df = pd.Series(all_results, name="inflation_factor")
+all_results_df = pd.Series(all_results, name="inflation_factor").rename_axis(
+    "phenotype_code"
+)
 
-# %%
+# %% tags=[]
 all_results_df.shape
 
-# %%
+# %% tags=[]
 all_results_df.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # # Checks
 
-# %%
-all_results.describe()
+# %% tags=[]
+all_results_df.describe()
 
-# %%
-assert all_results.min() >= 1.0
-assert all_results.max() <= 1.015
+# %% tags=[]
+assert all_results_df.min() >= 1.0
+assert all_results_df.max() <= 1.04
 
-# %%
+# %% tags=[]
+all_results_df.sort_values(ascending=False).head(20)
+
+# %% [markdown] tags=[]
+# # Save
+
+# %% tags=[]
+all_results_df.to_csv(
+    conf.RESULTS["GLS_NULL_SIMS"] / "random_pheno-gwas-inflation_factors.tsv", sep="\t"
+)
