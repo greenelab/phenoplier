@@ -15,6 +15,11 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -c|--success-pattern-count)
+      SUCCESS_PATTERN_COUNT="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -*|--*)
       echo "Unknown option $1"
       exit 1
@@ -42,6 +47,11 @@ if [ -z "${SUCCESS_PATTERN}" ]; then
     exit 1
 fi
 
+if [ -z "${SUCCESS_PATTERN_COUNT}" ]; then
+    SUCCESS_PATTERN_COUNT=1
+    echo "WARNING: Success pattern count (--success-pattern-count) not provided, using default: '${SUCCESS_PATTERN_COUNT}'"
+fi
+
 
 total_count=0
 not_finished_jobs=0
@@ -50,8 +60,8 @@ for logfile in $(find ${INPUT_DIR} -name "*.log"); do
     ((total_count++))
 
     count=`grep -c "${SUCCESS_PATTERN}" ${logfile}`
-    if [ "${count}" -lt "1" ]; then
-        echo "WARNING, not finished yet: ${logfile}"
+    if [ "${count}" -ne "${SUCCESS_PATTERN_COUNT}" ]; then
+        echo "WARNING, not finished yet (${count}/${SUCCESS_PATTERN_COUNT}): ${logfile}"
         ((not_finished_jobs++))
         continue
     fi
