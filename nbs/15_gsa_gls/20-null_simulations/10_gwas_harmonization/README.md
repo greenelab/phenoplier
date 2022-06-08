@@ -64,9 +64,14 @@ Here we need to use some templating, because we impute across random phenotypes,
 ```bash
 mkdir -p _tmp/imputation
 
-# iterate over all random phenotype ids, chromosomes and
-# batch ids and submit a job for each combination
-for pheno_id in {0..99}; do
+# Iterate over all random phenotype ids, chromosomes and batch ids and submit a job for each combination.
+# IMPORTANT: These are a lot of tasks. You might want to split jobs by chaning the range in first for line:
+#   0..200
+#   201..400
+#   401..600
+#   601..800
+#   801..999
+for pheno_id in {0..999}; do
   for chromosome in {1..22}; do
     for batch_id in {0..9}; do
       export pheno_id chromosome batch_id
