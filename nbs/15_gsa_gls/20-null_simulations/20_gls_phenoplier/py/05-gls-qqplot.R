@@ -38,7 +38,8 @@ GLS_NULL_SIMS_DIR <- Sys.getenv("PHENOPLIER_RESULTS_GLS_NULL_SIMS")
 GLS_NULL_SIMS_DIR
 
 # %% tags=[]
-PHENOPLIER_GLS_DIR <- file.path(GLS_NULL_SIMS_DIR, "phenoplier", "gls")
+# PHENOPLIER_GLS_DIR <- file.path(GLS_NULL_SIMS_DIR, "phenoplier", "gls-1000g-mashr-mean_gene_expr")
+PHENOPLIER_GLS_DIR <- file.path(GLS_NULL_SIMS_DIR, "phenoplier", "gls-gtex-mashr-mean_gene_expr")
 
 # %% tags=[]
 PHENOPLIER_GLS_DIR
@@ -53,7 +54,7 @@ PHENOPLIER_GLS_DIR
 # ## Load data
 
 # %% tags=[]
-glsph <- as.data.frame(read_tsv(file.path(PHENOPLIER_GLS_DIR, "random.pheno1-gls_phenoplier.tsv.gz")))
+glsph <- as.data.frame(read_tsv(file.path(PHENOPLIER_GLS_DIR, "random.pheno1-combined-gls_phenoplier.tsv.gz")))
 
 # %% tags=[]
 dim(glsph)
@@ -84,13 +85,18 @@ qq(glsph$pvalue, main = "Q-Q plot of GLS PhenoPLIER p-values")
 # ## Load data
 
 # %% tags=[]
-glsph <- as.data.frame(read_tsv(file.path(PHENOPLIER_GLS_DIR, "random.pheno28-gls_phenoplier.tsv.gz")))
+glsph <- as.data.frame(read_tsv(file.path(PHENOPLIER_GLS_DIR, "random.pheno28-combined-gls_phenoplier.tsv.gz")))
 
 # %% tags=[]
 dim(glsph)
 
 # %% tags=[]
 head(glsph)
+
+# %% tags=[]
+glsph %>%
+  filter(pvalue <= 0.05) %>%
+  dim_desc()
 
 # %% [markdown] tags=[]
 # ## QQ-plot
