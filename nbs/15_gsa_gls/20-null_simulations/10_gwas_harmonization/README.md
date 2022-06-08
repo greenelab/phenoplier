@@ -51,9 +51,11 @@ cat cluster_jobs/01_harmonization_job.sh | bsub
 ```
 
 The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
-`bash check_job.sh -i _tmp/harmonization/`
+```bash
+bash check_job.sh -i _tmp/harmonization/
+```
 
-There should be 100 files in the output directory: 100 random phenotypes.
+There should be 1000 files in the output directory: 1000 random phenotypes.
 
 ## Imputation
 
@@ -76,7 +78,7 @@ done
 
 Check logs with: `bash check_job.sh -i _tmp/imputation/`
 
-There should be 22,000 files in the output directory: 22 chromosomes * 10 batches * 100 random phenotypes.
+There should be 220,000 files in the output directory: 22 chromosomes * 10 batches * 1000 random phenotypes.
 If there are less than that number, some jobs might have failed.
 To see which ones failed and run them again, you can use the following python code:
 
@@ -135,9 +137,23 @@ mkdir -p _tmp/postprocessing
 cat cluster_jobs/10_postprocessing_job.sh | bsub
 ```
 
-Check logs with: `bash check_job.sh -i _tmp/postprocessing`
+Check logs with:
+```bash
+bash check_job.sh -i _tmp/postprocessing
+```
 
-There should be 100 files in the output directory, one for each random phenotype.
+Another check is to count how many parts were processed for each random phenotype.
+It should be 22 chromosomes times 10 batches (220):
+```bash
+bash check_job.sh \
+  -i _tmp/postprocessing/ \
+  -p "INFO - Processing imputed random" \
+  -c 220
+
+# which should output:
+# Finished checking [NUMBER_OF_PHENOTYPES] logs:
+#  All jobs finished successfully
+```
 
 
 ## Monitoring jobs
@@ -145,7 +161,7 @@ There should be 100 files in the output directory, one for each random phenotype
 Check jobs with command `bjobs`.
 Or, for a constantly-updated monitoring (refreshing every 2 seconds):
 ```bash
-watch -n 2 bjobs
+watch -n 2 bjobs -WL
 ```
 
 Logs for `random_pheno0` are in `random_pheno1.*` (indexes are different because LPC arrays cannot start with zero).
