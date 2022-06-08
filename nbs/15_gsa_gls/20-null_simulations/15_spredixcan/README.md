@@ -48,9 +48,14 @@ Here we need to use some templating, because we run across random phenotypes and
 ```bash
 mkdir -p _tmp/spredixcan
 
-# iterate over all random phenotype ids and tissues
-# and submit a job for each combination
-for pheno_id in {0..99}; do
+# Iterate over all random phenotype ids, chromosomes and batch ids and submit a job for each combination.
+# IMPORTANT: These are a lot of tasks. You might want to split jobs by chaning the range in first for line:
+#   0..200
+#   201..400
+#   401..600
+#   601..800
+#   801..999
+for pheno_id in {0..999}; do
   for tissue in ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_TISSUES}; do
     export pheno_id tissue
     cat cluster_jobs/01_spredixcan_job-template.sh | envsubst '${pheno_id} ${tissue}' | bsub
