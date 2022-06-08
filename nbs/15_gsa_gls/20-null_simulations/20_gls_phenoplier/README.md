@@ -52,13 +52,19 @@ The `_tmp` folder stores logs and needs to be created.
 Here we need to use some templating, because we run across random phenotypes and batches.
 
 ```bash
-mkdir -p _tmp/gls_phenoplier
+mkdir -p _tmp/gls_phenoplier_mean
 
-# iterate over all random phenotype ids and batches
-# and submit a job for each combination
+# Iterate over all random phenotype ids, chromosomes and batch ids and submit a job for each combination.
+# IMPORTANT: These are a lot of tasks. You might want to split jobs by chaning the range in first for line:
+#   0..200
+#   201..400
+#   401..600
+#   601..800
+#   801..999
+
 export batch_n_splits=10
 
-for pheno_id in {0..99}; do
+for pheno_id in {0..999}; do
   for ((batch_id=1; batch_id<=${batch_n_splits}; batch_id++)); do
     export pheno_id batch_id
     cat cluster_jobs/01_gls_phenoplier_mean_job-template.sh | envsubst '${pheno_id} ${batch_id} ${batch_n_splits}' | bsub
@@ -68,7 +74,7 @@ done
 The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
 * Check whether jobs finished successfully:
 ```bash
-bash check_job.sh -i _tmp/gls_phenoplier/ -p "INFO: Writing results to" -f '*.error'
+bash check_job.sh -i _tmp/gls_phenoplier_mean/ -p "INFO: Writing results to" -f '*.error'
 
 # A success output would look like this:
 
@@ -90,7 +96,7 @@ from pathlib import Path
 
 import pandas as pd
 
-RESULTS_DIR = Path(os.environ["PHENOPLIER_RESULTS_GLS_NULL_SIMS"]) / "phenoplier/gls/"
+RESULTS_DIR = Path(os.environ["PHENOPLIER_RESULTS_GLS_NULL_SIMS"]) / "phenoplier" / "gls-gtex-mashr-mean_gene_expr"
 all_results_files = sorted(list(f.name for f in RESULTS_DIR.glob("*.tsv.gz")))
 
 all_dfs = []
@@ -99,7 +105,12 @@ for key, group in itertools.groupby(all_results_files, lambda x: x.split("-")[0]
     all_dfs = pd.concat(all_dfs, axis=0)
     assert all_dfs.shape == (987, 2)
     all_dfs = all_dfs.sort_index()
-    all_dfs.to_csv(RESULTS_DIR / f"{key}-gls_phenoplier.tsv.gz", sep="\t")
+    all_dfs.to_csv(RESULTS_DIR / f"{key}-combined-gls_phenoplier.tsv.gz", sep="\t")
+```
+
+And remove batch files:
+```bash
+rm ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-gtex-mashr-mean_gene_expr/random.pheno3-batch*-gls_phenoplier.tsv.gz
 ```
 
 
