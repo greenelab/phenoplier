@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Given an input folder, it checks that jobs submitted in a cluster (Penn PMACS) finished correctly.
-
 # read arguments
 POSITIONAL_ARGS=()
 
@@ -9,6 +7,16 @@ while [[ $# -gt 0 ]]; do
   case $1 in
     -i|--input-dir)
       INPUT_DIR="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -p|--success-pattern)
+      SUCCESS_PATTERN="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -c|--success-pattern-count)
+      SUCCESS_PATTERN_COUNT="$2"
       shift # past argument
       shift # past value
       ;;
@@ -34,6 +42,16 @@ if [ -z "${INPUT_DIR}" ]; then
     exit 1
 fi
 
+if [ -z "${SUCCESS_PATTERN}" ]; then
+    SUCCESS_PATTERN="INFO - Finished "
+    echo "WARNING: Success pattern (--success-pattern) not provided, using default: '${SUCCESS_PATTERN}'"
+fi
+
+if [ -z "${SUCCESS_PATTERN_COUNT}" ]; then
+    SUCCESS_PATTERN_COUNT=1
+    echo "WARNING: Success pattern count (--success-pattern-count) not provided, using default: '${SUCCESS_PATTERN_COUNT}'"
+fi
+
 
 total_count=0
 not_finished_jobs=0
@@ -41,8 +59,8 @@ not_finished_jobs=0
 for logfile in $(find ${INPUT_DIR} -name "*.error"); do
     ((total_count++))
 
-    count=`grep -c "INFO - Finished " ${logfile}`
-    if [ "${count}" -ne "1" ]; then
+    count=`grep -c "${SUCCESS_PATTERN}" ${logfile}`
+    if [ "${count}" -ne "${SUCCESS_PATTERN_COUNT}" ]; then
         echo "WARNING, not finished yet: ${logfile}"
         ((not_finished_jobs++))
         continue
