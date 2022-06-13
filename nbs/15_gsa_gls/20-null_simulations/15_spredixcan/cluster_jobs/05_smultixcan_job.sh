@@ -1,5 +1,5 @@
 #!/bin/bash
-# BSUB -J random_pheno[1-100]
+# BSUB -J random_pheno[1-1000]
 # BSUB -cwd _tmp/smultixcan
 # BSUB -oo random_pheno%I.%J.out
 # BSUB -eo random_pheno%I.%J.error
