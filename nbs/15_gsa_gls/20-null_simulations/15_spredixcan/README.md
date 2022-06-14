@@ -50,11 +50,11 @@ mkdir -p _tmp/spredixcan
 
 # Iterate over all random phenotype ids, chromosomes and batch ids and submit a job for each combination.
 # IMPORTANT: These are a lot of tasks. You might want to split jobs by chaning the range in first for line:
-#   0..200
-#   201..400
-#   401..600
-#   601..800
-#   801..999
+#   0..199
+#   200..399
+#   400..599
+#   600..799
+#   800..999
 for pheno_id in {0..999}; do
   for tissue in ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_TISSUES}; do
     export pheno_id tissue
@@ -130,3 +130,8 @@ Logs for `random_pheno0` are in `random_pheno1.*` (indexes are different because
 # QQ plots
 
 Notebook `15-twas-qqplot.ipynb` checks that the distribution of pvalues is as expected.
+
+
+
+
+REMEMBER TO RUN QQPLOTS NOTEBOOKS WHEN ALL IS DONE
