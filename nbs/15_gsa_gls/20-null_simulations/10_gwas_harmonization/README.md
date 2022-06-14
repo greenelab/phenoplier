@@ -55,7 +55,7 @@ The `check_jobs.sh` script could be used also to quickly assess which jobs faile
 bash check_job.sh -i _tmp/harmonization/
 ```
 
-There should be 1000 files in the output directory: 1000 random phenotypes.
+There should be [NUMBER OF PHENOTYPES] files in the output directory: 1000 random phenotypes.
 
 ## Imputation
 
@@ -66,11 +66,11 @@ mkdir -p _tmp/imputation
 
 # Iterate over all random phenotype ids, chromosomes and batch ids and submit a job for each combination.
 # IMPORTANT: These are a lot of tasks. You might want to split jobs by chaning the range in first for line:
-#   0..200
-#   201..400
-#   401..600
-#   601..800
-#   801..999
+#   0..199
+#   200..399
+#   400..599
+#   600..799
+#   800..999
 for pheno_id in {0..999}; do
   for chromosome in {1..22}; do
     for batch_id in {0..9}; do
@@ -81,7 +81,10 @@ for pheno_id in {0..999}; do
 done
 ```
 
-Check logs with: `bash check_job.sh -i _tmp/imputation/`
+Check logs with:
+```bash
+bash check_job.sh -i _tmp/imputation/
+```
 
 There should be 220,000 files in the output directory: 22 chromosomes * 10 batches * 1000 random phenotypes.
 If there are less than that number, some jobs might have failed.
@@ -91,6 +94,11 @@ To see which ones failed and run them again, you can use the following python co
 import os
 import re
 from pathlib import Path
+
+# adjust accordingly
+N_PHENOTYPES = 200    # 1000
+PHENO_ID_START = 400  # 0
+PHENO_ID_END = 599    # 999
 
 IMPUTATION_OUTPUT_DIR = Path(
   os.environ["PHENOPLIER_RESULTS_GLS_NULL_SIMS"],
@@ -102,21 +110,22 @@ output_files = list(f.name for f in IMPUTATION_OUTPUT_DIR.glob("*.txt"))
 len(output_files)
 
 # expected list of files
-OUTPUT_FILE_TEMPLATE = "random.pheno{pheno_id}.glm-harmonized-imputed-chr{chromosome}-batch{batch_id}_{n_batches}.txt"
+OUTPUT_FILE_TEMPLATE = "random.pheno{pheno_id}.glm.linear.tsv-harmonized-imputed-chr{chromosome}-batch{batch_id}_{n_batches}.txt"
 
 expected_output_files = [
   OUTPUT_FILE_TEMPLATE.format(pheno_id=p, chromosome=c, batch_id=bi, n_batches=10)
-  for p in range(0,100)
+  for p in range(PHENO_ID_START, PHENO_ID_END+1)
   for c in range(1, 23)
   for bi in range(0, 10)
 ]
-assert len(expected_output_files) == 100 * 10 * 22
+assert len(expected_output_files) == N_PHENOTYPES * 10 * 22
 
 # get files that are expected but not there
 missing_files = set(expected_output_files).difference(set(output_files))
+len(missing_files)
 
 # extract pheno id, chromosome and batch id from missing files
-pheno_pattern = re.compile(r"random.pheno(?P<pheno_id>[0-9]+).glm-harmonized-imputed-chr(?P<chromosome>[0-9]+)-batch(?P<batch_id>[0-9]+)_[0-9]+.txt")
+pheno_pattern = re.compile(r"random.pheno(?P<pheno_id>[0-9]+).glm.linear.tsv-harmonized-imputed-chr(?P<chromosome>[0-9]+)-batch(?P<batch_id>[0-9]+)_[0-9]+.txt")
 missing_jobs = [pheno_pattern.search(mf).groups() for mf in missing_files]
 assert len(missing_jobs) == len(missing_files)
 
@@ -175,3 +184,7 @@ Logs for `random_pheno0` are in `random_pheno1.*` (indexes are different because
 # Manhattan and QQ plots
 
 Notebook `15-gwas-qqplot.ipynb` checks that the distribution of pvalues is as expected.
+
+
+
+REMEMBER TO RUN QQPLOTS NOTEBOOKS WHEN ALL IS DONE
