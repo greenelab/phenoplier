@@ -10,6 +10,7 @@ from functools import lru_cache
 
 import numpy as np
 import pandas as pd
+from scipy.spatial.distance import squareform
 
 import conf
 from data.cache import read_data
@@ -654,7 +655,8 @@ class Gene(object):
         Returns:
             A pandas DataFrame with the variants' weight for the prediction of
              this gene expression. It has these columns: variant ID (in GTEx v8
-             format) and its weight.
+             format) and its weight. It returns None if no predictors (SNPs) are
+             available for the gene in this tissue/model.
         """
         sqlite_conn = Gene._get_tissue_connection(tissue, model_type)
 
@@ -852,15 +854,17 @@ class Gene(object):
 
         Returns:
             A float with the correlation of the two genes' predicted expression.
+            None if:
+              * One if any of the genes have no predictors (SNPs) in the tissue.
+              * TODO: what else?
         """
-        gene_tissue = tissue
         other_gene_tissue = tissue
         if other_tissue is not None:
             other_gene_tissue = other_tissue
 
         gene_w = self.get_prediction_weights(tissue, model_type)
         if gene_w is None:
-            return 0.0
+            return None
         gene_w = gene_w.set_index("varID")
         if gene_w.abs().sum().sum() == 0.0:
             # some genes in the models have weight equal to zero (weird)
@@ -868,7 +872,7 @@ class Gene(object):
 
         other_gene_w = other_gene.get_prediction_weights(other_gene_tissue, model_type)
         if other_gene_w is None:
-            return 0.0
+            return None
         other_gene_w = other_gene_w.set_index("varID")
         if other_gene_w.abs().sum().sum() == 0.0:
             return 0.0
@@ -906,3 +910,108 @@ class Gene(object):
         return (gene_w.T @ snps_cov @ other_gene_w).squeeze() / np.sqrt(
             gene_var * other_gene_var
         )
+
+    # @lru_cache(maxsize=None)
+    def get_tissues_correlations(
+        self,
+        other_gene,
+        tissues: list = None,
+        reference_panel: str = "GTEX_V8",
+        model_type: str = "MASHR",
+    ):
+        """
+        It computes the correlation matrix for two genes across all tissues.
+
+        Args:
+            tissues: TODO
+        """
+
+        # TODO: replace this by the "tissues" argument
+        #  the tissues argument will be provided after looking at for what tissues one
+        #  gene has results in S-PrediXcan
+        tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{model_type}_TISSUES"].split(
+            " "
+        )
+        n_tissues = len(tissues)
+
+        res = np.full((n_tissues, n_tissues), fill_value=np.nan)
+
+        # TODO: some optimization if the genes are the same?
+
+        for t1_idx, t1 in enumerate(tissues):
+            for t2_idx, t2 in enumerate(tissues):
+                ec = self.get_expression_correlation(
+                    other_gene,
+                    t1,
+                    t2,
+                )
+                # ec could be None; that means that there are no SNP preditors for one
+                # of the genes in the tissue
+                res[t1_idx, t2_idx] = ec
+
+        # Return a dataframe with tissues in rows and columns
+        df = pd.DataFrame(res, index=tissues.copy(), columns=tissues.copy())
+
+        # remove tissues for which we don't have snps predictors for any of the genes
+        df = df.dropna(axis=0, how="all").dropna(axis=1, how="all")
+
+        # if the diagonal are all close to 1.0, then round it to 1.0
+        if all([np.isclose(v, 1.0) for v in np.diag(df)]):
+            np.fill_diagonal(df.values, 1.0)
+
+        return df
+
+    # @lru_cache(maxsize=None)
+    def get_ssm_correlation(
+        self,
+        other_gene,
+        tissues: list = None,
+        reference_panel: str = "GTEX_V8",
+        model_type: str = "MASHR",
+        condition_number: float = 30,
+    ):
+        """
+        Computes the correlation of the model sum of squares (SSM) for a couple of genes.
+        For that, is uses the same predictors used by the MultiXcan approach, that is, the principal components
+        of the expression matrix for one gene across tissues.
+
+        Args:
+            TODO
+        Returns:
+            TODO
+        """
+        genes_corrs = self.get_tissues_correlations(
+            other_gene, tissues, reference_panel, model_type
+        )
+
+        if genes_corrs.sum().sum() == 0.0:
+            return 0.0
+
+        this_gene_n_tissues = genes_corrs.shape[0]
+        other_gene_n_tissues = genes_corrs.shape[1]
+
+        # this gene SVD
+        genes_corrs_u, genes_corrs_s, genes_corrs_vh = np.linalg.svd(
+            genes_corrs, full_matrices=False
+        )
+
+        # select top eigenvalues
+        genes_corrs_s_max_rel = genes_corrs_s.max() / genes_corrs_s
+        genes_corrs_s_top_idx = np.array(
+            [i for i, w in enumerate(genes_corrs_s_max_rel) if w < condition_number]
+        )
+
+        genes_corrs_vh_selected = genes_corrs_vh[:, genes_corrs_s_top_idx]
+
+        cov_ssm = 2 * np.trace(genes_corrs_vh_selected.dot(genes_corrs_vh_selected.T))
+
+        # fixme: ese ssm esta mal, hay que hacer para los dos genes
+        this_gene_sd_ssm = np.sqrt(
+            2 * min(genes_corrs_vh_selected.shape[1], this_gene_n_tissues)
+        )
+        other_gene_sd_ssm = np.sqrt(
+            2 * min(genes_corrs_vh_selected.shape[1], other_gene_n_tissues)
+        )
+
+        corr = cov_ssm / (this_gene_sd_ssm * other_gene_sd_ssm)
+        return min(1.0, max(-1.0, corr))
