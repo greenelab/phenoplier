@@ -42,6 +42,10 @@ import conf
 # %% [markdown] tags=[]
 # # Settings
 
+# %%
+N_PHENOTYPES = 400
+N_LVS = 987
+
 # %% tags=[]
 # INPUT_DIR = conf.RESULTS["GLS_NULL_SIMS"] / "phenoplier" / "gls"
 INPUT_DIR = (
@@ -91,7 +95,8 @@ dfs = [
 ]
 
 # %% tags=[]
-len(dfs)
+display(len(dfs))
+assert len(dfs) == N_PHENOTYPES
 
 # %% tags=[]
 dfs = pd.concat(dfs, axis=0, ignore_index=True)
@@ -102,13 +107,21 @@ dfs.shape
 # %%
 dfs.head()
 
+# %%
+_tmp = dfs.groupby("phenotype")["lv"].nunique().unique()
+assert _tmp.shape[0] == 1
+assert _tmp[0] == N_LVS
+
+# %%
+show_prop(dfs)
+
 # %% [markdown]
 # # Summary
 
 # %%
 summary_list = []
 for lv, lv_data in dfs.groupby("lv"):
-    assert lv_data.shape[0] == 100
+    assert lv_data.shape[0] == N_PHENOTYPES
 
     summary_list.append(
         {
@@ -120,6 +133,7 @@ for lv, lv_data in dfs.groupby("lv"):
     )
 
 summary_df = pd.DataFrame(summary_list)
+assert summary_df.shape[0] == N_LVS
 
 # %%
 summary_df.shape
@@ -134,21 +148,42 @@ summary_df.describe()
 summary_df[summary_df["5"] < 0.08]
 
 # %%
-summary_df[summary_df["5"] == 0.30]
-
-# %%
-dfs[dfs["lv"] == "LV704"].sort_values("pvalue").head(40)
+summary_df[summary_df["5"] > 0.27]
 
 # %%
 summary_df[summary_df["lv"] != "LV704"].quantile(
     [0.01, 0.05, 0.10, 0.15, 0.20, 0.25, 0.50, 0.75, 0.80, 0.85, 0.90, 0.95]
 )
 
+# %%
+summary_df[~summary_df["lv"].isin(("LV704",))].describe()
+
+# %% [markdown]
+# ## See what's going on with that LV
+
+# %%
+multiplier_z = pd.read_pickle(conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"])
+
+# %%
+multiplier_z.shape
+
+# %%
+multiplier_z.head()
+
+# %%
+multiplier_z["LV704"].sort_values(ascending=False).head(20)
+
+# %%
+multiplier_z["LV1"].sort_values(ascending=False).head(20)
+
+# %%
+sns.histplot(multiplier_z["LV704"])
+
 # %% [markdown]
 # # Some QQ-plots
 
 # %%
-results = dfs[dfs["phenotype"] == "random.pheno6"]  # .sample(n=100)
+results = dfs[dfs["phenotype"] == "random.pheno28"]  # .sample(n=100)
 
 # %%
 results.shape
