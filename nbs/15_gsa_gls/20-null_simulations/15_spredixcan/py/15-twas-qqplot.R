@@ -73,7 +73,7 @@ head(twas)
 # %% tags=[]
 options(repr.plot.width = 10, repr.plot.height = 10)
 
-qq(twas$pvalue, main = "Q-Q plot of TWAS p-values : log")
+qq(twas$pvalue, main = "Q-Q plot of TWAS p-values")
 
 # %% [markdown] tags=[]
 # ## S-MultiXcan
@@ -96,13 +96,10 @@ head(twas)
 # %% tags=[]
 options(repr.plot.width = 10, repr.plot.height = 10)
 
-qq(twas$pvalue, main = "Q-Q plot of TWAS p-values : log")
+qq(twas$pvalue, main = "Q-Q plot of TWAS p-values")
 
 # %% [markdown] tags=[]
 # # Random pheno 28
-
-# %% [markdown] tags=[]
-# Random phenotype 28 has the largest inflation factor in the original GWAS summary stats (although within the acceptable limits).
 
 # %% [markdown] tags=[]
 # ## S-PrediXcan
@@ -125,7 +122,7 @@ head(twas)
 # %% tags=[]
 options(repr.plot.width = 10, repr.plot.height = 10)
 
-qq(twas$pvalue, main = "Q-Q plot of TWAS p-values : log")
+qq(twas$pvalue, main = "Q-Q plot of TWAS p-values")
 
 # %% [markdown] tags=[]
 # ## S-MultiXcan
@@ -148,6 +145,6 @@ head(twas)
 # %% tags=[]
 options(repr.plot.width = 10, repr.plot.height = 10)
 
-qq(twas$pvalue, main = "Q-Q plot of TWAS p-values : log")
+qq(twas$pvalue, main = "Q-Q plot of TWAS p-values")
 
 # %% tags=[]
