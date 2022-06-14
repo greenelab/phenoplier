@@ -58,11 +58,61 @@ dim(gwas)
 # %% tags=[]
 head(gwas)
 
-# %% tags=[]
-# gwas <- gwas %>% filter(pvalue >= 0 & pvalue <= 1)
+# %% [markdown] tags=[]
+# ### Extract chromosome
 
 # %% tags=[]
-# dim(gwas)
+unique(gwas$chromosome)
+
+# %% tags=[]
+gwas$chrom <- gsub("chr([0-9]+)", "\\1", gwas$chromosome)
+gwas <- transform(gwas, chrom = as.numeric(chrom))
+
+# %% tags=[]
+unique(gwas$chrom)
+
+# %% [markdown] tags=[]
+# ## Manhattan plot
+
+# %% tags=[]
+options(repr.plot.width = 20, repr.plot.height = 10)
+
+manhattan(
+  gwas,
+  chr = "chrom",
+  bp = "position",
+  p = "pvalue",
+  snp = "variant_id",
+  main = "Manhattan plot",
+  suggestiveline = F,
+  genomewideline = -log10(5e-08),
+  cex = 0.6,
+  cex.axis = 0.9,
+  ylim = c(0, 10),
+)
+
+# %% [markdown] tags=[]
+# ## QQ-plot
+
+# %% tags=[]
+options(repr.plot.width = 10, repr.plot.height = 10)
+
+qq(gwas$pvalue, main = "Q-Q plot of GWAS p-values")
+
+# %% [markdown] tags=[]
+# # Random pheno 373
+
+# %% [markdown] tags=[]
+# ## Load data
+
+# %% tags=[]
+gwas <- as.data.frame(read_table(file.path(GWAS_DIR, "random.pheno373.glm-imputed.txt.gz")))
+
+# %% tags=[]
+dim(gwas)
+
+# %% tags=[]
+head(gwas)
 
 # %% [markdown] tags=[]
 # ### Extract chromosome
@@ -103,31 +153,22 @@ manhattan(
 # %% tags=[]
 options(repr.plot.width = 10, repr.plot.height = 10)
 
-qq(gwas$pvalue, main = "Q-Q plot of GWAS p-values : log")
+qq(gwas$pvalue, main = "Q-Q plot of GWAS p-values")
 
 # %% [markdown] tags=[]
-# # Random pheno 28
-
-# %% [markdown] tags=[]
-# Random phenotype 28 has the largest inflation factor in the original GWAS summary stats (although within the acceptable limits).
+# # Random pheno 622
 
 # %% [markdown] tags=[]
 # ## Load data
 
 # %% tags=[]
-gwas <- as.data.frame(read_table(file.path(GWAS_DIR, "random.pheno28.glm-imputed.txt.gz")))
+gwas <- as.data.frame(read_table(file.path(GWAS_DIR, "random.pheno622.glm-imputed.txt.gz")))
 
 # %% tags=[]
 dim(gwas)
 
 # %% tags=[]
 head(gwas)
-
-# %% tags=[]
-# gwas <- gwas %>% filter(P >= 0 & P <= 1)
-
-# %% tags=[]
-# dim(gwas)
 
 # %% [markdown] tags=[]
 # ### Extract chromosome
@@ -154,7 +195,7 @@ manhattan(
   bp = "position",
   p = "pvalue",
   snp = "variant_id",
-  main = "Manhattan plot: logistic",
+  main = "Manhattan plot",
   suggestiveline = F,
   genomewideline = -log10(5e-08),
   cex = 0.6,
@@ -168,6 +209,174 @@ manhattan(
 # %% tags=[]
 options(repr.plot.width = 10, repr.plot.height = 10)
 
-qq(gwas$pvalue, main = "Q-Q plot of GWAS p-values : log")
+qq(gwas$pvalue, main = "Q-Q plot of GWAS p-values")
+
+# %% [markdown] tags=[]
+# # Random pheno 825
+
+# %% [markdown] tags=[]
+# ## Load data
+
+# %% tags=[]
+gwas <- as.data.frame(read_table(file.path(GWAS_DIR, "random.pheno825.glm-imputed.txt.gz")))
+
+# %% tags=[]
+dim(gwas)
+
+# %% tags=[]
+head(gwas)
+
+# %% [markdown] tags=[]
+# ### Extract chromosome
+
+# %% tags=[]
+unique(gwas$chromosome)
+
+# %% tags=[]
+gwas$chrom <- gsub("chr([0-9]+)", "\\1", gwas$chromosome)
+gwas <- transform(gwas, chrom = as.numeric(chrom))
+
+# %% tags=[]
+unique(gwas$chrom)
+
+# %% [markdown] tags=[]
+# ## Manhattan plot
+
+# %% tags=[]
+options(repr.plot.width = 20, repr.plot.height = 10)
+
+manhattan(
+  gwas,
+  chr = "chrom",
+  bp = "position",
+  p = "pvalue",
+  snp = "variant_id",
+  main = "Manhattan plot",
+  suggestiveline = F,
+  genomewideline = -log10(5e-08),
+  cex = 0.6,
+  cex.axis = 0.9,
+  ylim = c(0, 10),
+)
+
+# %% [markdown] tags=[]
+# ## QQ-plot
+
+# %% tags=[]
+options(repr.plot.width = 10, repr.plot.height = 10)
+
+qq(gwas$pvalue, main = "Q-Q plot of GWAS p-values")
+
+# %% [markdown] tags=[]
+# # Random pheno 135
+
+# %% [markdown] tags=[]
+# ## Load data
+
+# %% tags=[]
+gwas <- as.data.frame(read_table(file.path(GWAS_DIR, "random.pheno135.glm-imputed.txt.gz")))
+
+# %% tags=[]
+dim(gwas)
+
+# %% tags=[]
+head(gwas)
+
+# %% [markdown] tags=[]
+# ### Extract chromosome
+
+# %% tags=[]
+unique(gwas$chromosome)
+
+# %% tags=[]
+gwas$chrom <- gsub("chr([0-9]+)", "\\1", gwas$chromosome)
+gwas <- transform(gwas, chrom = as.numeric(chrom))
+
+# %% tags=[]
+unique(gwas$chrom)
+
+# %% [markdown] tags=[]
+# ## Manhattan plot
+
+# %% tags=[]
+options(repr.plot.width = 20, repr.plot.height = 10)
+
+manhattan(
+  gwas,
+  chr = "chrom",
+  bp = "position",
+  p = "pvalue",
+  snp = "variant_id",
+  main = "Manhattan plot",
+  suggestiveline = F,
+  genomewideline = -log10(5e-08),
+  cex = 0.6,
+  cex.axis = 0.9,
+  ylim = c(0, 10),
+)
+
+# %% [markdown] tags=[]
+# ## QQ-plot
+
+# %% tags=[]
+options(repr.plot.width = 10, repr.plot.height = 10)
+
+qq(gwas$pvalue, main = "Q-Q plot of GWAS p-values")
+
+# %% [markdown] tags=[]
+# # Random pheno 412
+
+# %% [markdown] tags=[]
+# ## Load data
+
+# %% tags=[]
+gwas <- as.data.frame(read_table(file.path(GWAS_DIR, "random.pheno412.glm-imputed.txt.gz")))
+
+# %% tags=[]
+dim(gwas)
+
+# %% tags=[]
+head(gwas)
+
+# %% [markdown] tags=[]
+# ### Extract chromosome
+
+# %% tags=[]
+unique(gwas$chromosome)
+
+# %% tags=[]
+gwas$chrom <- gsub("chr([0-9]+)", "\\1", gwas$chromosome)
+gwas <- transform(gwas, chrom = as.numeric(chrom))
+
+# %% tags=[]
+unique(gwas$chrom)
+
+# %% [markdown] tags=[]
+# ## Manhattan plot
+
+# %% tags=[]
+options(repr.plot.width = 20, repr.plot.height = 10)
+
+manhattan(
+  gwas,
+  chr = "chrom",
+  bp = "position",
+  p = "pvalue",
+  snp = "variant_id",
+  main = "Manhattan plot",
+  suggestiveline = F,
+  genomewideline = -log10(5e-08),
+  cex = 0.6,
+  cex.axis = 0.9,
+  ylim = c(0, 10),
+)
+
+# %% [markdown] tags=[]
+# ## QQ-plot
+
+# %% tags=[]
+options(repr.plot.width = 10, repr.plot.height = 10)
+
+qq(gwas$pvalue, main = "Q-Q plot of GWAS p-values")
 
 # %% tags=[]
