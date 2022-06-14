@@ -828,6 +828,7 @@ class Gene(object):
         self,
         other_gene,
         tissue: str,
+        other_tissue: str = None,
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
     ):
@@ -839,7 +840,11 @@ class Gene(object):
             other_gene:
                 Another Gene object.
             tissue:
-                The tissue name.
+                The tissue name that will be used for both genes, or this gene
+                (self) if 'other_gene' is provided.
+            other_tissue:
+                The tissue name that will be used for 'other_gene'. In that
+                case, 'tissue' is for this gene (self).
             reference_panel:
                 A reference panel for the SNP covariance matrix. Either GTEX_V8 or 1000G.
             model_type:
@@ -848,6 +853,11 @@ class Gene(object):
         Returns:
             A float with the correlation of the two genes' predicted expression.
         """
+        gene_tissue = tissue
+        other_gene_tissue = tissue
+        if other_tissue is not None:
+            other_gene_tissue = other_tissue
+
         gene_w = self.get_prediction_weights(tissue, model_type)
         if gene_w is None:
             return 0.0
@@ -856,7 +866,7 @@ class Gene(object):
             # some genes in the models have weight equal to zero (weird)
             return 0.0
 
-        other_gene_w = other_gene.get_prediction_weights(tissue, model_type)
+        other_gene_w = other_gene.get_prediction_weights(other_gene_tissue, model_type)
         if other_gene_w is None:
             return 0.0
         other_gene_w = other_gene_w.set_index("varID")
@@ -871,7 +881,7 @@ class Gene(object):
             return 0.0
 
         other_gene_var = other_gene.get_pred_expression_variance(
-            tissue, reference_panel, model_type
+            other_gene_tissue, reference_panel, model_type
         )
         if other_gene_var is None or other_gene_var == 0.0:
             return 0.0
