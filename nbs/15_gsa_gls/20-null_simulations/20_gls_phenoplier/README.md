@@ -56,11 +56,11 @@ mkdir -p _tmp/gls_phenoplier_mean
 
 # Iterate over all random phenotype ids, chromosomes and batch ids and submit a job for each combination.
 # IMPORTANT: These are a lot of tasks. You might want to split jobs by chaning the range in first for line:
-#   0..200
-#   201..400
-#   401..600
-#   601..800
-#   801..999
+#   0..199
+#   200..399
+#   400..599
+#   600..799
+#   800..999
 
 export batch_n_splits=10
 
@@ -77,8 +77,7 @@ The `check_jobs.sh` script could be used also to quickly assess which jobs faile
 bash check_job.sh -i _tmp/gls_phenoplier_mean/ -p "INFO: Writing results to" -f '*.error'
 
 # A success output would look like this:
-
-Finished checking 1000 logs:
+Finished checking [NUMBER OF PHENOTYPES * $batch_n_splits] logs:
   All jobs finished successfully
 ```
 
