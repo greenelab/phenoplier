@@ -1,5 +1,6 @@
 import pandas as pd
 import pytest
+import numpy as np
 
 from entity import Gene
 
@@ -432,3 +433,154 @@ def test_gene_get_expression_correlation_gene_weights_are_zero():
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
     assert genes_corr == 0.0
+
+
+def test_get_tissues_correlations_same_gene():
+    # ENSG00000122025
+    # FLT3
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000122025")
+
+    # get the correlation matrix of the gene expression across all tissues
+    genes_corrs = gene1.get_tissues_correlations(gene1)
+
+    # check shape
+    assert genes_corrs is not None
+    assert not genes_corrs.isna().any().any()
+    assert genes_corrs.shape == (41, 41)
+    genes_corrs_diag_unique_values = np.unique(np.diag(genes_corrs))
+    assert genes_corrs_diag_unique_values.shape[0] == 1
+    assert genes_corrs_diag_unique_values[0] == 1.0
+    np.testing.assert_array_almost_equal(genes_corrs, genes_corrs.T)
+
+    # check some values precomputed in a notebook
+    # all values for Kidney_Cortex are zero
+    assert "Kidney_Cortex" not in genes_corrs.index
+    assert (
+        genes_corrs.loc["Skin_Not_Sun_Exposed_Suprapubic", "Spleen"].round(5) == 0.97219
+    )
+    assert (
+        genes_corrs.loc[
+            "Brain_Substantia_nigra", "Skin_Not_Sun_Exposed_Suprapubic"
+        ].round(5)
+        == -0.00591
+    )
+
+
+def test_gene_correlation_different_gene():
+    # ENSG00000122025
+    # FLT3
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000122025")
+
+    # ENSG00000175130
+    # MARCKSL1
+    # chr 1
+    gene2 = Gene(ensembl_id="ENSG00000175130")
+
+    # get the correlation matrix of the gene expression across all tissues
+    genes_corrs = gene1.get_tissues_correlations(gene2)
+
+    # check shape
+    assert genes_corrs is not None
+    assert not genes_corrs.isna().any().any()
+    assert genes_corrs.shape == (41, 4)
+    genes_corrs_diag_unique_values = np.unique(np.diag(genes_corrs))
+    assert genes_corrs_diag_unique_values.shape[0] == 1
+    assert genes_corrs_diag_unique_values[0] == 0.0
+
+    genes_corrs_unique_values = genes_corrs.unstack().unique()
+    assert genes_corrs_unique_values.shape[0] == 1
+    assert genes_corrs_unique_values[0] == 0.0
+
+
+def test_ssm_correlation_same_gene_with_many_tissues():
+    # ENSG00000122025
+    # FLT3
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000122025")
+
+    genes_corr = gene1.get_ssm_correlation(gene1)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert genes_corr == 1.0
+
+
+def test_ssm_correlation_same_gene_with_few_tissues():
+    # ENSG00000175130
+    # MARCKSL1
+    # chr 1
+    gene1 = Gene(ensembl_id="ENSG00000175130")
+
+    genes_corr = gene1.get_ssm_correlation(gene1)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert genes_corr == 1.0
+
+
+def test_ssm_correlation_genes_in_different_chromosomes():
+    # ENSG00000122025
+    # FLT3
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000122025")
+
+    # ENSG00000175130
+    # MARCKSL1
+    # chr 1
+    gene2 = Gene(ensembl_id="ENSG00000175130")
+
+    genes_corr = gene1.get_ssm_correlation(gene2)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert genes_corr == 0.0
+
+
+def test_ssm_correlation_genes_in_same_band():
+    # ENSG00000134871
+    # COL4A2
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000134871")
+
+    # ENSG00000187498
+    # COL4A1
+    # chr 13
+    gene2 = Gene(ensembl_id="ENSG00000187498")
+
+    genes_corr = gene1.get_ssm_correlation(gene2)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert 1.0 >= genes_corr > 0.95
+
+
+def test_ssm_correlation_genes_in_same_band_2():
+    # ENSG00000183087
+    # GAS6
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000183087")
+
+    # ENSG00000187498
+    # COL4A1
+    # chr 13
+    gene2 = Gene(ensembl_id="ENSG00000187498")
+
+    genes_corr = gene1.get_ssm_correlation(gene2)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert 1.0 >= genes_corr > 0.95
+
+
+def test_ssm_correlation_genes_in_close_bands():
+    # ENSG00000073910
+    # FRY
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000073910")
+
+    # ENSG00000133101
+    # CCNA1
+    # chr 13
+    gene2 = Gene(ensembl_id="ENSG00000133101")
+
+    genes_corr = gene1.get_ssm_correlation(gene2)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert 0.40 >= genes_corr > 0.30
