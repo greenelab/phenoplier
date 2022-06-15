@@ -903,7 +903,7 @@ class Gene(object):
         if self.chromosome != other_gene.chromosome:
             return 0.0
 
-        if use_within_distance and not self.within_distance(other_gene, 1e6):
+        if use_within_distance and not self.within_distance(other_gene, 2.5e6):
             return 0.0
 
         other_gene_tissue = tissue
