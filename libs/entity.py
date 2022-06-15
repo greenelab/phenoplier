@@ -674,9 +674,9 @@ class Gene(object):
                 return None
 
             if varid_as_index:
-                return df.set_index("varID")
-            else:
-                return df
+                df = df.set_index("varID")
+
+            return df.sort_index()
         finally:
             sqlite_conn.close()
 
@@ -892,13 +892,13 @@ class Gene(object):
             tissue, reference_panel, model_type
         )
         if gene_var is None or gene_var == 0.0:
-            return 0.0
+            return None
 
         other_gene_var = other_gene.get_pred_expression_variance(
             other_gene_tissue, reference_panel, model_type
         )
         if other_gene_var is None or other_gene_var == 0.0:
-            return 0.0
+            return None
 
         try:
             snps_cov = self._get_snps_cov(
