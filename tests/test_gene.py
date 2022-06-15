@@ -252,7 +252,7 @@ def test_gene_get_snps_cov_snp_list_different_chromosomes():
     ]
 
     with pytest.raises(ValueError) as e:
-        Gene._get_snps_cov(g1_snps)
+        Gene._get_snps_cov(g1_snps, check=True)
 
 
 def test_gene_get_snps_cov_genes_different_chromosomes():
