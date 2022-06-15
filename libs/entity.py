@@ -957,8 +957,6 @@ class Gene(object):
 
         res = np.full((n_tissues, n_tissues), fill_value=np.nan)
 
-        # TODO: some optimization if the genes are the same?
-
         for t1_idx, t1 in enumerate(tissues):
             for t2_idx, t2 in enumerate(tissues):
                 ec = self.get_expression_correlation(
@@ -1013,9 +1011,10 @@ class Gene(object):
         this_gene_n_tissues = genes_corrs.shape[0]
         other_gene_n_tissues = genes_corrs.shape[1]
 
-        # this gene SVD
+        # SVD
+        corr = genes_corrs.to_numpy().conjugate()
         genes_corrs_u, genes_corrs_s, genes_corrs_vh = np.linalg.svd(
-            genes_corrs, full_matrices=False
+            corr, full_matrices=False
         )
 
         # select top eigenvalues
@@ -1038,3 +1037,4 @@ class Gene(object):
 
         corr = cov_ssm / (this_gene_sd_ssm * other_gene_sd_ssm)
         return min(1.0, max(-1.0, corr))
+
