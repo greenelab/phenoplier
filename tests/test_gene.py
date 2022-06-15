@@ -574,7 +574,7 @@ def test_ssm_correlation_genes_in_same_band_within_distance():
     genes_corr = gene1.get_ssm_correlation(gene2)
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
-    assert 0.40 >= genes_corr > 0.39
+    assert 0.16 >= genes_corr > 0.15
 
     # check symmetry
     assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
@@ -592,7 +592,7 @@ def test_ssm_correlation_genes_in_same_band_within_distance_2():
     genes_corr = gene1.get_ssm_correlation(gene2)
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
-    assert -0.17 >= genes_corr >= -0.18
+    assert -0.04 >= genes_corr >= -0.05
 
     # check symmetry
     assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
@@ -610,7 +610,7 @@ def test_ssm_correlation_genes_in_same_band_within_distance_3():
     genes_corr = gene1.get_ssm_correlation(gene2)
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
-    assert -0.04 >= genes_corr >= -0.05
+    assert -0.06 >= genes_corr >= -0.07
 
     # check symmetry
     assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
@@ -628,7 +628,7 @@ def test_ssm_correlation_genes_in_same_band_within_distance_4():
     genes_corr = gene1.get_ssm_correlation(gene2)
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
-    assert 0.07 >= genes_corr > 0.06
+    assert 0.09 >= genes_corr > 0.08
 
     # check symmetry
     assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
@@ -646,7 +646,7 @@ def test_ssm_correlation_genes_in_same_band_within_distance_5():
     genes_corr = gene1.get_ssm_correlation(gene2)
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
-    assert 0.07 >= genes_corr > 0.06
+    assert -0.07 >= genes_corr > -0.08
 
     # check symmetry
     assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
