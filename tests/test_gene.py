@@ -503,7 +503,7 @@ def test_ssm_correlation_same_gene_with_many_tissues():
     genes_corr = gene1.get_ssm_correlation(gene1)
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
-    assert genes_corr == 1.0
+    assert round(genes_corr, 2) == 1.0
 
 
 def test_ssm_correlation_same_gene_with_few_tissues():
@@ -515,7 +515,7 @@ def test_ssm_correlation_same_gene_with_few_tissues():
     genes_corr = gene1.get_ssm_correlation(gene1)
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
-    assert genes_corr == 1.0
+    assert round(genes_corr, 2) == 1.0
 
 
 def test_ssm_correlation_genes_in_different_chromosomes():
@@ -534,14 +534,35 @@ def test_ssm_correlation_genes_in_different_chromosomes():
     assert isinstance(genes_corr, float)
     assert genes_corr == 0.0
 
+    # check symmetry
+    assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
 
-def test_ssm_correlation_genes_in_same_band():
-    # ENSG00000134871
+
+def test_ssm_correlation_genes_far_apart_not_within_distance():
+    # ENSG00000188976
+    # NOC2L
+    # chr 1p36.33
+    gene1 = Gene(ensembl_id="ENSG00000188976")
+
+    # ENSG00000238243
+    # OR2W3
+    # chr 1q44
+    gene2 = Gene(ensembl_id="ENSG00000238243")
+
+    genes_corr = gene1.get_ssm_correlation(gene2)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert genes_corr == 0.0
+
+    # check symmetry
+    assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
+
+
+def test_ssm_correlation_genes_in_same_band_within_distance():
     # COL4A2
     # chr 13
     gene1 = Gene(ensembl_id="ENSG00000134871")
 
-    # ENSG00000187498
     # COL4A1
     # chr 13
     gene2 = Gene(ensembl_id="ENSG00000187498")
@@ -549,16 +570,17 @@ def test_ssm_correlation_genes_in_same_band():
     genes_corr = gene1.get_ssm_correlation(gene2)
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
-    assert 1.0 >= genes_corr > 0.95
+    assert 0.40 >= genes_corr > 0.39
+
+    # check symmetry
+    assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
 
 
-def test_ssm_correlation_genes_in_same_band_2():
-    # ENSG00000183087
-    # GAS6
+def test_ssm_correlation_genes_in_same_band_within_distance_2():
+    # IRS2
     # chr 13
-    gene1 = Gene(ensembl_id="ENSG00000183087")
+    gene1 = Gene(ensembl_id="ENSG00000185950")
 
-    # ENSG00000187498
     # COL4A1
     # chr 13
     gene2 = Gene(ensembl_id="ENSG00000187498")
@@ -566,10 +588,103 @@ def test_ssm_correlation_genes_in_same_band_2():
     genes_corr = gene1.get_ssm_correlation(gene2)
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
-    assert 1.0 >= genes_corr > 0.95
+    assert -0.17 >= genes_corr >= -0.18
+
+    # check symmetry
+    assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
 
 
-def test_ssm_correlation_genes_in_close_bands():
+def test_ssm_correlation_genes_in_same_band_within_distance_3():
+    # IRS2
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000185950")
+
+    # COL4A2
+    # chr 13
+    gene2 = Gene(ensembl_id="ENSG00000134871")
+
+    genes_corr = gene1.get_ssm_correlation(gene2)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert -0.04 >= genes_corr >= -0.05
+
+    # check symmetry
+    assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
+
+
+def test_ssm_correlation_genes_in_same_band_within_distance_4():
+    # IRS2
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000185950")
+
+    # RAB20
+    # chr 13
+    gene2 = Gene(ensembl_id="ENSG00000139832")
+
+    genes_corr = gene1.get_ssm_correlation(gene2)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert 0.07 >= genes_corr > 0.06
+
+    # check symmetry
+    assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
+
+
+def test_ssm_correlation_genes_in_same_band_within_distance_5():
+    # COL4A2
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000134871")
+
+    # RAB20
+    # chr 13
+    gene2 = Gene(ensembl_id="ENSG00000139832")
+
+    genes_corr = gene1.get_ssm_correlation(gene2)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert 0.07 >= genes_corr > 0.06
+
+    # check symmetry
+    assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
+
+
+def test_ssm_correlation_genes_in_close_bands_not_within_distance():
+    # UPF3A
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000169062")
+
+    # EFNB2
+    # chr 13
+    gene2 = Gene(ensembl_id="ENSG00000125266")
+
+    genes_corr = gene1.get_ssm_correlation(gene2)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert genes_corr == 0.0
+
+    # check symmetry
+    assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
+
+
+def test_ssm_correlation_genes_in_same_band_not_within_distance():
+    # TNFSF13B
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000102524")
+
+    # TPP2
+    # chr 13
+    gene2 = Gene(ensembl_id="ENSG00000134900")
+
+    genes_corr = gene1.get_ssm_correlation(gene2)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert genes_corr == 0.0
+
+    # check symmetry
+    assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
+
+
+def test_gene_within_distance():
     # ENSG00000073910
     # FRY
     # chr 13
@@ -580,7 +695,35 @@ def test_ssm_correlation_genes_in_close_bands():
     # chr 13
     gene2 = Gene(ensembl_id="ENSG00000133101")
 
-    genes_corr = gene1.get_ssm_correlation(gene2)
-    assert genes_corr is not None
-    assert isinstance(genes_corr, float)
-    assert 0.40 >= genes_corr > 0.30
+    assert not gene1.within_distance(gene2, 1e6)
+    assert gene1.within_distance(gene2, 5e6)
+
+    # ENSG00000073910
+    # SDCCAG8
+    # chr 1
+    gene1 = Gene(ensembl_id="ENSG00000054282")
+
+    # ENSG00000133101
+    # AKT3
+    # chr 1
+    gene2 = Gene(ensembl_id="ENSG00000117020")
+
+    assert gene1.within_distance(gene2, 1)
+    assert gene1.within_distance(gene2, 1e6)
+    assert gene1.within_distance(gene2, 5e6)
+    assert gene1.within_distance(gene2, 10e6)
+
+    # SDCCAG8
+    # chr 1
+    gene1 = Gene(ensembl_id="ENSG00000054282")
+
+    # ADSS
+    # chr 1
+    gene2 = Gene(ensembl_id="ENSG00000035687")
+
+    assert not gene1.within_distance(gene2, 1e3)
+    assert not gene1.within_distance(gene2, 1e4)
+    assert not gene1.within_distance(gene2, 1e5)
+    assert gene1.within_distance(gene2, 1e6)
+    assert gene1.within_distance(gene2, 5e6)
+    assert gene1.within_distance(gene2, 10e6)
