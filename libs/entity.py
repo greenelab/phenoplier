@@ -605,6 +605,17 @@ class Gene(object):
 
         return f"{chrom}{band}"
 
+    @lru_cache(maxsize=None)
+    def get_attribute(self, attribute_name):
+        """Returns any attribute of the gene in BioMart."""
+        if self.ensembl_id not in Gene.BIOMART_GENES.index:
+            return None
+
+        gene_data = Gene.BIOMART_GENES.loc[self.ensembl_id]
+        attr = gene_data[attribute_name]
+
+        return attr
+
     @staticmethod
     def _get_tissue_connection(tissue: str, model_type: str):
         """
