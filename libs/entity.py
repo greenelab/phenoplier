@@ -674,7 +674,7 @@ class Gene(object):
                 return None
 
             if varid_as_index:
-                df = df.set_index("varID")
+                df = df.set_index("varID")["weight"]
 
             return df.sort_index()
         finally:
@@ -919,9 +919,7 @@ class Gene(object):
 
         # formula from the MultiXcan paper:
         #   https://doi.org/10.1371/journal.pgen.1007889
-        return (gene_w.T @ snps_cov @ other_gene_w).squeeze() / np.sqrt(
-            gene_var * other_gene_var
-        )
+        return (gene_w.T @ snps_cov @ other_gene_w) / np.sqrt(gene_var * other_gene_var)
 
     # @lru_cache(maxsize=None)
     def get_tissues_correlations(
