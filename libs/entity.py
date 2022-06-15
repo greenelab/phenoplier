@@ -670,7 +670,7 @@ class Gene(object):
                 sqlite_conn,
             )
 
-            if df.shape[0] == 0:
+            if df.shape[0] == 0 or df["weight"].abs().sum() == 0.0:
                 return None
 
             if varid_as_index:
@@ -874,9 +874,9 @@ class Gene(object):
         if gene_w is None:
             return None
         # gene_w = gene_w.set_index("varID")
-        if gene_w.abs().sum().sum() == 0.0:
-            # some genes in the models have weight equal to zero (weird)
-            return 0.0
+        # if gene_w.abs().sum().sum() == 0.0:
+        #     # some genes in the models have weight equal to zero (weird)
+        #     return 0.0
 
         other_gene_w = other_gene.get_prediction_weights(
             other_gene_tissue, model_type, varid_as_index=True
@@ -884,8 +884,8 @@ class Gene(object):
         if other_gene_w is None:
             return None
         # other_gene_w = other_gene_w.set_index("varID")
-        if other_gene_w.abs().sum().sum() == 0.0:
-            return 0.0
+        # if other_gene_w.abs().sum().sum() == 0.0:
+        #     return 0.0
 
         # get genes' variances
         gene_var = self.get_pred_expression_variance(
