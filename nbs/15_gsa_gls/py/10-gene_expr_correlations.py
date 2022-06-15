@@ -62,6 +62,10 @@ EQTL_MODEL_FILES_PREFIX = "mashr_"
 # make it read the prefix from conf.py
 EQTL_MODEL_FILES_PREFIX = None
 
+# this is the default value used in S-MultiXcan to select the
+# top principal components of the expression correlation matrix
+SMULTIXCAN_CONDITION_NUMBER = 30
+
 # specifies a single chromosome value
 # by default, run on all chromosomes
 chromosome = "all"
@@ -258,20 +262,22 @@ for chr_num in all_chrs:
     for gene_idx1 in range(0, len(gene_chr_objs) - 1):
         gene_obj1 = gene_chr_objs[gene_idx1]
 
-        # FIXME: get tissues for which we have results for gene_obj1 only from S-PrediXcan
-
         for gene_idx2 in range(gene_idx1 + 1, len(gene_chr_objs)):
             gene_obj2 = gene_chr_objs[gene_idx2]
 
             pbar.set_description(f"{gene_obj1.ensembl_id} / {gene_obj2.ensembl_id}")
 
-            # FIXME: get tissues for which we have results for gene_obj2 only from S-PrediXcan
-
             try:
+                # FIXME: compute the correlation of the sum of squares of the model using all
+                # the available tissues; this could be problematic because for some results
+                # (computed on a specific phenotype/GWAS) we might not have all the tissues
+                # available, which can certainly bias the correlation estimation.
+                # Since this depends on the GWAS on a specific phenotype, we should ideally have
+                # one correlation matrix per GWAS. I should look at how we can improve this.
                 gene_corrs.append(
                     gene_obj1.get_ssm_correlation(
                         other_gene=gene_obj2,
-                        # tissues=tissues, FIXME
+                        condition_number=SMULTIXCAN_CONDITION_NUMBER,
                         reference_panel=REFERENCE_PANEL,
                         model_type=EQTL_MODEL,
                     )
