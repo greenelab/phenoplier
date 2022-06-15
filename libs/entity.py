@@ -974,9 +974,10 @@ class Gene(object):
         # TODO: replace this by the "tissues" argument
         #  the tissues argument will be provided after looking at for what tissues one
         #  gene has results in S-PrediXcan
-        tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{model_type}_TISSUES"].split(
-            " "
-        )
+        if tissues is None:
+            tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{model_type}_TISSUES"].split(
+                " "
+            )
         tissues = sorted(tissues)
         n_tissues = len(tissues)
 
@@ -985,9 +986,9 @@ class Gene(object):
         for t1_idx, t1 in enumerate(tissues):
             for t2_idx, t2 in enumerate(tissues):
                 ec = self.get_expression_correlation(
-                    other_gene,
-                    t1,
-                    t2,
+                    other_gene=other_gene,
+                    tissue=t1,
+                    other_tissue=t2,
                     reference_panel=reference_panel,
                     model_type=model_type,
                     use_within_distance=use_within_distance,
