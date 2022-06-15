@@ -265,7 +265,7 @@ def test_gene_get_snps_cov_genes_different_chromosomes():
     g2_snps = g2.get_prediction_weights(tissue, model_type="MASHR")["varID"]
 
     with pytest.raises(Exception) as e:
-        Gene._get_snps_cov(g1_snps, g2_snps)
+        Gene._get_snps_cov(g1_snps, g2_snps, check=True)
 
 
 @pytest.mark.parametrize(
@@ -356,7 +356,7 @@ def test_gene_get_expression_correlation(gene_id1, gene_id2, tissue, expected_co
     gene2 = Gene(ensembl_id=gene_id2)
 
     genes_corr = gene1.get_expression_correlation(
-        gene2, tissue, reference_panel="1000g"
+        gene2, tissue, reference_panel="1000g", use_within_distance=False
     )
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
@@ -364,20 +364,26 @@ def test_gene_get_expression_correlation(gene_id1, gene_id2, tissue, expected_co
 
     # correlation should be asymmetric
     genes_corr_2 = gene2.get_expression_correlation(
-        gene1, tissue, reference_panel="1000g"
+        gene1, tissue, reference_panel="1000g", use_within_distance=False
     )
     assert round(genes_corr_2, 4) == round(genes_corr, 4)
 
     # correlation with itself should be 1.0
     assert (
         round(
-            gene1.get_expression_correlation(gene1, tissue, reference_panel="1000g"), 4
+            gene1.get_expression_correlation(
+                gene1, tissue, reference_panel="1000g", use_within_distance=False
+            ),
+            4,
         )
         == 1.0
     )
     assert (
         round(
-            gene2.get_expression_correlation(gene2, tissue, reference_panel="1000g"), 4
+            gene2.get_expression_correlation(
+                gene2, tissue, reference_panel="1000g", use_within_distance=False
+            ),
+            4,
         )
         == 1.0
     )
@@ -467,13 +473,11 @@ def test_get_tissues_correlations_same_gene():
     )
 
 
-def test_gene_correlation_different_gene():
-    # ENSG00000122025
+def test_get_tissues_correlations_different_gene():
     # FLT3
     # chr 13
     gene1 = Gene(ensembl_id="ENSG00000122025")
 
-    # ENSG00000175130
     # MARCKSL1
     # chr 1
     gene2 = Gene(ensembl_id="ENSG00000175130")
@@ -484,7 +488,7 @@ def test_gene_correlation_different_gene():
     # check shape
     assert genes_corrs is not None
     assert not genes_corrs.isna().any().any()
-    assert genes_corrs.shape == (41, 4)
+    assert genes_corrs.shape == (49, 49)
     genes_corrs_diag_unique_values = np.unique(np.diag(genes_corrs))
     assert genes_corrs_diag_unique_values.shape[0] == 1
     assert genes_corrs_diag_unique_values[0] == 0.0
