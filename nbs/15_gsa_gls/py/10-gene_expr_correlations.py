@@ -24,7 +24,7 @@
 #
 # It also has a parameter set for papermill to run on a single chromosome to run in parallel (see under `Settings` below).
 #
-# This notebook does not have an output because it is not directly run. If you want to see outputs for each chromosome, check out the `gene_corrs` folder, which contains a copy of this notebook for each chromosome.
+# This notebook is not directly run. See README.md.
 
 # %% [markdown] tags=[]
 # # Modules
@@ -146,6 +146,7 @@ genes_info = pd.DataFrame(
         "name": [g.name for g in _gene_obj],
         "id": [g.ensembl_id for g in _gene_obj],
         "chr": [g.chromosome for g in _gene_obj],
+        "band": [g.band for g in _gene_obj],
     }
 )
 
@@ -195,13 +196,19 @@ for gene_idx1 in range(0, len(_gene_list) - 1):
     for gene_idx2 in range(gene_idx1 + 1, len(_gene_list)):
         gene_obj2 = _gene_list[gene_idx2]
 
-        gene_obj1.get_expression_correlation(
+        c = gene_obj1.get_ssm_correlation(
             gene_obj2,
-            tissue,
         )
+
+        print(f"{gene_obj1.name} / {gene_obj2.name}: {c}")
 
 # %% [markdown] tags=[]
 # # Compute correlation per chromosome
+
+# %%
+import warnings
+
+warnings.filterwarnings("error")
 
 # %%
 all_chrs = genes_info["chr"].dropna().unique()
@@ -216,11 +223,23 @@ if chromosome != "all":
 
 # # For testing purposes
 # all_chrs = ["13"]
-# tissues = ["Whole_Blood"]
+# # tissues = ["Whole_Blood"]
 # genes_info = genes_info[genes_info["id"].isin(["ENSG00000134871", "ENSG00000187498", "ENSG00000183087", "ENSG00000073910"])]
+
 
 for chr_num in all_chrs:
     print(f"Chromosome {chr_num}", flush=True)
+
+    # check if results exist
+    output_dir = OUTPUT_DIR_BASE / "by_chr"
+    output_file = output_dir / f"gene_corrs-chr{chr_num}.pkl"
+
+    if output_file.exists():
+        _tmp_data = pd.read_pickle(output_file)
+
+        if _tmp_data.shape[0] > 0:
+            print("Already run, stopping.")
+            continue
 
     genes_chr = genes_info[genes_info["chr"] == chr_num]
     print(f"Genes in chromosome{genes_chr.shape}", flush=True)
@@ -232,65 +251,83 @@ for chr_num in all_chrs:
     n_comb = int(n * (n - 1) / 2.0)
     print(f"Number of gene combinations: {n_comb}", flush=True)
 
-    for tissue in tissues:
-        print(f"Tissue {tissue}", flush=True)
+    gene_corrs = []
 
-        # check if results exist
-        output_dir = OUTPUT_DIR_BASE / "by_tissue"
-        output_file = output_dir / f"gene_corrs-{tissue}-chr{chr_num}.pkl"
+    pbar = tqdm(ncols=100, total=n_comb)
+    i = 0
+    for gene_idx1 in range(0, len(gene_chr_objs) - 1):
+        gene_obj1 = gene_chr_objs[gene_idx1]
 
-        if output_file.exists():
-            _tmp_data = pd.read_pickle(output_file)
+        # FIXME: get tissues for which we have results for gene_obj1 only from S-PrediXcan
 
-            if _tmp_data.shape[0] > 0:
-                print("Already run, stopping.")
-                continue
+        for gene_idx2 in range(gene_idx1 + 1, len(gene_chr_objs)):
+            gene_obj2 = gene_chr_objs[gene_idx2]
 
-        gene_corrs = []
+            pbar.set_description(f"{gene_obj1.ensembl_id} / {gene_obj2.ensembl_id}")
 
-        pbar = tqdm(ncols=100, total=n_comb)
-        i = 0
-        for gene_idx1 in range(0, len(gene_chr_objs) - 1):
-            gene_obj1 = gene_chr_objs[gene_idx1]
+            # FIXME: get tissues for which we have results for gene_obj2 only from S-PrediXcan
 
-            for gene_idx2 in range(gene_idx1 + 1, len(gene_chr_objs)):
-                gene_obj2 = gene_chr_objs[gene_idx2]
-
+            try:
                 gene_corrs.append(
-                    gene_obj1.get_expression_correlation(
-                        gene_obj2,
-                        tissue,
+                    gene_obj1.get_ssm_correlation(
+                        other_gene=gene_obj2,
+                        # tissues=tissues, FIXME
                         reference_panel=REFERENCE_PANEL,
                         model_type=EQTL_MODEL,
                     )
                 )
+            except Warning:
+                print(
+                    f"RuntimeWarning for genes {gene_obj1.ensembl_id} and {gene_obj2.ensembl_id}",
+                    flush=True,
+                )
+                import traceback
 
-                pbar.update(1)
+                print(traceback.format_exc(), flush=True)
+            except Exception as e:
+                print(
+                    f"Exception for genes {gene_obj1.ensembl_id} and {gene_obj2.ensembl_id}",
+                    flush=True,
+                )
+                import traceback
 
-        pbar.close()
+                print(traceback.format_exc(), flush=True)
+                gene_corrs.append(np.nan)
 
-        # testing
-        gene_corrs_flat = pd.Series(gene_corrs)
-        print(f"Min/max values: {gene_corrs_flat.min()} / {gene_corrs_flat.max()}")
-        assert gene_corrs_flat.min() >= -1.001
-        assert gene_corrs_flat.max() <= 1.001
+            pbar.update(1)
 
-        # save
-        # FIXME: consider saving only the condenced matrix here. See here for
-        # more details: https://github.com/greenelab/phenoplier/pull/38#discussion_r634600813
-        gene_corrs_data = squareform(np.array(gene_corrs, dtype=np.float32))
-        np.fill_diagonal(gene_corrs_data, 1.0)
+    pbar.close()
 
-        gene_corrs_df = pd.DataFrame(
-            data=gene_corrs_data,
-            index=gene_chr_ids,
-            columns=gene_chr_ids,
-        )
+    # testing
+    gene_corrs_flat = pd.Series(gene_corrs)
+    print(f"Min/max values: {gene_corrs_flat.min()} / {gene_corrs_flat.max()}")
+    assert gene_corrs_flat.min() >= -1.001
+    assert gene_corrs_flat.max() <= 1.001
 
-        output_dir.mkdir(exist_ok=True, parents=True)
-        display(output_file)
+    # save
+    # FIXME: consider saving only the condenced matrix here. See here for
+    # more details: https://github.com/greenelab/phenoplier/pull/38#discussion_r634600813
+    gene_corrs_data = squareform(np.array(gene_corrs, dtype=np.float64))
+    np.fill_diagonal(gene_corrs_data, 1.0)
 
-        gene_corrs_df.to_pickle(output_file)
+    gene_corrs_df = pd.DataFrame(
+        data=gene_corrs_data,
+        index=gene_chr_ids,
+        columns=gene_chr_ids,
+    )
+
+    # FIXME: all values should be between 1.0 and -1.0 (change then if not)
+
+    output_dir.mkdir(exist_ok=True, parents=True)
+    display(output_file)
+
+    gene_corrs_df.to_pickle(output_file)
+
+# %%
+gene_corrs_df.shape
+
+# %%
+gene_corrs_df
 
 # %% [markdown]
 # # Testing
