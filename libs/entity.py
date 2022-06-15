@@ -975,9 +975,9 @@ class Gene(object):
         #  the tissues argument will be provided after looking at for what tissues one
         #  gene has results in S-PrediXcan
         if tissues is None:
-            tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{model_type}_TISSUES"].split(
-                " "
-            )
+            tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][
+                f"{model_type}_TISSUES"
+            ].split(" ")
         tissues = sorted(tissues)
         n_tissues = len(tissues)
 
@@ -1043,17 +1043,16 @@ class Gene(object):
         # SVD
         corrs = genes_corrs.to_numpy().conjugate()
         genes_corrs_u, genes_corrs_s, genes_corrs_vh = np.linalg.svd(
-            corrs, full_matrices=True
+            corrs, full_matrices=False
         )
 
         # select top eigenvalues
-        genes_corrs_s = genes_corrs_s[genes_corrs_s > 0]
-        genes_corrs_s_max_rel = genes_corrs_s.max() / genes_corrs_s
+        genes_corrs_s_max = genes_corrs_s.max()
         genes_corrs_s_top_idx = np.array(
             [
                 i
-                for i, w in enumerate(genes_corrs_s_max_rel)
-                if w < condition_number or i == 0
+                for i, v in enumerate(genes_corrs_s)
+                if (v > 0) and ((genes_corrs_s_max / v) < condition_number or i == 0)
             ]
         )
 
