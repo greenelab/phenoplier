@@ -1028,33 +1028,40 @@ class Gene(object):
             TODO
         """
         genes_corrs = self.get_tissues_correlations(
-            other_gene, tissues, reference_panel, model_type, use_within_distance=use_within_distance,
+            other_gene,
+            tissues,
+            reference_panel,
+            model_type,
+            use_within_distance=use_within_distance,
         )
 
         if genes_corrs.sum().sum() == 0.0:
             return 0.0
 
-        this_gene_n_tissues = genes_corrs.shape[0]
-        other_gene_n_tissues = genes_corrs.shape[1]
-
         # SVD
         corrs = genes_corrs.to_numpy().conjugate()
         genes_corrs_u, genes_corrs_s, genes_corrs_vh = np.linalg.svd(
-            corrs, full_matrices=False
+            corrs, full_matrices=True
         )
 
         # select top eigenvalues
+        genes_corrs_s = genes_corrs_s[genes_corrs_s > 0]
         genes_corrs_s_max_rel = genes_corrs_s.max() / genes_corrs_s
         genes_corrs_s_top_idx = np.array(
-            [i for i, w in enumerate(genes_corrs_s_max_rel) if w < condition_number]
+            [
+                i
+                for i, w in enumerate(genes_corrs_s_max_rel)
+                if w < condition_number or i == 0
+            ]
         )
 
-        genes_corrs_vh_selected = genes_corrs_vh[:, genes_corrs_s_top_idx]
+        this_gene_eigenvectors = genes_corrs_u[:, genes_corrs_s_top_idx]
+        other_gene_eigenvectors = genes_corrs_vh[genes_corrs_s_top_idx, :]
 
-        cov_ssm = 2 * np.trace(genes_corrs_vh_selected.dot(genes_corrs_vh_selected.T))
+        cov_ssm = 2 * np.trace(this_gene_eigenvectors.dot(other_gene_eigenvectors))
 
-        this_gene_sd_ssm = np.sqrt(2 * genes_corrs_vh_selected.shape[1])
-        other_gene_sd_ssm = np.sqrt(2 * genes_corrs_vh_selected.shape[1])
+        this_gene_sd_ssm = np.sqrt(2 * genes_corrs_s_top_idx.shape[0])
+        other_gene_sd_ssm = np.sqrt(2 * genes_corrs_s_top_idx.shape[0])
 
         return cov_ssm / (this_gene_sd_ssm * other_gene_sd_ssm)
         # return corr
