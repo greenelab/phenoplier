@@ -34,10 +34,15 @@
 # %autoreload 2
 
 # %% tags=[]
+from random import sample
+import warnings
+
 import numpy as np
 from scipy.spatial.distance import squareform
 import pandas as pd
 from tqdm import tqdm
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 import conf
 from entity import Gene
@@ -68,7 +73,7 @@ SMULTIXCAN_CONDITION_NUMBER = 30
 
 # specifies a single chromosome value
 # by default, run on all chromosomes
-chromosome = "all"
+chromosome = None
 
 # %%
 if EQTL_MODEL_FILES_PREFIX is None:
@@ -97,17 +102,9 @@ OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 display(f"Using output dir base: {OUTPUT_DIR_BASE}")
 
 # %%
-if chromosome == "all":
-    from time import sleep
-
-    message = """
-    WARNING: you are going to compute correlations of gene predicted expression across all chromosomes without parallelism.
-    It is recommended that you look at the README.md file in this subfolder (nbs/08_gsa_gls/README.md) to know how to do that.
-    
-    It will continue in 20 seconds.
-    """
-    print(message)
-    sleep(20)
+assert (
+    chromosome is not None
+), "You have to select one chromosome (format: number between 1 and 22)"
 
 # %% [markdown] tags=[]
 # # Load data
@@ -151,6 +148,7 @@ genes_info = pd.DataFrame(
         "id": [g.ensembl_id for g in _gene_obj],
         "chr": [g.chromosome for g in _gene_obj],
         "band": [g.band for g in _gene_obj],
+        "start_position": [g.get_attribute("start_position") for g in _gene_obj],
     }
 )
 
@@ -176,29 +174,20 @@ assert len(tissues) == 49
 # # Test
 
 # %%
-genes_info[genes_info["chr"] == "13"]
+chromosome_genes_info = genes_info[genes_info["chr"] == chromosome]
+display(chromosome_genes_info)
 
 # %%
-_gene_list = [
-    Gene("ENSG00000134871"),
-    Gene("ENSG00000187498"),
-    Gene("ENSG00000183087"),
-    Gene("ENSG00000073910"),
-    Gene("ENSG00000133101"),
-    Gene("ENSG00000122025"),
-    Gene("ENSG00000120659"),
-    Gene("ENSG00000133116"),
-]
-
-tissue = "Whole_Blood"
+_gene_list_ids = sample(chromosome_genes_info["id"].tolist(), 5)
+selected_chromosome_genes_obj = [Gene(ensembl_id=g_id) for g_id in _gene_list_ids]
+display(len(selected_chromosome_genes_obj))
 
 # %%
-# %%timeit
-for gene_idx1 in range(0, len(_gene_list) - 1):
-    gene_obj1 = _gene_list[gene_idx1]
+for gene_idx1 in range(0, len(selected_chromosome_genes_obj) - 1):
+    gene_obj1 = selected_chromosome_genes_obj[gene_idx1]
 
-    for gene_idx2 in range(gene_idx1 + 1, len(_gene_list)):
-        gene_obj2 = _gene_list[gene_idx2]
+    for gene_idx2 in range(gene_idx1 + 1, len(selected_chromosome_genes_obj)):
+        gene_obj2 = selected_chromosome_genes_obj[gene_idx2]
 
         c = gene_obj1.get_ssm_correlation(
             gene_obj2,
@@ -210,25 +199,27 @@ for gene_idx1 in range(0, len(_gene_list) - 1):
 # # Compute correlation per chromosome
 
 # %%
-import warnings
-
 warnings.filterwarnings("error")
 
 # %%
+# standard checks
 all_chrs = genes_info["chr"].dropna().unique()
 assert all_chrs.shape[0] == 22
 
-if chromosome != "all":
-    chromosome = str(chromosome)
-    assert chromosome in all_chrs
+# select chromosome given by the user
+chromosome = str(chromosome)
+assert chromosome in all_chrs
 
-    # run only on the chromosome specified
-    all_chrs = [chromosome]
+# run only on the chromosome specified
+all_chrs = [chromosome]
+genes_chr = genes_info[genes_info["chr"] == chromosome]
+print(f"Number of genes in chromosome: {genes_chr.shape[0]}", flush=True)
 
-# # For testing purposes
-# all_chrs = ["13"]
-# # tissues = ["Whole_Blood"]
-# genes_info = genes_info[genes_info["id"].isin(["ENSG00000134871", "ENSG00000187498", "ENSG00000183087", "ENSG00000073910"])]
+# For testing purposes
+# genes_chr = genes_chr.sample(n=20)
+
+# sort genes by starting position to make visualizations better later
+genes_chr = genes_chr.sort_values("start_position")
 
 
 for chr_num in all_chrs:
@@ -244,9 +235,6 @@ for chr_num in all_chrs:
         if _tmp_data.shape[0] > 0:
             print("Already run, stopping.")
             continue
-
-    genes_chr = genes_info[genes_info["chr"] == chr_num]
-    print(f"Genes in chromosome{genes_chr.shape}", flush=True)
 
     gene_chr_objs = [Gene(ensembl_id=gene_id) for gene_id in genes_chr["id"]]
     gene_chr_ids = [g.ensembl_id for g in gene_chr_objs]
@@ -322,28 +310,74 @@ for chr_num in all_chrs:
         columns=gene_chr_ids,
     )
 
-    # FIXME: all values should be between 1.0 and -1.0 (change then if not)
-
     output_dir.mkdir(exist_ok=True, parents=True)
     display(output_file)
 
     gene_corrs_df.to_pickle(output_file)
 
+# %% [markdown]
+# # Testing
+
 # %%
 gene_corrs_df.shape
 
 # %%
-gene_corrs_df
-
-# %% [markdown]
-# # Testing
-
-# %% tags=[]
-# data = pd.read_pickle(
-#     conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "gene_corrs" / "Whole_Blood" / "gene_corrs-Whole_Blood-chr13.pkl"
-# )
+gene_corrs_df.head()
 
 # %%
-# assert data.loc["ENSG00000134871", "ENSG00000187498"] > 0.97
+_min_val = gene_corrs_df.min().min()
+display(_min_val)
+assert _min_val >= -1.0
+
+# %%
+_max_val = gene_corrs_df.max().max()  # this captures the diagonal
+display(_max_val)
+assert _max_val <= 1.0
+
+# %%
+# check upper triangular values
+assert len(gene_corrs) == int(genes_chr.shape[0] * (genes_chr.shape[0] - 1) / 2)
+
+# %%
+gene_corrs = pd.Series(gene_corrs)
+
+# %%
+gene_corrs.describe()
+
+# %%
+gene_corrs_quantiles = gene_corrs.quantile(np.arange(0, 1, 0.05))
+display(gene_corrs_quantiles)
+
+# %% [markdown]
+# ## Plot: distribution
+
+# %%
+with sns.plotting_context("paper", font_scale=1.5):
+    g = sns.displot(gene_corrs, kde=True, height=7)
+    g.ax.set_title(
+        f"Distribution of gene correlation values in chromosome {chromosome}"
+    )
+
+# %% [markdown]
+# ## Plot: heatmap
+
+# %%
+vmin_val = min(-0.05, gene_corrs_quantiles[0.10])
+vmax_val = max(0.05, gene_corrs_quantiles[0.90])
+display(f"{vmin_val} / {vmax_val}")
+
+# %%
+f, ax = plt.subplots(figsize=(10, 10))
+sns.heatmap(
+    gene_corrs_df,
+    xticklabels=False,
+    yticklabels=False,
+    square=True,
+    vmin=vmin_val,
+    vmax=vmax_val,
+    cmap="YlGnBu",
+    ax=ax,
+)
+ax.set_title(f"Gene correlations in chromosome {chromosome}")
 
 # %%
