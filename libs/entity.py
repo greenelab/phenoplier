@@ -977,6 +977,7 @@ class Gene(object):
         tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{model_type}_TISSUES"].split(
             " "
         )
+        tissues = sorted(tissues)
         n_tissues = len(tissues)
 
         res = np.full((n_tissues, n_tissues), fill_value=np.nan)
