@@ -717,13 +717,13 @@ class Gene(object):
 
         # go to disk and read the data
         with pd.HDFStore(snps_cov_file, mode="r") as store:
-            return store[snps_chr].sort_index()
+            return store[snps_chr].sort_index(axis=0).sort_index(axis=1)
 
     @staticmethod
     def _get_snps_cov(
         snps_ids_list1,
         snps_ids_list2=None,
-        check=True,
+        check=False,
         reference_panel="GTEX_V8",
         model_type="MASHR",
     ):
@@ -778,8 +778,10 @@ class Gene(object):
         # from the specified SNP lists, only keep those for which we have
         # genotypes
         variants_with_genotype = set(snps_cov.index)
-        snps_ids_list1 = [v for v in snps_ids_list1 if v in variants_with_genotype]
-        snps_ids_list2 = [v for v in snps_ids_list2 if v in variants_with_genotype]
+        snps_ids_list1 = list(variants_with_genotype.intersection(set(snps_ids_list1)))
+        snps_ids_list2 = list(variants_with_genotype.intersection(set(snps_ids_list2)))
+        # snps_ids_list1 = [v for v in snps_ids_list1 if v in variants_with_genotype]
+        # snps_ids_list2 = [v for v in snps_ids_list2 if v in variants_with_genotype]
 
         snps_cov = snps_cov.loc[snps_ids_list1, snps_ids_list2]
 
