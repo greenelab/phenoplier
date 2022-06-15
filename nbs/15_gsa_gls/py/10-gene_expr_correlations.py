@@ -106,6 +106,12 @@ assert (
     chromosome is not None
 ), "You have to select one chromosome (format: number between 1 and 22)"
 
+# %%
+chromosome = str(chromosome)
+
+# %%
+display(f"Working on chromosome {chromosome}")
+
 # %% [markdown] tags=[]
 # # Load data
 
@@ -207,7 +213,6 @@ all_chrs = genes_info["chr"].dropna().unique()
 assert all_chrs.shape[0] == 22
 
 # select chromosome given by the user
-chromosome = str(chromosome)
 assert chromosome in all_chrs
 
 # run only on the chromosome specified
