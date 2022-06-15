@@ -619,6 +619,8 @@ class Gene(object):
     def within_distance(self, other_gene, distance_bp):
         """
         TODO: complete
+
+        IMPORTANT: this function assumes that the two genes are in the same chromosome
         """
         this_start = self.get_attribute("start_position")
         this_end = self.get_attribute("end_position")
@@ -970,10 +972,6 @@ class Gene(object):
         Args:
             tissues: TODO
         """
-
-        # TODO: replace this by the "tissues" argument
-        #  the tissues argument will be provided after looking at for what tissues one
-        #  gene has results in S-PrediXcan
         if tissues is None:
             tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][
                 f"{model_type}_TISSUES"
