@@ -1037,4 +1037,3 @@ class Gene(object):
 
         corr = cov_ssm / (this_gene_sd_ssm * other_gene_sd_ssm)
         return min(1.0, max(-1.0, corr))
-
