@@ -789,10 +789,8 @@ class Gene(object):
         # from the specified SNP lists, only keep those for which we have
         # genotypes
         variants_with_genotype = set(snps_cov.index)
-        snps_ids_list1 = list(variants_with_genotype.intersection(set(snps_ids_list1)))
-        snps_ids_list2 = list(variants_with_genotype.intersection(set(snps_ids_list2)))
-        # snps_ids_list1 = [v for v in snps_ids_list1 if v in variants_with_genotype]
-        # snps_ids_list2 = [v for v in snps_ids_list2 if v in variants_with_genotype]
+        snps_ids_list1 = [v for v in snps_ids_list1 if v in variants_with_genotype]
+        snps_ids_list2 = [v for v in snps_ids_list2 if v in variants_with_genotype]
 
         snps_cov = snps_cov.loc[snps_ids_list1, snps_ids_list2]
 
@@ -879,6 +877,9 @@ class Gene(object):
               * One if any of the genes have no predictors (SNPs) in the tissue.
               * TODO: what else?
         """
+        if self.chromosome != other_gene.chromosome:
+            return 0.0
+
         other_gene_tissue = tissue
         if other_tissue is not None:
             other_gene_tissue = other_tissue
@@ -913,16 +914,12 @@ class Gene(object):
         if other_gene_var is None or other_gene_var == 0.0:
             return None
 
-        try:
-            snps_cov = self._get_snps_cov(
-                gene_w.index,
-                other_gene_w.index,
-                reference_panel=reference_panel,
-                model_type=model_type,
-            )
-        except ValueError:
-            # if genes are from different chromosomes, correlation is zero
-            return 0.0
+        snps_cov = self._get_snps_cov(
+            gene_w.index,
+            other_gene_w.index,
+            reference_panel=reference_panel,
+            model_type=model_type,
+        )
 
         # align weights with snps cov
         gene_w = gene_w.loc[snps_cov.index]
@@ -1027,13 +1024,9 @@ class Gene(object):
 
         cov_ssm = 2 * np.trace(genes_corrs_vh_selected.dot(genes_corrs_vh_selected.T))
 
-        # fixme: ese ssm esta mal, hay que hacer para los dos genes
-        this_gene_sd_ssm = np.sqrt(
-            2 * min(genes_corrs_vh_selected.shape[1], this_gene_n_tissues)
-        )
-        other_gene_sd_ssm = np.sqrt(
-            2 * min(genes_corrs_vh_selected.shape[1], other_gene_n_tissues)
-        )
+        this_gene_sd_ssm = np.sqrt(2 * genes_corrs_vh_selected.shape[1])
+        other_gene_sd_ssm = np.sqrt(2 * genes_corrs_vh_selected.shape[1])
 
-        corr = cov_ssm / (this_gene_sd_ssm * other_gene_sd_ssm)
-        return min(1.0, max(-1.0, corr))
+        return cov_ssm / (this_gene_sd_ssm * other_gene_sd_ssm)
+        # return corr
+        # return min(1.0, max(-1.0, corr))
