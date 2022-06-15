@@ -640,7 +640,9 @@ class Gene(object):
         return sqlite3.connect(db_uri, uri=True)
 
     @lru_cache(maxsize=None)
-    def get_prediction_weights(self, tissue: str, model_type: str):
+    def get_prediction_weights(
+        self, tissue: str, model_type: str, varid_as_index: bool = False
+    ):
         """
         Given a tissue and model type, it returns the prediction weights for
         this gene. The prediction weights are a list of SNPs with the weights
@@ -651,6 +653,8 @@ class Gene(object):
                 The tissue name.
             model_type:
                 The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
+            varid_as_index:
+                TODO: complete
 
         Returns:
             A pandas DataFrame with the variants' weight for the prediction of
@@ -669,7 +673,10 @@ class Gene(object):
             if df.shape[0] == 0:
                 return None
 
-            return df
+            if varid_as_index:
+                return df.set_index("varID")
+            else:
+                return df
         finally:
             sqlite_conn.close()
 
@@ -691,6 +698,7 @@ class Gene(object):
                 The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
         Returns:
             A square pandas dataframe with SNPs covariances.
+            TODO: the index of the dataframe is sorted with sort_index
         """
         snp_cov_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
             "GENE_CORRS_FILE_NAME_TEMPLATES"
@@ -709,7 +717,7 @@ class Gene(object):
 
         # go to disk and read the data
         with pd.HDFStore(snps_cov_file, mode="r") as store:
-            return store[snps_chr]
+            return store[snps_chr].sort_index()
 
     @staticmethod
     def _get_snps_cov(
@@ -862,18 +870,20 @@ class Gene(object):
         if other_tissue is not None:
             other_gene_tissue = other_tissue
 
-        gene_w = self.get_prediction_weights(tissue, model_type)
+        gene_w = self.get_prediction_weights(tissue, model_type, varid_as_index=True)
         if gene_w is None:
             return None
-        gene_w = gene_w.set_index("varID")
+        # gene_w = gene_w.set_index("varID")
         if gene_w.abs().sum().sum() == 0.0:
             # some genes in the models have weight equal to zero (weird)
             return 0.0
 
-        other_gene_w = other_gene.get_prediction_weights(other_gene_tissue, model_type)
+        other_gene_w = other_gene.get_prediction_weights(
+            other_gene_tissue, model_type, varid_as_index=True
+        )
         if other_gene_w is None:
             return None
-        other_gene_w = other_gene_w.set_index("varID")
+        # other_gene_w = other_gene_w.set_index("varID")
         if other_gene_w.abs().sum().sum() == 0.0:
             return 0.0
 
@@ -944,6 +954,8 @@ class Gene(object):
                     other_gene,
                     t1,
                     t2,
+                    reference_panel=reference_panel,
+                    model_type=model_type,
                 )
                 # ec could be None; that means that there are no SNP preditors for one
                 # of the genes in the tissue
