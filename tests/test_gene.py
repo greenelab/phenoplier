@@ -652,6 +652,70 @@ def test_ssm_correlation_genes_in_same_band_within_distance_5():
     assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
 
 
+def test_ssm_correlation_genes_specify_single_tissues():
+    # COL4A2
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000134871")
+
+    # RAB20
+    # chr 13
+    gene2 = Gene(ensembl_id="ENSG00000139832")
+
+    # first, compute using all tissues
+    genes_corr = gene1.get_ssm_correlation(gene2)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert -0.07 >= genes_corr > -0.08
+
+    # check symmetry
+    assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
+
+    # now, specify a list of tissues, the final corr should be different
+    tissues = ["Whole_Blood"]
+    new_genes_corr = gene1.get_ssm_correlation(gene2, tissues=tissues)
+    assert new_genes_corr is not None
+    assert isinstance(new_genes_corr, float)
+    assert -1 <= new_genes_corr <= 1.0
+    assert new_genes_corr != genes_corr
+
+    # check symmetry
+    assert round(gene2.get_ssm_correlation(gene1, tissues=tissues), 5) == round(
+        new_genes_corr, 5
+    )
+
+
+def test_ssm_correlation_genes_specify_two_tissues():
+    # COL4A2
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000134871")
+
+    # RAB20
+    # chr 13
+    gene2 = Gene(ensembl_id="ENSG00000139832")
+
+    # first, compute using all tissues
+    genes_corr = gene1.get_ssm_correlation(gene2)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert -0.07 >= genes_corr > -0.08
+
+    # check symmetry
+    assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
+
+    # now, specify a list of tissues, the final corr should be different
+    tissues = ["Whole_Blood", "Spleen"]
+    new_genes_corr = gene1.get_ssm_correlation(gene2, tissues=tissues)
+    assert new_genes_corr is not None
+    assert isinstance(new_genes_corr, float)
+    assert -1 <= new_genes_corr <= 1.0
+    assert new_genes_corr != genes_corr
+
+    # check symmetry
+    assert round(gene2.get_ssm_correlation(gene1, tissues=tissues), 5) == round(
+        new_genes_corr, 5
+    )
+
+
 def test_ssm_correlation_genes_in_close_bands_not_within_distance():
     # UPF3A
     # chr 13
