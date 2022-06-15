@@ -616,6 +616,28 @@ class Gene(object):
 
         return attr
 
+    def within_distance(self, other_gene, distance_bp):
+        """
+        TODO: complete
+        """
+        this_start = self.get_attribute("start_position")
+        this_end = self.get_attribute("end_position")
+        if this_start is None or this_end is None:
+            return False
+        this_start = int(this_start) - distance_bp
+        this_end = int(this_end) + distance_bp
+
+        other_start = other_gene.get_attribute("start_position")
+        other_end = other_gene.get_attribute("end_position")
+        if other_start is None or other_end is None:
+            return False
+        other_start = int(other_start) - distance_bp
+        other_end = int(other_end) + distance_bp
+
+        return (other_start <= this_start <= other_end) or (
+            this_start <= other_start <= this_end
+        )
+
     @staticmethod
     def _get_tissue_connection(tissue: str, model_type: str):
         """
@@ -852,6 +874,7 @@ class Gene(object):
         other_tissue: str = None,
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
+        use_within_distance=True,
     ):
         """
         Given another Gene object and a tissue, it computes the correlation
@@ -878,6 +901,9 @@ class Gene(object):
               * TODO: what else?
         """
         if self.chromosome != other_gene.chromosome:
+            return 0.0
+
+        if use_within_distance and not self.within_distance(other_gene, 1e6):
             return 0.0
 
         other_gene_tissue = tissue
@@ -936,6 +962,7 @@ class Gene(object):
         tissues: list = None,
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
+        use_within_distance=True,
     ):
         """
         It computes the correlation matrix for two genes across all tissues.
@@ -962,6 +989,7 @@ class Gene(object):
                     t2,
                     reference_panel=reference_panel,
                     model_type=model_type,
+                    use_within_distance=use_within_distance,
                 )
                 # ec could be None; that means that there are no SNP preditors for one
                 # of the genes in the tissue
@@ -987,6 +1015,7 @@ class Gene(object):
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
         condition_number: float = 30,
+        use_within_distance=True,
     ):
         """
         Computes the correlation of the model sum of squares (SSM) for a couple of genes.
@@ -999,7 +1028,7 @@ class Gene(object):
             TODO
         """
         genes_corrs = self.get_tissues_correlations(
-            other_gene, tissues, reference_panel, model_type
+            other_gene, tissues, reference_panel, model_type, use_within_distance=use_within_distance,
         )
 
         if genes_corrs.sum().sum() == 0.0:
@@ -1009,9 +1038,9 @@ class Gene(object):
         other_gene_n_tissues = genes_corrs.shape[1]
 
         # SVD
-        corr = genes_corrs.to_numpy().conjugate()
+        corrs = genes_corrs.to_numpy().conjugate()
         genes_corrs_u, genes_corrs_s, genes_corrs_vh = np.linalg.svd(
-            corr, full_matrices=False
+            corrs, full_matrices=False
         )
 
         # select top eigenvalues
