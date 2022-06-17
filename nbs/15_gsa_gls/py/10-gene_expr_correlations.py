@@ -201,13 +201,6 @@ output_file = output_dir / f"gene_corrs-chr{chromosome}.pkl"
 display(output_file)
 
 # %%
-if output_file.exists():
-    warning.warn("Output file exists, skipping")
-    import sys
-
-    sys.exit(1)
-
-# %%
 warnings.filterwarnings("error")
 
 # %%
