@@ -51,7 +51,7 @@ paste0("Using eQTL model: ", EQTL_MODEL)
 
 # %%
 # chromosome must be provided as parameter
-stopifnot(is.character(chromosome))
+stopifnot(!is.null(chromosome))
 
 # %% [markdown]
 # # Paths
@@ -137,6 +137,9 @@ nonpositive_eigenvalues <- eigenvalues[eigenvalues <= 0]
 IRdisplay::display(length(nonpositive_eigenvalues))
 IRdisplay::display(nonpositive_eigenvalues)
 
+# %%
+if (length(eigenvalues[eigenvalues <= 0]) == 0) { quit() }
+
 # %% [markdown]
 # # Make matrix positive definite if needed
 
@@ -171,12 +174,15 @@ IRdisplay::display(length(nonpositive_eigenvalues))
 IRdisplay::display(nonpositive_eigenvalues)
 
 # %%
+stopifnot(length(eigenvalues[eigenvalues <= 0]) == 0)
+
+# %%
 # quick and visual comparison of the two matrices
 IRdisplay::display(head(gene_corrs[1:10, 1:10]))
 IRdisplay::display(head(gene_corrs_corrected[1:10, 1:10]))
 
 # %% [markdown]
-# Both matrices "look" similar. We are not interested in perfectly accurate correlation values (they are already inaccurate).
+# Both matrices should "look" similar. We are not interested in perfectly accurate correlation values (they are already inaccurate).
 
 # %% [markdown]
 # # Save
