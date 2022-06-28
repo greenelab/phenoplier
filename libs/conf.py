@@ -282,7 +282,7 @@ PHENOMEXCAN["LD_BLOCKS"]["GTEX_V8_GENOTYPE_DIR"] = Path(
 ).resolve()
 PHENOMEXCAN["LD_BLOCKS"]["GENE_CORRS_FILE_NAME_TEMPLATES"] = {
     "SNPS_COVARIANCE": "{prefix}snps_chr_blocks_cov{suffix}.h5",
-    "GENE_CORR_AVG": "{prefix}multiplier_genes-pred_expression_corr_avg{suffix}.pkl",
+    "GENE_CORR_AVG": "{prefix}multiplier_genes-pred_expression_corr{suffix}.pkl",
 }
 # PHENOMEXCAN["LD_BLOCKS"]["ELASTIC_NET"] = {
 #    "SNPS_COVARIANCE_FILE": PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
