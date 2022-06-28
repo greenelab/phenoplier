@@ -20,7 +20,7 @@
 # %% [markdown] tags=[]
 # (Please, take a look at the README.md file in this directory for instructions on how to run this notebook)
 #
-# This notebook reads all gene correlations across all tissues and computes a single correlation matrix using the mean of correlations across all tissues.
+# This notebook reads all gene correlations across all chromosomes and computes a single correlation matrix by assembling a big correlation matrix with all genes.
 
 # %% [markdown] tags=[]
 # # Modules
@@ -33,6 +33,8 @@
 import numpy as np
 from scipy.spatial.distance import squareform
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 import conf
 from entity import Gene
@@ -78,18 +80,16 @@ OUTPUT_DIR_BASE = (
     / REFERENCE_PANEL.lower()
     / EQTL_MODEL.lower()
 )
+display(OUTPUT_DIR_BASE)
 OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 
 # %%
 display(f"Using output dir base: {OUTPUT_DIR_BASE}")
 
 # %%
-INPUT_DIR = OUTPUT_DIR_BASE / "by_tissue"
+INPUT_DIR = OUTPUT_DIR_BASE / "by_chr" / "corrected_positive_definite"
 display(INPUT_DIR)
 assert INPUT_DIR.exists()
-
-# %%
-OUTPUT_FILE_AGG_METHOD = "mean"
 
 # %% [markdown] tags=[]
 # # Load data
@@ -98,51 +98,22 @@ OUTPUT_FILE_AGG_METHOD = "mean"
 # ## Gene correlations
 
 # %% tags=[]
-all_gene_corr_files = list(INPUT_DIR.rglob("*.pkl"))
+all_gene_corr_files = list(INPUT_DIR.glob("gene_corrs-chr*.pkl"))
+
+# %%
+# sort by chromosome
+all_gene_corr_files = sorted(
+    all_gene_corr_files, key=lambda x: int(x.name.split("-chr")[1].split(".pkl")[0])
+)
 
 # %% tags=[]
 len(all_gene_corr_files)
 
 # %% tags=[]
-all_gene_corr_files[:5]
+all_gene_corr_files
 
 # %% tags=[]
-assert len(all_gene_corr_files) == 22 * 49
-
-# %% tags=[]
-all_gene_corr_files_df = pd.DataFrame({"corr_file": [f for f in all_gene_corr_files]})
-
-# %% tags=[]
-all_gene_corr_files_df = all_gene_corr_files_df.assign(
-    file_name=all_gene_corr_files_df["corr_file"].apply(lambda x: x.name)
-)
-
-# %% tags=[]
-all_gene_corr_files_df = all_gene_corr_files_df.assign(
-    tissue=all_gene_corr_files_df["file_name"].apply(
-        lambda x: x.split("-chr")[0].split("gene_corrs-")[1]
-    )
-)
-
-# %% tags=[]
-all_gene_corr_files_df = all_gene_corr_files_df.assign(
-    chromosome=all_gene_corr_files_df["file_name"].apply(
-        lambda x: int(x.split("-chr")[1].split(".")[0])
-    )
-)
-
-# %% tags=[]
-assert all_gene_corr_files_df["tissue"].unique().shape[0] == 49
-
-# %% tags=[]
-assert all_gene_corr_files_df["chromosome"].unique().shape[0] == 22
-assert set(all_gene_corr_files_df["chromosome"]) == set(range(1, 23))
-
-# %% tags=[]
-all_gene_corr_files_df.shape
-
-# %% tags=[]
-all_gene_corr_files_df.head()
+assert len(all_gene_corr_files) == 22
 
 # %% [markdown] tags=[]
 # ## MultiPLIER Z
@@ -182,8 +153,24 @@ genes_info = pd.DataFrame(
         "name": [g.name for g in _gene_obj],
         "id": [g.ensembl_id for g in _gene_obj],
         "chr": [g.chromosome for g in _gene_obj],
+        "start_position": [g.get_attribute("start_position") for g in _gene_obj],
     }
 ).dropna()
+
+# %%
+assert not genes_info.isna().any().any()
+
+# %%
+genes_info.dtypes
+
+# %%
+genes_info["chr"] = genes_info["chr"].apply(pd.to_numeric, downcast="integer")
+genes_info["start_position"] = genes_info["start_position"].astype(
+    int
+)  # .apply(pd.to_numeric, downcast="signed")
+
+# %%
+genes_info.dtypes
 
 # %% tags=[]
 genes_info.shape
@@ -191,160 +178,157 @@ genes_info.shape
 # %% tags=[]
 genes_info.head()
 
-# %% [markdown] tags=[]
-# ## Get tissues names
-
-# %% tags=[]
-tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_TISSUES"].split(" ")
-
-# %% tags=[]
-tissues[:5]
-
-# %% tags=[]
-assert len(tissues) == 49
+# %%
+assert not genes_info.isna().any().any()
 
 # %% [markdown] tags=[]
-# # Average correlations per chromosome
+# # Create full correlation matrix
 
-# %% tags=[]
-corrs_per_chr = {}
+# %%
+genes_info = genes_info.sort_values(["chr", "start_position"])
 
-for chr_num in range(1, 23):
-    print(f"Chromosome: {chr_num}", flush=True)
+# %%
+genes_info
 
-    chr_files = all_gene_corr_files_df[all_gene_corr_files_df["chromosome"] == chr_num]
-    print(f"Number of corrs files: {chr_files.shape}")
+# %%
+full_corr_matrix = pd.DataFrame(
+    np.zeros((genes_info.shape[0], genes_info.shape[0])),
+    index=genes_info["id"].tolist(),
+    columns=genes_info["id"].tolist(),
+)
 
-    multiplier_genes_in_chr = genes_info[genes_info["chr"] == str(chr_num)]
-    print(f"Number of MultiPLIER genes: {multiplier_genes_in_chr.shape}")
+# %%
+assert full_corr_matrix.index.is_unique & full_corr_matrix.columns.is_unique
 
-    # create final dataframe with corrs for this chr
-    chr_df = pd.DataFrame(
-        data=0.0,
-        index=multiplier_genes_in_chr["id"],
-        columns=multiplier_genes_in_chr["id"],
-    )
+# %%
+for chr_corr_file in all_gene_corr_files:
+    print(chr_corr_file.name, flush=True)
 
-    print("Reading corrs per tissue", flush=True)
-    for idx, tissue_corrs in chr_files.iterrows():
-        tissue_corrs_df = pd.read_pickle(tissue_corrs["corr_file"])
+    corr_data = pd.read_pickle(chr_corr_file)
+    full_corr_matrix.loc[corr_data.index, corr_data.columns] = corr_data
 
-        nan_values = tissue_corrs_df.isna()
-        if nan_values.any().any():
-            print(
-                f"  WARNING ({tissue_corrs['tissue']}): has NaN values ({nan_values.sum().sum()})"
-            )
-            tissue_corrs_df = tissue_corrs_df.fillna(0.0)
+# %%
+full_corr_matrix.shape
 
-        # align
-        tissue_corrs_df = tissue_corrs_df.loc[chr_df.index, chr_df.columns]
-
-        chr_df = chr_df + tissue_corrs_df
-    #         chr_df = chr_df.where(chr_df.abs() > tissue_corrs_df.abs(), tissue_corrs_df).fillna(chr_df)
-
-    chr_df = chr_df / float(chr_files.shape[0])
-    chr_df_flat = pd.Series(squareform(chr_df.values, checks=False))
-    display(chr_df_flat.describe())
-
-    corrs_per_chr[chr_num] = chr_df
-
-    print("\n")
+# %%
+full_corr_matrix
 
 # %% [markdown] tags=[]
-# # Create full gene correlation matrix
+# ## Some checks
+
+# %%
+full_corr_matrix[full_corr_matrix > 1.0] = 1.0
+np.fill_diagonal(full_corr_matrix.values, 1.0)
+
+# %%
+assert np.all(full_corr_matrix.to_numpy().diagonal() == 1.0)
+
+# %%
+# check that all genes have a value
+assert not full_corr_matrix.isna().any().any()
+
+# %%
+_min_val = full_corr_matrix.min().min()
+display(_min_val)
+assert _min_val >= -1.0
+
+# %%
+_max_val = full_corr_matrix.max().max()  # this only captures the ones in the diagonal
+display(_max_val)
+assert _max_val <= 1.0
+
+# %%
+# check that matrix is positive definite
+eigs = np.linalg.eigvals(full_corr_matrix.to_numpy())
+assert np.all(eigs > 0)
+
+# %%
+# this should not fail
+np.linalg.cholesky(np.linalg.inv(full_corr_matrix))
+
+# %%
+# full_corr_matrix = full_corr_matrix.astype(np.float32)
 
 # %% [markdown] tags=[]
-# This matrix has all genes in MultiPLIER Z
+# # Try to fit GLS and see if it works (with random data)
 
-# %% tags=[]
-gene_corrs_df = pd.DataFrame(data=0.0, index=genes_info["id"], columns=genes_info["id"])
+# %%
+import statsmodels.api as sm
 
-# %% tags=[]
-gene_corrs_df.shape
+# %%
+y = np.random.rand(full_corr_matrix.shape[0])
 
-# %% tags=[]
-gene_corrs_df.head()
+# %%
+X = np.random.rand(full_corr_matrix.shape[0], 2)
+X[:, 0] = 1
 
-# %% tags=[]
-for chr_num, chr_data in corrs_per_chr.items():
-    chr_data = chr_data.reindex(
-        index=gene_corrs_df.index, columns=gene_corrs_df.columns
-    )
-    gene_corrs_df = gene_corrs_df + chr_data.fillna(0.0)
+# %%
+# this should not throw an exception: LinAlgError("Matrix is not positive definite")
+# _gls_model = sm.GLS(y, X, sigma=np.identity(y.shape[0]))
+_gls_model = sm.GLS(y, X, sigma=full_corr_matrix)
 
-# %% tags=[]
-gene_corrs_df = gene_corrs_df.astype(np.float32)
+# %%
+_gls_results = _gls_model.fit()
 
-# %% tags=[]
-gene_corrs_df.head()
-
-# %% tags=[]
-assert np.all(gene_corrs_df.values.diagonal() == 1.0)
+# %%
+print(_gls_results.summary())
 
 # %% [markdown] tags=[]
 # ## Stats
 
 # %% tags=[]
-_gene_corrs_flat = squareform(gene_corrs_df.values, checks=False)
+full_corr_matrix_flat = full_corr_matrix.mask(
+    np.triu(np.ones(full_corr_matrix.shape)).astype(bool)
+).stack()
 
-# %% tags=[]
-pd.Series(_gene_corrs_flat).describe()
-
-# %% [markdown] tags=[]
-# # Plot
-
-# %% tags=[]
-import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
-
-# %% tags=[]
-genes_order = genes_info.sort_values("chr")["id"].tolist()
-
-# %% tags=[]
-cmap = ListedColormap(["w", "r"])
-
-# %% tags=[]
-fig, ax = plt.subplots(figsize=(10, 10))
-ax.matshow(
-    gene_corrs_df.loc[genes_order, genes_order].values, vmin=-0.05, vmax=0.05, cmap=cmap
+# %%
+display(full_corr_matrix_flat.shape)
+assert full_corr_matrix_flat.shape[0] == int(
+    full_corr_matrix.shape[0] * (full_corr_matrix.shape[0] - 1) / 2
 )
-ax.set_xlabel("Genes")
-ax.set_ylabel("Genes")
-ax.set_xticks([])
-ax.set_yticks([])
 
-# %% [markdown] tags=[]
-# # Testing
+# %%
+full_corr_matrix_flat[full_corr_matrix_flat == 1.0]
 
-# %% tags=[]
-# COL4A1 and COL4A2
-gene1 = "ENSG00000187498"
-gene2 = "ENSG00000134871"
-
-gene_corrs_df.loc[gene1, gene2]
+# %%
+full_corr_matrix_flat.head()
 
 # %% tags=[]
-_genes_files = all_gene_corr_files_df[all_gene_corr_files_df["chromosome"] == 13][
-    "corr_file"
-].tolist()
-assert len(_genes_files) == 49
+full_corr_matrix_flat.describe().apply(str)
 
-# %% tags=[]
-_gene_values = []
-for f in _genes_files:
-    gene1_gene2_corr = pd.read_pickle(f).loc[gene1, gene2]
-    _gene_values.append(gene1_gene2_corr)
+# %%
+full_corr_matrix_flat_quantiles = full_corr_matrix_flat.quantile(np.arange(0, 1, 0.05))
+display(full_corr_matrix_flat_quantiles)
 
-# %% tags=[]
-_gene_values = np.array(_gene_values)
-assert _gene_values.shape[0] == 49
+# %% [markdown]
+# ## Plot: distribution
 
-# %% tags=[]
-# display(_gene_values.mean())
-display(pd.Series(_gene_values).describe())
-assert gene_corrs_df.loc[gene1, gene2].round(5) == _gene_values.mean().round(
-    5
-), gene_corrs_df.loc[gene1, gene2]
+# %%
+with sns.plotting_context("paper", font_scale=1.5):
+    g = sns.displot(full_corr_matrix_flat, kde=True, height=7)
+    g.ax.set_title("Distribution of gene correlation values in all chromosomes")
+
+# %% [markdown]
+# ## Plot: heatmap
+
+# %%
+vmin_val = min(-0.05, full_corr_matrix_flat_quantiles[0.10])
+vmax_val = max(0.05, full_corr_matrix_flat_quantiles[0.90])
+display(f"{vmin_val} / {vmax_val}")
+
+# %%
+f, ax = plt.subplots(figsize=(10, 10))
+sns.heatmap(
+    full_corr_matrix,
+    xticklabels=False,
+    yticklabels=False,
+    square=True,
+    vmin=vmin_val,
+    vmax=vmax_val,
+    cmap="YlGnBu",
+    ax=ax,
+)
+ax.set_title("Gene correlations in all chromosomes")
 
 # %% [markdown] tags=[]
 # # Save
@@ -359,12 +343,12 @@ output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
 
 output_file = OUTPUT_DIR_BASE / output_file_name_template.format(
     prefix="",
-    suffix=f"-{OUTPUT_FILE_AGG_METHOD}-gene_ensembl_ids",
+    suffix=f"-ssm_corrs-gene_ensembl_ids",
 )
 display(output_file)
 
 # %% tags=[]
-gene_corrs_df.to_pickle(output_file)
+full_corr_matrix.to_pickle(output_file)
 
 # %% [markdown] tags=[]
 # ## With gene symbols
@@ -376,28 +360,28 @@ output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
 
 output_file = OUTPUT_DIR_BASE / output_file_name_template.format(
     prefix="",
-    suffix=f"-{OUTPUT_FILE_AGG_METHOD}-gene_symbols",
+    suffix=f"-ssm_corrs-gene_symbols",
 )
 display(output_file)
 
 # %% tags=[]
-gene_corrs_gene_names_df = gene_corrs_df.rename(
+full_corr_matrix_gene_symbols = full_corr_matrix.rename(
     index=Gene.GENE_ID_TO_NAME_MAP, columns=Gene.GENE_ID_TO_NAME_MAP
 )
 
 # %% tags=[]
-assert gene_corrs_gene_names_df.index.is_unique
+assert full_corr_matrix_gene_symbols.index.is_unique
 
 # %% tags=[]
-assert gene_corrs_gene_names_df.columns.is_unique
+assert full_corr_matrix_gene_symbols.columns.is_unique
 
 # %% tags=[]
-gene_corrs_gene_names_df.shape
+full_corr_matrix_gene_symbols.shape
 
 # %% tags=[]
-gene_corrs_gene_names_df.head()
+full_corr_matrix_gene_symbols.head()
 
 # %% tags=[]
-gene_corrs_gene_names_df.to_pickle(output_file)
+full_corr_matrix_gene_symbols.to_pickle(output_file)
 
 # %% tags=[]
