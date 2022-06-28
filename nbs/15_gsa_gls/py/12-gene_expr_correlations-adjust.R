@@ -144,7 +144,7 @@ if (length(eigenvalues[eigenvalues <= 0]) == 0) { quit() }
 # # Make matrix positive definite if needed
 
 # %%
-gene_corrs_corrected <- CorrectCM(gene_corrs, 1e-14)
+gene_corrs_corrected <- CorrectCM(gene_corrs, 1e-5)
 
 # %%
 dimnames(gene_corrs_corrected)[[1]] <- rownames(gene_corrs)
