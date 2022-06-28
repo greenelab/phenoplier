@@ -126,6 +126,11 @@ watch -n 2 bjobs
 
 Logs for `random_pheno0` are in `random_pheno1.*` (indexes are different because LPC arrays cannot start with zero).
 
+To kill running jobs:
+```bash
+bjobs | grep RUN | cut -d ' ' -f1 | xargs -I {} bkill {}
+```
+
 
 # QQ plots
 
