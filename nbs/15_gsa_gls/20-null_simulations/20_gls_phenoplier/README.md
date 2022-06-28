@@ -71,6 +71,7 @@ for pheno_id in {0..999}; do
   done
 done
 ```
+
 The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
 * Check whether jobs finished successfully:
 ```bash
@@ -119,6 +120,11 @@ Check jobs with command `bjobs`.
 Or, for a constantly-updated monitoring (refreshing every 2 seconds):
 ```bash
 watch -n 2 bjobs
+```
+
+To kill running jobs:
+```bash
+bjobs | grep RUN | cut -d ' ' -f1 | xargs -I {} bkill {}
 ```
 
 # QQ plots

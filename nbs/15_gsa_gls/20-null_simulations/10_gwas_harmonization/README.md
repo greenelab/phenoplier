@@ -97,8 +97,8 @@ from pathlib import Path
 
 # adjust accordingly
 N_PHENOTYPES = 200    # 1000
-PHENO_ID_START = 400  # 0
-PHENO_ID_END = 599    # 999
+PHENO_ID_START = 0    # 0
+PHENO_ID_END = 999    # 999
 
 IMPUTATION_OUTPUT_DIR = Path(
   os.environ["PHENOPLIER_RESULTS_GLS_NULL_SIMS"],
