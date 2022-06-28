@@ -1,13 +1,11 @@
 #!/bin/bash
 
-# This script is intended to be used by the developer not the end user.
-#
 # It runs the Docker container of this project by mounting the code and
 # manuscript directories inside the container. This makes that any file created
 # during the execution is locally available and ready to be pushed to the repo.
 # Plus, the code is always run inside the same environment (including the full
 # operating system).
-
+#
 # We assume the repo code is in the current directory, so the user has to make
 # sure this is right.
 
@@ -17,7 +15,7 @@ DOCKER_IMAGE_NAME="phenoplier"
 DOCKER_TAG="latest"
 DOCKER_PUBLISH_HOST="127.0.0.1"
 DOCKER_CONTAINER_PORT="8892"
-DOCKER_HOST_PORT="8889"
+DOCKER_HOST_PORT="8892"
 
 # project-specific environment variables
 ROOT_DIR="${PHENOPLIER_ROOT_DIR}"
@@ -28,10 +26,9 @@ N_JOBS=${!N_JOBS_VARNAME}
 echo "Configuration:"
 
 CODE_DIR=`pwd`
-echo "  Code dir: ${CODE_DIR}"
 
 # root dir
-if [ -z "${MANUSCRIPT_DIR}" ]; then
+if [ -z "${ROOT_DIR}" ]; then
   ROOT_DIR="${CODE_DIR}/base"
 fi
 
@@ -45,6 +42,8 @@ if [ -z "${N_JOBS}" ]; then
   N_JOBS=1
 fi
 
+echo "Configuration:"
+echo "  Code dir: ${CODE_DIR}"
 echo "  Root dir: ${ROOT_DIR}"
 echo "  Manuscript dir: ${MANUSCRIPT_DIR}"
 echo "  CPU cores: ${N_JOBS}"
