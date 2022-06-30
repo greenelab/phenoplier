@@ -32,6 +32,11 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -l|--debug-use-ols)
+      DEBUG_USE_OLS="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -*|--*)
       echo "Unknown option $1"
       exit 1
@@ -54,18 +59,8 @@ if [ -z "${INPUT_FILE}" ]; then
     exit 1
 fi
 
-if [ -z "${GENE_CORR_FILE}" ]; then
-    >&2 echo "Error, --gene-corr-file <value> not provided"
-    exit 1
-fi
-
-if [ -z "${BATCH_ID}" ]; then
-    >&2 echo "Error, --batch-id <value> not provided"
-    exit 1
-fi
-
-if [ -z "${BATCH_N_SPLITS}" ]; then
-    >&2 echo "Error, --batch-n-splits <value> not provided"
+if [ -z "${DEBUG_USE_OLS}" ] && [ -z "${GENE_CORR_FILE}" ]; then
+    >&2 echo "Error, either --debug-use-ols or --gene-corr-file <value> must be provided"
     exit 1
 fi
 
@@ -90,15 +85,27 @@ if ! python -c "from gls import GLSPhenoplier"; then
     exit 1
 fi
 
-# Create output directory
-#mkdir -p ${OUTPUT_DIR}
-#OUTPUT_FILENAME_BASE="${PHENOTYPE_NAME}-gtex_v8-mashr-smultixcan"
+GENE_CORRS_ARGS=""
+if [ ! -z "${GENE_CORR_FILE}" ]; then
+  GENE_CORRS_ARGS="--gene-corr-file ${GENE_CORR_FILE}"
+elif [ ! -z "${DEBUG_USE_OLS}" ]; then
+  GENE_CORRS_ARGS="--debug-use-ols"
+else
+  echo "Wrong arguments"
+  exit 1
+fi
+
+BATCH_ARGS=""
+if [ ! -z "${BATCH_ID}" ] && [ ! -z "${BATCH_N_SPLITS}" ]; then
+  BATCH_ARGS="--batch-id ${BATCH_ID} --batch-n-splits ${BATCH_N_SPLITS}"
+elif [ ! -z "${BATCH_ID}" ] || [ ! -z "${BATCH_N_SPLITS}" ]; then
+  echo "Wrong arguments"
+  exit 1
+fi
 
 python ${PHENOPLIER_CODE_DIR}/libs/gls_cli.py \
     -i ${INPUT_FILE} \
-    -o ${OUTPUT_FILE} \
-    --gene-corr-file ${GENE_CORR_FILE} \
     --duplicated-genes-action keep-first \
-    --batch-id ${BATCH_ID} \
-    --batch-n-splits ${BATCH_N_SPLITS}
+    ${GENE_CORRS_ARGS} \
+    -o ${OUTPUT_FILE} ${BATCH_ARGS}
 
