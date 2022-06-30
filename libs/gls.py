@@ -54,7 +54,7 @@ class GLSPhenoplier(object):
         self,
         smultixcan_result_set_filepath: str = None,
         gene_corrs_file_path: Path = None,
-        sigma=None,
+        debug_use_ols: bool = False,
         logger="warnings_only",
     ):
         self.smultixcan_result_set_filepath = conf.PHENOMEXCAN[
@@ -83,6 +83,8 @@ class GLSPhenoplier(object):
             self.gene_corrs_file_path = gene_corrs_file_path
         # sigma is disabled, but left here for future reference (debugging)
         # self.sigma = sigma
+        self.debug_use_ols = debug_use_ols
+
         self.log_warning = None
         self.log_info = None
         self.set_logger(logger)
@@ -163,7 +165,7 @@ class GLSPhenoplier(object):
     def match_and_align_genes(
         gene_phenotype_assoc: pd.Series,
         gene_lv_weights: pd.Series,
-        gene_correlations: pd.DataFrame,
+        gene_correlations: pd.DataFrame = None,
     ):
         """
         Given the gene-trait associations, gene-lv weights and gene correlation matrices, it returns a version of all
@@ -173,20 +175,23 @@ class GLSPhenoplier(object):
         Args:
             gene_phenotype_assoc: gene IDs in index
             gene_lv_weights: gene IDs in index
-            gene_correlations: gene IDs in index and column
+            gene_correlations: (optional) gene IDs in index and column
 
         Returns:
             A tuple with three elements: gene-trait associations, gene-lv weights and gene correlations, all
             aligned with the same genes.
         """
-        common_genes = gene_phenotype_assoc.index.intersection(
-            gene_lv_weights.index
-        ).intersection(gene_correlations.index)
+        common_genes = gene_phenotype_assoc.index.intersection(gene_lv_weights.index)
+
+        if gene_correlations is not None:
+            common_genes = common_genes.intersection(gene_correlations.index)
 
         return (
             gene_phenotype_assoc.loc[common_genes],
             gene_lv_weights.loc[common_genes],
-            gene_correlations.loc[common_genes, common_genes],
+            gene_correlations.loc[common_genes, common_genes]
+            if gene_correlations is not None
+            else None,
         )
 
     def _fit_named_internal(self, lv_code: str, phenotype: str):
@@ -243,7 +248,9 @@ class GLSPhenoplier(object):
         TODO
         """
         lv_weights = GLSPhenoplier._get_lv_weights(lv_weights_file)
-        gene_corrs = GLSPhenoplier._get_gene_corrs(self.gene_corrs_file_path)
+        gene_corrs = None
+        if not self.debug_use_ols:
+            gene_corrs = GLSPhenoplier._get_gene_corrs(self.gene_corrs_file_path)
 
         x = lv_weights[lv_code]
 
@@ -259,7 +266,7 @@ class GLSPhenoplier(object):
         Args:
             x: MUST HAVE a valid LV name
             y: MUST HAVE a valid name
-            gene_corrs:
+            gene_corrs: if None, then use a standard OLS model
 
         Returns:
             self
@@ -299,8 +306,14 @@ class GLSPhenoplier(object):
         self.log_info(f"Final number of genes in training data: {data.shape[0]}")
 
         # create GLS model and fit
-        gls_model = sm.GLS(data["phenotype"], data[["i", "lv"]], sigma=gene_corrs)
-        gls_results = gls_model.fit()
+        if gene_corrs is not None:
+            self.log_info("Using a Generalized Least Squares (GLS) model")
+            gls_model = sm.GLS(data["phenotype"], data[["i", "lv"]], sigma=gene_corrs)
+            gls_results = gls_model.fit()
+        else:
+            self.log_info("Using a Ordinary Least Squares (OLS) model")
+            gls_model = sm.OLS(data["phenotype"], data[["i", "lv"]])
+            gls_results = gls_model.fit()
 
         # add one-sided pvalue
         # in this case we are only interested in testing whether the coeficient

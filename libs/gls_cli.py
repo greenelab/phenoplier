@@ -52,6 +52,13 @@ def run():
         help="TODO; if not specified, it lets GLSPhenoplier to specify a default gene corrs file",
     )
     parser.add_argument(
+        # "-g",
+        "--debug-use-ols",
+        required=False,
+        action="store_true",
+        help="It uses a standard OLS model instead of GLS. For debugging purposes.",
+    )
+    parser.add_argument(
         "-l",
         "--lv-list",
         required=False,
@@ -201,10 +208,19 @@ def run():
     data = pd.Series(data=np.abs(stats.norm.ppf(data / 2)), index=data.index.copy())
     # data = -np.log10(data)
 
+    if args.debug_use_ols and args.gene_corr_file is not None:
+        logger.error(
+            "Incompatible arguments: you cannot specify both --gene-corr-file and --debug-use-ols"
+        )
+        sys.exit(1)
+
     if args.gene_corr_file is not None:
         logger.info(f"Using gene correlation file: {args.gene_corr_file}")
     else:
-        logger.warning("No gene correlations file specified. The default will be used")
+        if not args.debug_use_ols:
+            logger.warning(
+                "No gene correlations file specified. The default will be used"
+            )
 
     if args.lv_model_file is not None:
         lv_model_file = Path(args.lv_model_file)
@@ -247,6 +263,7 @@ def run():
 
     model = GLSPhenoplier(
         gene_corrs_file_path=args.gene_corr_file,
+        debug_use_ols=args.debug_use_ols,
         logger=logger,
     )
 

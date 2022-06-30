@@ -386,6 +386,57 @@ def test_gls_different_prediction_models_gls_fit_named():
     )
 
 
+def test_gls_debug_use_ols():
+    model = GLSPhenoplier(
+        conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"],
+        gene_corrs_file_path=DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl",
+    )
+
+    # get data and simulate phenotype
+    lv_weights = GLSPhenoplier._get_lv_weights()
+    gene_corrs = GLSPhenoplier._get_gene_corrs(model.gene_corrs_file_path)
+
+    np.random.seed(0)
+    phenotype_data = pd.Series(
+        np.abs(np.random.normal(size=lv_weights.shape[0])),
+        index=lv_weights.index.tolist(),
+        name="Random phenotype",
+    )
+
+    # match all genes and align
+    phenotype_data, lv_weights = GLSPhenoplier.match_and_align_genes(
+        phenotype_data, lv_weights, gene_corrs
+    )[0:2]
+
+    # fit with using GLS model
+    model.fit_named("LV270", phenotype_data)
+    assert model.results.df_resid == phenotype_data.shape[0] - 2
+    model1_results = model.results
+
+    # fit with OLS
+    model = GLSPhenoplier(
+        conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"],
+        debug_use_ols=True,
+        # gene_corrs_file_path=DATA_DIR / "sample-gene_corrs-1000g-en.pkl",
+    )
+
+    model.fit_named("LV270", phenotype_data)
+    assert model.results.df_resid == phenotype_data.shape[0] - 2
+    model2_results = model.results
+
+    assert model.phenotype_code == "Random phenotype"
+
+    assert not np.allclose(
+        model1_results.pvalues.to_numpy(),
+        model2_results.pvalues.to_numpy(),
+    )
+
+    assert not np.allclose(
+        model1_results.pvalues_onesided.to_numpy(),
+        model2_results.pvalues_onesided.to_numpy(),
+    )
+
+
 def test_gls_no_correlation_structure():
     # check that, if no correlation structure is given, results should match
     # R's nmle::gls function
