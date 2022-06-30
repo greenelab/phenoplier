@@ -620,6 +620,117 @@ def test_gls_cli_single_smultixcan_input_full_specify_gene_corrs(output_file):
     )
 
 
+def test_gls_cli_single_smultixcan_input_debug_use_ols(output_file):
+    # first, run a standard GLS (using correlation matrix)
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using gene correlation file:" in r_output
+    assert "sample-gene_corrs-gtex_v8-mashr.pkl" in r_output
+
+    assert output_file.exists()
+    output_data = pd.read_csv(output_file, sep="\t")
+    assert not output_data.isna().any().any()
+    gls_results = output_data
+    output_file.unlink()
+
+    # now run an OLS model
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
+            "--debug-use-ols",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using gene correlation file:" not in r_output
+    assert "No gene correlations file specified" not in r_output
+    assert "Using a Ordinary Least Squares (OLS) model" in r_output
+
+    assert output_file.exists()
+    output_data = pd.read_csv(output_file, sep="\t")
+    assert not output_data.isna().any().any()
+    ols_results = output_data
+    output_file.unlink()
+
+    # results should be different across batches
+    assert not np.allclose(
+        gls_results["coef"].to_numpy(),
+        ols_results["coef"].to_numpy(),
+    )
+    assert not np.allclose(
+        gls_results["pvalue"].to_numpy(),
+        ols_results["pvalue"].to_numpy(),
+    )
+
+
+def test_gls_cli_single_smultixcan_input_debug_use_ols_incompatible_arguments(
+    output_file,
+):
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
+            "--debug-use-ols",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 1
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Incompatible arguments" in r_output
+    assert "--debug-use-ols" in r_output
+
+    assert not output_file.exists()
+
+
 def test_gls_cli_use_incompatible_parameters_batch_and_lv_list(output_file):
     # batch 1
     r = subprocess.run(
