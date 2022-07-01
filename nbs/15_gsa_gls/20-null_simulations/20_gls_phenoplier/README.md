@@ -47,12 +47,45 @@ The `cluster_jobs/` folder has the job scripts to run on Penn's LPC cluster.
 To run the jobs in order, you need to execute the command below.
 The `_tmp` folder stores logs and needs to be created.
 
-## GLS PhenoPLIER
 
-Here we need to use some templating, because we run across random phenotypes and batches.
+## OLS
+
+### Compute LV-trait associations
 
 ```bash
-mkdir -p _tmp/gls_phenoplier_mean
+mkdir -p _tmp/gls_phenoplier_ols
+
+for pheno_id in {0..999}; do
+    export pheno_id
+    cat cluster_jobs/01_gls-use_ols-template.sh | envsubst '${pheno_id}' | bsub
+done
+```
+
+The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
+* Check whether jobs finished successfully:
+```bash
+bash check_job.sh -i _tmp/gls_phenoplier_mean/ -p "INFO: Writing results to" -f '*.error'
+
+bash check_job.sh -i _tmp/gls_phenoplier_mean/ -p "INFO: Using a Ordinary Least Squares (OLS) model" -f '*.error'
+
+# A success output would look like this:
+Finished checking [NUMBER OF PHENOTYPES * $batch_n_splits] logs:
+  All jobs finished successfully
+```
+
+There should be 1000 files in the output directory.
+
+
+
+
+
+
+### GLS PhenoPLIER
+
+**FIXME:** needs to be updated
+
+```bash
+mkdir -p _tmp/gls_phenoplier
 
 # Iterate over all random phenotype ids, chromosomes and batch ids and submit a job for each combination.
 # IMPORTANT: These are a lot of tasks. You might want to split jobs by chaning the range in first for line:
@@ -62,13 +95,11 @@ mkdir -p _tmp/gls_phenoplier_mean
 #   600..799
 #   800..999
 
-export batch_n_splits=10
-
 for pheno_id in {0..999}; do
-  for ((batch_id=1; batch_id<=${batch_n_splits}; batch_id++)); do
-    export pheno_id batch_id
-    cat cluster_jobs/01_gls_phenoplier_mean_job-template.sh | envsubst '${pheno_id} ${batch_id} ${batch_n_splits}' | bsub
-  done
+    for ((batch_id=1; batch_id<=${batch_n_splits}; batch_id++)); do
+        export pheno_id batch_id
+        cat cluster_jobs/01_gls_phenoplier_mean_job-template.sh | envsubst '${pheno_id} ${batch_id} ${batch_n_splits}' | bsub
+    done
 done
 ```
 
@@ -87,7 +118,10 @@ There should be 1000 files (100 random phenotypes and 10 batch splits) in the ou
 If any job failed, check `../10_gwas_harmonization/README.md`, which has python code to get a list of unfinished jobs.
 It will need to be adapted for these tasks.
 
-## Combine batches
+
+### Combine batches
+
+Use this if you used batches above.
 
 ```python
 import os
