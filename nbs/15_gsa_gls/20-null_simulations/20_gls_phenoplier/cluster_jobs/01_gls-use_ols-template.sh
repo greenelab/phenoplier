@@ -24,14 +24,7 @@ export OMP_NUM_THREADS=${n_jobs}
 
 CODE_DIR=${PHENOPLIER_CODE_DIR}/nbs/15_gsa_gls/20-null_simulations/20_gls_phenoplier
 INPUT_SMULTIXCAN_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan"
-
-# Custom gene corr matrix
-# GENE_CORR_FILE="/project/ritchie20/projects/phenoplier/base/data/tmp/gene_corrs/gene_corrs-default_identity_matrix.pkl"
 OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-debug_use_ols"
-
-# # GTEx v8 / MASHR / max gene expression across tissues
-# GENE_CORR_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_GENE_CORRS_DIR}/gtex_v8/mashr/multiplier_genes-pred_expression_corr_avg-max-gene_symbols.pkl"
-# OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-gtex-mashr-max_gene_expr"
 
 mkdir -p ${OUTPUT_DIR}
 
