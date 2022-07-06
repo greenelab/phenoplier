@@ -392,6 +392,55 @@ def test_gene_get_expression_correlation(gene_id1, gene_id2, tissue, expected_co
 
 
 @pytest.mark.parametrize(
+    # the expression of all these genes is the real one, and was calculated
+    # using the script tests/test_cases/predict_gene_expression.py
+    "gene_id1,gene_id2,tissue,expected_corr",
+    [
+        # case where all snps are in cov matrix
+        (
+            "ENSG00000169750",
+            "ENSG00000121101",
+            "Brain_Cortex",
+            0.05004568731277303,
+        ),
+        # case where some snps in the second gene are not in covariance snp matrix
+        (
+            "ENSG00000166821",
+            "ENSG00000140545",
+            "Whole_Blood",
+            0.04774750700416392,
+        ),
+        # case of highly correlated genes
+        (
+            "ENSG00000134871",
+            "ENSG00000187498",
+            "Whole_Blood",
+            0.9702481569810856,
+        ),
+        # case of negative correlation
+        (
+            "ENSG00000000457",
+            "ENSG00000000460",
+            "Whole_Blood",
+            -0.08940051626152806,
+        ),
+    ],
+)
+def test_gene_get_expression_correlation_compare_with_real_correlation(
+    gene_id1, gene_id2, tissue, expected_corr
+):
+    gene1 = Gene(ensembl_id=gene_id1)
+    gene2 = Gene(ensembl_id=gene_id2)
+
+    genes_corr = gene1.get_expression_correlation(
+        gene2, tissue, reference_panel="1000g", use_within_distance=False
+    )
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert genes_corr == expected_corr
+
+
+@pytest.mark.parametrize(
     "gene_id1,gene_id2,tissue,expected_corr",
     [
         # case where there is no model for a gene in that tissue
