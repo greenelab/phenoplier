@@ -6,15 +6,18 @@ Modify parameters section below to change the genes or tissue.
 """
 
 import sqlite3
+
+from IPython.display import display
 import pandas as pd
+from fastparquet import ParquetFile
 
 import conf
 
 # Parameter (change this as needed)
 #   Genes should be in the same chromosome.
-gene0_id = "ENSG00000169750"
-gene1_id = "ENSG00000121101"
-tissue_name = "Brain_Cortex"
+gene0_id = "ENSG00000000457"
+gene1_id = "ENSG00000000460"
+tissue_name = "Whole_Blood"
 
 # get gene prediction weights
 base_prediction_model_dir = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"]
@@ -42,8 +45,17 @@ assert gene0_chr == gene1_chr
 gene_variants = gene0["varID"].tolist() + gene1["varID"].tolist()
 assert len(gene_variants) == len(set(gene_variants))
 
-# get individual level data
+# get intersection of gene variants with variants in parquet file
 base_reference_panel_dir = conf.PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"]
+
+pf = ParquetFile(str(base_reference_panel_dir / f"{gene0_chr}.variants.parquet"))
+pf_variants = set(pf.columns)
+gene_variants = [gv for gv in gene_variants if gv in pf_variants]
+
+gene0 = gene0[gene0["varID"].isin(gene_variants)]
+gene1 = gene1[gene1["varID"].isin(gene_variants)]
+
+# get individual level data
 ind_data = pd.read_parquet(
     base_reference_panel_dir / f"{gene0_chr}.variants.parquet",
     columns=["individual"] + gene_variants,
@@ -63,6 +75,9 @@ def _predict_expression(gene_data):
 
 gene0_pred_expr = _predict_expression(gene0)
 gene1_pred_expr = _predict_expression(gene1)
+
+display(gene0)
+display(gene1)
 
 # compute the real correlation
 gene_corr = gene0_pred_expr.corr(gene1_pred_expr)
