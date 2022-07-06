@@ -52,7 +52,13 @@ display(INPUT_DIR)
 # # Load MultiXcan genes present in results
 
 # %%
-_tmp = pd.read_csv(conf.RESULTS["GLS_NULL_SIMS"] / "twas" / "smultixcan" / "random.pheno0-gtex_v8-mashr-smultixcan.txt", sep="\t")
+_tmp = pd.read_csv(
+    conf.RESULTS["GLS_NULL_SIMS"]
+    / "twas"
+    / "smultixcan"
+    / "random.pheno0-gtex_v8-mashr-smultixcan.txt",
+    sep="\t",
+)
 
 # %%
 _tmp.shape
@@ -76,7 +82,9 @@ multiplier_z.shape
 
 # %%
 # keep genes only present in MultiXcan
-multiplier_z = multiplier_z.loc[sorted(multixcan_genes.intersection(multiplier_z.index))]
+multiplier_z = multiplier_z.loc[
+    sorted(multixcan_genes.intersection(multiplier_z.index))
+]
 
 # %%
 multiplier_z.shape
@@ -110,13 +118,26 @@ assert get_prop(pd.Series(np.array([0.20, 0.50, 0.75, 0.10, 0.04])), 0.05) == 0.
 
 
 # %%
-def qqplot_unif(results):
+def qqplot_unif(results, other_results=None):
     data = results["pvalue"].to_numpy()
     n = data.shape[0]
-    uniform_data = np.array([i / (n + 1) for i in range(1, n + 1)])
-    
     observed_data = -np.log10(data)
-    expected_data = -np.log10(uniform_data)
+
+    observed_lv = results["lv"].unique()
+    assert len(observed_lv) == 1
+    observed_lv = observed_lv[0]
+
+    other_lv = ""
+    if other_results is not None:
+        other_data = other_results["pvalue"].to_numpy()
+        expected_data = -np.log10(other_data)
+
+        other_lv = other_results["lv"].unique()
+        assert len(other_lv) == 1
+        other_lv = other_lv[0]
+    else:
+        uniform_data = np.array([i / (n + 1) for i in range(1, n + 1)])
+        expected_data = -np.log10(uniform_data)
 
     with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
         {"lines.markersize": 3}
@@ -127,9 +148,9 @@ def qqplot_unif(results):
 
         ax.set_xlim(expected_data.min() - 0.05, expected_data.max() + 0.05)
 
-        ax.set_xlabel("$-\log_{10}$(expected pvalue)")
-        ax.set_ylabel("$-\log_{10}$(observed pvalue)")
-        ax.set_title("QQ-Plot - Null with MASHR models")
+        ax.set_xlabel(f"$-\log_{10}$(expected pvalue) - {other_lv}")
+        ax.set_ylabel(f"$-\log_{10}$(observed pvalue) - {observed_lv}")
+        # ax.set_title("QQ-Plot")
 
 
 # %%
@@ -244,6 +265,9 @@ display(lvs_high_error.sort_values("5").tail(20))
 # %% [markdown]
 # # LVs with high mean type I error
 
+# %%
+lv_results_high = {}
+
 # %% [markdown]
 # ## LV45
 
@@ -258,6 +282,10 @@ results.shape
 
 # %%
 results.head()
+
+# %%
+# save for future reference
+lv_results_high[lv_code] = results
 
 # %% [markdown]
 # ### Mean type I errors at different thresholds
@@ -284,17 +312,55 @@ show_prop(results, 0.20)
 qqplot_unif(results)
 
 # %% [markdown]
-# ### Why mean type I errors are so high?
+# ### Top genes in LV
 
 # %%
 lv_genes = get_lv_genes(lv_code)
 display(lv_genes.head(25))
 
 # %%
+# see bands of top genes
 lv_genes.head(25)["gene_band"].value_counts().head(10)
 
 # %% [markdown]
-# Top genes in this LV are all from the same band, very likely causing high type I errors.
+# **Note**: Top genes in this LV are all from the same band, very likely causing high type I errors.
+
+# %%
+# take a look at all genes with non-zero weight
+lv_genes_nonzero_weight = lv_genes[lv_genes[lv_code] > 0]
+
+# %%
+# how many genes have non-zero weight?
+lv_genes_nonzero_weight.shape
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_nonzero_weight["gene_band"].value_counts().head(10)
+
+# %%
+# distribution of amount of bands in LV
+g = sns.displot(lv_genes_nonzero_weight["gene_band"].value_counts(), height=7, aspect=2)
+
+# %%
+# distribution of weights in LV
+g = sns.displot(lv_genes[lv_genes[lv_code] > 0][lv_code], height=7, aspect=2)
+
+# %% [markdown]
+# ### Bottom genes in LV
+
+# %%
+lv_genes_zero_weight = lv_genes[lv_genes[lv_code] <= 0]
+
+# %%
+# how many genes have zero weight
+lv_genes_zero_weight.shape
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_zero_weight["gene_band"].value_counts().head(20)
+
+# %%
+g = sns.displot(lv_genes_zero_weight["gene_band"].value_counts(), height=7, aspect=2)
 
 # %% [markdown]
 # ## LV234
@@ -311,6 +377,10 @@ results.shape
 # %%
 results.head()
 
+# %%
+# save for future reference
+lv_results_high[lv_code] = results
+
 # %% [markdown]
 # ### Mean type I errors at different thresholds
 
@@ -336,17 +406,55 @@ show_prop(results, 0.20)
 qqplot_unif(results)
 
 # %% [markdown]
-# ### Why mean type I errors are so high?
+# ### Top genes in LV
 
 # %%
 lv_genes = get_lv_genes(lv_code)
 display(lv_genes.head(25))
 
 # %%
+# see bands of top genes
 lv_genes.head(25)["gene_band"].value_counts().head(10)
 
 # %% [markdown]
-# Same as LV45
+# **Note**: same as LV45
+
+# %%
+# take a look at all genes with non-zero weight
+lv_genes_nonzero_weight = lv_genes[lv_genes[lv_code] > 0]
+
+# %%
+# how many genes have non-zero weight?
+lv_genes_nonzero_weight.shape
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_nonzero_weight["gene_band"].value_counts().head(10)
+
+# %%
+# distribution of amount of bands in LV
+g = sns.displot(lv_genes_nonzero_weight["gene_band"].value_counts(), height=7, aspect=2)
+
+# %%
+# distribution of weights in LV
+g = sns.displot(lv_genes[lv_genes[lv_code] > 0][lv_code], height=7, aspect=2)
+
+# %% [markdown]
+# ### Bottom genes in LV
+
+# %%
+lv_genes_zero_weight = lv_genes[lv_genes[lv_code] <= 0]
+
+# %%
+# how many genes have zero weight
+lv_genes_zero_weight.shape
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_zero_weight["gene_band"].value_counts().head(20)
+
+# %%
+g = sns.displot(lv_genes_zero_weight["gene_band"].value_counts(), height=7, aspect=2)
 
 # %% [markdown]
 # ## LV847
@@ -363,6 +471,10 @@ results.shape
 # %%
 results.head()
 
+# %%
+# save for future reference
+lv_results_high[lv_code] = results
+
 # %% [markdown]
 # ### Mean type I errors at different thresholds
 
@@ -388,17 +500,55 @@ show_prop(results, 0.20)
 qqplot_unif(results)
 
 # %% [markdown]
-# ### Why mean type I errors are so high?
+# ### Top genes in LV
 
 # %%
 lv_genes = get_lv_genes(lv_code)
 display(lv_genes.head(25))
 
 # %%
+# see bands of top genes
 lv_genes.head(25)["gene_band"].value_counts().head(10)
 
 # %% [markdown]
-# Same as LV45
+# **Note**: same as LV45
+
+# %%
+# take a look at all genes with non-zero weight
+lv_genes_nonzero_weight = lv_genes[lv_genes[lv_code] > 0]
+
+# %%
+# how many genes have non-zero weight?
+lv_genes_nonzero_weight.shape
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_nonzero_weight["gene_band"].value_counts().head(10)
+
+# %%
+# distribution of amount of bands in LV
+g = sns.displot(lv_genes_nonzero_weight["gene_band"].value_counts(), height=7, aspect=2)
+
+# %%
+# distribution of weights in LV
+g = sns.displot(lv_genes[lv_genes[lv_code] > 0][lv_code], height=7, aspect=2)
+
+# %% [markdown]
+# ### Bottom genes in LV
+
+# %%
+lv_genes_zero_weight = lv_genes[lv_genes[lv_code] <= 0]
+
+# %%
+# how many genes have zero weight
+lv_genes_zero_weight.shape
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_zero_weight["gene_band"].value_counts().head(20)
+
+# %%
+g = sns.displot(lv_genes_zero_weight["gene_band"].value_counts(), height=7, aspect=2)
 
 # %% [markdown]
 # ## LV110
@@ -415,6 +565,10 @@ results.shape
 # %%
 results.head()
 
+# %%
+# save for future reference
+lv_results_high[lv_code] = results
+
 # %% [markdown]
 # ### Mean type I errors at different thresholds
 
@@ -440,17 +594,55 @@ show_prop(results, 0.20)
 qqplot_unif(results)
 
 # %% [markdown]
-# ### Why mean type I errors are so high?
+# ### Top genes in LV
 
 # %%
 lv_genes = get_lv_genes(lv_code)
 display(lv_genes.head(25))
 
 # %%
+# see bands of top genes
 lv_genes.head(25)["gene_band"].value_counts().head(10)
 
 # %% [markdown]
-# Same as LV45
+# Top genes in this LV are all from the same band, very likely causing high type I errors.
+
+# %%
+# take a look at all genes with non-zero weight
+lv_genes_nonzero_weight = lv_genes[lv_genes[lv_code] > 0]
+
+# %%
+# how many genes have non-zero weight?
+lv_genes_nonzero_weight.shape
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_nonzero_weight["gene_band"].value_counts().head(10)
+
+# %%
+# distribution of amount of bands in LV
+g = sns.displot(lv_genes_nonzero_weight["gene_band"].value_counts(), height=7, aspect=2)
+
+# %%
+# distribution of weights in LV
+g = sns.displot(lv_genes[lv_genes[lv_code] > 0][lv_code], height=7, aspect=2)
+
+# %% [markdown]
+# ### Bottom genes in LV
+
+# %%
+lv_genes_zero_weight = lv_genes[lv_genes[lv_code] <= 0]
+
+# %%
+# how many genes have zero weight
+lv_genes_zero_weight.shape
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_zero_weight["gene_band"].value_counts().head(20)
+
+# %%
+g = sns.displot(lv_genes_zero_weight["gene_band"].value_counts(), height=7, aspect=2)
 
 # %% [markdown]
 # ## LV769
@@ -467,6 +659,10 @@ results.shape
 # %%
 results.head()
 
+# %%
+# save for future reference
+lv_results_high[lv_code] = results
+
 # %% [markdown]
 # ### Mean type I errors at different thresholds
 
@@ -492,7 +688,12 @@ show_prop(results, 0.20)
 qqplot_unif(results)
 
 # %% [markdown]
-# ### Why mean type I errors are so high?
+# The QQplot here is not the same as the LVs before. In previous LVs, there are very small pvalues, likely because of the genes from the same region at the top of the LV.
+#
+# Here p-values are consistently smaller than expected, but there are no very small p-values.
+
+# %% [markdown]
+# ### Top genes in LV
 
 # %%
 lv_genes = get_lv_genes(lv_code)
@@ -502,53 +703,216 @@ display(lv_genes.head(25))
 # Ok, first LV that does not have genes from the same band at the top. What's going on here?
 
 # %%
+# see bands of top genes
 lv_genes.head(25)["gene_band"].value_counts().head(10)
 
 # %% [markdown]
 # There are same genes from the same band at the top, but not that many as the other LVs.
 # **However**, top genes from chr 6 are here. Those might be highly correlated.
+
+# %%
+# take a look at all genes with non-zero weight
+lv_genes_nonzero_weight = lv_genes[lv_genes[lv_code] > 0]
+
+# %%
+# how many genes have non-zero weight?
+lv_genes_nonzero_weight.shape
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_nonzero_weight["gene_band"].value_counts().head(10)
+
+# %%
+# distribution of amount of bands in LV
+g = sns.displot(lv_genes_nonzero_weight["gene_band"].value_counts(), height=7, aspect=2)
+
+# %%
+# distribution of weights in LV
+g = sns.displot(lv_genes[lv_genes[lv_code] > 0][lv_code], height=7, aspect=2)
+
+# %% [markdown]
+# ### Bottom genes in LV
+
+# %%
+lv_genes_zero_weight = lv_genes[lv_genes[lv_code] <= 0]
+
+# %%
+# how many genes have zero weight
+lv_genes_zero_weight.shape
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_zero_weight["gene_band"].value_counts().head(20)
+
+# %%
+g = sns.displot(lv_genes_zero_weight["gene_band"].value_counts(), height=7, aspect=2)
+
+# %%
+# compare band sizes distribution from top and bottom genes
+fig = sns.kdeplot(
+    lv_genes_nonzero_weight["gene_band"].value_counts(), shade=True, color="r"
+)
+fig = sns.kdeplot(
+    lv_genes_zero_weight["gene_band"].value_counts(), shade=True, color="b"
+)
+plt.show()
+
+# %% [markdown]
+# ## LV800
+
+# %%
+lv_code = "LV800"
+
+# %%
+results = dfs[dfs["lv"] == lv_code]
+
+# %%
+results.shape
+
+# %%
+results.head()
+
+# %%
+# save for future reference
+lv_results_high[lv_code] = results
+
+# %% [markdown]
+# ### Mean type I errors at different thresholds
+
+# %%
+show_prop(results, 0.01)
+
+# %%
+show_prop(results, 0.05)
+
+# %%
+show_prop(results, 0.10)
+
+# %%
+show_prop(results, 0.15)
+
+# %%
+show_prop(results, 0.20)
+
+# %% [markdown]
+# ### QQplot
+
+# %%
+qqplot_unif(results)
+
+# %% [markdown]
+# **Note**: looks similar to LV769. This one has smaller minimum p-values.
+
+# %% [markdown]
+# ### Top genes in LV
+
+# %%
+lv_genes = get_lv_genes(lv_code)
+display(lv_genes.head(25))
+
+# %% [markdown]
+# **Note**: similar to the first LVs in that top genes are mostly from the same band, but here weights are way smaller.
+
+# %%
+# see bands of top genes
+lv_genes.head(25)["gene_band"].value_counts().head(10)
+
+# %% [markdown]
+# There are same genes from the same band at the top, but not that many as the other LVs.
+# **However**, top genes from chr 6 are here. Those might be highly correlated.
+
+# %%
+# take a look at all genes with non-zero weight
+lv_genes_nonzero_weight = lv_genes[lv_genes[lv_code] > 0]
+
+# %%
+# how many genes have non-zero weight?
+lv_genes_nonzero_weight.shape
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_nonzero_weight["gene_band"].value_counts().head(10)
+
+# %%
+# distribution of amount of bands in LV
+g = sns.displot(lv_genes_nonzero_weight["gene_band"].value_counts(), height=7, aspect=2)
+
+# %%
+# distribution of weights in LV
+g = sns.displot(lv_genes[lv_genes[lv_code] > 0][lv_code], height=7, aspect=2)
+
+# %% [markdown]
+# **TODO**
+
+# %% [markdown]
+# ### Bottom genes in LV
+
+# %%
+lv_genes_zero_weight = lv_genes[lv_genes[lv_code] <= 0]
+
+# %%
+# how many genes have zero weight
+lv_genes_zero_weight.shape
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_zero_weight["gene_band"].value_counts().head(20)
+
+# %%
+g = sns.displot(lv_genes_zero_weight["gene_band"].value_counts(), height=7, aspect=2)
+
+# %%
+# compare band sizes distribution from top and bottom genes
+fig = sns.kdeplot(
+    lv_genes_nonzero_weight["gene_band"].value_counts(), shade=True, color="r"
+)
+fig = sns.kdeplot(
+    lv_genes_zero_weight["gene_band"].value_counts(), shade=True, color="b"
+)
+plt.show()
+
+# %% [markdown]
+# ## Notes
+
+# %% [markdown]
+# There are LVs with high mean type I errors that have different properties:
 #
-# What happens if I take a look at more top genes?
-
-# %%
-lv_genes.head(50)["gene_band"].value_counts().head(5)
-
-# %%
-lv_genes.head(100)["gene_band"].value_counts().head(15)
-
-# %%
-lv_genes.head(150)["gene_band"].value_counts().head(20)
-
-# %%
-lv_genes.head(200)["gene_band"].value_counts().head(30)
-
-# %% [markdown]
-# ## Distribution of gene weights
-
-# %%
-lv_genes[lv_code].describe()
-
-# %%
-lv_genes[lv_code].quantile(np.arange(0.80, 1.0, 0.01))
-
-# %%
-sns.displot(data=lv_genes, x=lv_code, kind="ecdf")
-
-# %%
-g = sns.displot(data=lv_genes, x=lv_code, kind="ecdf")
-g.ax.set_xlim((-0.05, 0.50))
-
-# %% [markdown]
-# How does band number patterns and distribution of weights in this LV compare with LVs with expected mean type I error?
-
-# %%
-lv769_genes = lv_genes
+# 1. LVs like LV45-LV110 (the first ones) have:
+#     1. Smaller minimum p-values (qqplots deviate late and quickly), with -log(p) around 10 or 20.
+#     1. High gene weights (around 6 to 9)...
+#     1. Genes from the same band at the top.
+#     1. Relatively fewer genes with non-zero (> 0) weights, from ~400 to ~1600.
+#     1. Cytobands usually have 1 or 2 genes with non-zero weight, but there are some with many genes.
+#         * LV45 has a single band with 13 genes, and all the rest have 8 or less...
+#         * ... whereas the rest of these LVs have many bands with many genes (this could explain why LV45 is the worst).
+#
+# 1. LVs like LV769 have:
+#     1. Larger p-values (qqplots deviate early) with -log10(p) around 4
+#     1. Lower gene weights (around 2 to 4).
+#     1. Genes at the top are not from the same band.
+#     1. Larger number of genes with non-zero (> 0) weights, more than 2400.
+#     1. Same pattern regarding cybands.
+#
+# 1. LVs like LV800 are mixed between the other two:
+#     1. QQ plots show early deviation but also smaller minimum pvalues.
+#     1. Lower gene weights (less than 2)
+#     1. Gene weights are a bit more uniform in LV800, with more genes having similar weights around 0.75 or 1.00.
+#     1. Genes at the top are from the same band.
+#     1. Same pattern regarding cybands.
+#
+# Besides the ratio of genes with non-zero weights and zero, I didn't find any distinction **among genes with zero weight**.
 
 # %% [markdown]
 # # LVs with expected mean type I error
 
 # %%
 display(lvs_expected_error.sort_values("5").head(20))
+
+# %% [markdown]
+# Here I'm manually selecting from this list, since I want those that are well calibrated across different p-value thresholds.
+
+# %%
+lv_results_expected = {}
 
 # %% [markdown]
 # ## LV412
@@ -565,6 +929,10 @@ results.shape
 # %%
 results.head()
 
+# %%
+# save for future reference
+lv_results_expected[lv_code] = results
+
 # %% [markdown]
 # ### Mean type I errors at different thresholds
 
@@ -590,78 +958,348 @@ show_prop(results, 0.20)
 qqplot_unif(results)
 
 # %% [markdown]
-# ### Why mean type I errors are expected?
+# **Note**
+
+# %% [markdown]
+# ### Top genes in LV
+
+# %%
+lv_genes = get_lv_genes(lv_code)
+display(lv_genes.head(25))
+
+# %% [markdown]
+# **Note**: hm, there are some genes from the same bands at the top here.
+
+# %%
+# see bands of top genes
+lv_genes.head(25)["gene_band"].value_counts().head(10)
+
+# %% [markdown]
+# There are same genes from the same band at the top, but not that many as the other LVs.
+#
+# This pattern is more similar to LV769, but this one has expected mean type I errors. Why?
+
+# %%
+# take a look at all genes with non-zero weight
+lv_genes_nonzero_weight = lv_genes[lv_genes[lv_code] > 0]
+
+# %%
+# how many genes have non-zero weight?
+lv_genes_nonzero_weight.shape
+
+# %% [markdown]
+# Similar to LV769.
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_nonzero_weight["gene_band"].value_counts().head(10)
+
+# %% [markdown]
+# Similar to LV769.
+
+# %%
+# distribution of amount of bands in LV
+g = sns.displot(lv_genes_nonzero_weight["gene_band"].value_counts(), height=7, aspect=2)
+
+# %% [markdown]
+# Similar to LV769.
+
+# %%
+# distribution of weights in LV
+g = sns.displot(lv_genes[lv_genes[lv_code] > 0][lv_code], height=7, aspect=2)
+
+# %% [markdown]
+# Similar to LV769.
+
+# %% [markdown]
+# ### Bottom genes in LV
+
+# %%
+lv_genes_zero_weight = lv_genes[lv_genes[lv_code] <= 0]
+
+# %%
+# how many genes have zero weight
+lv_genes_zero_weight.shape
+
+# %% [markdown]
+# Similar to LV769.
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_zero_weight["gene_band"].value_counts().head(20)
+
+# %% [markdown]
+# Similar to LV769.
+
+# %%
+g = sns.displot(lv_genes_zero_weight["gene_band"].value_counts(), height=7, aspect=2)
+
+# %% [markdown]
+# Hm, this is not exactly the same as LV769. Here the distribution of band sizes among genes with zero weight is similar to that with genes with non-zero weights.
+#
+# So maybe that imbalance is what makes an LV to have high mean type I errors.
+
+# %%
+# compare band sizes distribution from top and bottom genes
+fig = sns.kdeplot(
+    lv_genes_nonzero_weight["gene_band"].value_counts(), shade=True, color="r"
+)
+fig = sns.kdeplot(
+    lv_genes_zero_weight["gene_band"].value_counts(), shade=True, color="b"
+)
+plt.show()
+
+# %% [markdown]
+# Yep, the distributions are more similar in this LV than those in LV769 or LV800.
+
+# %% [markdown]
+# ## LV57
+
+# %%
+lv_code = "LV57"
+
+# %%
+results = dfs[dfs["lv"] == lv_code]
+
+# %%
+results.shape
+
+# %%
+results.head()
+
+# %%
+# save for future reference
+lv_results_expected[lv_code] = results
+
+# %% [markdown]
+# ### Mean type I errors at different thresholds
+
+# %%
+show_prop(results, 0.01)
+
+# %%
+show_prop(results, 0.05)
+
+# %%
+show_prop(results, 0.10)
+
+# %%
+show_prop(results, 0.15)
+
+# %%
+show_prop(results, 0.20)
+
+# %% [markdown]
+# ### QQplot
+
+# %%
+qqplot_unif(results)
+
+# %% [markdown]
+# **Note**
+
+# %% [markdown]
+# ### Top genes in LV
 
 # %%
 lv_genes = get_lv_genes(lv_code)
 display(lv_genes.head(25))
 
 # %%
+# see bands of top genes
 lv_genes.head(25)["gene_band"].value_counts().head(10)
 
-# %% [markdown]
-# Not different than LV759 at the top 25 genes in terms of numbers of genes from the same band.
-# **However**, we don't have genes from the same band in chr 6 here.
-#
-# Let's keep looking:
+# %%
+# take a look at all genes with non-zero weight
+lv_genes_nonzero_weight = lv_genes[lv_genes[lv_code] > 0]
 
 # %%
-lv_genes.head(50)["gene_band"].value_counts().head(5)
-
-# %% [markdown]
-# No difference with LV769
-
-# %%
-lv_genes.head(100)["gene_band"].value_counts().head(15)
+# how many genes have non-zero weight?
+lv_genes_nonzero_weight.shape
 
 # %% [markdown]
-# No big difference with LV769
+# Similar to LV769 and LV412
 
 # %%
-lv_genes.head(150)["gene_band"].value_counts().head(20)
+# how are bands distributed among zero weighted genes?
+lv_genes_nonzero_weight["gene_band"].value_counts().head(10)
+
+# %%
+# distribution of amount of bands in LV
+g = sns.displot(lv_genes_nonzero_weight["gene_band"].value_counts(), height=7, aspect=2)
 
 # %% [markdown]
-# No big difference with LV769.
+# The distribution seems similar to LV412, but here we have smaller bands.
 
 # %%
-lv_genes.head(200)["gene_band"].value_counts().head(30)
+# distribution of weights in LV
+g = sns.displot(lv_genes[lv_genes[lv_code] > 0][lv_code], height=7, aspect=2)
 
 # %% [markdown]
-# Here there are even more regions repeated, although we are looking at the top 200 genes now.
+# Similar to LV412.
 
 # %% [markdown]
-# ## Distribution of gene weights
+# ### Bottom genes in LV
 
 # %%
-lv_genes[lv_code].describe()
+lv_genes_zero_weight = lv_genes[lv_genes[lv_code] <= 0]
 
 # %%
-lv_genes[lv_code].quantile(np.arange(0.80, 1.0, 0.01))
-
-# %%
-sns.displot(data=lv_genes, x=lv_code, kind="ecdf")
-
-# %%
-g = sns.displot(data=lv_genes, x=lv_code, kind="ecdf")
-g.ax.set_xlim((-0.05, 0.50))
-
-# %%
-g = sns.displot(x=lv_genes[lv_code], kind="kde")
-g = sns.displot(x=lv769_genes["LV769"], kind="kde", ax=g.ax)
-# g.ax.set_xlim((-0.05, 0.50))
-# g.ax.set_ylim((-0.05, 0.50))
-
-# %%
-g = sns.displot(x=lv_genes[lv_code], y=lv769_genes["LV769"], kind="kde")
-g.ax.set_xlim((-0.05, 0.50))
-g.ax.set_ylim((-0.05, 0.50))
+# how many genes have zero weight
+lv_genes_zero_weight.shape
 
 # %% [markdown]
-# DE ESTE GRAFICO parece que ambos LVs abarcan genes totalmente diferentes (los que tienen weight de cero en uno tienen weights altos en el otro).
+# Compared with LV412, we have more zero weight genes here.
 
 # %%
-POR CADA LV, CONTAR CUANTOS genes tienen weight cero
+# how are bands distributed among zero weighted genes?
+lv_genes_zero_weight["gene_band"].value_counts().head(20)
 
-LUEGO, armar un displot de los genes que tienen valores mayores a cero
+# %% [markdown]
+# Similar to LV769.
 
-una hipotesis es que quizá LV769 (el que da mal) es sparce, y el otro (LV412) es mas dense (tiene valores positivos para mas genes)
+# %%
+g = sns.displot(lv_genes_zero_weight["gene_band"].value_counts(), height=7, aspect=2)
+
+# %%
+# compare band sizes distribution from top and bottom genes
+fig = sns.kdeplot(
+    lv_genes_nonzero_weight["gene_band"].value_counts(), shade=True, color="r"
+)
+fig = sns.kdeplot(
+    lv_genes_zero_weight["gene_band"].value_counts(), shade=True, color="b"
+)
+plt.show()
+
+# %% [markdown]
+# Here the distribution do differ, this is more similar to LV769.
+
+# %% [markdown]
+# ## LV647
+
+# %%
+lv_code = "LV647"
+
+# %%
+results = dfs[dfs["lv"] == lv_code]
+
+# %%
+results.shape
+
+# %%
+results.head()
+
+# %%
+# save for future reference
+lv_results_expected[lv_code] = results
+
+# %% [markdown]
+# ### Mean type I errors at different thresholds
+
+# %%
+show_prop(results, 0.01)
+
+# %%
+show_prop(results, 0.05)
+
+# %%
+show_prop(results, 0.10)
+
+# %%
+show_prop(results, 0.15)
+
+# %%
+show_prop(results, 0.20)
+
+# %% [markdown]
+# ### QQplot
+
+# %%
+qqplot_unif(results)
+
+# %% [markdown]
+# **Note**
+
+# %% [markdown]
+# ### Top genes in LV
+
+# %%
+lv_genes = get_lv_genes(lv_code)
+display(lv_genes.head(25))
+
+# %%
+# see bands of top genes
+lv_genes.head(25)["gene_band"].value_counts().head(10)
+
+# %%
+# take a look at all genes with non-zero weight
+lv_genes_nonzero_weight = lv_genes[lv_genes[lv_code] > 0]
+
+# %%
+# how many genes have non-zero weight?
+lv_genes_nonzero_weight.shape
+
+# %% [markdown]
+# Similar to LV412
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_nonzero_weight["gene_band"].value_counts().head(10)
+
+# %%
+# distribution of amount of bands in LV
+g = sns.displot(lv_genes_nonzero_weight["gene_band"].value_counts(), height=7, aspect=2)
+
+# %% [markdown]
+# Similar to LV412
+
+# %%
+# distribution of weights in LV
+g = sns.displot(lv_genes[lv_genes[lv_code] > 0][lv_code], height=7, aspect=2)
+
+# %% [markdown]
+# More similar to LV57.
+
+# %% [markdown]
+# ### Bottom genes in LV
+
+# %%
+lv_genes_zero_weight = lv_genes[lv_genes[lv_code] <= 0]
+
+# %%
+# how many genes have zero weight
+lv_genes_zero_weight.shape
+
+# %% [markdown]
+# Compared with LV412, we have more zero weight genes here.
+
+# %%
+# how are bands distributed among zero weighted genes?
+lv_genes_zero_weight["gene_band"].value_counts().head(20)
+
+# %%
+g = sns.displot(lv_genes_zero_weight["gene_band"].value_counts(), height=7, aspect=2)
+
+# %%
+# compare band sizes distribution from top and bottom genes
+fig = sns.kdeplot(
+    lv_genes_nonzero_weight["gene_band"].value_counts(), shade=True, color="r"
+)
+fig = sns.kdeplot(
+    lv_genes_zero_weight["gene_band"].value_counts(), shade=True, color="b"
+)
+plt.show()
+
+# %% [markdown]
+# The distributions of band sizes between zero and non-zero weighted genes in this LV are similar.
+
+# %% [markdown]
+# # Conclusions
+
+# %% [markdown]
+# Looks like not-well-calibrated LVs are due to either:
+# * Too many top genes from the same band.
+# * Or not matched distributions of band sizes between zero and non-zero weighted genes.
+# * Too many large bands among the top genes.
+
+# %%
