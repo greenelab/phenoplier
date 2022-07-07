@@ -15,8 +15,8 @@ import conf
 
 # Parameter (change this as needed)
 #   Genes should be in the same chromosome.
-gene0_id = "ENSG00000000457"
-gene1_id = "ENSG00000000460"
+gene0_id = "ENSG00000000938"
+gene1_id = "ENSG00000004455"
 tissue_name = "Whole_Blood"
 
 # get gene prediction weights
