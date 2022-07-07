@@ -419,10 +419,10 @@ def test_gene_get_expression_correlation(gene_id1, gene_id2, tissue, expected_co
         ),
         # case of negative correlation
         (
-            "ENSG00000000457",
-            "ENSG00000000460",
+            "ENSG00000000938",
+            "ENSG00000004455",
             "Whole_Blood",
-            -0.08940051626152806,
+            -0.03605498187542936,
         ),
     ],
 )
@@ -437,7 +437,7 @@ def test_gene_get_expression_correlation_compare_with_real_correlation(
     )
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
-    assert genes_corr == expected_corr
+    assert np.isclose(genes_corr, expected_corr)
 
 
 @pytest.mark.parametrize(
