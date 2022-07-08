@@ -596,23 +596,24 @@ def test_get_tissues_correlations_different_gene():
         ("ENSG00000274641", "ENSG00000277224", 0.008837131332243578),
     ],
 )
-def test_ssm_correlation_real_ssm_correlation_low_correlation(
-    gene_id1, gene_id2, expected_corr
-):
+def test_ssm_correlation_real_ssm_correlation(gene_id1, gene_id2, expected_corr):
     # FIXME: point to the file/script that is generating the real results
+
+    def compute_ssm_correlation(g1, g2):
+        return g1.get_ssm_correlation(
+            g2, reference_panel="1000G", model_type="MASHR", use_within_distance=False
+        )
 
     gene1 = Gene(ensembl_id=gene_id1)
     gene2 = Gene(ensembl_id=gene_id2)
 
-    genes_corr = gene1.get_ssm_correlation(gene2, use_within_distance=False)
+    genes_corr = compute_ssm_correlation(gene1, gene2)
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
     assert genes_corr == expected_corr
 
     # check symmetry
-    assert round(
-        gene2.get_ssm_correlation(gene1, use_within_distance=False), 5
-    ) == round(genes_corr, 5)
+    assert round(compute_ssm_correlation(gene2, gene1), 5) == round(genes_corr, 5)
 
 
 def test_ssm_correlation_same_gene_with_many_tissues():
