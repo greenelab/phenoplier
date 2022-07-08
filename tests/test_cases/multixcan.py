@@ -1,8 +1,7 @@
 import sqlite3
 
-from IPython.display import display
-import pandas as pd
 from fastparquet import ParquetFile
+from tqdm import tqdm
 
 import conf
 from entity import Gene
@@ -107,7 +106,7 @@ def predict_expression(gene0_id, gene1_id, center_gene_expr=False):
 # modules
 from patsy import dmatrices
 import numpy as np
-from numpy import dot as _dot, diag as _diag
+from numpy import dot as _dot
 import statsmodels.api as sm
 import pandas as pd
 
@@ -209,13 +208,62 @@ def get_ssm(multixcan_model_result, X_data, y_data):
 
 
 # Main
-# corr of ssm: -0.02
+# # FGR (1p35.3) and AK2 (1p35.1)
 # gene0_id = "ENSG00000000938"
 # gene1_id = "ENSG00000004455"
 
-# COL4A2 (13q34) and COL4A1 (13q34) - corr ssm: 0.235
-gene0_id = "ENSG00000134871"
-gene1_id = "ENSG00000187498"
+# # COL4A2 (13q34) and COL4A1 (13q34)
+# gene0_id = "ENSG00000134871"
+# gene1_id = "ENSG00000187498"
+
+# # NOC2L (1p36.33) and HES4 (1p36.33)
+# gene0_id = "ENSG00000188976"
+# gene1_id = "ENSG00000188290"
+
+# # ARSA (22q13.33) and SHANK3 (22q13.33)
+# gene0_id = "ENSG00000100299"
+# gene1_id = "ENSG00000251322"
+
+# # IRF4 (6p25.3) and TBP (6q27)
+# gene0_id = "ENSG00000137265"
+# gene1_id = "ENSG00000112592"
+
+# # IKZF3 (17q21.1) and PNMT (17q12)
+# gene0_id = "ENSG00000161405"
+# gene1_id = "ENSG00000141744"
+
+# # CCL2 (17q12) and CCL7 (17q12)
+# gene0_id = "ENSG00000108691"
+# gene1_id = "ENSG00000108688"
+
+# # CCL2 (17q12) and CCL8 (17q12)
+# gene0_id = "ENSG00000108691"
+# gene1_id = "ENSG00000108700"
+
+# # HIST2H2BF (1q21.2) and HIST3H2A (1q42.13)
+# gene0_id = "ENSG00000203814"
+# gene1_id = "ENSG00000181218"
+
+# # HIST2H2BF (1q21.2) and HIST3H2BB (1q42.13)
+# gene0_id = "ENSG00000203814"
+# gene1_id = "ENSG00000196890"
+
+# # HIST3H2A (1q42.13) and HIST3H2BB (1q42.13)
+# gene0_id = "ENSG00000181218"
+# gene1_id = "ENSG00000196890"
+
+# # HIST1H2BC (6p22.2) and HIST1H2AC (6p22.2)
+# gene0_id = "ENSG00000180596"
+# gene1_id = "ENSG00000180573"
+
+# # HIST1H2BO (6p22.1) and HIST1H2BK (6p22.1)
+# gene0_id = "ENSG00000274641"
+# gene1_id = "ENSG00000197903"
+
+# HIST1H2BO (6p22.1) and HIST1H2BF (6p22.2)
+gene0_id = "ENSG00000274641"
+gene1_id = "ENSG00000277224"
+
 
 N_PHENOTYPES = 10000
 
@@ -231,14 +279,14 @@ for pheno_i in range(N_PHENOTYPES):
     y = pd.Series(
         rs.normal(size=gene0_pred_expr.shape[0]), index=gene0_pred_expr.index.tolist()
     )
-    y = y - y.mean()
+    # y = y - y.mean()
     random_phenotypes.append(y)
 
 gene0_ssms = []
 gene1_ssms = []
-for y_idx, y in enumerate(random_phenotypes):
-    print(".", end="", flush=True)
-
+for y_idx, y in tqdm(
+    enumerate(random_phenotypes), total=len(random_phenotypes), ncols=100
+):
     gene0_model_result, gene0_data = run_multixcan(y, gene0_pred_expr)
     gene1_model_result, gene1_data = run_multixcan(y, gene1_pred_expr)
 
@@ -248,7 +296,7 @@ for y_idx, y in enumerate(random_phenotypes):
 gene0_ssms = pd.Series(gene0_ssms)
 gene1_ssms = pd.Series(gene1_ssms)
 
-gene0_ssms.corr(gene1_ssms)
+print(f"Correlation from null: {gene0_ssms.corr(gene1_ssms)}")
 
 
 # code to compute ssms correlation using MAGMA method
@@ -259,7 +307,7 @@ cov_ssm = 2 * np.trace(t0.T @ t1 @ t1.T @ t0)
 t0_ssm_sd = np.sqrt(2 * t0.shape[1]) * (t0.shape[0] - 1)
 t1_ssm_sd = np.sqrt(2 * t1.shape[1]) * (t1.shape[0] - 1)
 
-cov_ssm / (t0_ssm_sd * t1_ssm_sd)
+print(f"Correlation from genotype: {cov_ssm / (t0_ssm_sd * t1_ssm_sd)}")
 
 
 # EL METODO get_ssm_correlation necesita arreglarse, porque el metodo de magma de arriba parece funcionar bien con los dos pares de genes anteriores
