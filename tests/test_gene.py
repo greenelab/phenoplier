@@ -547,6 +547,74 @@ def test_get_tissues_correlations_different_gene():
     assert genes_corrs_unique_values[0] == 0.0
 
 
+@pytest.mark.parametrize(
+    "gene_id1,gene_id2,expected_corr",
+    [
+        # All these cases were generated using the file:
+        #  tests/test_cases/multixcan.py
+        # case with low correlation
+        #  FGR (1p35.3) and AK2 (1p35.1) - corr ssm: -0.007504128812187361
+        ("ENSG00000000938", "ENSG00000004455", 0.0063366557885307815),
+        # case with moderate correlation
+        #  NOC2L (1p36.33) and HES4 (1p36.33) - corr ssm: 0.09936675951373465
+        ("ENSG00000188976", "ENSG00000188290", 0.11545923512363486),
+        # case with high correlation
+        #  COL4A2 (13q34) and COL4A1 (13q34) - corr ssm: 0.26949013268938227
+        ("ENSG00000134871", "ENSG00000187498", 0.2741277581419143),
+        # case in same chromosome but far away
+        #  IRF4 (6p25.3) and TBP (6q27) - corr ssm: 0.021562228484490575
+        ("ENSG00000137265", "ENSG00000112592", 0.005050971898013959),
+        # case in same band, low correlation
+        #  ARSA (22q13.33) and SHANK3 (22q13.33) - corr ssm: 0.04978481316292831
+        ("ENSG00000100299", "ENSG00000251322", 0.03227259989743747),
+        # case in same chromosome, close bands, moderate correlation
+        #  IKZF3 (17q21.1) and PNMT (17q12) - corr ssm: 0.17760073544652036
+        ("ENSG00000161405", "ENSG00000141744", 0.17247836072948008),
+        # case in same band, very high correlation
+        #  CCL2 (17q12) and CCL7 (17q12) - corr ssm: 0.6711777075122141
+        ("ENSG00000108691", "ENSG00000108688", 0.6800818985116897),
+        # case in same band, moderate correlation
+        #  CCL2 (17q12) and CCL8 (17q12) - corr ssm: 0.18428851723519474
+        ("ENSG00000108691", "ENSG00000108700", 0.19085429774422794),
+        # case from LV, same chromosome, low correlation
+        #  HIST2H2BF (1q21.2) and HIST3H2A (1q42.13) - corr ssm: -0.004591318762258967
+        ("ENSG00000203814", "ENSG00000181218", 0.004857218553958475),
+        # case from LV, same chromosome, low correlation
+        #  HIST2H2BF (1q21.2) and HIST3H2BB (1q42.13) - corr ssm: -0.004810914232651819
+        ("ENSG00000203814", "ENSG00000196890", 0.0033322198833564283),
+        # case from LV, same band, high correlation
+        #  HIST3H2A (1q42.13) and HIST3H2BB (1q42.13) - corr ssm: 0.4742359153016549
+        ("ENSG00000181218", "ENSG00000196890", 0.4653524586237968),
+        # case from LV, same band, very high correlation
+        #  HIST1H2BC (6p22.2) and HIST1H2AC (6p22.2) - corr ssm: 0.866327373684711
+        ("ENSG00000180596", "ENSG00000180573", 0.8681004435630797),
+        # case from LV, same band, moderate correlation
+        #  HIST1H2BO (6p22.1) and HIST1H2BK (6p22.1) - corr ssm: 0.16879943739503644
+        ("ENSG00000274641", "ENSG00000197903", 0.17441877369957684),
+        # case from LV, same chromosome, close bands, no correlation
+        #  HIST1H2BO (6p22.1) and HIST1H2BF (6p22.2) - corr ssm: -0.008777382945963396
+        ("ENSG00000274641", "ENSG00000277224", 0.008837131332243578),
+    ],
+)
+def test_ssm_correlation_real_ssm_correlation_low_correlation(
+    gene_id1, gene_id2, expected_corr
+):
+    # FIXME: point to the file/script that is generating the real results
+
+    gene1 = Gene(ensembl_id=gene_id1)
+    gene2 = Gene(ensembl_id=gene_id2)
+
+    genes_corr = gene1.get_ssm_correlation(gene2, use_within_distance=False)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert genes_corr == expected_corr
+
+    # check symmetry
+    assert round(
+        gene2.get_ssm_correlation(gene1, use_within_distance=False), 5
+    ) == round(genes_corr, 5)
+
+
 def test_ssm_correlation_same_gene_with_many_tissues():
     # ENSG00000122025
     # FLT3
