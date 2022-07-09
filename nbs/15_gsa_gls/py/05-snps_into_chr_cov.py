@@ -44,9 +44,6 @@ from entity import Gene
 # %% [markdown]
 # # Settings
 
-# %%
-COV_DTYPE = np.float32
-
 # %% tags=["parameters"]
 # reference panel
 REFERENCE_PANEL = "GTEX_V8"
@@ -63,6 +60,10 @@ EQTL_MODEL_FILES_PREFIX = "mashr_"
 
 # make it read the prefix from conf.py
 EQTL_MODEL_FILES_PREFIX = None
+
+# the numpy dtype used for the covariance matrix
+#  either float64 or float32 (for huge matrices)
+COVARIANCE_MATRIX_DTYPE = None
 
 # %%
 if EQTL_MODEL_FILES_PREFIX is None:
@@ -89,6 +90,19 @@ OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 
 # %%
 display(f"Using output dir base: {OUTPUT_DIR_BASE}")
+
+# %%
+cov_dtype_dict = {
+    "float32": np.float32,
+    "float64": np.float64,
+}
+
+if COVARIANCE_MATRIX_DTYPE in cov_dtype_dict:
+    COV_DTYPE = cov_dtype_dict[COVARIANCE_MATRIX_DTYPE]
+else:
+    COV_DTYPE = np.float64
+
+display(f"Covariance matrix dtype used: {str(COV_DTYPE)}")
 
 
 # %% [markdown] tags=[]
