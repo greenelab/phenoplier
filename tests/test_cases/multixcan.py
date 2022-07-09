@@ -9,6 +9,7 @@ from entity import Gene
 
 def predict_expression(gene0_id, gene1_id, center_gene_expr=False):
     all_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_TISSUES"].split(" ")
+    all_tissues = sorted(all_tissues)
     print(f"Number of tissues {len(all_tissues)}")
     print(all_tissues[:5])
 
@@ -299,15 +300,89 @@ gene1_ssms = pd.Series(gene1_ssms)
 print(f"Correlation from null: {gene0_ssms.corr(gene1_ssms)}")
 
 
+n = gene0_pred_expr.shape[0]
+
 # code to compute ssms correlation using MAGMA method
-t0 = gene0_data.drop(columns=["Intercept"]).apply(scale)
-t1 = gene1_data.drop(columns=["Intercept"]).apply(scale)
+# in the original formula, the numerator is really the predictors but scaled
+gene0_pcs = gene0_data.drop(columns=["Intercept"]).apply(scale)
+gene1_pcs = gene1_data.drop(columns=["Intercept"]).apply(scale)
 
-cov_ssm = 2 * np.trace(t0.T @ t1 @ t1.T @ t0)
-t0_ssm_sd = np.sqrt(2 * t0.shape[1]) * (t0.shape[0] - 1)
-t1_ssm_sd = np.sqrt(2 * t1.shape[1]) * (t1.shape[0] - 1)
-
+cov_ssm = 2 * np.trace(gene0_pcs.T @ gene1_pcs @ gene1_pcs.T @ gene0_pcs)
+t0_ssm_sd = np.sqrt(2 * gene0_pcs.shape[1]) * (gene0_pcs.shape[0] - 1)
+t1_ssm_sd = np.sqrt(2 * gene1_pcs.shape[1]) * (gene1_pcs.shape[0] - 1)
 print(f"Correlation from genotype: {cov_ssm / (t0_ssm_sd * t1_ssm_sd)}")
 
 
-# EL METODO get_ssm_correlation necesita arreglarse, porque el metodo de magma de arriba parece funcionar bien con los dos pares de genes anteriores
+# modified version to use covariance in the numerator
+gene0_pcs = gene0_data.drop(columns=["Intercept"]).apply(scale)
+gene1_pcs = gene1_data.drop(columns=["Intercept"]).apply(scale)
+
+gene0_pcs_gene1_pcs_cov = (gene0_pcs.T @ gene1_pcs) / (n - 1)
+
+cov_ssm = 2 * np.trace(gene0_pcs_gene1_pcs_cov @ gene0_pcs_gene1_pcs_cov.T)
+t0_ssm_sd = np.sqrt(2 * gene0_pcs.shape[1])
+t1_ssm_sd = np.sqrt(2 * gene1_pcs.shape[1])
+print(f"Correlation from genotype: {cov_ssm / (t0_ssm_sd * t1_ssm_sd)}")
+
+
+# FINAL VERSION ??? without using predicted gene expression
+def _filter_eigen_values_from_max(s, ratio):
+    s_max = np.max(s)
+    return [i for i, x in enumerate(s) if x >= s_max * ratio]
+
+
+def pc_filter(x, cond_num):
+    return _filter_eigen_values_from_max(x, 1.0 / cond_num)
+
+
+reference_panel = "1000G"
+model_type = "MASHR"
+condition_number = 30
+use_within_distance = False
+
+# these are for debugging only
+T_i = gene0_pred_expr.apply(scale)
+T_j = gene1_pred_expr.apply(scale)
+
+gene0_corrs = gene0_obj.get_tissues_correlations(
+    gene0_obj,
+    reference_panel=reference_panel,
+    model_type=model_type,
+    use_within_distance=use_within_distance,
+)
+u_i, s_i, V_i = np.linalg.svd(gene0_corrs)
+selected = pc_filter(s_i, condition_number)
+s_i = s_i[selected]
+V_i = V_i[selected]
+
+gene1_corrs = gene1_obj.get_tissues_correlations(
+    gene1_obj,
+    reference_panel=reference_panel,
+    model_type=model_type,
+    use_within_distance=use_within_distance,
+)
+u_j, s_j, V_j = np.linalg.svd(gene1_corrs)
+selected = pc_filter(s_j, condition_number)
+s_j = s_j[selected]
+V_j = V_j[selected]
+
+gene0_gene1_corrs = gene0_obj.get_tissues_correlations(
+    gene1_obj,
+    reference_panel=reference_panel,
+    model_type=model_type,
+    use_within_distance=use_within_distance,
+)
+
+t0_t1_cov = (
+    np.diag(s_i ** (-1 / 2))
+    @ V_i
+    @ gene0_gene1_corrs
+    @ V_j.T
+    @ np.diag(s_j ** (-1 / 2))
+)
+
+cov_ssm = 2 * np.trace(t0_t1_cov @ t0_t1_cov.T)
+t0_ssm_sd = np.sqrt(2 * V_i.shape[0])
+t1_ssm_sd = np.sqrt(2 * V_j.shape[0])
+
+print(f"Correlation final: {cov_ssm / (t0_ssm_sd * t1_ssm_sd)}")
