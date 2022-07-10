@@ -86,6 +86,9 @@ if EQTL_MODEL_FILES_PREFIX is None:
 display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
 
 # %%
+display(f"S-MultiXcan condition number: {SMULTIXCAN_CONDITION_NUMBER}")
+
+# %%
 REFERENCE_PANEL_DIR = conf.PHENOMEXCAN["LD_BLOCKS"][f"{REFERENCE_PANEL}_GENOTYPE_DIR"]
 
 # %%
