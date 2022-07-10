@@ -72,8 +72,9 @@ echo "  Root dir: ${ROOT_DIR}"
 echo "  Manuscript dir: ${MANUSCRIPT_DIR}"
 echo "  CPU cores: ${N_JOBS}"
 
-echo ""
+echo
 echo "Waiting 2 seconds before starting"
+echo
 sleep 2
 
 # always create data directory before running Docker
@@ -88,9 +89,15 @@ else
   PORT_ARG=""
 fi
 
-echo "${FULL_COMMAND}"
+echo "Full command: ${FULL_COMMAND}"
+
+# if the bash functions code
+if [ ! -z "${PHENOPLIER_BASH_FUNCTIONS_CODE}" ]; then
+  echo "Exporting functions found in environment variable PHENOPLIER_BASH_FUNCTIONS_CODE"
+fi
 
 # show commands being executed
+echo
 set -x
 
 # run
@@ -101,6 +108,7 @@ docker run --rm ${PORT_ARG} ${DOCKER_ARGS} \
   -e OPEN_BLAS_NUM_THREADS=${N_JOBS} \
   -e NUMEXPR_NUM_THREADS=${N_JOBS} \
   -e OMP_NUM_THREADS=${N_JOBS} \
+  -e PHENOPLIER_BASH_FUNCTIONS_CODE="${PHENOPLIER_BASH_FUNCTIONS_CODE}" \
   -v "${CODE_DIR}:/opt/code" \
   -v "${ROOT_DIR}:/opt/data" \
   -v "${MANUSCRIPT_DIR}:/opt/manuscript" \
