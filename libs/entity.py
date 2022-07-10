@@ -983,11 +983,11 @@ class Gene(object):
         #   https://doi.org/10.1371/journal.pgen.1007889
         return (gene_w.T @ snps_cov @ other_gene_w) / np.sqrt(gene_var * other_gene_var)
 
-    # @lru_cache(maxsize=None)
+    @lru_cache(maxsize=None)
     def get_tissues_correlations(
         self,
         other_gene,
-        tissues: list = None,
+        tissues: tuple = None,
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
         use_within_distance=True,
@@ -997,6 +997,8 @@ class Gene(object):
 
         Args:
             tissues: TODO
+                FIXME: add note saying that tissues has to be tuple, otherwise
+                the lru_cache will fail if it is a list for example
         Returns:
             - tissue names are sorted using the `sorted` method
         """
@@ -1039,7 +1041,7 @@ class Gene(object):
     def get_ssm_correlation(
         self,
         other_gene,
-        tissues: list = None,
+        tissues: tuple = None,
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
         condition_number: float = 30,
