@@ -976,6 +976,8 @@ class Gene(object):
 
         Args:
             tissues: TODO
+        Returns:
+            - tissue names are sorted using the `sorted` method
         """
         if tissues is None:
             tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][
@@ -1038,9 +1040,6 @@ class Gene(object):
             s_max = np.max(s)
             return [i for i, x in enumerate(s) if x >= s_max * ratio]
 
-        def pc_filter(x, cond_num):
-            return _filter_eigen_values_from_max(x, 1.0 / cond_num)
-
         if self.chromosome != other_gene.chromosome:
             # Correlation between genes from different chromosomes is assumed
             # to be zero
@@ -1059,7 +1058,7 @@ class Gene(object):
             use_within_distance=use_within_distance,
         )
         u_i, s_i, V_i = np.linalg.svd(gene0_corrs)
-        selected = pc_filter(s_i, condition_number)
+        selected = _filter_eigen_values_from_max(s_i, 1.0 / condition_number)
         s_i = s_i[selected]
         V_i = V_i[selected]
 
@@ -1072,7 +1071,7 @@ class Gene(object):
             use_within_distance=use_within_distance,
         )
         u_j, s_j, V_j = np.linalg.svd(gene1_corrs)
-        selected = pc_filter(s_j, condition_number)
+        selected = _filter_eigen_values_from_max(s_j, 1.0 / condition_number)
         s_j = s_j[selected]
         V_j = V_j[selected]
 
@@ -1085,10 +1084,9 @@ class Gene(object):
             use_within_distance=use_within_distance,
         )
 
-        # FIXME: I should align tissues here for gene0_gene1_corrs
-
-        # if genes_corrs.sum().sum() == 0.0:
-        #     return 0.0
+        # TODO: it might be safe to force alignment of tissue names in all
+        #  *_corrs matrices. This should not be a problem, since
+        #  get_tissues_correlations returns sorted tissue names
 
         t0_t1_cov = (
             np.diag(s_i ** (-1 / 2))
