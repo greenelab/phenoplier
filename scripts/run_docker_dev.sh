@@ -23,6 +23,30 @@ MANUSCRIPT_DIR="${PHENOPLIER_MANUSCRIPT_DIR}"
 N_JOBS_VARNAME="PHENOPLIER_N_JOBS"
 N_JOBS=${!N_JOBS_VARNAME}
 
+# parameters parsing
+# read arguments
+POSITIONAL_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -d|--docker-args)
+      DOCKER_ARGS="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -*|--*)
+      echo "Unknown option $1"
+      exit 1
+      ;;
+    *)
+      POSITIONAL_ARGS+=("$1") # save positional arg
+      shift # past argument
+      ;;
+  esac
+done
+
+set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
 echo "Configuration:"
 
 CODE_DIR=`pwd`
@@ -70,7 +94,7 @@ echo "${FULL_COMMAND}"
 set -x
 
 # run
-docker run --rm ${PORT_ARG} \
+docker run --rm ${PORT_ARG} ${DOCKER_ARGS} \
   -e ${N_JOBS_VARNAME}=${N_JOBS} \
   -e NUMBA_NUM_THREADS=${N_JOBS} \
   -e MKL_NUM_THREADS=${N_JOBS} \
