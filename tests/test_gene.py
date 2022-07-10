@@ -682,7 +682,7 @@ def test_ssm_correlation_genes_specify_single_tissues():
     assert genes_corr > 0.0
 
     # now, specify a list of tissues, the final corr should be different
-    tissues = ["Whole_Blood"]
+    tissues = ("Whole_Blood",)
     new_genes_corr = gene1.get_ssm_correlation(gene2, tissues=tissues)
     assert new_genes_corr is not None
     assert isinstance(new_genes_corr, float)
@@ -711,7 +711,7 @@ def test_ssm_correlation_genes_specify_two_tissues():
     assert genes_corr > 0.0
 
     # now, specify a list of tissues, the final corr should be different
-    tissues = ["Whole_Blood", "Spleen"]
+    tissues = ("Whole_Blood", "Spleen")
     new_genes_corr = gene1.get_ssm_correlation(gene2, tissues=tissues)
     assert new_genes_corr is not None
     assert isinstance(new_genes_corr, float)
