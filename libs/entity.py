@@ -802,14 +802,14 @@ class Gene(object):
         snps_ids_list1 = list(snps_ids_list1)
 
         if len(snps_ids_list1) == 0:
-            return None, None, None
+            return None
 
         if snps_ids_list2 is None:
             snps_ids_list2 = snps_ids_list1
         else:
             snps_ids_list2 = list(snps_ids_list2)
             if len(snps_ids_list2) == 0:
-                return None, None, None
+                return None
 
         first_snp_id = snps_ids_list1[0]
         snps_chr = first_snp_id.split("_")[0]
@@ -828,8 +828,19 @@ class Gene(object):
 
         # from the specified SNP lists, only keep those for which we have
         # genotypes
-        snps_ids_list1 = [v for v in snps_ids_list1 if v in snps_cov_variants]
-        snps_ids_list2 = [v for v in snps_ids_list2 if v in snps_cov_variants]
+        def _get_snps_with_genotypes(snps_list):
+            snps_ids_with_genotype = []
+            snps_pos_with_genotype = []
+
+            for v_idx, v in enumerate(snps_list):
+                if v in snps_cov_variants:
+                    snps_ids_with_genotype.append(v)
+                    snps_pos_with_genotype.append(v_idx)
+
+            return snps_ids_with_genotype, snps_pos_with_genotype
+
+        snps_ids_list1, snps_pos_list1 = _get_snps_with_genotypes(snps_ids_list1)
+        snps_ids_list2, snps_pos_list2 = _get_snps_with_genotypes(snps_ids_list2)
 
         snps_cov = snps_cov[
             np.ix_(
@@ -839,9 +850,13 @@ class Gene(object):
         ]
 
         if snps_cov.shape[0] == 0 or snps_cov.shape[1] == 0:
-            return None, None, None
+            return None
 
-        return snps_cov, snps_ids_list1, snps_ids_list2
+        return (
+            snps_cov,
+            (snps_ids_list1, snps_pos_list1),
+            (snps_ids_list2, snps_pos_list2),
+        )
 
     @lru_cache(maxsize=None)
     def get_pred_expression_variance(
@@ -864,34 +879,21 @@ class Gene(object):
             return None
 
         # LD of snps in gene model
-        gene_snps_cov, snps_ids_list1 = Gene._get_snps_cov(
+        gene_snps_cov_data = Gene._get_snps_cov(
             w["varID"], reference_panel=reference_panel, model_type=model_type
-        )[:2]
-        if gene_snps_cov is None:
-            return None
-        # FIXME: remove this line, just for testing
-        gene_snps_cov = pd.DataFrame(
-            gene_snps_cov, index=snps_ids_list1, columns=snps_ids_list1
         )
+        if gene_snps_cov_data is None:
+            return None
+
+        gene_snps_cov, (_, snps_pos) = gene_snps_cov_data[:2]
 
         # gene model weights
-        w = w.set_index("varID")
-
-        # align weights with snps cov
-        common_snps = set(w.index).intersection(set(gene_snps_cov.index))
-        gene_n_snps = len(common_snps)
-        if gene_n_snps == 0:
-            raise Exception("No common snps")
-
-        w = w.loc[common_snps]
-
-        # snps covariance of common snps
-        r = gene_snps_cov.loc[common_snps, common_snps]
+        w = w["weight"].to_numpy()[np.ix_(snps_pos)]
 
         # return variance of gene's predicted expression using formula from:
         #   - MetaXcan paper: https://doi.org/10.1038/s41467-018-03621-1
         #   - MultiXcan paper: https://doi.org/10.1371/journal.pgen.1007889
-        return (w.T @ r @ w).squeeze()
+        return w.T @ gene_snps_cov @ w
 
     def get_expression_correlation(
         self,
@@ -966,7 +968,7 @@ class Gene(object):
         if other_gene_var is None or other_gene_var == 0.0:
             return None
 
-        snps_cov, snps_ids_list1, snps_ids_list2 = self._get_snps_cov(
+        (snps_cov, (_, snps_pos_list1), (_, snps_pos_list2),) = self._get_snps_cov(
             gene_w.index,
             other_gene_w.index,
             reference_panel=reference_panel,
@@ -974,8 +976,8 @@ class Gene(object):
         )
 
         # align weights with snps cov
-        gene_w = gene_w.loc[snps_ids_list1]
-        other_gene_w = other_gene_w.loc[snps_ids_list2]
+        gene_w = gene_w.to_numpy()[np.ix_(snps_pos_list1)]
+        other_gene_w = other_gene_w.to_numpy()[np.ix_(snps_pos_list2)]
 
         # formula from the MultiXcan paper:
         #   https://doi.org/10.1371/journal.pgen.1007889

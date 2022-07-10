@@ -159,13 +159,13 @@ def test_gene_get_snps_cov_genes_same_chromosome(
     g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR")["varID"]
     g2_snps = g2.get_prediction_weights(tissue, model_type="MASHR")["varID"]
 
-    df = Gene._get_snps_cov(g1_snps, g2_snps)
+    df, g1_snps_info, g2_snps_info = Gene._get_snps_cov(g1_snps, g2_snps)
     assert df is not None
     assert df.shape[0] == g1_snps.shape[0] == len(expected_snps1)
     assert df.shape[1] == g2_snps.shape[0] == len(expected_snps2)
-    assert not df.isna().any().any()
-    assert df.index.tolist() == expected_snps1
-    assert df.columns.tolist() == expected_snps2
+    assert not np.isnan(df).any()
+    assert g1_snps_info[0] == expected_snps1
+    assert g2_snps_info[0] == expected_snps2
 
 
 @pytest.mark.parametrize(
@@ -197,13 +197,16 @@ def test_gene_get_snps_cov_genes_same_chromosome_some_snps_missing_cov(
     g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR")["varID"]
     g2_snps = g2.get_prediction_weights(tissue, model_type="MASHR")["varID"]
 
-    df = Gene._get_snps_cov(g1_snps, g2_snps, reference_panel="1000g")
+    df, g1_snps_info, g2_snps_info = Gene._get_snps_cov(
+        g1_snps, g2_snps, reference_panel="1000g"
+    )
     assert df is not None
     assert df.shape[0] == len(expected_snps1)
     assert df.shape[1] == len(expected_snps2)
-    assert not df.isna().any().any()
-    assert df.index.tolist() == expected_snps1
-    assert df.columns.tolist() == expected_snps2
+    assert (len(g1_snps) > len(expected_snps1)) or (len(g2_snps) > len(expected_snps2))
+    assert not np.isnan(df).any()
+    assert g1_snps_info[0] == expected_snps1
+    assert g2_snps_info[0] == expected_snps2
 
 
 @pytest.mark.parametrize(
@@ -236,12 +239,12 @@ def test_gene_get_snps_cov_one_gene(gene_pair, expected_snps1, tissue):
 
     g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR")["varID"]
 
-    df = Gene._get_snps_cov(g1_snps)
+    df, g1_snps_info, g2_snps_info = Gene._get_snps_cov(g1_snps)
     assert df is not None
+    assert g1_snps_info == g2_snps_info
     assert df.shape[0] == df.shape[1] == g1_snps.shape[0] == len(expected_snps1)
-    assert not df.isna().any().any()
-    assert df.index.tolist() == expected_snps1
-    assert df.columns.tolist() == expected_snps1
+    assert not np.isnan(df).any()
+    assert g1_snps_info[0] == expected_snps1
 
 
 def test_gene_get_snps_cov_snp_list_different_chromosomes():
