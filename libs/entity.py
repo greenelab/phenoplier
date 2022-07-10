@@ -766,7 +766,7 @@ class Gene(object):
                 snp_id: snp_idx for snp_idx, snp_id in enumerate(snp_cov.index)
             }
 
-            return snp_cov, snp_cov_variants, snp_index_dict
+            return snp_cov.to_numpy(), snp_cov_variants, snp_index_dict
 
     @staticmethod
     def _get_snps_cov(
@@ -802,14 +802,14 @@ class Gene(object):
         snps_ids_list1 = list(snps_ids_list1)
 
         if len(snps_ids_list1) == 0:
-            return None
+            return None, None, None
 
         if snps_ids_list2 is None:
             snps_ids_list2 = snps_ids_list1
         else:
             snps_ids_list2 = list(snps_ids_list2)
             if len(snps_ids_list2) == 0:
-                return None
+                return None, None, None
 
         first_snp_id = snps_ids_list1[0]
         snps_chr = first_snp_id.split("_")[0]
@@ -828,18 +828,20 @@ class Gene(object):
 
         # from the specified SNP lists, only keep those for which we have
         # genotypes
-        # snps_ids_list1 = [v for v in snps_ids_list1 if v in snps_cov_variants]
-        # snps_ids_list2 = [v for v in snps_ids_list2 if v in snps_cov_variants]
+        snps_ids_list1 = [v for v in snps_ids_list1 if v in snps_cov_variants]
+        snps_ids_list2 = [v for v in snps_ids_list2 if v in snps_cov_variants]
 
-        snps_cov = snps_cov.iloc[
-            [snp_index_dict[v] for v in snps_ids_list1 if v in snps_cov_variants],
-            [snp_index_dict[v] for v in snps_ids_list2 if v in snps_cov_variants],
+        snps_cov = snps_cov[
+            np.ix_(
+                [snp_index_dict[v] for v in snps_ids_list1],
+                [snp_index_dict[v] for v in snps_ids_list2],
+            )
         ]
 
         if snps_cov.shape[0] == 0 or snps_cov.shape[1] == 0:
-            return None
+            return None, None, None
 
-        return snps_cov
+        return snps_cov, snps_ids_list1, snps_ids_list2
 
     @lru_cache(maxsize=None)
     def get_pred_expression_variance(
@@ -862,11 +864,15 @@ class Gene(object):
             return None
 
         # LD of snps in gene model
-        gene_snps_cov = Gene._get_snps_cov(
+        gene_snps_cov, snps_ids_list1 = Gene._get_snps_cov(
             w["varID"], reference_panel=reference_panel, model_type=model_type
-        )
+        )[:2]
         if gene_snps_cov is None:
             return None
+        # FIXME: remove this line, just for testing
+        gene_snps_cov = pd.DataFrame(
+            gene_snps_cov, index=snps_ids_list1, columns=snps_ids_list1
+        )
 
         # gene model weights
         w = w.set_index("varID")
@@ -960,7 +966,7 @@ class Gene(object):
         if other_gene_var is None or other_gene_var == 0.0:
             return None
 
-        snps_cov = self._get_snps_cov(
+        snps_cov, snps_ids_list1, snps_ids_list2 = self._get_snps_cov(
             gene_w.index,
             other_gene_w.index,
             reference_panel=reference_panel,
@@ -968,8 +974,8 @@ class Gene(object):
         )
 
         # align weights with snps cov
-        gene_w = gene_w.loc[snps_cov.index]
-        other_gene_w = other_gene_w.loc[snps_cov.columns]
+        gene_w = gene_w.loc[snps_ids_list1]
+        other_gene_w = other_gene_w.loc[snps_ids_list2]
 
         # formula from the MultiXcan paper:
         #   https://doi.org/10.1371/journal.pgen.1007889
