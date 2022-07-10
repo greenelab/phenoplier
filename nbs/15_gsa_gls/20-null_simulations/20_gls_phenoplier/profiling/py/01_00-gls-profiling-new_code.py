@@ -80,7 +80,10 @@ assert len(set([g.chromosome for g in all_genes])) == 1
 # %%
 # %prun -l 20 -s cumulative compute_ssm_correlation(all_genes)
 
-# %% [markdown]
+# %%
+# %prun -l 20 -s time compute_ssm_correlation(all_genes)
+
+# %% [markdown] tags=[]
 # # Profile by line
 
 # %% [markdown]
@@ -94,5 +97,14 @@ assert len(set([g.chromosome for g in all_genes])) == 1
 
 # %%
 # %lprun -f Gene._get_snps_cov compute_ssm_correlation(all_genes)
+
+# %% [markdown] tags=[]
+# # Profile by line - 2nd round
+
+# %% [markdown]
+# ## Function `get_tissues_correlations`
+
+# %%
+# %lprun -f Gene.get_tissues_correlations compute_ssm_correlation(all_genes)
 
 # %%
