@@ -566,6 +566,8 @@ class Gene(object):
     GENE_NAME_TO_ID_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"])
     BIOMART_GENES = read_data(conf.GENERAL["BIOMART_GENES_INFO_FILE"])
 
+    DEFAULT_WITHIN_DISTANCE = 2.5e6
+
     def __init__(self, ensembl_id=None, name=None):
         if ensembl_id is not None:
             if ensembl_id not in self.GENE_ID_TO_NAME_MAP:
@@ -616,12 +618,15 @@ class Gene(object):
 
         return attr
 
-    def within_distance(self, other_gene, distance_bp):
+    def within_distance(self, other_gene, distance_bp=None):
         """
         TODO: complete
 
         IMPORTANT: this function assumes that the two genes are in the same chromosome
         """
+        if distance_bp is None:
+            distance_bp = Gene.DEFAULT_WITHIN_DISTANCE
+
         this_start = self.get_attribute("start_position")
         this_end = self.get_attribute("end_position")
         if this_start is None or this_end is None:
@@ -905,7 +910,7 @@ class Gene(object):
         if self.chromosome != other_gene.chromosome:
             return 0.0
 
-        if use_within_distance and not self.within_distance(other_gene, 2.5e6):
+        if use_within_distance and not self.within_distance(other_gene):
             return 0.0
 
         other_gene_tissue = tissue
@@ -1018,50 +1023,83 @@ class Gene(object):
         use_within_distance=True,
     ):
         """
-        Computes the correlation of the model sum of squares (SSM) for a couple of genes.
-        For that, is uses the same predictors used by the MultiXcan approach, that is, the principal components
-        of the expression matrix for one gene across tissues.
+        Computes the correlation of the model sum of squares (SSM) for a couple
+        of genes. For that, is uses the same predictors used by the MultiXcan
+        approach, that is, the principal components of the expression matrix for
+        one gene across tissues.
 
         Args:
             TODO
         Returns:
             TODO
         """
-        genes_corrs = self.get_tissues_correlations(
+
+        def _filter_eigen_values_from_max(s, ratio):
+            s_max = np.max(s)
+            return [i for i, x in enumerate(s) if x >= s_max * ratio]
+
+        def pc_filter(x, cond_num):
+            return _filter_eigen_values_from_max(x, 1.0 / cond_num)
+
+        if self.chromosome != other_gene.chromosome:
+            # Correlation between genes from different chromosomes is assumed
+            # to be zero
+            return 0.0
+
+        # do not compute correlation if outside default distance
+        if use_within_distance and not self.within_distance(other_gene):
+            return 0.0
+
+        # this gene
+        gene0_corrs = self.get_tissues_correlations(
+            self,
+            tissues=tissues,
+            reference_panel=reference_panel,
+            model_type=model_type,
+            use_within_distance=use_within_distance,
+        )
+        u_i, s_i, V_i = np.linalg.svd(gene0_corrs)
+        selected = pc_filter(s_i, condition_number)
+        s_i = s_i[selected]
+        V_i = V_i[selected]
+
+        # other gene
+        gene1_corrs = other_gene.get_tissues_correlations(
             other_gene,
-            tissues,
-            reference_panel,
-            model_type,
+            tissues=tissues,
+            reference_panel=reference_panel,
+            model_type=model_type,
+            use_within_distance=use_within_distance,
+        )
+        u_j, s_j, V_j = np.linalg.svd(gene1_corrs)
+        selected = pc_filter(s_j, condition_number)
+        s_j = s_j[selected]
+        V_j = V_j[selected]
+
+        # between genes
+        gene0_gene1_corrs = self.get_tissues_correlations(
+            other_gene,
+            tissues=tissues,
+            reference_panel=reference_panel,
+            model_type=model_type,
             use_within_distance=use_within_distance,
         )
 
-        if genes_corrs.sum().sum() == 0.0:
-            return 0.0
+        # FIXME: I should align tissues here for gene0_gene1_corrs
 
-        # SVD
-        corrs = genes_corrs.to_numpy().conjugate()
-        genes_corrs_u, genes_corrs_s, genes_corrs_vh = np.linalg.svd(
-            corrs, full_matrices=False
+        # if genes_corrs.sum().sum() == 0.0:
+        #     return 0.0
+
+        t0_t1_cov = (
+            np.diag(s_i ** (-1 / 2))
+            @ V_i
+            @ gene0_gene1_corrs
+            @ V_j.T
+            @ np.diag(s_j ** (-1 / 2))
         )
 
-        # select top eigenvalues
-        genes_corrs_s_max = genes_corrs_s.max()
-        genes_corrs_s_top_idx = np.array(
-            [
-                i
-                for i, v in enumerate(genes_corrs_s)
-                if (v > 0) and ((genes_corrs_s_max / v) < condition_number or i == 0)
-            ]
-        )
+        cov_ssm = 2 * np.trace(t0_t1_cov @ t0_t1_cov.T)
+        t0_ssm_sd = np.sqrt(2 * V_i.shape[0])
+        t1_ssm_sd = np.sqrt(2 * V_j.shape[0])
 
-        this_gene_eigenvectors = genes_corrs_u[:, genes_corrs_s_top_idx]
-        other_gene_eigenvectors = genes_corrs_vh[genes_corrs_s_top_idx, :]
-
-        cov_ssm = 2 * np.trace(this_gene_eigenvectors.dot(other_gene_eigenvectors))
-
-        this_gene_sd_ssm = np.sqrt(2 * genes_corrs_s_top_idx.shape[0])
-        other_gene_sd_ssm = np.sqrt(2 * genes_corrs_s_top_idx.shape[0])
-
-        return cov_ssm / (this_gene_sd_ssm * other_gene_sd_ssm)
-        # return corr
-        # return min(1.0, max(-1.0, corr))
+        return cov_ssm / (t0_ssm_sd * t1_ssm_sd)
