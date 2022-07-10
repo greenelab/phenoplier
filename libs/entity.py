@@ -738,6 +738,9 @@ class Gene(object):
                 The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
         Returns:
             A square pandas dataframe with SNPs covariances.
+            FIXME: update, now I return a set with the variants IDs
+             - and it also returns a dictionary with snps ids in keys and position in values
+
             TODO: the index of the dataframe is sorted with sort_index
         """
         snp_cov_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
@@ -757,7 +760,13 @@ class Gene(object):
 
         # go to disk and read the data
         with pd.HDFStore(snps_cov_file, mode="r") as store:
-            return store[snps_chr].sort_index(axis=0).sort_index(axis=1)
+            snp_cov = store[snps_chr].sort_index(axis=0).sort_index(axis=1)
+            snp_cov_variants = set(snp_cov.index)
+            snp_index_dict = {
+                snp_id: snp_idx for snp_idx, snp_id in enumerate(snp_cov.index)
+            }
+
+            return snp_cov, snp_cov_variants, snp_index_dict
 
     @staticmethod
     def _get_snps_cov(
@@ -813,15 +822,19 @@ class Gene(object):
                 raise ValueError("Only snps from the same chromosome are supported")
 
         # read the entire covariance matrix for this chromosome
-        snps_cov = Gene._read_snps_cov(snps_chr, reference_panel, model_type)
+        snps_cov, snps_cov_variants, snp_index_dict = Gene._read_snps_cov(
+            snps_chr, reference_panel, model_type
+        )
 
         # from the specified SNP lists, only keep those for which we have
         # genotypes
-        variants_with_genotype = set(snps_cov.index)
-        snps_ids_list1 = [v for v in snps_ids_list1 if v in variants_with_genotype]
-        snps_ids_list2 = [v for v in snps_ids_list2 if v in variants_with_genotype]
+        # snps_ids_list1 = [v for v in snps_ids_list1 if v in snps_cov_variants]
+        # snps_ids_list2 = [v for v in snps_ids_list2 if v in snps_cov_variants]
 
-        snps_cov = snps_cov.loc[snps_ids_list1, snps_ids_list2]
+        snps_cov = snps_cov.iloc[
+            [snp_index_dict[v] for v in snps_ids_list1 if v in snps_cov_variants],
+            [snp_index_dict[v] for v in snps_ids_list2 if v in snps_cov_variants],
+        ]
 
         if snps_cov.shape[0] == 0 or snps_cov.shape[1] == 0:
             return None
@@ -962,7 +975,7 @@ class Gene(object):
         #   https://doi.org/10.1371/journal.pgen.1007889
         return (gene_w.T @ snps_cov @ other_gene_w) / np.sqrt(gene_var * other_gene_var)
 
-    # @lru_cache(maxsize=None)
+    @lru_cache(maxsize=None)
     def get_tissues_correlations(
         self,
         other_gene,
