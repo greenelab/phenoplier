@@ -38,9 +38,6 @@ REFERENCE_PANEL <- "GTEX_V8"
 ## mashr
 EQTL_MODEL <- "MASHR"
 
-# ## elastic net
-# EQTL_MODEL = "ELASTIC_NET"
-
 chromosome <- NULL
 
 # %%
@@ -98,14 +95,15 @@ CorrectCM <- function(CM, p = 0) {
 
 # %%
 is_positive_definite <- function(data) {
-  eigenvalues <- eigen(data)$values
-  nonpositive_eigenvalues <- eigenvalues[eigenvalues <= 0]
+  # eigenvalues <- eigen(data)$values
+  # nonpositive_eigenvalues <- eigenvalues[eigenvalues <= 0]
 
-  if (length(nonpositive_eigenvalues) > 0) {
-    IRdisplay::display("We need to correct the data and make the matrix positive definite")
+  cholStatus <- try(u <- chol(data), silent = FALSE)
+  cholError <- ifelse(class(cholStatus) == "try-error", TRUE, FALSE)
+
+  if (cholError) {
     return(FALSE)
   } else {
-    IRdisplay::display("Matrix is already positive definite!")
     return(TRUE)
   }
 }
@@ -126,70 +124,48 @@ head(gene_corrs[1:10, 1:10])
 # # Check positive definiteness
 
 # %%
-is_positive_definite(gene_corrs)
+orig_matrix_is_positive_definite <- is_positive_definite(gene_corrs)
 
 # %%
-# see eigenvalues
-eigenvalues <- eigen(gene_corrs)$values
+if (orig_matrix_is_positive_definite) {
+  IRdisplay::display("Matrix is already positive definite!")
+  file.copy(INPUT_FILE, OUTPUT_FILE)
+} else {
+  IRdisplay::display("We need to correct the data and make the matrix positive definite")
 
-# %%
-nonpositive_eigenvalues <- eigenvalues[eigenvalues <= 0]
-IRdisplay::display(length(nonpositive_eigenvalues))
-IRdisplay::display(nonpositive_eigenvalues)
+  eigenvalues <- eigen(gene_corrs)$values
+  nonpositive_eigenvalues <- eigenvalues[eigenvalues <= 0]
+  IRdisplay::display(length(nonpositive_eigenvalues))
+  IRdisplay::display(nonpositive_eigenvalues)
+    
+  # Make matrix positive definite
+  gene_corrs_corrected <- CorrectCM(gene_corrs, 1e-10)
+  dimnames(gene_corrs_corrected)[[1]] <- rownames(gene_corrs)
+  dimnames(gene_corrs_corrected)[[2]] <- colnames(gene_corrs)
+  gene_corrs_corrected <- as.data.frame(gene_corrs_corrected)
+    
+  # check if new matrix is really positive definite
+    matrix_is_positive_definite <- is_positive_definite(gene_corrs_corrected)
+    if (matrix_is_positive_definite) {
+        
+      IRdisplay::display("It worked!")
+      IRdisplay::display(head(gene_corrs[1:10, 1:10]))
+      IRdisplay::display(head(gene_corrs_corrected[1:10, 1:10]))
+      py_save_object(gene_corrs_corrected, OUTPUT_FILE)
+        
+    } else {
+        
+      eigenvalues <- eigen(gene_corrs_corrected)$values
+      nonpositive_eigenvalues <- eigenvalues[eigenvalues <= 0]
+      IRdisplay::display(length(nonpositive_eigenvalues))
+      IRdisplay::display(nonpositive_eigenvalues)
 
-# %%
-if (length(eigenvalues[eigenvalues <= 0]) == 0) {
-  quit()
+      stop("Method failed to adjust matrix")
+        
+    }
 }
 
 # %% [markdown]
-# # Make matrix positive definite if needed
-
-# %%
-gene_corrs_corrected <- CorrectCM(gene_corrs, 1e-5)
-
-# %%
-dimnames(gene_corrs_corrected)[[1]] <- rownames(gene_corrs)
-
-# %%
-dimnames(gene_corrs_corrected)[[2]] <- colnames(gene_corrs)
-
-# %%
-gene_corrs_corrected <- as.data.frame(gene_corrs_corrected)
-
-# %%
-dim(gene_corrs_corrected)
-
-# %% [markdown]
-# # Check positive definiteness of corrected matrix
-
-# %%
-is_positive_definite(gene_corrs_corrected)
-
-# %%
-# see eigenvalues
-eigenvalues <- eigen(gene_corrs_corrected)$values
-
-# %%
-nonpositive_eigenvalues <- eigenvalues[eigenvalues <= 0]
-IRdisplay::display(length(nonpositive_eigenvalues))
-IRdisplay::display(nonpositive_eigenvalues)
-
-# %%
-stopifnot(length(eigenvalues[eigenvalues <= 0]) == 0)
-
-# %%
-# quick and visual comparison of the two matrices
-IRdisplay::display(head(gene_corrs[1:10, 1:10]))
-IRdisplay::display(head(gene_corrs_corrected[1:10, 1:10]))
-
-# %% [markdown]
 # Both matrices should "look" similar. We are not interested in perfectly accurate correlation values (they are already inaccurate).
-
-# %% [markdown]
-# # Save
-
-# %%
-py_save_object(gene_corrs_corrected, OUTPUT_FILE)
 
 # %%
