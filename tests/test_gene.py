@@ -795,6 +795,25 @@ def test_ssm_correlation_second_gene_without_prediction_models():
     assert genes_corr is None
 
 
+def test_ssm_correlation_correlation_maximum_value_is_always_one():
+    # without checking maximum values, the pair of genes below return a
+    # correlation of 1.0000000000000002
+
+    # MPV17 - 2p23.3
+    gene1 = Gene(ensembl_id="ENSG00000115204")
+
+    # GTF3C2 - 2p23.3
+    gene2 = Gene(ensembl_id="ENSG00000115207")
+
+    genes_corr = gene1.get_ssm_correlation(gene2, reference_panel="1000G")
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert genes_corr == 1.0
+
+    # check symmetry
+    assert gene2.get_ssm_correlation(gene1, reference_panel="1000G") == 1.0
+
+
 def test_gene_within_distance():
     # ENSG00000073910
     # FRY

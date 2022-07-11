@@ -1129,4 +1129,13 @@ class Gene(object):
         t0_ssm_sd = np.sqrt(2 * V_i.shape[0])
         t1_ssm_sd = np.sqrt(2 * V_j.shape[0])
 
-        return cov_ssm / (t0_ssm_sd * t1_ssm_sd)
+        r = cov_ssm / (t0_ssm_sd * t1_ssm_sd)
+
+        # return 1.0 in cases where the correlation is very close to 1.0 this
+        # happens for some genes where r is slightly larger than 1.0 (which is
+        # the most important issue) or very close to 1.0 (like
+        # 0.9999999999999996)
+        if np.isclose(r, 1.0):
+            return 1.0
+
+        return r
