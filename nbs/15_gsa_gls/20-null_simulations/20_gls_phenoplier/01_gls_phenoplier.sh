@@ -17,6 +17,11 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    --lv-list)
+      LV_LIST="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -b|--batch-id)
       BATCH_ID="$2"
       shift # past argument
@@ -103,9 +108,14 @@ elif [ ! -z "${BATCH_ID}" ] || [ ! -z "${BATCH_N_SPLITS}" ]; then
   exit 1
 fi
 
+LV_LIST_ARGS=""
+if [ ! -z "${LV_LIST}" ]; then
+  BATCH_ARGS="--lv-list ${LV_LIST}"
+fi
+
 python ${PHENOPLIER_CODE_DIR}/libs/gls_cli.py \
     -i ${INPUT_FILE} \
     --duplicated-genes-action keep-first \
     ${GENE_CORRS_ARGS} \
-    -o ${OUTPUT_FILE} ${BATCH_ARGS}
+    -o ${OUTPUT_FILE} ${BATCH_ARGS} ${LV_LIST_ARGS}
 
