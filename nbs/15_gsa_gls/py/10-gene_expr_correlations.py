@@ -59,14 +59,6 @@ REFERENCE_PANEL = "GTEX_V8"
 # prediction models
 ## mashr
 EQTL_MODEL = "MASHR"
-EQTL_MODEL_FILES_PREFIX = "mashr_"
-
-# ## elastic net
-# EQTL_MODEL = "ELASTIC_NET"
-# EQTL_MODEL_FILES_PREFIX = "en_"
-
-# make it read the prefix from conf.py
-EQTL_MODEL_FILES_PREFIX = None
 
 # this is the default value used in S-MultiXcan to select the
 # top principal components of the expression correlation matrix
@@ -77,10 +69,7 @@ SMULTIXCAN_CONDITION_NUMBER = 30
 chromosome = None
 
 # %%
-if EQTL_MODEL_FILES_PREFIX is None:
-    EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][
-        f"{EQTL_MODEL}_PREFIX"
-    ]
+EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
 
 # %%
 display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
