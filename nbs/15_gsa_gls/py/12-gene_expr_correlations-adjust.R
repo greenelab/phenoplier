@@ -137,32 +137,28 @@ if (orig_matrix_is_positive_definite) {
   nonpositive_eigenvalues <- eigenvalues[eigenvalues <= 0]
   IRdisplay::display(length(nonpositive_eigenvalues))
   IRdisplay::display(nonpositive_eigenvalues)
-    
+
   # Make matrix positive definite
   gene_corrs_corrected <- CorrectCM(gene_corrs, 1e-10)
   dimnames(gene_corrs_corrected)[[1]] <- rownames(gene_corrs)
   dimnames(gene_corrs_corrected)[[2]] <- colnames(gene_corrs)
   gene_corrs_corrected <- as.data.frame(gene_corrs_corrected)
-    
-  # check if new matrix is really positive definite
-    matrix_is_positive_definite <- is_positive_definite(gene_corrs_corrected)
-    if (matrix_is_positive_definite) {
-        
-      IRdisplay::display("It worked!")
-      IRdisplay::display(head(gene_corrs[1:10, 1:10]))
-      IRdisplay::display(head(gene_corrs_corrected[1:10, 1:10]))
-      py_save_object(gene_corrs_corrected, OUTPUT_FILE)
-        
-    } else {
-        
-      eigenvalues <- eigen(gene_corrs_corrected)$values
-      nonpositive_eigenvalues <- eigenvalues[eigenvalues <= 0]
-      IRdisplay::display(length(nonpositive_eigenvalues))
-      IRdisplay::display(nonpositive_eigenvalues)
 
-      stop("Method failed to adjust matrix")
-        
-    }
+  # check if new matrix is really positive definite
+  matrix_is_positive_definite <- is_positive_definite(gene_corrs_corrected)
+  if (matrix_is_positive_definite) {
+    IRdisplay::display("It worked!")
+    IRdisplay::display(head(gene_corrs[1:10, 1:10]))
+    IRdisplay::display(head(gene_corrs_corrected[1:10, 1:10]))
+    py_save_object(gene_corrs_corrected, OUTPUT_FILE)
+  } else {
+    eigenvalues <- eigen(gene_corrs_corrected)$values
+    nonpositive_eigenvalues <- eigenvalues[eigenvalues <= 0]
+    IRdisplay::display(length(nonpositive_eigenvalues))
+    IRdisplay::display(nonpositive_eigenvalues)
+
+    stop("Method failed to adjust matrix")
+  }
 }
 
 # %% [markdown]
