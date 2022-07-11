@@ -241,14 +241,28 @@ for gene_idx1 in range(0, len(gene_chr_objs) - 1):
             # available, which can certainly bias the correlation estimation.
             # Since this depends on the GWAS on a specific phenotype, we should ideally have
             # one correlation matrix per GWAS. I should look at how we can improve this.
-            gene_corrs.append(
-                gene_obj1.get_ssm_correlation(
-                    other_gene=gene_obj2,
-                    condition_number=SMULTIXCAN_CONDITION_NUMBER,
-                    reference_panel=REFERENCE_PANEL,
-                    model_type=EQTL_MODEL,
-                )
+            r = gene_obj1.get_ssm_correlation(
+                other_gene=gene_obj2,
+                condition_number=SMULTIXCAN_CONDITION_NUMBER,
+                reference_panel=REFERENCE_PANEL,
+                model_type=EQTL_MODEL,
             )
+
+            # if r is None, make sure it's because one of the genes has no prediction models
+            if r is None:
+                gene1_w = gene_obj1.get_prediction_weights(
+                    tissue, model_type, varid_as_index=True
+                )
+                gene2_w = gene_obj2.get_prediction_weights(
+                    tissue, model_type, varid_as_index=True
+                )
+                assert (
+                    gene1_w is None or gene2_w is None
+                ), "Gene correlation is None, but both genes have prediction models"
+
+                r = 0.0
+
+            gene_corrs.append(r)
         except Warning:
             print(
                 f"RuntimeWarning for genes {gene_obj1.ensembl_id} and {gene_obj2.ensembl_id}",
@@ -306,7 +320,7 @@ gene_corrs_df.head()
 # %%
 _min_val = gene_corrs_df.min().min()
 display(_min_val)
-assert _min_val >= -1.0
+assert _min_val >= 0.0
 
 # %%
 _max_val = gene_corrs_df.max().max()  # this captures the diagonal
