@@ -262,55 +262,12 @@ for gene_idx1 in range(0, len(gene_chr_objs) - 1):
                 model_type=EQTL_MODEL,
             )
 
-            # if r is None, make sure it's because one of the genes has no prediction models
             if r is None:
-                # get genes prediction models
-                gene1_ws = [
-                    gene_obj1.get_prediction_weights(
-                        tissue,
-                        model_type=EQTL_MODEL,
-                    )
-                    for tissue in prediction_model_tissues
-                ]
+                # if r is None, it's very likely because:
+                #  * one of the genes has no prediction models
+                #  * all the SNPs predictors for the gene are not present in the reference
+                #    panel
 
-                gene2_ws = [
-                    gene_obj2.get_prediction_weights(
-                        tissue,
-                        model_type=EQTL_MODEL,
-                    )
-                    for tissue in prediction_model_tissues
-                ]
-
-                # get genes variants
-                gene1_vars = [
-                    gene_obj1.get_pred_expression_variance(
-                        tissue,
-                        reference_panel=REFERENCE_PANEL,
-                        model_type=EQTL_MODEL,
-                    )
-                    for tissue in prediction_model_tissues
-                ]
-
-                gene2_vars = [
-                    gene_obj2.get_pred_expression_variance(
-                        tissue,
-                        reference_panel=REFERENCE_PANEL,
-                        model_type=EQTL_MODEL,
-                    )
-                    for tissue in prediction_model_tissues
-                ]
-
-                # make sure that r is None because either any of the genes:
-                #   * do not have prediction models, or
-                #   * its predictions models are not in the reference panel
-                assert (
-                    all(v is None for v in gene1_ws) or all(v is None for v in gene2_ws)
-                ) and (
-                    all(v is None for v in gene1_vars)
-                    or all(v is None for v in gene2_vars)
-                ), "Gene correlation is None, but some of the  "
-
-                # if all the rest is true, then it is safe to set the correlation to zero
                 r = 0.0
 
             gene_corrs.append(r)
