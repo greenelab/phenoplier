@@ -550,6 +550,17 @@ def test_get_tissues_correlations_different_gene():
     assert genes_corrs_unique_values[0] == 0.0
 
 
+def test_get_tissues_correlations_gene_without_prediction_models():
+    # WNT10A - 2q35
+    gene1 = Gene(ensembl_id="ENSG00000135925")
+
+    # get the correlation matrix of the gene expression across all tissues
+    genes_corrs = gene1.get_tissues_correlations(gene1)
+
+    # check shape
+    assert genes_corrs is None
+
+
 @pytest.mark.parametrize(
     "gene_id1,gene_id2,expected_corr",
     [
@@ -739,7 +750,7 @@ def test_ssm_correlation_genes_in_close_bands_not_within_distance():
     assert genes_corr == 0.0
 
     # check symmetry
-    assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
+    assert gene2.get_ssm_correlation(gene1) == pytest.approx(genes_corr, rel=1e-10)
 
 
 def test_ssm_correlation_genes_in_same_band_not_within_distance():
@@ -757,7 +768,31 @@ def test_ssm_correlation_genes_in_same_band_not_within_distance():
     assert genes_corr == 0.0
 
     # check symmetry
-    assert round(gene2.get_ssm_correlation(gene1), 5) == round(genes_corr, 5)
+    assert gene2.get_ssm_correlation(gene1) == pytest.approx(genes_corr, rel=1e-10)
+
+
+def test_ssm_correlation_first_gene_without_prediction_models():
+    # WNT10A - 2q35
+    # this gene does not have prediction models
+    gene1 = Gene(ensembl_id="ENSG00000135925")
+
+    # ATIC - 2q35
+    gene2 = Gene(ensembl_id="ENSG00000138363")
+
+    genes_corr = gene1.get_ssm_correlation(gene2)
+    assert genes_corr is None
+
+
+def test_ssm_correlation_second_gene_without_prediction_models():
+    # ATIC - 2q35
+    gene1 = Gene(ensembl_id="ENSG00000138363")
+
+    # WNT10A - 2q35
+    # this gene does not have prediction models
+    gene2 = Gene(ensembl_id="ENSG00000135925")
+
+    genes_corr = gene1.get_ssm_correlation(gene2)
+    assert genes_corr is None
 
 
 def test_gene_within_distance():
