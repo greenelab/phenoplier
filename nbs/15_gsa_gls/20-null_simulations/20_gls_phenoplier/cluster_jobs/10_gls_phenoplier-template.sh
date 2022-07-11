@@ -5,7 +5,7 @@
 # BSUB -eo random_pheno${pheno_id}.%J.error
 # -#BSUB -u miltondp@gmail.com
 # -#BSUB -N
-# BSUB -n 2
+# BSUB -n 1
 # BSUB -R "rusage[mem=3GB]"
 # BSUB -M 3GB
 # BSUB -W 1:00
@@ -14,7 +14,7 @@
 #   see README.md to know how to generate the actual job scripts.
 
 # make sure we use the number of CPUs specified
-export n_jobs=2
+export n_jobs=1
 export PHENOPLIER_N_JOBS=${n_jobs}
 export NUMBA_NUM_THREADS=${n_jobs}
 export MKL_NUM_THREADS=${n_jobs}
@@ -25,13 +25,9 @@ export OMP_NUM_THREADS=${n_jobs}
 CODE_DIR=${PHENOPLIER_CODE_DIR}/nbs/15_gsa_gls/20-null_simulations/20_gls_phenoplier
 INPUT_SMULTIXCAN_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan"
 
-# GTEx v8 / MASHR / mean gene expression across tissues
-GENE_CORR_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_GENE_CORRS_DIR}/gtex_v8/mashr/multiplier_genes-pred_expression_corr_avg-mean-gene_symbols.pkl"
-OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-gtex-mashr-mean_gene_expr"
-
-# # GTEx v8 / MASHR / max gene expression across tissues
-# GENE_CORR_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_GENE_CORRS_DIR}/gtex_v8/mashr/multiplier_genes-pred_expression_corr_avg-max-gene_symbols.pkl"
-# OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-gtex-mashr-max_gene_expr"
+# 1000G / MASHR
+GENE_CORR_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_GENE_CORRS_DIR}/1000g/mashr/multiplier_genes-gene_correlations-gene_symbols.pkl"
+OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-1000g_mashr"
 
 mkdir -p ${OUTPUT_DIR}
 
