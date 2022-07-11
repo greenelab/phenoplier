@@ -1,6 +1,7 @@
 from pathlib import Path
 from functools import lru_cache
 
+import numpy as np
 import pandas as pd
 from scipy import stats
 import statsmodels.api as sm
@@ -55,6 +56,7 @@ class GLSPhenoplier(object):
         smultixcan_result_set_filepath: str = None,
         gene_corrs_file_path: Path = None,
         debug_use_ols: bool = False,
+        debug_use_sub_gene_corr: bool = False,
         logger="warnings_only",
     ):
         self.smultixcan_result_set_filepath = conf.PHENOMEXCAN[
@@ -84,6 +86,7 @@ class GLSPhenoplier(object):
         # sigma is disabled, but left here for future reference (debugging)
         # self.sigma = sigma
         self.debug_use_ols = debug_use_ols
+        self.debug_use_sub_gene_corr = debug_use_sub_gene_corr
 
         self.log_warning = None
         self.log_info = None
@@ -253,6 +256,25 @@ class GLSPhenoplier(object):
             gene_corrs = GLSPhenoplier._get_gene_corrs(self.gene_corrs_file_path)
 
         x = lv_weights[lv_code]
+
+        if self.debug_use_sub_gene_corr:
+            self.log_info(
+                f"Using submatrix of gene correlations with nonzero genes in {lv_code}"
+            )
+
+            corr_mat_sub = pd.DataFrame(
+                np.identity(gene_corrs.shape[0]),
+                index=gene_corrs.index.copy(),
+                columns=gene_corrs.columns.copy(),
+            )
+
+            lv_nonzero_genes = x[x > 0].index
+            lv_nonzero_genes = lv_nonzero_genes.intersection(gene_corrs.index)
+            corr_mat_sub.loc[lv_nonzero_genes, lv_nonzero_genes] = gene_corrs.loc[
+                lv_nonzero_genes, lv_nonzero_genes
+            ]
+
+            gene_corrs = corr_mat_sub
 
         return self._fit_general(x, phenotype, gene_corrs)
 
