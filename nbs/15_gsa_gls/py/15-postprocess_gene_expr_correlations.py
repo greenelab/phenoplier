@@ -87,7 +87,7 @@ OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 display(f"Using output dir base: {OUTPUT_DIR_BASE}")
 
 # %%
-INPUT_DIR = OUTPUT_DIR_BASE / "by_chr"
+INPUT_DIR = OUTPUT_DIR_BASE / "by_chr" / "corrected_positive_definite"
 display(INPUT_DIR)
 assert INPUT_DIR.exists()
 
@@ -230,7 +230,7 @@ assert not full_corr_matrix.isna().any().any()
 # %%
 _min_val = full_corr_matrix.min().min()
 display(_min_val)
-assert _min_val >= 0.0
+# assert _min_val >= 0.0
 
 # %%
 _max_val = full_corr_matrix.max().max()  # this will capture the 1.0 in the diagonal
