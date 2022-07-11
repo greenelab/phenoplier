@@ -59,6 +59,13 @@ def run():
         help="It uses a standard OLS model instead of GLS. For debugging purposes.",
     )
     parser.add_argument(
+        # "-g",
+        "--debug-use-sub-gene-corr",
+        required=False,
+        action="store_true",
+        help="TODO.",
+    )
+    parser.add_argument(
         "-l",
         "--lv-list",
         required=False,
@@ -264,6 +271,7 @@ def run():
     model = GLSPhenoplier(
         gene_corrs_file_path=args.gene_corr_file,
         debug_use_ols=args.debug_use_ols,
+        debug_use_sub_gene_corr=args.debug_use_sub_gene_corr,
         logger=logger,
     )
 
