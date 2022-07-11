@@ -109,6 +109,20 @@ display(f"Working on chromosome {chromosome}")
 # # Load data
 
 # %% [markdown] tags=[]
+# ## Prediction model tissues
+
+# %%
+prediction_model_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][
+    f"{EQTL_MODEL}_TISSUES"
+].split(" ")
+
+# %%
+len(prediction_model_tissues)
+
+# %%
+prediction_model_tissues[:5]
+
+# %% [markdown] tags=[]
 # ## MultiPLIER Z
 
 # %% tags=[]
@@ -250,14 +264,24 @@ for gene_idx1 in range(0, len(gene_chr_objs) - 1):
 
             # if r is None, make sure it's because one of the genes has no prediction models
             if r is None:
-                gene1_w = gene_obj1.get_prediction_weights(
-                    tissue, model_type, varid_as_index=True
-                )
-                gene2_w = gene_obj2.get_prediction_weights(
-                    tissue, model_type, varid_as_index=True
-                )
-                assert (
-                    gene1_w is None or gene2_w is None
+                gene1_ws = [
+                    gene_obj1.get_prediction_weights(
+                        tissue,
+                        model_type=EQTL_MODEL,
+                    )
+                    for tissue in prediction_model_tissues
+                ]
+
+                gene2_ws = [
+                    gene_obj2.get_prediction_weights(
+                        tissue,
+                        model_type=EQTL_MODEL,
+                    )
+                    for tissue in prediction_model_tissues
+                ]
+
+                assert all(v is None for v in gene1_ws) or all(
+                    v is None for v in gene2_ws
                 ), "Gene correlation is None, but both genes have prediction models"
 
                 r = 0.0
