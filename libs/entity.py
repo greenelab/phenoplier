@@ -1030,6 +1030,8 @@ class Gene(object):
 
         # remove tissues for which we don't have snps predictors for any of the genes
         df = df.dropna(axis=0, how="all").dropna(axis=1, how="all")
+        if df.shape == (0, 0):
+            return None
 
         # if the diagonal are all close to 1.0, then round it to 1.0
         if all([np.isclose(v, 1.0) for v in np.diag(df)]):
@@ -1080,6 +1082,8 @@ class Gene(object):
             model_type=model_type,
             use_within_distance=use_within_distance,
         )
+        if gene0_corrs is None:
+            return None
         u_i, s_i, V_i = np.linalg.svd(gene0_corrs)
         selected = _filter_eigen_values_from_max(s_i, 1.0 / condition_number)
         s_i = s_i[selected]
@@ -1093,6 +1097,8 @@ class Gene(object):
             model_type=model_type,
             use_within_distance=use_within_distance,
         )
+        if gene1_corrs is None:
+            return None
         u_j, s_j, V_j = np.linalg.svd(gene1_corrs)
         selected = _filter_eigen_values_from_max(s_j, 1.0 / condition_number)
         s_j = s_j[selected]
