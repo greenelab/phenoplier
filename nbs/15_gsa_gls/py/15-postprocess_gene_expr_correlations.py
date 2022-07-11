@@ -87,7 +87,7 @@ OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 display(f"Using output dir base: {OUTPUT_DIR_BASE}")
 
 # %%
-INPUT_DIR = OUTPUT_DIR_BASE / "by_chr" / "corrected_positive_definite"
+INPUT_DIR = OUTPUT_DIR_BASE / "by_chr"
 display(INPUT_DIR)
 assert INPUT_DIR.exists()
 
@@ -230,10 +230,10 @@ assert not full_corr_matrix.isna().any().any()
 # %%
 _min_val = full_corr_matrix.min().min()
 display(_min_val)
-assert _min_val >= -1.0
+assert _min_val >= 0.0
 
 # %%
-_max_val = full_corr_matrix.max().max()  # this only captures the ones in the diagonal
+_max_val = full_corr_matrix.max().max()  # this will capture the 1.0 in the diagonal
 display(_max_val)
 assert _max_val <= 1.0
 
@@ -246,14 +246,14 @@ assert np.all(eigs > 0)
 # this should not fail
 np.linalg.cholesky(np.linalg.inv(full_corr_matrix))
 
-# %%
-# full_corr_matrix = full_corr_matrix.astype(np.float32)
-
 # %% [markdown] tags=[]
 # # Try to fit GLS and see if it works (with random data)
 
 # %%
 import statsmodels.api as sm
+
+# %%
+np.random.seed(0)
 
 # %%
 y = np.random.rand(full_corr_matrix.shape[0])
@@ -337,18 +337,18 @@ ax.set_title("Gene correlations in all chromosomes")
 # ## With ensemble ids
 
 # %%
-output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
-    "GENE_CORRS_FILE_NAME_TEMPLATES"
-]["GENE_CORR_AVG"]
+# output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
+#     "GENE_CORRS_FILE_NAME_TEMPLATES"
+# ]["GENE_CORR_AVG"]
 
-output_file = OUTPUT_DIR_BASE / output_file_name_template.format(
-    prefix="",
-    suffix=f"-ssm_corrs-gene_ensembl_ids",
-)
-display(output_file)
+# output_file = OUTPUT_DIR_BASE / output_file_name_template.format(
+#     prefix="",
+#     suffix=f"-ssm_corrs-gene_ensembl_ids",
+# )
+# display(output_file)
 
 # %% tags=[]
-full_corr_matrix.to_pickle(output_file)
+# full_corr_matrix.to_pickle(output_file)
 
 # %% [markdown] tags=[]
 # ## With gene symbols
@@ -360,7 +360,7 @@ output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
 
 output_file = OUTPUT_DIR_BASE / output_file_name_template.format(
     prefix="",
-    suffix=f"-ssm_corrs-gene_symbols",
+    suffix=f"-gene_symbols",
 )
 display(output_file)
 
