@@ -209,7 +209,7 @@ display(output_file)
 # %%
 warnings.filterwarnings("error")
 
-# %%
+# %% tags=[]
 # standard checks
 all_chrs = genes_info["chr"].dropna().unique()
 assert all_chrs.shape[0] == 22
@@ -264,6 +264,7 @@ for gene_idx1 in range(0, len(gene_chr_objs) - 1):
 
             # if r is None, make sure it's because one of the genes has no prediction models
             if r is None:
+                # get genes prediction models
                 gene1_ws = [
                     gene_obj1.get_prediction_weights(
                         tissue,
@@ -280,10 +281,36 @@ for gene_idx1 in range(0, len(gene_chr_objs) - 1):
                     for tissue in prediction_model_tissues
                 ]
 
-                assert all(v is None for v in gene1_ws) or all(
-                    v is None for v in gene2_ws
-                ), "Gene correlation is None, but both genes have prediction models"
+                # get genes variants
+                gene1_vars = [
+                    gene_obj1.get_pred_expression_variance(
+                        tissue,
+                        reference_panel=REFERENCE_PANEL,
+                        model_type=EQTL_MODEL,
+                    )
+                    for tissue in prediction_model_tissues
+                ]
 
+                gene2_vars = [
+                    gene_obj2.get_pred_expression_variance(
+                        tissue,
+                        reference_panel=REFERENCE_PANEL,
+                        model_type=EQTL_MODEL,
+                    )
+                    for tissue in prediction_model_tissues
+                ]
+
+                # make sure that r is None because either any of the genes:
+                #   * do not have prediction models, or
+                #   * its predictions models are not in the reference panel
+                assert (
+                    all(v is None for v in gene1_ws) or all(v is None for v in gene2_ws)
+                ) and (
+                    all(v is None for v in gene1_vars)
+                    or all(v is None for v in gene2_vars)
+                ), "Gene correlation is None, but some of the  "
+
+                # if all the rest is true, then it is safe to set the correlation to zero
                 r = 0.0
 
             gene_corrs.append(r)
@@ -340,6 +367,9 @@ gene_corrs_df.shape
 
 # %%
 gene_corrs_df.head()
+
+# %%
+assert not gene_corrs_df.isna().any().any()
 
 # %%
 _min_val = gene_corrs_df.min().min()
