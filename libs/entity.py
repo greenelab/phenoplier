@@ -983,7 +983,7 @@ class Gene(object):
         #   https://doi.org/10.1371/journal.pgen.1007889
         return (gene_w.T @ snps_cov @ other_gene_w) / np.sqrt(gene_var * other_gene_var)
 
-    @lru_cache(maxsize=None)
+    # @lru_cache(maxsize=None)
     def get_tissues_correlations(
         self,
         other_gene,
@@ -1039,6 +1039,35 @@ class Gene(object):
 
         return df
 
+    @lru_cache(maxsize=None)
+    def get_tissues_correlations_svd(
+        self,
+        tissues: tuple = None,
+        reference_panel: str = "GTEX_V8",
+        model_type: str = "MASHR",
+        condition_number: float = 30,
+        use_within_distance=True,
+    ):
+        def _filter_eigen_values_from_max(s, ratio):
+            s_max = np.max(s)
+            return [i for i, x in enumerate(s) if x >= s_max * ratio]
+
+        gene_corrs = self.get_tissues_correlations(
+            self,
+            tissues=tissues,
+            reference_panel=reference_panel,
+            model_type=model_type,
+            use_within_distance=use_within_distance,
+        )
+        if gene_corrs is None:
+            return None
+        u_i, s_i, V_i = np.linalg.svd(gene_corrs)
+        selected = _filter_eigen_values_from_max(s_i, 1.0 / condition_number)
+        s_i = s_i[selected]
+        V_i = V_i[selected]
+
+        return u_i, s_i, V_i
+
     # @lru_cache(maxsize=None)
     def get_ssm_correlation(
         self,
@@ -1061,10 +1090,6 @@ class Gene(object):
             TODO
         """
 
-        def _filter_eigen_values_from_max(s, ratio):
-            s_max = np.max(s)
-            return [i for i, x in enumerate(s) if x >= s_max * ratio]
-
         if self.chromosome != other_gene.chromosome:
             # Correlation between genes from different chromosomes is assumed
             # to be zero
@@ -1074,35 +1099,31 @@ class Gene(object):
         if use_within_distance and not self.within_distance(other_gene):
             return 0.0
 
+        def _filter_eigen_values_from_max(s, ratio):
+            s_max = np.max(s)
+            return [i for i, x in enumerate(s) if x >= s_max * ratio]
+
         # this gene
-        gene0_corrs = self.get_tissues_correlations(
-            self,
+        gene0_svd = self.get_tissues_correlations_svd(
             tissues=tissues,
             reference_panel=reference_panel,
             model_type=model_type,
             use_within_distance=use_within_distance,
         )
-        if gene0_corrs is None:
+        if gene0_svd is None:
             return None
-        u_i, s_i, V_i = np.linalg.svd(gene0_corrs)
-        selected = _filter_eigen_values_from_max(s_i, 1.0 / condition_number)
-        s_i = s_i[selected]
-        V_i = V_i[selected]
+        u_i, s_i, V_i = gene0_svd
 
         # other gene
-        gene1_corrs = other_gene.get_tissues_correlations(
-            other_gene,
+        gene1_svd = other_gene.get_tissues_correlations_svd(
             tissues=tissues,
             reference_panel=reference_panel,
             model_type=model_type,
             use_within_distance=use_within_distance,
         )
-        if gene1_corrs is None:
+        if gene1_svd is None:
             return None
-        u_j, s_j, V_j = np.linalg.svd(gene1_corrs)
-        selected = _filter_eigen_values_from_max(s_j, 1.0 / condition_number)
-        s_j = s_j[selected]
-        V_j = V_j[selected]
+        u_j, s_j, V_j = gene1_svd
 
         # between genes
         gene0_gene1_corrs = self.get_tissues_correlations(
