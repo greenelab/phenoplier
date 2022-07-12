@@ -59,6 +59,9 @@ EQTL_MODEL_FILES_PREFIX = "mashr_"
 # make it read the prefix from conf.py
 EQTL_MODEL_FILES_PREFIX = None
 
+# check that final correlation matrix works with statsmodels.GLS
+COMPATIBLE_WITH_STATSMODELS_GLS = True
+
 # %%
 if EQTL_MODEL_FILES_PREFIX is None:
     EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][
@@ -87,7 +90,11 @@ OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 display(f"Using output dir base: {OUTPUT_DIR_BASE}")
 
 # %%
-INPUT_DIR = OUTPUT_DIR_BASE / "by_chr" / "corrected_positive_definite"
+INPUT_DIR = OUTPUT_DIR_BASE / "by_chr"
+
+if COMPATIBLE_WITH_STATSMODELS_GLS:
+    INPUT_DIR = INPUT_DIR / "corrected_positive_definite"
+
 display(INPUT_DIR)
 assert INPUT_DIR.exists()
 
@@ -211,14 +218,15 @@ for chr_corr_file in all_gene_corr_files:
 full_corr_matrix.shape
 
 # %%
+# make sure all elements in the diagonal are ones/1.0
+full_corr_matrix[full_corr_matrix > 1.0] = 1.0
+np.fill_diagonal(full_corr_matrix.values, 1.0)
+
+# %%
 full_corr_matrix
 
 # %% [markdown] tags=[]
 # ## Some checks
-
-# %%
-full_corr_matrix[full_corr_matrix > 1.0] = 1.0
-np.fill_diagonal(full_corr_matrix.values, 1.0)
 
 # %%
 assert np.all(full_corr_matrix.to_numpy().diagonal() == 1.0)
@@ -230,7 +238,9 @@ assert not full_corr_matrix.isna().any().any()
 # %%
 _min_val = full_corr_matrix.min().min()
 display(_min_val)
-# assert _min_val >= 0.0
+# sometimes, if using statsmodels.GLS and after adjusting correlation matrices,
+# correlations are lower than zero
+assert _min_val >= -1e-10
 
 # %%
 _max_val = full_corr_matrix.max().max()  # this will capture the 1.0 in the diagonal
@@ -238,40 +248,39 @@ display(_max_val)
 assert _max_val <= 1.0
 
 # %%
-# check that matrix is positive definite
+# Check that matrix is invertible
+inv_mat = np.linalg.inv(full_corr_matrix)
+
+# %%
+assert not np.isnan(inv_mat).any()
+assert not np.isinf(inv_mat).any()
+assert not np.iscomplex(inv_mat).any()
+
+# %%
+# print negative eigenvalues
 eigs = np.linalg.eigvals(full_corr_matrix.to_numpy())
-assert np.all(eigs > 0)
+display(len(eigs[eigs < 0]))
+display(eigs[eigs < 0])
 
 # %%
-# this should not fail
-np.linalg.cholesky(np.linalg.inv(full_corr_matrix))
+if COMPATIBLE_WITH_STATSMODELS_GLS:
+    # A Cholesky decomposition must not fail for statsmodels.GLS to work
+    np.linalg.cholesky(np.linalg.inv(full_corr_matrix))
 
-# %% [markdown] tags=[]
-# # Try to fit GLS and see if it works (with random data)
+    import statsmodels.api as sm
 
-# %%
-import statsmodels.api as sm
+    np.random.seed(0)
 
-# %%
-np.random.seed(0)
+    y = np.random.rand(full_corr_matrix.shape[0])
+    X = np.random.rand(full_corr_matrix.shape[0], 2)
+    X[:, 0] = 1
 
-# %%
-y = np.random.rand(full_corr_matrix.shape[0])
+    # this should not throw an exception: LinAlgError("Matrix is not positive definite")
+    _gls_model = sm.GLS(y, X, sigma=full_corr_matrix)
 
-# %%
-X = np.random.rand(full_corr_matrix.shape[0], 2)
-X[:, 0] = 1
+    _gls_results = _gls_model.fit()
 
-# %%
-# this should not throw an exception: LinAlgError("Matrix is not positive definite")
-# _gls_model = sm.GLS(y, X, sigma=np.identity(y.shape[0]))
-_gls_model = sm.GLS(y, X, sigma=full_corr_matrix)
-
-# %%
-_gls_results = _gls_model.fit()
-
-# %%
-print(_gls_results.summary())
+    display(_gls_results.summary())
 
 # %% [markdown] tags=[]
 # ## Stats
