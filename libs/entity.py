@@ -983,7 +983,7 @@ class Gene(object):
         #   https://doi.org/10.1371/journal.pgen.1007889
         return (gene_w.T @ snps_cov @ other_gene_w) / np.sqrt(gene_var * other_gene_var)
 
-    # @lru_cache(maxsize=None)
+    @lru_cache(maxsize=None)
     def get_tissues_correlations(
         self,
         other_gene,
