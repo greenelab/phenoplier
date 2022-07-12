@@ -105,6 +105,11 @@ chromosome = str(chromosome)
 # %%
 display(f"Working on chromosome {chromosome}")
 
+# %%
+# This paramter, if True, computes the correlation between closeby genes only
+COMPUTE_CORRELATIONS_WITHIN_DISTANCE = False
+display(f"Compute correlation within distance {COMPUTE_CORRELATIONS_WITHIN_DISTANCE}")
+
 # %% [markdown] tags=[]
 # # Load data
 
@@ -260,6 +265,7 @@ for gene_idx1 in range(0, len(gene_chr_objs) - 1):
                 condition_number=SMULTIXCAN_CONDITION_NUMBER,
                 reference_panel=REFERENCE_PANEL,
                 model_type=EQTL_MODEL,
+                use_within_distance=COMPUTE_CORRELATIONS_WITHIN_DISTANCE,
             )
 
             if r is None:
