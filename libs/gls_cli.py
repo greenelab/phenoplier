@@ -272,6 +272,7 @@ def run():
         gene_corrs_file_path=args.gene_corr_file,
         debug_use_ols=args.debug_use_ols,
         debug_use_sub_gene_corr=args.debug_use_sub_gene_corr,
+        use_own_implementation=True,
         logger=logger,
     )
 
