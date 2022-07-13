@@ -301,7 +301,7 @@ def run():
                 "beta": res.params.loc["lv"],
                 "beta_se": res.bse.loc["lv"],
                 "t": res.tvalues.loc["lv"],
-                "pvalue_twsided": res.pvalues.loc["lv"],
+                "pvalue_twosided": res.pvalues.loc["lv"],
                 "pvalue_onesided": res.pvalues_onesided.loc["lv"],
                 # "pvalue_twosided": res.pvalues.loc["lv"],
                 # "summary": gls_model.results_summary,
