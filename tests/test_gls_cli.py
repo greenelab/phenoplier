@@ -328,12 +328,12 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
 
     # results should be different across batches
     assert not np.allclose(
-        keep_first_results["coef"].to_numpy(),
-        keep_last_results["coef"].to_numpy(),
+        keep_first_results["beta"].to_numpy(),
+        keep_last_results["beta"].to_numpy(),
     )
     assert not np.allclose(
-        keep_first_results["pvalue"].to_numpy(),
-        keep_last_results["pvalue"].to_numpy(),
+        keep_first_results["pvalue_onesided"].to_numpy(),
+        keep_last_results["pvalue_onesided"].to_numpy(),
     )
 
 
@@ -413,12 +413,12 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
 
     # results should be different across batches
     assert not np.allclose(
-        keep_last_results["coef"].to_numpy(),
-        remove_all_results["coef"].to_numpy(),
+        keep_last_results["beta"].to_numpy(),
+        remove_all_results["beta"].to_numpy(),
     )
     assert not np.allclose(
-        keep_last_results["pvalue"].to_numpy(),
-        remove_all_results["pvalue"].to_numpy(),
+        keep_last_results["pvalue_onesided"].to_numpy(),
+        remove_all_results["pvalue_onesided"].to_numpy(),
     )
 
 
@@ -459,8 +459,8 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 3  # 3 lvs tested
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -531,8 +531,8 @@ def test_gls_cli_single_smultixcan_input_full_all_lvs_in_model_file(output_file)
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 5  # 5 lvs tested (all in the model file)
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -611,12 +611,12 @@ def test_gls_cli_single_smultixcan_input_full_specify_gene_corrs(output_file):
 
     # results should be different across batches
     assert not np.allclose(
-        gtex_mashr_results["coef"].to_numpy(),
-        a1000g_en_results["coef"].to_numpy(),
+        gtex_mashr_results["beta"].to_numpy(),
+        a1000g_en_results["beta"].to_numpy(),
     )
     assert not np.allclose(
-        gtex_mashr_results["pvalue"].to_numpy(),
-        a1000g_en_results["pvalue"].to_numpy(),
+        gtex_mashr_results["pvalue_onesided"].to_numpy(),
+        a1000g_en_results["pvalue_onesided"].to_numpy(),
     )
 
 
@@ -689,12 +689,12 @@ def test_gls_cli_single_smultixcan_input_debug_use_ols(output_file):
 
     # results should be different across batches
     assert not np.allclose(
-        gls_results["coef"].to_numpy(),
-        ols_results["coef"].to_numpy(),
+        gls_results["beta"].to_numpy(),
+        ols_results["beta"].to_numpy(),
     )
     assert not np.allclose(
-        gls_results["pvalue"].to_numpy(),
-        ols_results["pvalue"].to_numpy(),
+        gls_results["pvalue_onesided"].to_numpy(),
+        ols_results["pvalue_onesided"].to_numpy(),
     )
 
 
@@ -1085,8 +1085,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 2  # 5 lvs tested (all in the model file)
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -1126,8 +1126,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 2  # 5 lvs tested (all in the model file)
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV3" in _lvs
     assert "LV4" in _lvs
@@ -1167,8 +1167,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 1  # 5 lvs tested (all in the model file)
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV5" in _lvs
     assert not output_data.isna().any().any()
@@ -1176,30 +1176,30 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
 
     # results should be different across batches
     assert not np.allclose(
-        batch1_values["coef"].to_numpy(),
-        batch2_values["coef"].to_numpy(),
+        batch1_values["beta"].to_numpy(),
+        batch2_values["beta"].to_numpy(),
     )
     assert not np.allclose(
-        batch1_values["pvalue"].to_numpy(),
-        batch2_values["pvalue"].to_numpy(),
-    )
-
-    assert not np.allclose(
-        batch1_values["coef"].to_numpy(),
-        batch3_values["coef"].to_numpy(),
-    )
-    assert not np.allclose(
-        batch1_values["pvalue"].to_numpy(),
-        batch3_values["pvalue"].to_numpy(),
+        batch1_values["pvalue_onesided"].to_numpy(),
+        batch2_values["pvalue_onesided"].to_numpy(),
     )
 
     assert not np.allclose(
-        batch2_values["coef"].to_numpy(),
-        batch3_values["coef"].to_numpy(),
+        batch1_values["beta"].to_numpy(),
+        batch3_values["beta"].to_numpy(),
     )
     assert not np.allclose(
-        batch2_values["pvalue"].to_numpy(),
-        batch3_values["pvalue"].to_numpy(),
+        batch1_values["pvalue_onesided"].to_numpy(),
+        batch3_values["pvalue_onesided"].to_numpy(),
+    )
+
+    assert not np.allclose(
+        batch2_values["beta"].to_numpy(),
+        batch3_values["beta"].to_numpy(),
+    )
+    assert not np.allclose(
+        batch2_values["pvalue_onesided"].to_numpy(),
+        batch3_values["pvalue_onesided"].to_numpy(),
     )
 
 
@@ -1238,8 +1238,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 1  # 1 lvs tested
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert not output_data.isna().any().any()
@@ -1277,8 +1277,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 1  # 1 lvs tested
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV2" in _lvs
     assert not output_data.isna().any().any()
@@ -1316,8 +1316,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 1  # 1 lvs tested
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV3" in _lvs
     assert not output_data.isna().any().any()
@@ -1355,8 +1355,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 1  # 1 lvs tested
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV4" in _lvs
     assert not output_data.isna().any().any()
@@ -1394,8 +1394,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 1  # 1 lvs tested
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV5" in _lvs
     assert not output_data.isna().any().any()
@@ -1436,8 +1436,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_is_1(
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 5  # 1 lvs tested
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -1485,8 +1485,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 3
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV1" in _lvs
     assert "LV2" in _lvs
@@ -1526,8 +1526,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 2  # 1 lvs tested
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV4" in _lvs
     assert "LV5" in _lvs
@@ -1566,8 +1566,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 2  # 1 lvs tested
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV6" in _lvs
     assert "LV7" in _lvs
@@ -1606,8 +1606,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     output_data = pd.read_csv(output_file, sep="\t")
     assert output_data.shape[0] == 2  # 1 lvs tested
     assert "lv" in output_data.columns
-    assert "coef" in output_data.columns
-    assert "pvalue" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
     _lvs = set(output_data["lv"].tolist())
     assert "LV8" in _lvs
     assert "LV9" in _lvs
