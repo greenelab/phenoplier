@@ -57,6 +57,7 @@ class GLSPhenoplier(object):
         gene_corrs_file_path: Path = None,
         debug_use_ols: bool = False,
         debug_use_sub_gene_corr: bool = False,
+        use_own_implementation: bool = False,
         logger="warnings_only",
     ):
         self.smultixcan_result_set_filepath = conf.PHENOMEXCAN[
@@ -69,7 +70,7 @@ class GLSPhenoplier(object):
             # by default, it loads gene correlations from GTEX_V8 and MASHR models
             input_dir_base = (
                 conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_CORRS_DIR"]
-                / "GTEX_V8".lower()
+                / "1000G".lower()
                 / "MASHR".lower()
             )
 
@@ -77,7 +78,7 @@ class GLSPhenoplier(object):
                 "GENE_CORRS_FILE_NAME_TEMPLATES"
             ]["GENE_CORR_AVG"].format(
                 prefix="",
-                suffix=f"-mean-gene_symbols",
+                suffix=f"-gene_symbols",
             )
 
             self.gene_corrs_file_path = input_dir_base / input_filename
@@ -87,11 +88,13 @@ class GLSPhenoplier(object):
         # self.sigma = sigma
         self.debug_use_ols = debug_use_ols
         self.debug_use_sub_gene_corr = debug_use_sub_gene_corr
+        self.use_own_implementation = use_own_implementation
 
         self.log_warning = None
         self.log_info = None
         self.set_logger(logger)
 
+        self.cov_inv = None
         self.lv_code = None
         self.phenotype_code = None
         self.model = None
@@ -321,40 +324,91 @@ class GLSPhenoplier(object):
             )
 
         # create training data
-        data = pd.DataFrame({"i": 1.0, "lv": x, "phenotype": y})
-        data = data.apply(lambda d: scale(d) if d.name != "i" else d)
+        data = pd.DataFrame(
+            {
+                "i": 1.0,
+                "lv": (x - x.mean()) / x.std(),
+                "phenotype": (y - y.mean()) / y.std(),
+            }
+        )
+        # data = data.apply(lambda d: scale(d) if d.name != "i" else d)
         assert not data.isna().any().any(), "Data contains NaN"
 
         self.log_info(f"Final number of genes in training data: {data.shape[0]}")
 
+        # self.lv_code = lv_code
+        # self.phenotype_code = y.name if isinstance(y, pd.Series) else None
+
         # create GLS model and fit
-        if gene_corrs is not None:
-            self.log_info("Using a Generalized Least Squares (GLS) model")
-            gls_model = sm.GLS(data["phenotype"], data[["i", "lv"]], sigma=gene_corrs)
-            gls_results = gls_model.fit()
+        if self.use_own_implementation:
+            if self.cov_inv is None:
+                cov_inv = np.linalg.inv(gene_corrs)
+                self.cov_inv = cov_inv
+            else:
+                cov_inv = self.cov_inv
+
+            Xn_cols = ["i", "lv"]
+            Xn = data[Xn_cols].to_numpy()
+            y_col = "phenotype"
+            yn = data[y_col].to_numpy()
+
+            df_res = Xn.shape[0] - Xn.shape[1]
+
+            x_cov_inv_x = np.linalg.inv(Xn.T @ cov_inv @ Xn)
+            b_hat = x_cov_inv_x @ Xn.T @ cov_inv @ yn
+            y_hat = Xn @ b_hat
+            error = y - y_hat
+            variance_b_hat = x_cov_inv_x
+
+            # my version
+            # variance_hat = (error.T @ cov_inv @ error) / (Xn.shape[0] - Xn.shape[1])
+            # book's version
+            variance_hat = (error.T @ error) / (Xn.shape[0] - Xn.shape[1])
+
+            se = np.sqrt(variance_hat) * np.sqrt(variance_b_hat.diagonal())
+            t_values = b_hat / se
+
+            class Results(object):
+                pass
+
+            self.results = Results()
+            self.results.params = pd.Series(b_hat, index=Xn_cols)
+            self.results.bse = pd.Series(se, index=Xn_cols)
+            self.results.tvalues = pd.Series(t_values, index=Xn_cols)
+            self.results.pvalues_onesided = pd.Series(
+                stats.t.sf(t_values, df_res), index=Xn_cols
+            )
+            self.results.pvalues = 2 * pd.Series(
+                stats.t.sf(np.abs(t_values), df_res), index=Xn_cols
+            )
         else:
-            self.log_info("Using a Ordinary Least Squares (OLS) model")
-            gls_model = sm.OLS(data["phenotype"], data[["i", "lv"]])
-            gls_results = gls_model.fit()
+            if gene_corrs is not None:
+                self.log_info("Using a Generalized Least Squares (GLS) model")
+                gls_model = sm.GLS(
+                    data["phenotype"], data[["i", "lv"]], sigma=gene_corrs
+                )
+                gls_results = gls_model.fit()
+            else:
+                self.log_info("Using a Ordinary Least Squares (OLS) model")
+                gls_model = sm.OLS(data["phenotype"], data[["i", "lv"]])
+                gls_results = gls_model.fit()
 
-        # add one-sided pvalue
-        # in this case we are only interested in testing whether the coeficient
-        # is positive (positive correlation between gene weights in an LV and
-        # gene associations for a trait). We are not interested if it is
-        # negative, since it does not seem to make much sense.
-        gls_results.pvalues_onesided = gls_results.pvalues.copy()
-        idx = gls_results.pvalues_onesided.index.tolist()
-        gls_results.pvalues_onesided.loc[idx] = stats.t.sf(
-            gls_results.tvalues.loc[idx], gls_results.df_resid
-        )
+            # add one-sided pvalue
+            # in this case we are only interested in testing whether the coeficient
+            # is positive (positive correlation between gene weights in an LV and
+            # gene associations for a trait). We are not interested if it is
+            # negative, since it does not seem to make much sense.
+            gls_results.pvalues_onesided = gls_results.pvalues.copy()
+            idx = gls_results.pvalues_onesided.index.tolist()
+            gls_results.pvalues_onesided.loc[idx] = stats.t.sf(
+                gls_results.tvalues.loc[idx], gls_results.df_resid
+            )
 
-        # save results
-        self.lv_code = lv_code
-        self.phenotype_code = y.name if isinstance(y, pd.Series) else None
-        self.model = gls_model
+            # save results
+            self.model = gls_model
 
-        self.results = gls_results
-        self.results_summary = gls_results.summary()
+            self.results = gls_results
+            self.results_summary = gls_results.summary()
 
         return self
 
