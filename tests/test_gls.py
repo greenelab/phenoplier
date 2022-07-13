@@ -21,6 +21,117 @@ DATA_DIR = (Path(__file__).parent / "data" / "gls").resolve()
 assert DATA_DIR.exists()
 
 
+def test_gls_random_phenotype0_lv1():
+    phenotype_code = 0
+    lv_code = "LV1"
+
+    y = pd.read_pickle(
+        DATA_DIR / f"multixcan-random_phenotype{phenotype_code}-pvalues.pkl.xz"
+    )
+
+    model = GLSPhenoplier(
+        use_own_implementation=True,
+        gene_corrs_file_path=DATA_DIR / "corr_mat_fixed.pkl.xz",
+    )
+    model.fit_named(lv_code, y)
+
+    obs_coef = model.results.params.loc["lv"]
+    obs_coef_se = model.results.bse.loc["lv"]
+    obs_tvalue = model.results.tvalues.loc["lv"]
+    obs_pval_twosided = model.results.pvalues.loc["lv"]
+    obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+
+    exp_coef = -0.00047704516235583206
+    exp_coef_se = 0.0036681089173670593
+    exp_tvalue = -0.13005207127225968
+    exp_pval_twosided = 0.8965292913179314
+    exp_res_df = 6440
+    exp_pval_onesided = stats.t.sf(exp_tvalue, exp_res_df)
+
+    # check
+    assert obs_coef is not None
+    assert isinstance(obs_coef, float)
+    assert obs_coef == pytest.approx(exp_coef, rel=1e-10)
+    assert obs_coef_se == pytest.approx(exp_coef_se, rel=1e-2)
+    assert obs_tvalue == pytest.approx(exp_tvalue, rel=1e-2)
+    assert obs_pval_twosided == pytest.approx(exp_pval_twosided, rel=1e-2)
+    assert obs_pval_onesided == pytest.approx(exp_pval_onesided, rel=1e-3)
+
+
+def test_gls_random_phenotype10_lv10():
+    phenotype_code = 10
+    lv_code = "LV10"
+
+    y = pd.read_pickle(
+        DATA_DIR / f"multixcan-random_phenotype{phenotype_code}-pvalues.pkl.xz"
+    )
+
+    model = GLSPhenoplier(
+        use_own_implementation=True,
+        gene_corrs_file_path=DATA_DIR / "corr_mat_fixed.pkl.xz",
+    )
+    model.fit_named(lv_code, y)
+
+    obs_coef = model.results.params.loc["lv"]
+    obs_coef_se = model.results.bse.loc["lv"]
+    obs_tvalue = model.results.tvalues.loc["lv"]
+    obs_pval_twosided = model.results.pvalues.loc["lv"]
+    obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+
+    exp_coef = -0.009080664541144956
+    exp_coef_se = 0.007642176496737248
+    exp_tvalue = -1.1882301521067795
+    exp_pval_twosided = 0.2347865648578187
+    exp_res_df = 6440
+    exp_pval_onesided = stats.t.sf(exp_tvalue, exp_res_df)
+
+    # check
+    assert obs_coef is not None
+    assert isinstance(obs_coef, float)
+    assert obs_coef == pytest.approx(exp_coef, rel=1e-10)
+    assert obs_coef_se == pytest.approx(exp_coef_se, rel=1e-2)
+    assert obs_tvalue == pytest.approx(exp_tvalue, rel=1e-2)
+    assert obs_pval_twosided == pytest.approx(exp_pval_twosided, rel=5e-2)
+    assert obs_pval_onesided == pytest.approx(exp_pval_onesided, rel=1e-2)
+
+
+def test_gls_real_pheno_whooping_cough_lv100():
+    phenotype_code = "whooping_cough"
+    lv_code = "LV100"
+
+    y = pd.read_pickle(
+        DATA_DIR / f"multixcan-phenomexcan-{phenotype_code}-pvalues.pkl.xz"
+    )
+
+    model = GLSPhenoplier(
+        use_own_implementation=True,
+        gene_corrs_file_path=DATA_DIR / "corr_mat_fixed.pkl.xz",
+    )
+    model.fit_named(lv_code, y)
+
+    obs_coef = model.results.params.loc["lv"]
+    obs_coef_se = model.results.bse.loc["lv"]
+    obs_tvalue = model.results.tvalues.loc["lv"]
+    obs_pval_twosided = model.results.pvalues.loc["lv"]
+    obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+
+    exp_coef = -0.01924107338805289
+    exp_coef_se = 0.00417985154437976
+    exp_tvalue = -4.603291093896502
+    exp_pval_twosided = 4.2383656497944205e-06
+    exp_res_df = 6448
+    exp_pval_onesided = stats.t.sf(exp_tvalue, exp_res_df)
+
+    # check
+    assert obs_coef is not None
+    assert isinstance(obs_coef, float)
+    assert obs_coef == pytest.approx(exp_coef, rel=1e-10)
+    assert obs_coef_se == pytest.approx(exp_coef_se, rel=5e-2)
+    assert obs_tvalue == pytest.approx(exp_tvalue, rel=5e-2)
+    assert obs_pval_twosided == pytest.approx(exp_pval_twosided, abs=1e-5, rel=1e-2)
+    assert obs_pval_onesided == pytest.approx(exp_pval_onesided, rel=1e-5)
+
+
 def test_one_sided_pvalue_coef_positive():
     model = GLSPhenoplier(conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"])
     model.fit_named("LV603", "Astle_et_al_2016_Neutrophil_count")
