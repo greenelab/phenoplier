@@ -219,8 +219,9 @@ full_corr_matrix.shape
 
 # %%
 # make sure all elements in the diagonal are ones/1.0
-full_corr_matrix[full_corr_matrix > 1.0] = 1.0
-np.fill_diagonal(full_corr_matrix.values, 1.0)
+# maybe it's not a good idea to modify the matrix after being adjusted for positive definiteness
+# full_corr_matrix[full_corr_matrix > 1.0] = 1.0
+# np.fill_diagonal(full_corr_matrix.values, 1.0)
 
 # %%
 full_corr_matrix
@@ -229,7 +230,7 @@ full_corr_matrix
 # ## Some checks
 
 # %%
-assert np.all(full_corr_matrix.to_numpy().diagonal() == 1.0)
+# assert np.all(full_corr_matrix.to_numpy().diagonal() == 1.0)
 
 # %%
 # check that all genes have a value
@@ -240,12 +241,12 @@ _min_val = full_corr_matrix.min().min()
 display(_min_val)
 # sometimes, if using statsmodels.GLS and after adjusting correlation matrices,
 # correlations are lower than zero
-assert _min_val >= -1e-10
+assert _min_val >= -1e-3
 
 # %%
 _max_val = full_corr_matrix.max().max()  # this will capture the 1.0 in the diagonal
 display(_max_val)
-assert _max_val <= 1.0
+assert _max_val <= 1.01
 
 # %%
 # Check that matrix is invertible
