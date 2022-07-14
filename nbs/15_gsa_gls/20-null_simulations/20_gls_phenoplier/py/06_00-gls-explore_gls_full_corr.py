@@ -481,39 +481,6 @@ qqplot_unif(results)
 # **Note**: looks similar to LV769. This one has smaller minimum p-values.
 
 # %% [markdown]
-# ## Notes
-
-# %% [markdown]
-# **TODO UPDATE**
-#
-# There are LVs with high mean type I errors that have different properties:
-#
-# 1. LVs like LV45-LV110 (the first ones) have:
-#     1. Smaller minimum p-values (qqplots deviate late and quickly), with -log(p) around 10 or 20.
-#     1. High gene weights (around 6 to 9)...
-#     1. Genes from the same band at the top.
-#     1. Relatively fewer genes with non-zero (> 0) weights, from ~400 to ~1600.
-#     1. Cytobands usually have 1 or 2 genes with non-zero weight, but there are some with many genes.
-#         * LV45 has a single band with 13 genes, and all the rest have 8 or less...
-#         * ... whereas the rest of these LVs have many bands with many genes (this could explain why LV45 is the worst).
-#
-# 1. LVs like LV769 have:
-#     1. Larger p-values (qqplots deviate early) with -log10(p) around 4
-#     1. Lower gene weights (around 2 to 4).
-#     1. Genes at the top are not from the same band.
-#     1. Larger number of genes with non-zero (> 0) weights, more than 2400.
-#     1. Same pattern regarding cybands.
-#
-# 1. LVs like LV800 are mixed between the other two:
-#     1. QQ plots show early deviation but also smaller minimum pvalues.
-#     1. Lower gene weights (less than 2)
-#     1. Gene weights are a bit more uniform in LV800, with more genes having similar weights around 0.75 or 1.00.
-#     1. Genes at the top are from the same band.
-#     1. Same pattern regarding cybands.
-#
-# Besides the ratio of genes with non-zero weights and zero, I didn't find any distinction **among genes with zero weight**.
-
-# %% [markdown]
 # # LVs with expected mean type I error
 
 # %%
@@ -615,12 +582,6 @@ show_prop(results, 0.20)
 qqplot_unif(results)
 
 # %% [markdown]
-# **Note**
-
-# %% [markdown]
-# Here the distribution do differ, this is more similar to LV769.
-
-# %% [markdown]
 # ## LV647
 
 # %%
@@ -662,17 +623,5 @@ show_prop(results, 0.20)
 
 # %%
 qqplot_unif(results)
-
-# %% [markdown]
-# **Note**
-
-# %% [markdown]
-# # Conclusions
-
-# %% [markdown]
-# Looks like not-well-calibrated LVs are due to either:
-# * Too many top genes from the same band.
-# * Or not matched distributions of band sizes between zero and non-zero weighted genes.
-# * Too many large bands among the top genes.
 
 # %%
