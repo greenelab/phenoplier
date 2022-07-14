@@ -1,6 +1,6 @@
 #!/bin/bash
 # BSUB -J random_pheno${pheno_id}
-# BSUB -cwd _tmp/gls_phenoplier_lv45
+# BSUB -cwd _tmp/gls_phenoplier_test
 # BSUB -oo random_pheno${pheno_id}.%J.out
 # BSUB -eo random_pheno${pheno_id}.%J.error
 # -#BSUB -u miltondp@gmail.com
@@ -27,7 +27,7 @@ INPUT_SMULTIXCAN_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan"
 
 # 1000G / MASHR
 GENE_CORR_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_GENE_CORRS_DIR}/1000g/mashr/multiplier_genes-gene_correlations-gene_symbols.pkl"
-OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-1000g_mashr-test_full_gene_corrs"
+OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-1000g_mashr-test-full_corr"
 
 mkdir -p ${OUTPUT_DIR}
 
