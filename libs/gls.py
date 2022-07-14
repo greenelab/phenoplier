@@ -342,7 +342,8 @@ class GLSPhenoplier(object):
         # create GLS model and fit
         if self.use_own_implementation:
             if self.cov_inv is None:
-                cov_inv = np.linalg.inv(gene_corrs)
+                chol_mat = np.linalg.cholesky(gene_corrs)
+                cov_inv = np.linalg.inv(chol_mat)
                 self.cov_inv = cov_inv
             else:
                 cov_inv = self.cov_inv
@@ -352,35 +353,61 @@ class GLSPhenoplier(object):
             y_col = "phenotype"
             yn = data[y_col].to_numpy()
 
-            df_res = Xn.shape[0] - Xn.shape[1]
+            Xn = cov_inv @ Xn
+            yn = cov_inv @ yn
 
-            x_cov_inv_x = np.linalg.inv(Xn.T @ cov_inv @ Xn)
-            b_hat = x_cov_inv_x @ Xn.T @ cov_inv @ yn
-            y_hat = Xn @ b_hat
-            error = y - y_hat
-            variance_b_hat = x_cov_inv_x
-
-            # my version
-            # variance_hat = (error.T @ cov_inv @ error) / (Xn.shape[0] - Xn.shape[1])
-            # book's version
-            variance_hat = (error.T @ error) / (Xn.shape[0] - Xn.shape[1])
-
-            se = np.sqrt(variance_hat) * np.sqrt(variance_b_hat.diagonal())
-            t_values = b_hat / se
-
-            class Results(object):
-                pass
-
-            self.results = Results()
-            self.results.params = pd.Series(b_hat, index=Xn_cols)
-            self.results.bse = pd.Series(se, index=Xn_cols)
-            self.results.tvalues = pd.Series(t_values, index=Xn_cols)
-            self.results.pvalues_onesided = pd.Series(
-                stats.t.sf(t_values, df_res), index=Xn_cols
+            data = pd.DataFrame(
+                {
+                    "i": Xn[:, 0],
+                    "lv": Xn[:, 1],
+                    "phenotype": yn,
+                }
             )
-            self.results.pvalues = 2 * pd.Series(
-                stats.t.sf(np.abs(t_values), df_res), index=Xn_cols
+
+            gls_model = sm.OLS(data["phenotype"], data[["i", "lv"]])
+            gls_results = gls_model.fit()
+
+            gls_results.pvalues_onesided = gls_results.pvalues.copy()
+            idx = gls_results.pvalues_onesided.index.tolist()
+            gls_results.pvalues_onesided.loc[idx] = stats.t.sf(
+                gls_results.tvalues.loc[idx], gls_results.df_resid
             )
+
+            # save results
+            self.model = gls_model
+
+            self.results = gls_results
+            self.results_summary = gls_results.summary()
+
+            # df_res = Xn.shape[0] - Xn.shape[1]
+            #
+            # x_cov_inv_x = np.linalg.inv(Xn.T @ cov_inv @ Xn)
+            # b_hat = x_cov_inv_x @ Xn.T @ cov_inv @ yn
+            # y_hat = Xn @ b_hat
+            # error = y - y_hat
+            # variance_b_hat = x_cov_inv_x
+            #
+            # # my version
+            # # variance_hat = (error.T @ cov_inv @ error) / (Xn.shape[0] - Xn.shape[1])
+            # # book's version
+            # variance_hat = (error.T @ error) / (Xn.shape[0] - Xn.shape[1])
+            #
+            # se = np.sqrt(variance_hat) * np.sqrt(variance_b_hat.diagonal())
+            # t_values = b_hat / se
+            #
+            # class Results(object):
+            #     pass
+            #
+            # self.results = Results()
+            # self.results.params = pd.Series(b_hat, index=Xn_cols)
+            # self.results.bse = pd.Series(se, index=Xn_cols)
+            # self.results.tvalues = pd.Series(t_values, index=Xn_cols)
+            # self.results.pvalues_onesided = pd.Series(
+            #     stats.t.sf(t_values, df_res), index=Xn_cols
+            # )
+            # self.results.pvalues = 2 * pd.Series(
+            #     stats.t.sf(np.abs(t_values), df_res), index=Xn_cols
+            # )
         else:
             if gene_corrs is not None:
                 self.log_info("Using a Generalized Least Squares (GLS) model")
