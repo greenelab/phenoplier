@@ -256,6 +256,10 @@ PHENOMEXCAN["FASTENLOC_TORUS_RCP_FILE"] = Path(
 PHENOMEXCAN["FASTENLOC_EFO_PARTIAL_TORUS_RCP_FILE"] = Path(
     PHENOMEXCAN["GENE_ASSOC_DIR"], "fastenloc-efo_partial-torus-rcp.pkl"
 ).resolve()
+# raw results
+PHENOMEXCAN["SMULTIXCAN_MASHR_RESULTS_DIR"] = Path(
+    PHENOMEXCAN["GENE_ASSOC_DIR"], "smultixcan"
+).resolve()
 
 # GWAS info
 PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"] = Path(
