@@ -341,12 +341,19 @@ class GLSPhenoplier(object):
 
         # create GLS model and fit
         if self.use_own_implementation:
-            if self.cov_inv is None:
+            # cache the Cholesky matrix only if we are using the full
+            # correlation matrix; otherwise, the correlation matrix is different
+            # for each LV
+            if self.debug_use_sub_gene_corr:
                 chol_mat = np.linalg.cholesky(gene_corrs)
                 cov_inv = np.linalg.inv(chol_mat)
-                self.cov_inv = cov_inv
             else:
-                cov_inv = self.cov_inv
+                if self.cov_inv is None:
+                    chol_mat = np.linalg.cholesky(gene_corrs)
+                    cov_inv = np.linalg.inv(chol_mat)
+                    self.cov_inv = cov_inv
+                else:
+                    cov_inv = self.cov_inv
 
             Xn_cols = ["i", "lv"]
             Xn = data[Xn_cols].to_numpy()
