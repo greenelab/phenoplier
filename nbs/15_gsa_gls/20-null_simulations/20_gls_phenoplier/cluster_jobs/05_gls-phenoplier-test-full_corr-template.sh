@@ -1,6 +1,6 @@
 #!/bin/bash
-# BSUB -J random_pheno${pheno_id}-${batch_id}
-# BSUB -cwd _tmp/gls_phenoplier
+# BSUB -J random_pheno${pheno_id}
+# BSUB -cwd _tmp/gls_phenoplier_lv45
 # BSUB -oo random_pheno${pheno_id}.%J.out
 # BSUB -eo random_pheno${pheno_id}.%J.error
 # -#BSUB -u miltondp@gmail.com
@@ -27,14 +27,13 @@ INPUT_SMULTIXCAN_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan"
 
 # 1000G / MASHR
 GENE_CORR_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_GENE_CORRS_DIR}/1000g/mashr/multiplier_genes-gene_correlations-gene_symbols.pkl"
-OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-1000g_mashr"
+OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-1000g_mashr-test_full_gene_corrs"
 
 mkdir -p ${OUTPUT_DIR}
 
 bash ${CODE_DIR}/01_gls_phenoplier.sh \
   --input-file ${INPUT_SMULTIXCAN_DIR}/random.pheno${pheno_id}-gtex_v8-mashr-smultixcan.txt \
   --gene-corr-file ${GENE_CORR_FILE} \
-  --batch-id ${batch_id} \
-  --batch-n-splits ${batch_n_splits} \
-  --output-file ${OUTPUT_DIR}/random.pheno${pheno_id}-batch${batch_id}_${batch_n_splits}-gls_phenoplier.tsv.gz
+  --lv-list "LV45 LV234 LV847 LV110 LV769 LV800 LV412 LV57 LV647" \
+  --output-file ${OUTPUT_DIR}/random.pheno${pheno_id}-gls_phenoplier.tsv.gz
 
