@@ -145,6 +145,8 @@ RESULTS["CRISPR_ANALYSES"]["BASE_DIR"] = Path(
 
 RESULTS["GLS"] = Path(RESULTS["BASE_DIR"], "gls").resolve()
 RESULTS["GLS_NULL_SIMS"] = Path(RESULTS["GLS"], "null_sims").resolve()
+RESULTS["GLS_PHENOMEXCAN"] = Path(RESULTS["GLS"], "phenomexcan").resolve()
+RESULTS["GLS_EMERGE"] = Path(RESULTS["GLS"], "emerge").resolve()
 
 
 #
