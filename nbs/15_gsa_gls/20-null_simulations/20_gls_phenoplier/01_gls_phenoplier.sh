@@ -37,8 +37,13 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    -l|--debug-use-ols)
+    --debug-use-ols)
       DEBUG_USE_OLS="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    --debug-use-sub-gene-corr)
+      DEBUG_USE_SUB_CORR="$2"
       shift # past argument
       shift # past value
       ;;
@@ -98,6 +103,10 @@ elif [ ! -z "${DEBUG_USE_OLS}" ]; then
 else
   echo "Wrong arguments"
   exit 1
+fi
+
+if [ ! -z "${DEBUG_USE_SUB_CORR}" ]; then
+  GENE_CORRS_ARGS="${GENE_CORRS_ARGS} --debug-use-sub-gene-corr"
 fi
 
 BATCH_ARGS=""
