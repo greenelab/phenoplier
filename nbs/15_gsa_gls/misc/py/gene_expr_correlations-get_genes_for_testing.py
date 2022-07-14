@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# **TODO** update
+# This notebook explore genes closeby and far way to create test cases for the SSM correlation method.
 
 # %% [markdown] tags=[]
 # # Modules
@@ -39,10 +39,6 @@ from entity import Gene
 
 # %% [markdown] tags=[]
 # # Settings
-
-# %% tags=[]
-INPUT_DIR = conf.RESULTS["GLS_NULL_SIMS"] / "phenoplier"
-display(INPUT_DIR)
 
 # %% [markdown]
 # # Load MultiXcan genes present in results
