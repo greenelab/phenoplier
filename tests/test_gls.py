@@ -95,6 +95,72 @@ def test_gls_coef_negative_full_matrix_random_phenotype():
     assert obs_pval_onesided == pytest.approx(exp_pval_onesided, rel=1e-5)
 
 
+def test_gls_full_matrix_same_model_different_lvs():
+    # run on same phenotype, but different lvs, using the same model
+    # this mimics the use of GLSPhenoplier by gls_cli.py (console)
+    phenotype_code = 6
+
+    y = pd.read_pickle(
+        DATA_DIR / f"multixcan-random_phenotype{phenotype_code}-pvalues.pkl.xz"
+    )
+
+    model = GLSPhenoplier(
+        use_own_implementation=True,
+        gene_corrs_file_path=DATA_DIR / "corr_mat.pkl.xz",
+        debug_use_sub_gene_corr=False,
+    )
+
+    # first LV
+    lv_code = "LV45"
+    model.fit_named(lv_code, y)
+
+    obs_coef = model.results.params.loc["lv"]
+    obs_coef_se = model.results.bse.loc["lv"]
+    obs_tvalue = model.results.tvalues.loc["lv"]
+    obs_pval_twosided = model.results.pvalues.loc["lv"]
+    obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+
+    exp_coef = 0.003810795472142111
+    exp_coef_se = 0.012271545160174927
+    exp_tvalue = 0.310539171913685
+    exp_pval_twosided = 0.7561610253800751
+    exp_pval_onesided = 0.37808051269003756
+
+    # check
+    assert obs_coef is not None
+    assert isinstance(obs_coef, float)
+    assert obs_coef == pytest.approx(exp_coef, rel=1e-5)
+    assert obs_coef_se == pytest.approx(exp_coef_se, rel=1e-5)
+    assert obs_tvalue == pytest.approx(exp_tvalue, rel=1e-5)
+    assert obs_pval_twosided == pytest.approx(exp_pval_twosided, rel=1e-5)
+    assert obs_pval_onesided == pytest.approx(exp_pval_onesided, rel=1e-5)
+
+    # second LV
+    lv_code = "LV455"
+    model.fit_named(lv_code, y)
+
+    obs_coef = model.results.params.loc["lv"]
+    obs_coef_se = model.results.bse.loc["lv"]
+    obs_tvalue = model.results.tvalues.loc["lv"]
+    obs_pval_twosided = model.results.pvalues.loc["lv"]
+    obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+
+    exp_coef = 8.650711873537164e-05
+    exp_coef_se = 0.00018035107257825515
+    exp_tvalue = 0.47965957451035285
+    exp_pval_twosided = 0.6314857662460573
+    exp_pval_onesided = 0.3157428831230287
+
+    # check
+    assert obs_coef is not None
+    assert isinstance(obs_coef, float)
+    assert obs_coef == pytest.approx(exp_coef, rel=1e-5)
+    assert obs_coef_se == pytest.approx(exp_coef_se, rel=1e-5)
+    assert obs_tvalue == pytest.approx(exp_tvalue, rel=1e-5)
+    assert obs_pval_twosided == pytest.approx(exp_pval_twosided, rel=1e-5)
+    assert obs_pval_onesided == pytest.approx(exp_pval_onesided, rel=1e-5)
+
+
 def test_gls_coef_negative_sub_matrix_random_phenotype():
     phenotype_code = 6
     lv_code = "LV45"
@@ -206,6 +272,72 @@ def test_gls_coef_positive_sub_matrix_random_phenotype0_lv800():
     assert obs_pval_onesided == pytest.approx(exp_pval_onesided, rel=1e-10)
 
 
+def test_gls_sub_matrix_same_model_different_lvs():
+    # run on same phenotype, but different lvs, using the same model
+    # this mimics the use of GLSPhenoplier by gls_cli.py (console)
+    phenotype_code = 6
+
+    y = pd.read_pickle(
+        DATA_DIR / f"multixcan-random_phenotype{phenotype_code}-pvalues.pkl.xz"
+    )
+
+    model = GLSPhenoplier(
+        use_own_implementation=True,
+        gene_corrs_file_path=DATA_DIR / "corr_mat.pkl.xz",
+        debug_use_sub_gene_corr=True,
+    )
+
+    # first LV
+    lv_code = "LV45"
+    model.fit_named(lv_code, y)
+
+    obs_coef = model.results.params.loc["lv"]
+    obs_coef_se = model.results.bse.loc["lv"]
+    obs_tvalue = model.results.tvalues.loc["lv"]
+    obs_pval_twosided = model.results.pvalues.loc["lv"]
+    obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+
+    exp_coef = -0.012985100862501646
+    exp_coef_se = 0.011620815913625014
+    exp_tvalue = -1.117400099873973
+    exp_pval_twosided = 0.2638649762970155
+    exp_pval_onesided = 0.8680675118514922
+
+    # check
+    assert obs_coef is not None
+    assert isinstance(obs_coef, float)
+    assert obs_coef == pytest.approx(exp_coef, rel=1e-5)
+    assert obs_coef_se == pytest.approx(exp_coef_se, rel=1e-5)
+    assert obs_tvalue == pytest.approx(exp_tvalue, rel=1e-5)
+    assert obs_pval_twosided == pytest.approx(exp_pval_twosided, rel=1e-5)
+    assert obs_pval_onesided == pytest.approx(exp_pval_onesided, rel=1e-5)
+
+    # second LV
+    lv_code = "LV455"
+    model.fit_named(lv_code, y)
+
+    obs_coef = model.results.params.loc["lv"]
+    obs_coef_se = model.results.bse.loc["lv"]
+    obs_tvalue = model.results.tvalues.loc["lv"]
+    obs_pval_twosided = model.results.pvalues.loc["lv"]
+    obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+
+    exp_coef = 0.005579886461567623
+    exp_coef_se = 0.011701985846626066
+    exp_tvalue = 0.4768324397842631
+    exp_pval_twosided = 0.6334976228046719
+    exp_pval_onesided = 0.31674881140233596
+
+    # check
+    assert obs_coef is not None
+    assert isinstance(obs_coef, float)
+    assert obs_coef == pytest.approx(exp_coef, rel=1e-5)
+    assert obs_coef_se == pytest.approx(exp_coef_se, rel=1e-5)
+    assert obs_tvalue == pytest.approx(exp_tvalue, rel=1e-5)
+    assert obs_pval_twosided == pytest.approx(exp_pval_twosided, rel=1e-5)
+    assert obs_pval_onesided == pytest.approx(exp_pval_onesided, rel=1e-5)
+
+
 def test_gls_real_pheno_coef_positive_whooping_cough_lv570():
     phenotype_code = "whooping_cough"
     lv_code = "LV570"
@@ -231,8 +363,7 @@ def test_gls_real_pheno_coef_positive_whooping_cough_lv570():
     exp_coef_se = 0.010343425212644251
     exp_tvalue = 0.971844364565006
     exp_pval_twosided = 0.3311644354099884
-    exp_res_df = 6448
-    exp_pval_onesided = stats.t.sf(exp_tvalue, exp_res_df)
+    exp_pval_onesided = 0.1655822177049942
 
     # check
     assert obs_coef is not None
@@ -269,9 +400,7 @@ def test_gls_real_pheno_coef_negative_wheezing_lv400():
     exp_coef_se = 0.01198940412636518
     exp_tvalue = -7.925066316609398
     exp_pval_twosided = 2.6672597928016686e-15
-    exp_res_df = 6448
-    exp_pval_onesided = stats.t.sf(exp_tvalue, exp_res_df)
-    assert exp_pval_onesided > 0.50
+    exp_pval_onesided = 0.9999999999999987
 
     # check
     assert obs_coef is not None
