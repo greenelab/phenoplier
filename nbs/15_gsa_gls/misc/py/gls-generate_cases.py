@@ -597,6 +597,51 @@ y.sort_values(ascending=False).head()
 y.to_pickle(OUTPUT_DIR / f"{phenotype_name}.pkl.xz")
 
 # %% [markdown]
+# ## Random phenotype 6 / LV455
+
+# %%
+lv_code = "LV455"
+phenotype_code = 6
+
+phenotype_name = f"multixcan-random_phenotype{phenotype_code}-pvalues"
+display(phenotype_name)
+
+# %%
+X, y = get_data(lv_code, random_phenotype_code=phenotype_code)
+corr_mat = get_aligned_corr_mat(X, perc=PERC_NONZERO_GENES)
+
+Xs, ys = standardize_data(X, y)
+_gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
+
+# %%
+print(_gls_results.summary())
+
+# %%
+# for debugging purposes I print the OLS results also
+_tmp_model = sm.OLS(y, X)
+_tmp_results = _tmp_model.fit()
+print(_tmp_results.summary())
+
+# %%
+# print full numbers
+with np.printoptions(threshold=sys.maxsize, precision=20):
+    print(_gls_results.params.to_numpy()[1])
+    print(_gls_results.bse.to_numpy()[1])
+    print(_gls_results.tvalues.to_numpy()[1])
+    print(_gls_results.pvalues.to_numpy()[1])
+    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+
+# %%
+X.sort_values(lv_code, ascending=False).head()
+
+# %%
+y.sort_values(ascending=False).head()
+
+# %%
+# save phenotype
+y.to_pickle(OUTPUT_DIR / f"{phenotype_name}.pkl.xz")
+
+# %% [markdown]
 # ## Random phenotype 10 / LV100
 
 # %%
