@@ -4,8 +4,8 @@ from functools import lru_cache
 import numpy as np
 import pandas as pd
 from scipy import stats
+from scipy import sparse
 import statsmodels.api as sm
-from sklearn.preprocessing import scale
 
 import conf
 from entity import Gene
@@ -83,6 +83,9 @@ class GLSPhenoplier(object):
 
             self.gene_corrs_file_path = input_dir_base / input_filename
         else:
+            if isinstance(gene_corrs_file_path, str):
+                gene_corrs_file_path = Path(gene_corrs_file_path)
+
             self.gene_corrs_file_path = gene_corrs_file_path
         # sigma is disabled, but left here for future reference (debugging)
         # self.sigma = sigma
@@ -255,12 +258,12 @@ class GLSPhenoplier(object):
         """
         lv_weights = GLSPhenoplier._get_lv_weights(lv_weights_file)
         gene_corrs = None
-        if not self.debug_use_ols:
+        if not self.debug_use_ols and self.gene_corrs_file_path.is_file():
             gene_corrs = GLSPhenoplier._get_gene_corrs(self.gene_corrs_file_path)
 
         x = lv_weights[lv_code]
 
-        if self.debug_use_sub_gene_corr:
+        if self.debug_use_sub_gene_corr and self.gene_corrs_file_path.is_file():
             self.log_info(
                 f"Using submatrix of gene correlations with nonzero genes in {lv_code}"
             )
@@ -308,6 +311,7 @@ class GLSPhenoplier(object):
         # remove missing values from gene-trait associations
         n_genes_orig = y.shape[0]
         y = y.dropna()
+        assert not y.isin([np.inf, -np.inf]).any().any(), "y contains inf values"
         n_genes_without_nan = y.shape[0]
         if n_genes_orig != n_genes_without_nan:
             self.log_warning(
@@ -331,7 +335,6 @@ class GLSPhenoplier(object):
                 "phenotype": (y - y.mean()) / y.std(),
             }
         )
-        # data = data.apply(lambda d: scale(d) if d.name != "i" else d)
         assert not data.isna().any().any(), "Data contains NaN"
 
         self.log_info(f"Final number of genes in training data: {data.shape[0]}")
@@ -340,13 +343,31 @@ class GLSPhenoplier(object):
         # self.phenotype_code = y.name if isinstance(y, pd.Series) else None
 
         # create GLS model and fit
-        if self.use_own_implementation:
+        if not self.debug_use_ols and self.use_own_implementation:
             # cache the Cholesky matrix only if we are using the full
             # correlation matrix; otherwise, the correlation matrix is different
             # for each LV
             if self.debug_use_sub_gene_corr:
-                chol_mat = np.linalg.cholesky(gene_corrs)
-                cov_inv = np.linalg.inv(chol_mat)
+                if gene_corrs is not None:
+                    # gene_corrs was given, meaning that it is a file
+                    chol_mat = np.linalg.cholesky(gene_corrs)
+                    cov_inv = np.linalg.inv(chol_mat)
+                elif self.gene_corrs_file_path.is_dir():
+                    # gene_corrs is None and file to gene_corrs is directory
+                    gene_names = GLSPhenoplier.load_chol_inv_data(
+                        self.gene_corrs_file_path, "gene_names"
+                    )
+                    cov_inv = GLSPhenoplier.load_chol_inv_data(
+                        self.gene_corrs_file_path, lv_code
+                    )
+
+                    # align data to gene names in cov_inv
+                    data = data.loc[gene_names]
+                    assert not data.isna().any(
+                        None
+                    ), "Data has NaN after aligning with cov_inv"
+                else:
+                    raise ValueError("Bad combination of arguments")
             else:
                 if self.cov_inv is None:
                     chol_mat = np.linalg.cholesky(gene_corrs)
@@ -385,36 +406,6 @@ class GLSPhenoplier(object):
 
             self.results = gls_results
             self.results_summary = gls_results.summary()
-
-            # df_res = Xn.shape[0] - Xn.shape[1]
-            #
-            # x_cov_inv_x = np.linalg.inv(Xn.T @ cov_inv @ Xn)
-            # b_hat = x_cov_inv_x @ Xn.T @ cov_inv @ yn
-            # y_hat = Xn @ b_hat
-            # error = y - y_hat
-            # variance_b_hat = x_cov_inv_x
-            #
-            # # my version
-            # # variance_hat = (error.T @ cov_inv @ error) / (Xn.shape[0] - Xn.shape[1])
-            # # book's version
-            # variance_hat = (error.T @ error) / (Xn.shape[0] - Xn.shape[1])
-            #
-            # se = np.sqrt(variance_hat) * np.sqrt(variance_b_hat.diagonal())
-            # t_values = b_hat / se
-            #
-            # class Results(object):
-            #     pass
-            #
-            # self.results = Results()
-            # self.results.params = pd.Series(b_hat, index=Xn_cols)
-            # self.results.bse = pd.Series(se, index=Xn_cols)
-            # self.results.tvalues = pd.Series(t_values, index=Xn_cols)
-            # self.results.pvalues_onesided = pd.Series(
-            #     stats.t.sf(t_values, df_res), index=Xn_cols
-            # )
-            # self.results.pvalues = 2 * pd.Series(
-            #     stats.t.sf(np.abs(t_values), df_res), index=Xn_cols
-            # )
         else:
             if gene_corrs is not None:
                 self.log_info("Using a Generalized Least Squares (GLS) model")
@@ -472,3 +463,15 @@ class GLSPhenoplier(object):
             raise ValueError(
                 "Wrong phenotype data type. Should be str or pandas.Series (with gene symbols as index)"
             )
+
+    @staticmethod
+    def load_chol_inv_data(input_dir, base_filename):
+        full_filepath = input_dir / (base_filename + ".npz")
+        assert (
+            full_filepath.exists()
+        ), f"Input file does not exist: {str(full_filepath)}"
+
+        if base_filename in ("metadata", "gene_names"):
+            return np.load(full_filepath)["data"]
+        else:
+            return sparse.load_npz(full_filepath).toarray()
