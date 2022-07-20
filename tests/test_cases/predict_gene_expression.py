@@ -6,6 +6,8 @@ Modify parameters section below to change the genes or tissue.
 """
 
 import sqlite3
+import warnings
+import time
 
 from IPython.display import display
 import pandas as pd
@@ -15,9 +17,15 @@ import conf
 
 # Parameter (change this as needed)
 #   Genes should be in the same chromosome.
-gene0_id = "ENSG00000000938"
-gene1_id = "ENSG00000004455"
-tissue_name = "Whole_Blood"
+gene0_id = "ENSG00000169750"
+gene1_id = "ENSG00000121101"
+tissue_name = "Brain_Cortex"
+snps_subset = {
+    # first gene snps: all of them
+    "chr17_82032100_A_T_b38",
+    # second gene snps: remove chr17_58690513_G_A_b38
+    "chr17_58695876_A_G_b38",
+}
 
 # get gene prediction weights
 base_prediction_model_dir = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"]
@@ -44,12 +52,29 @@ assert gene0_chr == gene1_chr
 # get gene variants
 gene_variants = gene0["varID"].tolist() + gene1["varID"].tolist()
 assert len(gene_variants) == len(set(gene_variants))
+if snps_subset is not None:
+    if len(snps_subset.intersection(gene_variants)) >= len(gene_variants):
+        warnings.warn(
+            "snps_subsets is not removing any variants from predictions models. WAITING 5 seconds"
+        )
+        time.sleep(5)
+
+    # keep only variants in snps_subset
+    gene_variants = list(snps_subset.intersection(gene_variants))
 
 # get intersection of gene variants with variants in parquet file
 base_reference_panel_dir = conf.PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"]
 
 pf = ParquetFile(str(base_reference_panel_dir / f"{gene0_chr}.variants.parquet"))
 pf_variants = set(pf.columns)
+
+if snps_subset is not None:
+    if len(snps_subset.intersection(pf_variants)) != len(snps_subset):
+        warnings.warn(
+            "Some SNPs in snps_subset are not present in genotype data. WAITING 5 seconds"
+        )
+        time.sleep(5)
+
 gene_variants = [gv for gv in gene_variants if gv in pf_variants]
 
 gene0 = gene0[gene0["varID"].isin(gene_variants)]
@@ -60,6 +85,7 @@ ind_data = pd.read_parquet(
     base_reference_panel_dir / f"{gene0_chr}.variants.parquet",
     columns=["individual"] + gene_variants,
 )
+
 
 # predict expression for the two genes
 def _predict_expression(gene_data):
