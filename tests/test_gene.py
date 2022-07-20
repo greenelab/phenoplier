@@ -692,6 +692,67 @@ def test_get_tissues_correlations_different_gene():
     assert genes_corrs_unique_values[0] == 0.0
 
 
+def test_get_tissues_correlations_subset_of_tissues_single_same_tissue_both_genes():
+    # COL4A2 - 13q34
+    gene1 = Gene(ensembl_id="ENSG00000134871")
+
+    # COL4A1 - 13q34
+    gene2 = Gene(ensembl_id="ENSG00000187498")
+
+    # get the correlation matrix of the gene expression across all tissues
+    genes_corrs = gene1.get_tissues_correlations(
+        gene2,
+        reference_panel="1000G",
+        tissues=("Whole_Blood",),
+        other_tissues=("Whole_Blood",),
+    )
+
+    # check shape
+    assert genes_corrs is not None
+    assert not genes_corrs.isna().any().any()
+    assert genes_corrs.shape == (1, 1)
+    assert genes_corrs.iloc[0, 0] == pytest.approx(0.9702481569810856, rel=1e-5)
+
+
+def test_get_tissues_correlations_subset_of_tissues_several_tissues():
+    # COL4A2 - 13q34
+    gene1 = Gene(ensembl_id="ENSG00000134871")
+
+    # COL4A1 - 13q34
+    gene2 = Gene(ensembl_id="ENSG00000187498")
+
+    # get the correlation matrix of the gene expression across all tissues
+    genes_corrs = gene1.get_tissues_correlations(
+        other_gene=gene2,
+        tissues=("Whole_Blood", "Artery_Coronary"),
+        other_tissues=("Artery_Aorta", "Whole_Blood", "Ovary"),
+        reference_panel="1000G",
+    )
+
+    # check shape
+    assert genes_corrs is not None
+    assert not genes_corrs.isna().any().any()
+    assert genes_corrs.shape == (2, 3)
+    assert genes_corrs.loc["Whole_Blood", "Artery_Aorta"] == pytest.approx(
+        -0.9301565975324703, rel=1e-5
+    )
+    assert genes_corrs.loc["Whole_Blood", "Whole_Blood"] == pytest.approx(
+        0.9702481569810856, rel=1e-5
+    )
+    assert genes_corrs.loc["Whole_Blood", "Ovary"] == pytest.approx(
+        -0.9702481569810807, rel=1e-5
+    )
+    assert genes_corrs.loc["Artery_Coronary", "Artery_Aorta"] == pytest.approx(
+        0.9301565975324726, rel=1e-5
+    )
+    assert genes_corrs.loc["Artery_Coronary", "Whole_Blood"] == pytest.approx(
+        -0.9702481569810858, rel=1e-5
+    )
+    assert genes_corrs.loc["Artery_Coronary", "Ovary"] == pytest.approx(
+        0.9702481569810842, rel=1e-5
+    )
+
+
 def test_get_tissues_correlations_gene_without_prediction_models():
     # WNT10A - 2q35
     gene1 = Gene(ensembl_id="ENSG00000135925")
@@ -770,9 +831,6 @@ def test_ssm_correlation_real_ssm_correlation(gene_id1, gene_id2, expected_corr)
 
     # check symmetry
     assert compute_ssm_correlation(gene2, gene1) == pytest.approx(genes_corr, rel=1e-10)
-
-
-# FIXME: todo esto de abajo probablemente esté mal; ver que se puede rescatar
 
 
 def test_ssm_correlation_same_gene_with_many_tissues():
