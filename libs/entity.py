@@ -1003,11 +1003,23 @@ class Gene(object):
         #   https://doi.org/10.1371/journal.pgen.1007889
         return (gene_w.T @ snps_cov @ other_gene_w) / np.sqrt(gene_var * other_gene_var)
 
+    @staticmethod
+    def _get_tissues(tissues: tuple, model_type: str):
+        if tissues is not None and len(tissues) > 0:
+            return tissues
+
+        all_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][
+            f"{model_type}_TISSUES"
+        ].split(" ")
+
+        return tuple(sorted(all_tissues))
+
     @lru_cache(maxsize=None)
     def get_tissues_correlations(
         self,
         other_gene,
         tissues: tuple = None,
+        other_tissues: tuple = None,
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
         use_within_distance=True,
@@ -1017,22 +1029,23 @@ class Gene(object):
 
         Args:
             tissues: TODO
+                this are tissues for gene self (this gene)
+
                 FIXME: add note saying that tissues has to be tuple, otherwise
                 the lru_cache will fail if it is a list for example
+            other_tissues: TODO
+                this is the same as tissues, but for other_gene
+            TODO: add other arguments
         Returns:
             - tissue names are sorted using the `sorted` method
         """
-        if tissues is None:
-            tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][
-                f"{model_type}_TISSUES"
-            ].split(" ")
-        tissues = sorted(tissues)
-        n_tissues = len(tissues)
+        tissues = Gene._get_tissues(tissues, model_type)
+        other_tissues = Gene._get_tissues(other_tissues, model_type)
 
-        res = np.full((n_tissues, n_tissues), fill_value=np.nan)
+        res = np.full((len(tissues), len(other_tissues)), fill_value=np.nan)
 
         for t1_idx, t1 in enumerate(tissues):
-            for t2_idx, t2 in enumerate(tissues):
+            for t2_idx, t2 in enumerate(other_tissues):
                 ec = self.get_expression_correlation(
                     other_gene=other_gene,
                     tissue=t1,
@@ -1046,7 +1059,7 @@ class Gene(object):
                 res[t1_idx, t2_idx] = ec
 
         # Return a dataframe with tissues in rows and columns
-        df = pd.DataFrame(res, index=tissues.copy(), columns=tissues.copy())
+        df = pd.DataFrame(res, index=tissues, columns=other_tissues)
 
         # remove tissues for which we don't have snps predictors for any of the genes
         df = df.dropna(axis=0, how="all").dropna(axis=1, how="all")
@@ -1077,7 +1090,7 @@ class Gene(object):
             return [i for i, x in enumerate(s) if x >= s_max * ratio]
 
         gene_corrs = self.get_tissues_correlations(
-            self,
+            other_gene=self,
             tissues=tissues,
             reference_panel=reference_panel,
             model_type=model_type,
