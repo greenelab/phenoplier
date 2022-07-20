@@ -1048,6 +1048,10 @@ class Gene(object):
         condition_number: float = 30,
         use_within_distance=True,
     ):
+        """
+        FIXME: add documentation
+        """
+
         def _filter_eigen_values_from_max(s, ratio):
             s_max = np.max(s)
             return [i for i, x in enumerate(s) if x >= s_max * ratio]
@@ -1108,6 +1112,7 @@ class Gene(object):
             tissues=tissues,
             reference_panel=reference_panel,
             model_type=model_type,
+            condition_number=condition_number,
             use_within_distance=use_within_distance,
         )
         if gene0_svd is None:
@@ -1119,6 +1124,7 @@ class Gene(object):
             tissues=tissues,
             reference_panel=reference_panel,
             model_type=model_type,
+            condition_number=condition_number,
             use_within_distance=use_within_distance,
         )
         if gene1_svd is None:
