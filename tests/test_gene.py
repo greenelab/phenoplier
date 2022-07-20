@@ -346,7 +346,7 @@ def test_gene_get_pred_expression_variance_gene_not_in_tissue():
         ("ENSG00000134871", "ENSG00000169750", "Testis", 0.00),
     ],
 )
-def test_gene_get_expression_correlation_in_tissues(
+def test_gene_get_expression_correlation_in_same_tissues(
     gene_id1, gene_id2, tissue, expected_corr
 ):
     gene1 = Gene(ensembl_id=gene_id1)
@@ -386,6 +386,63 @@ def test_gene_get_expression_correlation_in_tissues(
     )
 
     assert round(genes_corr, 4) == round(expected_corr, 4)
+
+
+@pytest.mark.parametrize(
+    "gene1_id,gene1_tissue,gene2_id,gene2_tissue,expected_corr",
+    [
+        # case where some snps in the second gene are not in covariance snp matrix
+        (
+            "ENSG00000166821",
+            "Whole_Blood",
+            "ENSG00000140545",
+            "Liver",
+            -0.03596169385766873,
+        ),
+        # case where all snps are in cov matrix
+        (
+            "ENSG00000121101",
+            "Artery_Coronary",
+            "ENSG00000169750",
+            "Stomach",
+            -0.0794586198132903,
+        ),
+        # case of highly correlated genes
+        (
+            "ENSG00000134871",
+            "Artery_Coronary",
+            "ENSG00000187498",
+            "Artery_Aorta",
+            0.9301565975324726,
+        ),
+    ],
+)
+def test_gene_get_expression_correlation_in_different_tissues(
+    gene1_id, gene1_tissue, gene2_id, gene2_tissue, expected_corr
+):
+    gene1 = Gene(ensembl_id=gene1_id)
+    gene2 = Gene(ensembl_id=gene2_id)
+
+    genes_corr = gene1.get_expression_correlation(
+        tissue=gene1_tissue,
+        other_gene=gene2,
+        other_tissue=gene2_tissue,
+        reference_panel="1000g",
+        use_within_distance=False,
+    )
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert genes_corr == pytest.approx(expected_corr, rel=1e-5)
+
+    # correlation should be asymmetric
+    genes_corr_2 = gene2.get_expression_correlation(
+        tissue=gene2_tissue,
+        other_gene=gene1,
+        other_tissue=gene1_tissue,
+        reference_panel="1000g",
+        use_within_distance=False,
+    )
+    assert genes_corr_2 == pytest.approx(genes_corr, rel=10e-10)
 
 
 @pytest.mark.parametrize(

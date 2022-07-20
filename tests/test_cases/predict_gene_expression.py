@@ -17,23 +17,23 @@ import conf
 
 # Parameter (change this as needed)
 #   Genes should be in the same chromosome.
-gene0_id = "ENSG00000169750"
-gene1_id = "ENSG00000121101"
-tissue_name = "Brain_Cortex"
-snps_subset = {
-    # first gene snps: all of them
-    "chr17_82032100_A_T_b38",
-    # second gene snps: remove chr17_58690513_G_A_b38
-    "chr17_58695876_A_G_b38",
-}
+gene0_id = "ENSG00000134871"
+gene0_tissue_name = "Artery_Coronary"
+gene1_id = "ENSG00000187498"
+gene1_tissue_name = "Artery_Aorta"
+snps_subset = None
 
 # get gene prediction weights
 base_prediction_model_dir = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"]
-input_db_file = base_prediction_model_dir / f"mashr_{tissue_name}.db"
+
+input_db_file = base_prediction_model_dir / f"mashr_{gene0_tissue_name}.db"
 with sqlite3.connect(input_db_file) as cnx:
     gene0 = pd.read_sql_query(
         f'select * from weights where gene like "{gene0_id}.%"', cnx
     )
+
+input_db_file = base_prediction_model_dir / f"mashr_{gene1_tissue_name}.db"
+with sqlite3.connect(input_db_file) as cnx:
     gene1 = pd.read_sql_query(
         f'select * from weights where gene like "{gene1_id}.%"', cnx
     )
@@ -107,4 +107,6 @@ display(gene1)
 
 # compute the real correlation
 gene_corr = gene0_pred_expr.corr(gene1_pred_expr)
-print(f"{gene0_id} / {gene1_id} in {tissue_name}: {gene_corr}")
+print(
+    f"\n{gene0_id} ({gene0_tissue_name}) / {gene1_id} ({gene1_tissue_name}): {gene_corr}"
+)
