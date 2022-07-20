@@ -319,30 +319,27 @@ def test_gene_get_pred_expression_variance_gene_not_in_tissue():
 @pytest.mark.parametrize(
     "gene_id1,gene_id2,tissue,expected_corr",
     [
-        # FIXME add real expected values
         # case where some snps in the second gene are not in covariance snp matrix
         (
             "ENSG00000166821",
             "ENSG00000140545",
             "Whole_Blood",
             0.0477,
-        ),  # FIXME THIS IS NOT THE REAL CORRELATION VALUE!
+        ),
         # case where all snps are in cov matrix
         (
             "ENSG00000121101",
             "ENSG00000169750",
             "Brain_Cortex",
             0.05,
-        ),  # FIXME THIS IS NOT THE REAL CORRELATION VALUE!
+        ),
         # case of highly correlated genes
         (
             "ENSG00000134871",
             "ENSG00000187498",
             "Whole_Blood",
             0.9702,
-        ),  # FIXME check if this value is right, not sure how to do that
-        # case with more than 1 snps in each gene
-        # FIXME ADD
+        ),
         # corr of genes from different chromosomes is always zero
         # (same gene pair across different tissues)
         ("ENSG00000166821", "ENSG00000121101", "Whole_Blood", 0.00),
@@ -354,7 +351,9 @@ def test_gene_get_pred_expression_variance_gene_not_in_tissue():
         ("ENSG00000134871", "ENSG00000169750", "Testis", 0.00),
     ],
 )
-def test_gene_get_expression_correlation(gene_id1, gene_id2, tissue, expected_corr):
+def test_gene_get_expression_correlation_in_tissues(
+    gene_id1, gene_id2, tissue, expected_corr
+):
     gene1 = Gene(ensembl_id=gene_id1)
     gene2 = Gene(ensembl_id=gene_id2)
 
@@ -812,6 +811,28 @@ def test_ssm_correlation_correlation_maximum_value_is_always_one():
 
     # check symmetry
     assert gene2.get_ssm_correlation(gene1, reference_panel="1000G") == 1.0
+
+
+def test_ssm_correlation_correlation_condition_number():
+    # HIST3H2A (1q42.13)
+    gene1 = Gene(ensembl_id="ENSG00000181218")
+
+    # HIST3H2BB (1q42.13)
+    gene2 = Gene(ensembl_id="ENSG00000196890")
+
+    genes_corr = gene1.get_ssm_correlation(
+        gene2, reference_panel="1000G", condition_number=30
+    )
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert 0 <= genes_corr <= 1.0
+
+    # now check that with a different condition number, results should be
+    # different
+    new_genes_corr = gene1.get_ssm_correlation(
+        gene2, reference_panel="1000G", condition_number=10
+    )
+    assert not (new_genes_corr == pytest.approx(genes_corr))
 
 
 def test_gene_within_distance():
