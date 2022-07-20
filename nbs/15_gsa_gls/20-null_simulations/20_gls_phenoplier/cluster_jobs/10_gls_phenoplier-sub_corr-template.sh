@@ -8,7 +8,7 @@
 # BSUB -n 1
 # BSUB -R "rusage[mem=3GB]"
 # BSUB -M 3GB
-# BSUB -W 0:30
+# BSUB -W 0:45
 
 # IMPORTANT: this is not a ready-for-submission script, it's a template.
 #   see README.md to know how to generate the actual job scripts.
@@ -26,7 +26,8 @@ CODE_DIR=${PHENOPLIER_CODE_DIR}/nbs/15_gsa_gls/20-null_simulations/20_gls_phenop
 INPUT_SMULTIXCAN_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan"
 
 # 1000G / MASHR
-GENE_CORR_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_GENE_CORRS_DIR}/1000g/mashr/multiplier_genes-gene_correlations-gene_symbols.pkl"
+#GENE_CORR_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_GENE_CORRS_DIR}/1000g/mashr/multiplier_genes-gene_correlations-gene_symbols.pkl"
+GENE_CORR_FILE="${PHENOPLIER_PHENOMEXCAN_LD_BLOCKS_GENE_CORRS_DIR}/1000g/mashr/multiplier_genes-gene_correlations-gene_symbols.per_lv/"
 OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-1000g_mashr-sub_corr"
 
 mkdir -p ${OUTPUT_DIR}
