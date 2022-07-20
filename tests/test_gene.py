@@ -101,13 +101,8 @@ def test_gene_get_prediction_weights(gene_id, tissue, expected_snps_weights):
     assert w is not None
     assert w.shape[0] == len(expected_snps_weights)
 
-    # assert "gene" in w.columns
-    assert "varID" in w.columns
-    assert "weight" in w.columns
-
-    w = w.set_index("varID")
     for snp_id, snp_weight in expected_snps_weights.items():
-        assert w.loc[snp_id, "weight"].round(5) == round(snp_weight, 5)
+        assert w.loc[snp_id].round(5) == round(snp_weight, 5)
 
 
 def test_gene_get_prediction_weights_empty():
@@ -156,8 +151,8 @@ def test_gene_get_snps_cov_genes_same_chromosome(
     g1 = Gene(ensembl_id=gene_pair[0])
     g2 = Gene(ensembl_id=gene_pair[1])
 
-    g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR")["varID"]
-    g2_snps = g2.get_prediction_weights(tissue, model_type="MASHR")["varID"]
+    g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR").index
+    g2_snps = g2.get_prediction_weights(tissue, model_type="MASHR").index
 
     df, g1_snps_info, g2_snps_info = Gene._get_snps_cov(g1_snps, g2_snps)
     assert df is not None
@@ -194,8 +189,8 @@ def test_gene_get_snps_cov_genes_same_chromosome_some_snps_missing_cov(
     g1 = Gene(ensembl_id=gene_pair[0])
     g2 = Gene(ensembl_id=gene_pair[1])
 
-    g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR")["varID"]
-    g2_snps = g2.get_prediction_weights(tissue, model_type="MASHR")["varID"]
+    g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR").index
+    g2_snps = g2.get_prediction_weights(tissue, model_type="MASHR").index
 
     df, g1_snps_info, g2_snps_info = Gene._get_snps_cov(
         g1_snps, g2_snps, reference_panel="1000g"
@@ -237,7 +232,7 @@ def test_gene_get_snps_cov_genes_same_chromosome_some_snps_missing_cov(
 def test_gene_get_snps_cov_one_gene(gene_pair, expected_snps1, tissue):
     g1 = Gene(ensembl_id=gene_pair[0])
 
-    g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR")["varID"]
+    g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR").index
 
     df, g1_snps_info, g2_snps_info = Gene._get_snps_cov(g1_snps)
     assert df is not None
@@ -264,8 +259,8 @@ def test_gene_get_snps_cov_genes_different_chromosomes():
     g1 = Gene(ensembl_id="ENSG00000123200")
     g2 = Gene(ensembl_id="ENSG00000133065")
 
-    g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR")["varID"]
-    g2_snps = g2.get_prediction_weights(tissue, model_type="MASHR")["varID"]
+    g1_snps = g1.get_prediction_weights(tissue, model_type="MASHR").index
+    g2_snps = g2.get_prediction_weights(tissue, model_type="MASHR").index
 
     with pytest.raises(Exception) as e:
         Gene._get_snps_cov(g1_snps, g2_snps, check=True)
@@ -440,6 +435,97 @@ def test_gene_get_expression_correlation_compare_with_real_correlation(
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
     assert np.isclose(genes_corr, expected_corr)
+
+
+@pytest.mark.parametrize(
+    # the expression of all these genes is the real one, and was calculated
+    # using the script tests/test_cases/predict_gene_expression.py
+    # in that script, I changed the gene0/gene1 dataframes by removing some
+    # SNPs so they are not included when computing expression correlation
+    "gene_id1,gene_id2,tissue,snps_subset,expected_corr",
+    [
+        # case where all snps are in cov matrix
+        (
+            "ENSG00000169750",
+            "ENSG00000121101",
+            "Brain_Cortex",
+            {
+                # first gene snps: all of them
+                "chr17_82032100_A_T_b38",
+                # second gene snps: remove chr17_58690513_G_A_b38
+                "chr17_58695876_A_G_b38",
+            },
+            0.0709243871577751,
+        ),
+        # case where some snps in the second gene are not in covariance snp matrix
+        (
+            "ENSG00000166821",
+            "ENSG00000140545",
+            "Whole_Blood",
+            {
+                # first gene snps: all of them
+                "chr15_89690738_G_C_b38",
+                # second gene snps: chr15_88945286_AAAGTGCTGAGATCCTCCTACCTCT_A_b38 is not
+                # in genotype data, and remove chr15_88913717_G_A_b38
+                "chr15_88917324_A_G_b38",
+            },
+            0.07412638583307823,
+        ),
+        # case of highly correlated genes using all snps, but both genes have
+        # only one snp; here I remove one of them, so the correlation should be
+        # None/NaN
+        (
+            "ENSG00000134871",
+            "ENSG00000187498",
+            "Whole_Blood",
+            {
+                # first gene snps: all of them
+                "chr13_110305525_T_G_b38",
+                # second gene snps: remove the single one chr13_110307117_C_A_b38
+            },
+            None,
+        ),
+        # case of negative correlation
+        (
+            "ENSG00000000938",
+            "ENSG00000004455",
+            "Whole_Blood",
+            {
+                # first gene snps: all of them
+                "chr1_27636786_T_C_b38",
+                # second gene snps: only one of them
+                "chr1_33071920_A_C_b38",
+            },
+            -0.01826437561866124,
+        ),
+    ],
+)
+def test_gene_get_expression_correlation_subset_of_snps(
+    gene_id1, gene_id2, tissue, snps_subset, expected_corr
+):
+    # here snps_subset is supposed to be a set of SNPs present, for example,
+    # in the GWASs, so only those must be taken into consideration to compute
+    # correlation
+    gene1 = Gene(ensembl_id=gene_id1)
+    gene2 = Gene(ensembl_id=gene_id2)
+
+    # snps_subset needs to be frozenset (for caching in entity.py)
+    snps_subset = frozenset(snps_subset)
+
+    genes_corr = gene1.get_expression_correlation(
+        gene2,
+        tissue,
+        reference_panel="1000g",
+        use_within_distance=False,
+        snps_subset=snps_subset,
+    )
+
+    if expected_corr is None:
+        assert genes_corr is None
+    else:
+        assert genes_corr is not None
+        assert isinstance(genes_corr, float)
+        assert genes_corr == pytest.approx(expected_corr, rel=1e-5)
 
 
 @pytest.mark.parametrize(

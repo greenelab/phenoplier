@@ -681,7 +681,10 @@ class Gene(object):
 
     @lru_cache(maxsize=None)
     def get_prediction_weights(
-        self, tissue: str, model_type: str, varid_as_index: bool = False
+        self,
+        tissue: str,
+        model_type: str,
+        snps_subset: frozenset = None,
     ):
         """
         Given a tissue and model type, it returns the prediction weights for
@@ -693,8 +696,10 @@ class Gene(object):
                 The tissue name.
             model_type:
                 The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
-            varid_as_index:
-                TODO: complete
+            snps_subset:
+                This is a subset of SNPs IDs (such as "chr1_33071920_A_C_b38") that
+                will be considered to compute the correlation. All snps that are not
+                present in this subset will be ignored.
 
         Returns:
             A pandas DataFrame with the variants' weight for the prediction of
@@ -705,16 +710,27 @@ class Gene(object):
         sqlite_conn = Gene._get_tissue_connection(tissue, model_type)
 
         try:
+            query = f"""
+                select varID, weight
+                from weights
+                where gene like '{self.ensembl_id}.%'
+            """
+
             df = pd.read_sql(
-                f"select varID, weight from weights where gene like '{self.ensembl_id}.%'",
+                query,
                 sqlite_conn,
             )
 
             if df.shape[0] == 0 or df["weight"].abs().sum() == 0.0:
                 return None
 
-            if varid_as_index:
-                df = df.set_index("varID")["weight"]
+            df = df.set_index("varID")["weight"]
+
+            if snps_subset is not None and len(snps_subset) > 0:
+                snps = snps_subset.intersection(set(df.index))
+                if len(snps) == 0:
+                    return None
+                df = df.loc[snps]
 
             return df.sort_index()
         finally:
@@ -860,7 +876,11 @@ class Gene(object):
 
     @lru_cache(maxsize=None)
     def get_pred_expression_variance(
-        self, tissue: str, reference_panel: str, model_type: str
+        self,
+        tissue: str,
+        reference_panel: str,
+        model_type: str,
+        snps_subset: frozenset = None,
     ):
         """
         Given a tissue, it computes the covariance of the predicted gene
@@ -874,13 +894,13 @@ class Gene(object):
         Returns:
             A float with the covariance of the gene predicted expression.
         """
-        w = self.get_prediction_weights(tissue, model_type)
+        w = self.get_prediction_weights(tissue, model_type, snps_subset=snps_subset)
         if w is None:
             return None
 
         # LD of snps in gene model
         gene_snps_cov_data = Gene._get_snps_cov(
-            w["varID"], reference_panel=reference_panel, model_type=model_type
+            w.index, reference_panel=reference_panel, model_type=model_type
         )
         if gene_snps_cov_data is None:
             return None
@@ -888,7 +908,7 @@ class Gene(object):
         gene_snps_cov, (_, snps_pos) = gene_snps_cov_data[:2]
 
         # gene model weights
-        w = w["weight"].to_numpy()[np.ix_(snps_pos)]
+        w = w.to_numpy()[np.ix_(snps_pos)]
 
         # return variance of gene's predicted expression using formula from:
         #   - MetaXcan paper: https://doi.org/10.1038/s41467-018-03621-1
@@ -903,6 +923,7 @@ class Gene(object):
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
         use_within_distance=True,
+        snps_subset: frozenset = None,
     ):
         """
         Given another Gene object and a tissue, it computes the correlation
@@ -921,6 +942,10 @@ class Gene(object):
                 A reference panel for the SNP covariance matrix. Either GTEX_V8 or 1000G.
             model_type:
                 The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
+            snps_subset:
+                This is a subset of SNPs IDs (such as "chr1_33071920_A_C_b38") that
+                will be considered to compute the correlation. All snps that are not
+                present in this subset will be ignored.
 
         Returns:
             A float with the correlation of the two genes' predicted expression.
@@ -938,32 +963,27 @@ class Gene(object):
         if other_tissue is not None:
             other_gene_tissue = other_tissue
 
-        gene_w = self.get_prediction_weights(tissue, model_type, varid_as_index=True)
+        gene_w = self.get_prediction_weights(
+            tissue, model_type, snps_subset=snps_subset
+        )
         if gene_w is None:
             return None
-        # gene_w = gene_w.set_index("varID")
-        # if gene_w.abs().sum().sum() == 0.0:
-        #     # some genes in the models have weight equal to zero (weird)
-        #     return 0.0
 
         other_gene_w = other_gene.get_prediction_weights(
-            other_gene_tissue, model_type, varid_as_index=True
+            other_gene_tissue, model_type, snps_subset=snps_subset
         )
         if other_gene_w is None:
             return None
-        # other_gene_w = other_gene_w.set_index("varID")
-        # if other_gene_w.abs().sum().sum() == 0.0:
-        #     return 0.0
 
         # get genes' variances
         gene_var = self.get_pred_expression_variance(
-            tissue, reference_panel, model_type
+            tissue, reference_panel, model_type, snps_subset=snps_subset
         )
         if gene_var is None or gene_var == 0.0:
             return None
 
         other_gene_var = other_gene.get_pred_expression_variance(
-            other_gene_tissue, reference_panel, model_type
+            other_gene_tissue, reference_panel, model_type, snps_subset=snps_subset
         )
         if other_gene_var is None or other_gene_var == 0.0:
             return None
