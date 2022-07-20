@@ -206,11 +206,6 @@ display(lvs_high_error.shape)
 display(lvs_high_error.sort_values("5").tail(20))
 
 # %% [markdown]
-# Many LVs have a mean type I error greater than expected.
-#
-# LV45 has the largest mean type I error (0.158). Let's take a look at these LVs with poor mean type I errors.
-
-# %% [markdown]
 # # LVs with high mean type I error
 
 # %%
