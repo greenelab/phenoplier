@@ -813,9 +813,7 @@ def test_get_tissues_correlations_gene_without_prediction_models():
         ("ENSG00000274641", "ENSG00000277224", 0.008837131332243578),
     ],
 )
-def test_ssm_correlation_real_ssm_correlation(gene_id1, gene_id2, expected_corr):
-    # FIXME: point to the file/script that is generating the real results
-
+def test_ssm_correlation_using_all_tissues(gene_id1, gene_id2, expected_corr):
     def compute_ssm_correlation(g1, g2):
         return g1.get_ssm_correlation(
             g2, reference_panel="1000G", model_type="MASHR", use_within_distance=False
@@ -833,23 +831,460 @@ def test_ssm_correlation_real_ssm_correlation(gene_id1, gene_id2, expected_corr)
     assert compute_ssm_correlation(gene2, gene1) == pytest.approx(genes_corr, rel=1e-10)
 
 
-def test_ssm_correlation_same_gene_with_many_tissues():
+@pytest.mark.parametrize(
+    "gene1_id,gene1_tissues,gene2_id,gene2_tissues,expected_corr",
+    [
+        # All these cases were generated using the file:
+        #  tests/test_cases/multixcan.py
+        #
+        # case with low correlation, same subset of tissues
+        #  FGR (1p35.3) and AK2 (1p35.1) - corr ssm: 0.004334531855003577
+        (
+            "ENSG00000000938",
+            ("Whole_Blood", "Liver"),
+            "ENSG00000004455",
+            ("Whole_Blood", "Liver"),
+            0.0037750542776042078,
+        ),
+        # case with low/moderate correlation, same subset of tissues but different
+        #  order
+        #  NOC2L (1p36.33) and HES4 (1p36.33) - corr ssm: 0.031233667345898525
+        (
+            "ENSG00000188976",
+            ("Vagina", "Colon_Sigmoid", "Adipose_Subcutaneous"),
+            "ENSG00000188290",
+            ("Adipose_Subcutaneous", "Vagina", "Colon_Sigmoid"),
+            0.05105487507372672,
+        ),
+        # case with high correlation, only one tissue and the same one
+        #  COL4A2 (13q34) and COL4A1 (13q34) - corr ssm: 0.9422694271657404
+        (
+            "ENSG00000134871",
+            ("Whole_Blood",),
+            "ENSG00000187498",
+            ("Whole_Blood",),
+            0.9450480122997846,
+        ),
+        # same case as before, with only one tissue but a different one
+        #  COL4A2 (13q34) and COL4A1 (13q34) - corr ssm: 0.8592059297353322
+        (
+            "ENSG00000134871",
+            ("Artery_Coronary",),
+            "ENSG00000187498",
+            ("Artery_Aorta",),
+            0.8685610738386613,
+        ),
+        # same case as before, but with asymmetric number of distinct tissues
+        #  COL4A2 (13q34) and COL4A1 (13q34) - corr ssm: 0.9240418273534601
+        (
+            "ENSG00000134871",
+            ("Artery_Coronary", "Whole_Blood", "Pituitary", "Nerve_Tibial"),
+            "ENSG00000187498",
+            ("Testis", "Pancreas"),
+            0.9267879969125328,
+        ),
+        # same case as before, but tissues exchanged (some do not exist for
+        #  first gene)
+        #  COL4A2 (13q34) and COL4A1 (13q34) - corr ssm: 0.656725901368496
+        (
+            "ENSG00000134871",
+            ("Testis", "Pancreas"),  # no model for Pancreas
+            "ENSG00000187498",
+            ("Artery_Coronary", "Whole_Blood", "Pituitary", "Nerve_Tibial"),
+            0.6625281614888511,
+        ),
+        # same case as before, but tissues exchanged (some do not exist for
+        #  second gene)
+        #  COL4A2 (13q34) and COL4A1 (13q34) - corr ssm: -0.007060792745146127
+        (
+            "ENSG00000134871",
+            ("Artery_Coronary", "Whole_Blood", "Pituitary", "Nerve_Tibial"),
+            "ENSG00000187498",
+            (
+                "Adipose_Visceral_Omentum",
+                "Brain_Amygdala",
+            ),  # no model for Brain_Amygdala
+            0.0014496394482319279,
+        ),
+        # case in same chromosome, close bands, moderate correlation
+        #  IKZF3 (17q21.1) and PNMT (17q12) - corr ssm: 0.1790853137947722
+        (
+            "ENSG00000161405",
+            ("Lung", "Muscle_Skeletal"),
+            "ENSG00000141744",
+            (
+                "Prostate",
+                "Small_Intestine_Terminal_Ileum",
+                "Skin_Sun_Exposed_Lower_leg",
+            ),
+            0.19199621017966995,
+        ),
+    ],
+)
+def test_ssm_correlation_using_subsets_tissues(
+    gene1_id, gene1_tissues, gene2_id, gene2_tissues, expected_corr
+):
+    def compute_ssm_correlation(g1, g1_tis, g2, g2_tis):
+        return g1.get_ssm_correlation(
+            other_gene=g2,
+            tissues=g1_tis,
+            other_tissues=g2_tis,
+            reference_panel="1000G",
+            model_type="MASHR",
+            use_within_distance=False,
+        )
+
+    gene1 = Gene(ensembl_id=gene1_id)
+    gene2 = Gene(ensembl_id=gene2_id)
+
+    genes_corr = compute_ssm_correlation(gene1, gene1_tissues, gene2, gene2_tissues)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert genes_corr == pytest.approx(expected_corr, rel=5e-3)
+
+    # check symmetry
+    assert compute_ssm_correlation(
+        gene2, gene2_tissues, gene1, gene1_tissues
+    ) == pytest.approx(genes_corr, rel=1e-10)
+
+
+@pytest.mark.parametrize(
+    "gene1_id,gene1_tissues,gene2_id,gene2_tissues,snps_subset,expected_corr",
+    [
+        # All these cases were generated using the file:
+        #  tests/test_cases/multixcan.py
+        #
+        # case where all SNPs are used (at least 2 SNPs per gene per tissue)
+        #  I use this case for comparison with other cases below
+        #  FGR (1p35.3) and AK2 (1p35.1) - corr ssm: -0.003771674549162753
+        (
+            "ENSG00000000938",
+            ("Thyroid", "Artery_Tibial"),
+            "ENSG00000004455",
+            ("Nerve_Tibial", "Liver"),
+            None,
+            0.0019803784985639333,
+        ),
+        # exactly the same case, here I just specify all the SNPs manually (so
+        #  it has to return the same correlation)
+        #  FGR (1p35.3) and AK2 (1p35.1) - corr ssm: same as before
+        (
+            "ENSG00000000938",
+            ("Thyroid", "Artery_Tibial"),
+            "ENSG00000004455",
+            ("Nerve_Tibial", "Liver"),
+            {
+                # first gene:
+                #  Thyroid
+                "chr1_27634281_G_A_b38",
+                "chr1_27636786_T_C_b38",
+                #  Artery_Tibial
+                "chr1_27631734_A_G_b38",
+                "chr1_27634321_C_G_b38",
+                # second gene:
+                #  Nerve_Tibial
+                "chr1_33059142_T_A_b38",
+                "chr1_33080995_A_G_b38",
+                #  Liver
+                "chr1_33080995_A_G_b38",
+                "chr1_33085456_C_G_b38",
+            },
+            0.0019803784985639333,
+        ),
+        # same case, but some SNPs are removed in the first gene, first tissue
+        #  FGR (1p35.3) and AK2 (1p35.1) - corr ssm: -0.004422420712027562
+        (
+            "ENSG00000000938",
+            ("Thyroid", "Artery_Tibial"),
+            "ENSG00000004455",
+            ("Nerve_Tibial", "Liver"),
+            {
+                # first gene:
+                #  Thyroid
+                # "chr1_27634281_G_A_b38",  # remove the one with largest effect
+                "chr1_27636786_T_C_b38",
+                #  Artery_Tibial
+                "chr1_27631734_A_G_b38",
+                "chr1_27634321_C_G_b38",
+                # second gene:
+                #  Nerve_Tibial
+                "chr1_33059142_T_A_b38",
+                "chr1_33080995_A_G_b38",
+                #  Liver
+                "chr1_33080995_A_G_b38",
+                "chr1_33085456_C_G_b38",
+            },
+            0.0029427325584488006,
+        ),
+        # same case, but some SNPs are removed in the first gene, second tissue
+        #  FGR (1p35.3) and AK2 (1p35.1) - corr ssm: 0.0033504293601502692
+        (
+            "ENSG00000000938",
+            ("Thyroid", "Artery_Tibial"),
+            "ENSG00000004455",
+            ("Nerve_Tibial", "Liver"),
+            {
+                # first gene:
+                #  Thyroid
+                "chr1_27634281_G_A_b38",
+                "chr1_27636786_T_C_b38",
+                #  Artery_Tibial
+                "chr1_27631734_A_G_b38",
+                # "chr1_27634321_C_G_b38", # remove
+                # second gene:
+                #  Nerve_Tibial
+                "chr1_33059142_T_A_b38",
+                "chr1_33080995_A_G_b38",
+                #  Liver
+                "chr1_33080995_A_G_b38",
+                "chr1_33085456_C_G_b38",
+            },
+            0.0009373552873566728,
+        ),
+        # same case, but some SNPs are removed in the second gene, first tissue
+        #  FGR (1p35.3) and AK2 (1p35.1) - corr ssm: -0.010539889181369597
+        (
+            "ENSG00000000938",
+            ("Thyroid", "Artery_Tibial"),
+            "ENSG00000004455",
+            ("Nerve_Tibial", "Liver"),
+            {
+                # first gene:
+                #  Thyroid
+                "chr1_27634281_G_A_b38",
+                "chr1_27636786_T_C_b38",
+                #  Artery_Tibial
+                "chr1_27631734_A_G_b38",
+                "chr1_27634321_C_G_b38",
+                # second gene:
+                #  Nerve_Tibial
+                "chr1_33059142_T_A_b38",
+                # "chr1_33080995_A_G_b38",  # remove
+                #  Liver
+                # "chr1_33080995_A_G_b38",  # (same as other one)
+                "chr1_33085456_C_G_b38",
+            },
+            0.0021756612863551364,
+        ),
+        # same case, but some SNPs are removed in the second gene, second tissue
+        #  FGR (1p35.3) and AK2 (1p35.1) - corr ssm: 0.00012453225502289452
+        (
+            "ENSG00000000938",
+            ("Thyroid", "Artery_Tibial"),
+            "ENSG00000004455",
+            ("Nerve_Tibial", "Liver"),
+            {
+                # first gene:
+                #  Thyroid
+                "chr1_27634281_G_A_b38",
+                "chr1_27636786_T_C_b38",
+                #  Artery_Tibial
+                "chr1_27631734_A_G_b38",
+                "chr1_27634321_C_G_b38",
+                # second gene:
+                #  Nerve_Tibial
+                "chr1_33059142_T_A_b38",
+                "chr1_33080995_A_G_b38",
+                #  Liver
+                "chr1_33080995_A_G_b38",
+                # "chr1_33085456_C_G_b38",  # remove
+            },
+            0.002838611117020821,
+        ),
+        # same case, but remove one SNP per gene/tissue pair
+        #  FGR (1p35.3) and AK2 (1p35.1) - corr ssm: -0.010108294974588818
+        (
+            "ENSG00000000938",
+            ("Thyroid", "Artery_Tibial"),
+            "ENSG00000004455",
+            ("Nerve_Tibial", "Liver"),
+            {
+                # first gene:
+                #  Thyroid
+                "chr1_27634281_G_A_b38",
+                # "chr1_27636786_T_C_b38",  # remove
+                #  Artery_Tibial
+                # "chr1_27631734_A_G_b38",  # remove
+                "chr1_27634321_C_G_b38",
+                # second gene:
+                #  Nerve_Tibial
+                # "chr1_33059142_T_A_b38",  # remove
+                "chr1_33080995_A_G_b38",
+                #  Liver
+                "chr1_33080995_A_G_b38",
+                # "chr1_33085456_C_G_b38",  # remove
+            },
+            0.003082718792811474,
+        ),
+        # same case, but remove all SNPs for the first gene, should be None
+        #  FGR (1p35.3) and AK2 (1p35.1) - corr ssm: None
+        (
+            "ENSG00000000938",
+            ("Thyroid", "Artery_Tibial"),
+            "ENSG00000004455",
+            ("Nerve_Tibial", "Liver"),
+            {
+                # first gene:
+                #  Thyroid
+                # "chr1_27634281_G_A_b38",  # remove
+                # "chr1_27636786_T_C_b38",  # remove
+                #  Artery_Tibial
+                # "chr1_27631734_A_G_b38",  # remove
+                # "chr1_27634321_C_G_b38",  # remove
+                # second gene:
+                #  Nerve_Tibial
+                "chr1_33059142_T_A_b38",
+                "chr1_33080995_A_G_b38",
+                #  Liver
+                "chr1_33080995_A_G_b38",
+                "chr1_33085456_C_G_b38",
+            },
+            None,
+        ),
+        # case with high correlation, all SNPs selected
+        #  HIST1H2BC (6p22.2) and HIST1H2AC (6p22.2) - corr ssm: 0.8124182460001728
+        (
+            "ENSG00000180596",
+            ("Small_Intestine_Terminal_Ileum", "Uterus"),
+            "ENSG00000180573",
+            (
+                "Brain_Cerebellum",
+                "Esophagus_Gastroesophageal_Junction",
+                "Artery_Coronary",
+            ),
+            {
+                # first gene:
+                #  Small_Intestine_Terminal_Ileum
+                "chr6_26124075_T_C_b38",
+                "chr6_26124202_C_T_b38",
+                #  Uterus
+                "chr6_26124075_T_C_b38",
+                "chr6_26124406_C_T_b38",
+                # second gene:
+                #  Brain_Cerebellum
+                "chr6_26124075_T_C_b38",
+                "chr6_26124015_G_A_b38",
+                "chr6_26124406_C_T_b38",
+                #  Esophagus_Gastroesophageal_Junction
+                "chr6_26124075_T_C_b38",
+                "chr6_26124015_G_A_b38",
+                # Artery_Coronary
+                "chr6_26124075_T_C_b38",
+                "chr6_26124015_G_A_b38",
+            },
+            0.8234178806813264,
+        ),
+        # same case, with at least one SNP remove from each gene/tissue pair
+        #  The selected SNPs removes the first tissue of the first gene
+        #  HIST1H2BC (6p22.2) and HIST1H2AC (6p22.2) - corr ssm: 0.698593658666404
+        (
+            "ENSG00000180596",
+            ("Small_Intestine_Terminal_Ileum", "Uterus"),
+            "ENSG00000180573",
+            (
+                "Brain_Cerebellum",
+                "Esophagus_Gastroesophageal_Junction",
+                "Artery_Coronary",
+            ),
+            {
+                # first gene:
+                #  Small_Intestine_Terminal_Ileum
+                # "chr6_26124075_T_C_b38",  # remove, this removes this tissue
+                "chr6_26124202_C_T_b38",  # this SNP is not in the genotype
+                #  Uterus
+                # "chr6_26124075_T_C_b38",  # (same as other one)
+                "chr6_26124406_C_T_b38",
+                # second gene:
+                #  Brain_Cerebellum
+                # "chr6_26124075_T_C_b38",  # (same as other one)
+                "chr6_26124015_G_A_b38",
+                "chr6_26124406_C_T_b38",
+                #  Esophagus_Gastroesophageal_Junction
+                # "chr6_26124075_T_C_b38",  # (same as other one)
+                "chr6_26124015_G_A_b38",
+                # Artery_Coronary
+                # "chr6_26124075_T_C_b38",  # (same as other one)
+                "chr6_26124015_G_A_b38",
+            },
+            0.7098608458879089,
+        ),
+        # same case, with other SNPs removed, only one shared variant is left,
+        #  and the correlation is perfect (1.0)
+        #  HIST1H2BC (6p22.2) and HIST1H2AC (6p22.2) - corr ssm: 1.0
+        (
+            "ENSG00000180596",
+            ("Small_Intestine_Terminal_Ileum", "Uterus"),
+            "ENSG00000180573",
+            (
+                "Brain_Cerebellum",
+                "Esophagus_Gastroesophageal_Junction",
+                "Artery_Coronary",
+            ),
+            {
+                # first gene:
+                #  Small_Intestine_Terminal_Ileum
+                "chr6_26124075_T_C_b38",
+                # "chr6_26124202_C_T_b38",    # this SNP is not in the genotype
+                #  Uterus
+                "chr6_26124075_T_C_b38",
+                # "chr6_26124406_C_T_b38",  # removed
+                # second gene:
+                #  Brain_Cerebellum
+                "chr6_26124075_T_C_b38",
+                # "chr6_26124015_G_A_b38",  # removed
+                # "chr6_26124406_C_T_b38",  # (same as other one)
+                #  Esophagus_Gastroesophageal_Junction
+                "chr6_26124075_T_C_b38",
+                # "chr6_26124015_G_A_b38",  # (same as other one)
+                # Artery_Coronary
+                "chr6_26124075_T_C_b38",
+                # "chr6_26124015_G_A_b38",  # (same as other one)
+            },
+            1.0,
+        ),
+    ],
+)
+def test_ssm_correlation_using_subsets_tissues_and_subsets_of_snps(
+    gene1_id, gene1_tissues, gene2_id, gene2_tissues, snps_subset, expected_corr
+):
+    def compute_ssm_correlation(g1, g1_tis, g2, g2_tis):
+        return g1.get_ssm_correlation(
+            other_gene=g2,
+            tissues=g1_tis,
+            other_tissues=g2_tis,
+            snps_subset=frozenset(snps_subset) if snps_subset is not None else None,
+            reference_panel="1000G",
+            model_type="MASHR",
+            use_within_distance=False,
+        )
+
+    gene1 = Gene(ensembl_id=gene1_id)
+    gene2 = Gene(ensembl_id=gene2_id)
+
+    genes_corr = compute_ssm_correlation(gene1, gene1_tissues, gene2, gene2_tissues)
+    if expected_corr is not None:
+        assert genes_corr is not None
+        assert isinstance(genes_corr, float)
+        assert genes_corr == pytest.approx(expected_corr, rel=5e-3)
+
+        # check symmetry
+        assert compute_ssm_correlation(
+            gene2, gene2_tissues, gene1, gene1_tissues
+        ) == pytest.approx(genes_corr, rel=1e-10)
+    else:
+        assert genes_corr is None
+
+        # check symmetry
+        assert (
+            compute_ssm_correlation(gene2, gene2_tissues, gene1, gene1_tissues) is None
+        )
+
+
+def test_ssm_correlation_same_gene():
     # ENSG00000122025
     # FLT3
     # chr 13
     gene1 = Gene(ensembl_id="ENSG00000122025")
-
-    genes_corr = gene1.get_ssm_correlation(gene1)
-    assert genes_corr is not None
-    assert isinstance(genes_corr, float)
-    assert genes_corr == pytest.approx(1.0)
-
-
-def test_ssm_correlation_same_gene_with_few_tissues():
-    # ENSG00000175130
-    # MARCKSL1
-    # chr 1
-    gene1 = Gene(ensembl_id="ENSG00000175130")
 
     genes_corr = gene1.get_ssm_correlation(gene1)
     assert genes_corr is not None
@@ -875,64 +1310,6 @@ def test_ssm_correlation_genes_in_different_chromosomes():
 
     # check symmetry
     assert gene2.get_ssm_correlation(gene1) == 0.0
-
-
-def test_ssm_correlation_genes_specify_single_tissues():
-    # COL4A2
-    # chr 13
-    gene1 = Gene(ensembl_id="ENSG00000134871")
-
-    # RAB20
-    # chr 13
-    gene2 = Gene(ensembl_id="ENSG00000139832")
-
-    # first, compute using all tissues
-    genes_corr = gene1.get_ssm_correlation(gene2)
-    assert genes_corr is not None
-    assert isinstance(genes_corr, float)
-    assert genes_corr > 0.0
-
-    # now, specify a list of tissues, the final corr should be different
-    tissues = ("Whole_Blood",)
-    new_genes_corr = gene1.get_ssm_correlation(gene2, tissues=tissues)
-    assert new_genes_corr is not None
-    assert isinstance(new_genes_corr, float)
-    assert new_genes_corr > 0.0
-    assert new_genes_corr != genes_corr
-
-    # check symmetry
-    assert gene2.get_ssm_correlation(gene1, tissues=tissues) == pytest.approx(
-        new_genes_corr, rel=1e-10
-    )
-
-
-def test_ssm_correlation_genes_specify_two_tissues():
-    # COL4A2
-    # chr 13
-    gene1 = Gene(ensembl_id="ENSG00000134871")
-
-    # RAB20
-    # chr 13
-    gene2 = Gene(ensembl_id="ENSG00000139832")
-
-    # first, compute using all tissues
-    genes_corr = gene1.get_ssm_correlation(gene2)
-    assert genes_corr is not None
-    assert isinstance(genes_corr, float)
-    assert genes_corr > 0.0
-
-    # now, specify a list of tissues, the final corr should be different
-    tissues = ("Whole_Blood", "Spleen")
-    new_genes_corr = gene1.get_ssm_correlation(gene2, tissues=tissues)
-    assert new_genes_corr is not None
-    assert isinstance(new_genes_corr, float)
-    assert new_genes_corr > 0.0
-    assert new_genes_corr != genes_corr
-
-    # check symmetry
-    assert gene2.get_ssm_correlation(gene1, tissues=tissues) == pytest.approx(
-        new_genes_corr, rel=1e-10
-    )
 
 
 def test_ssm_correlation_genes_in_close_bands_not_within_distance():
@@ -1014,7 +1391,7 @@ def test_ssm_correlation_correlation_maximum_value_is_always_one():
     assert gene2.get_ssm_correlation(gene1, reference_panel="1000G") == 1.0
 
 
-def test_ssm_correlation_correlation_condition_number():
+def test_ssm_correlation_correlation_with_condition_number():
     # HIST3H2A (1q42.13)
     gene1 = Gene(ensembl_id="ENSG00000181218")
 

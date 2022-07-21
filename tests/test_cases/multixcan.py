@@ -1,3 +1,7 @@
+"""
+It has code to run MultiXcan on randomly generated phenotypes and compute
+the correlation between two genes' sum of squares for model (SSM).
+"""
 import sqlite3
 
 from fastparquet import ParquetFile
@@ -7,11 +11,48 @@ import conf
 from entity import Gene
 
 
-def predict_expression(gene0_id, gene1_id, center_gene_expr=False):
-    all_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_TISSUES"].split(" ")
-    all_tissues = sorted(all_tissues)
-    print(f"Number of tissues {len(all_tissues)}")
-    print(all_tissues[:5])
+def get_gene_prediction_weights(gene_obj, gene_tissues):
+    base_prediction_model_dir = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"]
+
+    all_genes_data = []
+
+    for tissue_name in gene_tissues:
+        print(tissue_name)
+
+        input_db_file = base_prediction_model_dir / f"mashr_{tissue_name}.db"
+        with sqlite3.connect(input_db_file) as cnx:
+            gene0 = pd.read_sql_query(
+                f'select * from weights where gene like "{gene_obj.ensembl_id}.%"', cnx
+            )
+            if gene0.shape[0] > 0:
+                gene0["tissue"] = tissue_name
+                all_genes_data.append(gene0)
+
+    if len(all_genes_data) == 0:
+        raise ValueError(f"No predictor SNPs for gene {gene_obj.ensembl_id}")
+
+    return all_genes_data
+
+
+def predict_expression(
+    gene0_id,
+    gene1_id,
+    gene0_tissues=None,
+    gene1_tissues=None,
+    snps_subset: set = None,
+    center_gene_expr=False,
+):
+    if gene0_tissues is None:
+        gene0_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_TISSUES"].split(
+            " "
+        )
+        gene0_tissues = sorted(gene0_tissues)
+
+    if gene1_tissues is None:
+        gene1_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_TISSUES"].split(
+            " "
+        )
+        gene1_tissues = sorted(gene1_tissues)
 
     # get genes' chromosomes
     gene0_obj = Gene(ensembl_id=gene0_id)
@@ -20,33 +61,19 @@ def predict_expression(gene0_id, gene1_id, center_gene_expr=False):
     print(f"Genes chromosome: {gene0_obj.chromosome}")
 
     # get gene prediction weights
-    base_prediction_model_dir = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"]
-    all_genes_data = []
-    for tissue_name in all_tissues:
-        print(tissue_name)
+    gene0_data = get_gene_prediction_weights(gene0_obj, gene0_tissues)
+    gene1_data = get_gene_prediction_weights(gene1_obj, gene1_tissues)
 
-        input_db_file = base_prediction_model_dir / f"mashr_{tissue_name}.db"
-        with sqlite3.connect(input_db_file) as cnx:
-            gene0 = pd.read_sql_query(
-                f'select * from weights where gene like "{gene0_id}.%"', cnx
-            )
-            if gene0.shape[0] > 0:
-                gene0["tissue"] = tissue_name
-                all_genes_data.append(gene0)
-
-            gene1 = pd.read_sql_query(
-                f'select * from weights where gene like "{gene1_id}.%"', cnx
-            )
-            if gene1.shape[0] > 0:
-                gene1["tissue"] = tissue_name
-                all_genes_data.append(gene1)
-
-    all_genes_data = pd.concat(all_genes_data, axis=0)
+    all_genes_data = pd.concat(gene0_data + gene1_data, axis=0)
     assert not all_genes_data.isna().any().any()
 
     # get gene variants
     gene_variants = list(set(all_genes_data["varID"].tolist()))
-    print(f"Number of variants: {len(gene_variants)}")
+    print(f"Number of unique variants: {len(gene_variants)}")
+    # keep only variants in snps_subset
+    if snps_subset is not None:
+        gene_variants = list(snps_subset.intersection(gene_variants))
+        print(f"Number of variants after filtering: {len(gene_variants)}")
 
     # get intersection of gene variants with variants in parquet file
     base_reference_panel_dir = conf.PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"]
@@ -90,11 +117,12 @@ def predict_expression(gene0_id, gene1_id, center_gene_expr=False):
         return gene_expr
 
     gene0_pred_expr = pd.DataFrame(
-        {t: _predict_expression(gene0_id, t) for t in all_tissues}
+        {t: _predict_expression(gene0_id, t) for t in gene0_tissues}
     ).dropna(how="all", axis=1)
     assert not gene0_pred_expr.isna().any().any()
+
     gene1_pred_expr = pd.DataFrame(
-        {t: _predict_expression(gene1_id, t) for t in all_tissues}
+        {t: _predict_expression(gene1_id, t) for t in gene1_tissues}
     ).dropna(how="all", axis=1)
     assert not gene1_pred_expr.isna().any().any()
 
@@ -209,70 +237,67 @@ def get_ssm(multixcan_model_result, X_data, y_data):
 
 
 # Main
-# # FGR (1p35.3) and AK2 (1p35.1)
-# gene0_id = "ENSG00000000938"
-# gene1_id = "ENSG00000004455"
-
-# # COL4A2 (13q34) and COL4A1 (13q34)
-# gene0_id = "ENSG00000134871"
-# gene1_id = "ENSG00000187498"
-
-# # NOC2L (1p36.33) and HES4 (1p36.33)
-# gene0_id = "ENSG00000188976"
-# gene1_id = "ENSG00000188290"
-
-# # ARSA (22q13.33) and SHANK3 (22q13.33)
-# gene0_id = "ENSG00000100299"
-# gene1_id = "ENSG00000251322"
-
-# # IRF4 (6p25.3) and TBP (6q27)
-# gene0_id = "ENSG00000137265"
-# gene1_id = "ENSG00000112592"
-
-# # IKZF3 (17q21.1) and PNMT (17q12)
-# gene0_id = "ENSG00000161405"
-# gene1_id = "ENSG00000141744"
-
-# # CCL2 (17q12) and CCL7 (17q12)
-# gene0_id = "ENSG00000108691"
-# gene1_id = "ENSG00000108688"
-
-# # CCL2 (17q12) and CCL8 (17q12)
-# gene0_id = "ENSG00000108691"
-# gene1_id = "ENSG00000108700"
-
-# # HIST2H2BF (1q21.2) and HIST3H2A (1q42.13)
-# gene0_id = "ENSG00000203814"
-# gene1_id = "ENSG00000181218"
-
-# # HIST2H2BF (1q21.2) and HIST3H2BB (1q42.13)
-# gene0_id = "ENSG00000203814"
-# gene1_id = "ENSG00000196890"
-
-# # HIST3H2A (1q42.13) and HIST3H2BB (1q42.13)
-# gene0_id = "ENSG00000181218"
-# gene1_id = "ENSG00000196890"
-
-# # HIST1H2BC (6p22.2) and HIST1H2AC (6p22.2)
-# gene0_id = "ENSG00000180596"
-# gene1_id = "ENSG00000180573"
-
-# # HIST1H2BO (6p22.1) and HIST1H2BK (6p22.1)
-# gene0_id = "ENSG00000274641"
-# gene1_id = "ENSG00000197903"
-
-# HIST1H2BO (6p22.1) and HIST1H2BF (6p22.2)
-gene0_id = "ENSG00000274641"
-gene1_id = "ENSG00000277224"
-
 
 N_PHENOTYPES = 10000
+
+gene0_id = "ENSG00000180596"
+gene0_tissues = ("Small_Intestine_Terminal_Ileum", "Uterus")
+gene1_id = "ENSG00000180573"
+gene1_tissues = (
+    "Brain_Cerebellum",
+    "Esophagus_Gastroesophageal_Junction",
+    "Artery_Coronary",
+)
+snps_subset = {
+    # first gene:
+    #  Small_Intestine_Terminal_Ileum
+    "chr6_26124075_T_C_b38",
+    # "chr6_26124202_C_T_b38",    # this SNP is not in the genotype
+    #  Uterus
+    "chr6_26124075_T_C_b38",
+    # "chr6_26124406_C_T_b38",  # removed
+    # second gene:
+    #  Brain_Cerebellum
+    "chr6_26124075_T_C_b38",
+    # "chr6_26124015_G_A_b38",  # removed
+    # "chr6_26124406_C_T_b38",  # (same as other one)
+    #  Esophagus_Gastroesophageal_Junction
+    "chr6_26124075_T_C_b38",
+    # "chr6_26124015_G_A_b38",  # (same as other one)
+    # Artery_Coronary
+    "chr6_26124075_T_C_b38",
+    # "chr6_26124015_G_A_b38",  # (same as other one)
+}
 
 gene0_obj = Gene(ensembl_id=gene0_id)
 gene1_obj = Gene(ensembl_id=gene1_id)
 
-gene0_pred_expr, gene1_pred_expr = predict_expression(gene0_id, gene1_id)
+# to quickly test whether genes have predictors in tissues:
+#     get_gene_prediction_weights(gene0_obj, gene0_tissues)
+# or to explore how many snps are in each model across all tissues
+#     all_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][
+#                   f"MASHR_TISSUES"
+#     ].split(" ")
+#
+#     for t in all_tissues:
+#         try:
+#             _tmp = get_gene_prediction_weights(gene1_obj, (t,))[0]
+#             print(f"  {_tmp.shape[0]}", flush=True)
+#         except:
+#             print(f"[FAILED] {t}")
 
+# predict expression
+gene0_pred_expr, gene1_pred_expr = predict_expression(
+    gene0_id,
+    gene1_id,
+    gene0_tissues=gene0_tissues,
+    gene1_tissues=gene1_tissues,
+    snps_subset=snps_subset,
+)
+assert gene0_pred_expr.shape[1] == len(gene0_tissues)
+assert gene1_pred_expr.shape[1] == len(gene1_tissues)
+
+# generate random phenotypes
 rs = np.random.RandomState(0)
 
 random_phenotypes = []
@@ -283,6 +308,7 @@ for pheno_i in range(N_PHENOTYPES):
     # y = y - y.mean()
     random_phenotypes.append(y)
 
+# run multixcan, get SSMs
 gene0_ssms = []
 gene1_ssms = []
 for y_idx, y in tqdm(
@@ -297,13 +323,13 @@ for y_idx, y in tqdm(
 gene0_ssms = pd.Series(gene0_ssms)
 gene1_ssms = pd.Series(gene1_ssms)
 
+# compute empirical correlation between SSMs
 print(f"Correlation from null: {gene0_ssms.corr(gene1_ssms)}")
 
 
-n = gene0_pred_expr.shape[0]
-
 # code to compute ssms correlation using MAGMA method
 # in the original formula, the numerator is really the predictors but scaled
+
 gene0_pcs = gene0_data.drop(columns=["Intercept"]).apply(scale)
 gene1_pcs = gene1_data.drop(columns=["Intercept"]).apply(scale)
 
@@ -311,78 +337,3 @@ cov_ssm = 2 * np.trace(gene0_pcs.T @ gene1_pcs @ gene1_pcs.T @ gene0_pcs)
 t0_ssm_sd = np.sqrt(2 * gene0_pcs.shape[1]) * (gene0_pcs.shape[0] - 1)
 t1_ssm_sd = np.sqrt(2 * gene1_pcs.shape[1]) * (gene1_pcs.shape[0] - 1)
 print(f"Correlation from genotype: {cov_ssm / (t0_ssm_sd * t1_ssm_sd)}")
-
-
-# modified version to use covariance in the numerator
-gene0_pcs = gene0_data.drop(columns=["Intercept"]).apply(scale)
-gene1_pcs = gene1_data.drop(columns=["Intercept"]).apply(scale)
-
-gene0_pcs_gene1_pcs_cov = (gene0_pcs.T @ gene1_pcs) / (n - 1)
-
-cov_ssm = 2 * np.trace(gene0_pcs_gene1_pcs_cov @ gene0_pcs_gene1_pcs_cov.T)
-t0_ssm_sd = np.sqrt(2 * gene0_pcs.shape[1])
-t1_ssm_sd = np.sqrt(2 * gene1_pcs.shape[1])
-print(f"Correlation from genotype: {cov_ssm / (t0_ssm_sd * t1_ssm_sd)}")
-
-
-# FINAL VERSION ??? without using predicted gene expression
-def _filter_eigen_values_from_max(s, ratio):
-    s_max = np.max(s)
-    return [i for i, x in enumerate(s) if x >= s_max * ratio]
-
-
-def pc_filter(x, cond_num):
-    return _filter_eigen_values_from_max(x, 1.0 / cond_num)
-
-
-reference_panel = "1000G"
-model_type = "MASHR"
-condition_number = 30
-use_within_distance = False
-
-# these are for debugging only
-T_i = gene0_pred_expr.apply(scale)
-T_j = gene1_pred_expr.apply(scale)
-
-gene0_corrs = gene0_obj.get_tissues_correlations(
-    gene0_obj,
-    reference_panel=reference_panel,
-    model_type=model_type,
-    use_within_distance=use_within_distance,
-)
-u_i, s_i, V_i = np.linalg.svd(gene0_corrs)
-selected = pc_filter(s_i, condition_number)
-s_i = s_i[selected]
-V_i = V_i[selected]
-
-gene1_corrs = gene1_obj.get_tissues_correlations(
-    gene1_obj,
-    reference_panel=reference_panel,
-    model_type=model_type,
-    use_within_distance=use_within_distance,
-)
-u_j, s_j, V_j = np.linalg.svd(gene1_corrs)
-selected = pc_filter(s_j, condition_number)
-s_j = s_j[selected]
-V_j = V_j[selected]
-
-gene0_gene1_corrs = gene0_obj.get_tissues_correlations(
-    gene1_obj,
-    reference_panel=reference_panel,
-    model_type=model_type,
-    use_within_distance=use_within_distance,
-)
-
-t0_t1_cov = (
-    np.diag(s_i ** (-1 / 2))
-    @ V_i
-    @ gene0_gene1_corrs
-    @ V_j.T
-    @ np.diag(s_j ** (-1 / 2))
-)
-
-cov_ssm = 2 * np.trace(t0_t1_cov @ t0_t1_cov.T)
-t0_ssm_sd = np.sqrt(2 * V_i.shape[0])
-t1_ssm_sd = np.sqrt(2 * V_j.shape[0])
-
-print(f"Correlation final: {cov_ssm / (t0_ssm_sd * t1_ssm_sd)}")
