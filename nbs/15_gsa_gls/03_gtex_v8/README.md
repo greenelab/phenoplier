@@ -17,6 +17,18 @@ The only files that are needed are the following:
 So adjust the file selection and download the manifest file only for those, to avoid downloading many unneeded files.
 See `01_05-download.sh`.
 
+If you receive an error with RequestNewAccessToken, then you need to update your credentials.
+First, go to https://anvil.terra.bio/#profile and renew the links.
+Then, go to https://gen3.theanvil.io/identity and delete the current API key and create a new one, and download the `credentials.json` file.
+Finally, run this command:
+
+```bash
+~/projects/anvil/software/gen3-client configure \
+  --profile=miltondp_gtex \
+  --cred=/home/miltondp/credentials.json \
+  --apiendpoint=https://gen3.theanvil.io
+```
+
 
 # Load Penn's LPC-specific paths and PhenoPLIER configuration
 
