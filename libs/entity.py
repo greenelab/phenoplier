@@ -1020,6 +1020,7 @@ class Gene(object):
         other_gene,
         tissues: tuple = None,
         other_tissues: tuple = None,
+        snps_subset: frozenset = None,
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
         use_within_distance=True,
@@ -1050,6 +1051,7 @@ class Gene(object):
                     other_gene=other_gene,
                     tissue=t1,
                     other_tissue=t2,
+                    snps_subset=snps_subset,
                     reference_panel=reference_panel,
                     model_type=model_type,
                     use_within_distance=use_within_distance,
@@ -1076,6 +1078,7 @@ class Gene(object):
     def get_tissues_correlations_svd(
         self,
         tissues: tuple = None,
+        snps_subset: frozenset = None,
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
         condition_number: float = 30,
@@ -1083,6 +1086,7 @@ class Gene(object):
     ):
         """
         FIXME: add documentation
+        this computes the SVD of the tissues correlations for a single gene
         """
 
         def _filter_eigen_values_from_max(s, ratio):
@@ -1092,6 +1096,8 @@ class Gene(object):
         gene_corrs = self.get_tissues_correlations(
             other_gene=self,
             tissues=tissues,
+            other_tissues=tissues,
+            snps_subset=snps_subset,
             reference_panel=reference_panel,
             model_type=model_type,
             use_within_distance=use_within_distance,
@@ -1110,6 +1116,8 @@ class Gene(object):
         self,
         other_gene,
         tissues: tuple = None,
+        other_tissues: tuple = None,
+        snps_subset: frozenset = None,
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
         condition_number: float = 30,
@@ -1136,13 +1144,10 @@ class Gene(object):
         if use_within_distance and not self.within_distance(other_gene):
             return 0.0
 
-        def _filter_eigen_values_from_max(s, ratio):
-            s_max = np.max(s)
-            return [i for i, x in enumerate(s) if x >= s_max * ratio]
-
         # this gene
         gene0_svd = self.get_tissues_correlations_svd(
             tissues=tissues,
+            snps_subset=snps_subset,
             reference_panel=reference_panel,
             model_type=model_type,
             condition_number=condition_number,
@@ -1154,7 +1159,8 @@ class Gene(object):
 
         # other gene
         gene1_svd = other_gene.get_tissues_correlations_svd(
-            tissues=tissues,
+            tissues=other_tissues,
+            snps_subset=snps_subset,
             reference_panel=reference_panel,
             model_type=model_type,
             condition_number=condition_number,
@@ -1166,8 +1172,10 @@ class Gene(object):
 
         # between genes
         gene0_gene1_corrs = self.get_tissues_correlations(
-            other_gene,
+            other_gene=other_gene,
             tissues=tissues,
+            other_tissues=other_tissues,
+            snps_subset=snps_subset,
             reference_panel=reference_panel,
             model_type=model_type,
             use_within_distance=use_within_distance,
