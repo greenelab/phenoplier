@@ -37,6 +37,8 @@
 from random import sample, seed
 import warnings
 from pathlib import Path
+import pickle
+import traceback
 
 import numpy as np
 from scipy.spatial.distance import squareform
@@ -52,63 +54,104 @@ from entity import Gene
 # # Settings
 
 # %% tags=["parameters"]
-# reference panel
-REFERENCE_PANEL = "GTEX_V8"
-# REFERENCE_PANEL = "1000G"
+# a cohort name (it could be something like UK_BIOBANK, etc)
+COHORT_NAME = None
 
-# prediction models
-## mashr
-EQTL_MODEL = "MASHR"
+# reference panel such as 1000G or GTEX_V8
+REFERENCE_PANEL = None
+
+# predictions models such as MASHR or ELASTIC_NET
+EQTL_MODEL = None
 
 # this is the default value used in S-MultiXcan to select the
 # top principal components of the expression correlation matrix
 SMULTIXCAN_CONDITION_NUMBER = 30
 
 # specifies a single chromosome value
-# by default, run on all chromosomes
-chromosome = None
+CHROMOSOME = None
+
+# if True, then it will continue if a gene pair correlation fails,
+# printing the warning/error for debugging. If False, any warning/error
+# will be thrown
+
+# FIXME: make it False when all is working
+DEBUG_MODE = True
+
+# %% tags=["injected-parameters"]
+# FIXME: remove later
+# Parameters
+COHORT_NAME = "1000G_EUR"
+REFERENCE_PANEL = "1000G"
+EQTL_MODEL = "MASHR"
+CHROMOSOME = 1
+
 
 # %%
+assert COHORT_NAME is not None or len(COHORT_NAME) == 0, "A cohort name must be given"
+
+COHORT_NAME = COHORT_NAME.lower()
+display(f"Cohort name: {COHORT_NAME}")
+
+# %%
+assert (
+    REFERENCE_PANEL is not None or len(REFERENCE_PANEL) == 0
+), "A reference panel must be given"
+
+display(f"Reference panel: {REFERENCE_PANEL}")
+
+# %%
+assert (
+    EQTL_MODEL is not None or len(EQTL_MODEL) == 0
+), "A prediction/eQTL model must be given"
+
 EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
+display(f"eQTL model: {EQTL_MODEL}) / {EQTL_MODEL_FILES_PREFIX}")
 
 # %%
-display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
+assert (
+    SMULTIXCAN_CONDITION_NUMBER is not None or SMULTIXCAN_CONDITION_NUMBER > 0
+), "The S-MultiXcan condition number (positive integer) must be given"
 
-# %%
 display(f"S-MultiXcan condition number: {SMULTIXCAN_CONDITION_NUMBER}")
 
 # %%
-REFERENCE_PANEL_DIR = conf.PHENOMEXCAN["LD_BLOCKS"][f"{REFERENCE_PANEL}_GENOTYPE_DIR"]
+assert CHROMOSOME is not None and (
+    1 <= CHROMOSOME <= 22
+), "You have to select one chromosome (format: number between 1 and 22)"
+
+CHROMOSOME = str(CHROMOSOME)
+display(f"Working on chromosome {CHROMOSOME}")
 
 # %%
-display(f"Using reference panel folder: {str(REFERENCE_PANEL_DIR)}")
+# TODO: see if this is necessary; if so, make it a parameter with default value True
+# This parameter, if True, computes the correlation between closeby genes only
+
+COMPUTE_CORRELATIONS_WITHIN_DISTANCE = True
+display(f"Compute correlation within distance {COMPUTE_CORRELATIONS_WITHIN_DISTANCE}")
 
 # %%
 OUTPUT_DIR_BASE = (
-    conf.PHENOMEXCAN["LD_BLOCKS"][f"GENE_CORRS_DIR"]
+    conf.RESULTS["GLS"]
+    / "gene_corrs"
+    / "cohorts"
+    / COHORT_NAME
     / REFERENCE_PANEL.lower()
     / EQTL_MODEL.lower()
 )
 OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 
-# %%
 display(f"Using output dir base: {OUTPUT_DIR_BASE}")
 
 # %%
-assert (
-    chromosome is not None
-), "You have to select one chromosome (format: number between 1 and 22)"
+INPUT_DIR = conf.RESULTS["GLS"] / "gene_corrs" / "cohorts" / COHORT_NAME
+assert INPUT_DIR.exists()
+
+display(INPUT_DIR)
 
 # %%
-chromosome = str(chromosome)
-
-# %%
-display(f"Working on chromosome {chromosome}")
-
-# %%
-# This paramter, if True, computes the correlation between closeby genes only
-COMPUTE_CORRELATIONS_WITHIN_DISTANCE = False
-display(f"Compute correlation within distance {COMPUTE_CORRELATIONS_WITHIN_DISTANCE}")
+# TODO: remove if not needed
+# REFERENCE_PANEL_DIR = conf.PHENOMEXCAN["LD_BLOCKS"][f"{REFERENCE_PANEL}_GENOTYPE_DIR"]
+# display(f"Using reference panel folder: {str(REFERENCE_PANEL_DIR)}")
 
 # %% [markdown] tags=[]
 # # Load data
@@ -117,193 +160,193 @@ display(f"Compute correlation within distance {COMPUTE_CORRELATIONS_WITHIN_DISTA
 # ## Prediction model tissues
 
 # %%
-prediction_model_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][
-    f"{EQTL_MODEL}_TISSUES"
-].split(" ")
+# prediction_model_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][
+#     f"{EQTL_MODEL}_TISSUES"
+# ].split(" ")
 
 # %%
-len(prediction_model_tissues)
+# len(prediction_model_tissues)
 
 # %%
-prediction_model_tissues[:5]
+# prediction_model_tissues[:5]
 
 # %% [markdown] tags=[]
 # ## MultiPLIER Z
 
 # %% tags=[]
-multiplier_z_genes = pd.read_pickle(
-    conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]
-).index.tolist()
+# multiplier_z_genes = pd.read_pickle(
+#     conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]
+# ).index.tolist()
 
 # %% tags=[]
-len(multiplier_z_genes)
+# len(multiplier_z_genes)
 
 # %% tags=[]
-multiplier_z_genes[:10]
+# multiplier_z_genes[:10]
 
 # %% [markdown] tags=[]
-# ## Get gene objects
+# ## GWAS variants
 
-# %% tags=[]
-multiplier_gene_obj = {
-    gene_name: Gene(name=gene_name)
-    for gene_name in multiplier_z_genes
-    if gene_name in Gene.GENE_NAME_TO_ID_MAP
-}
+# %%
+with open(INPUT_DIR / "gwas_variant_ids.pkl", "rb") as handle:
+    gwas_variants_ids_set = pickle.load(handle)
 
-# %% tags=[]
-len(multiplier_gene_obj)
+# %%
+len(gwas_variants_ids_set)
 
-# %% tags=[]
-multiplier_gene_obj["GAS6"].ensembl_id
+# %%
+list(gwas_variants_ids_set)[:5]
 
-# %% tags=[]
-_gene_obj = list(multiplier_gene_obj.values())
+# %% [markdown] tags=[]
+# ## S-PrediXcan tissue models
 
-genes_info = pd.DataFrame(
-    {
-        "name": [g.name for g in _gene_obj],
-        "id": [g.ensembl_id for g in _gene_obj],
-        "chr": [g.chromosome for g in _gene_obj],
-        "band": [g.band for g in _gene_obj],
-        "start_position": [g.get_attribute("start_position") for g in _gene_obj],
-    }
+# %%
+spredixcan_genes_models = pd.read_pickle(INPUT_DIR / "gene_tissues.pkl").set_index(
+    "gene_id"
 )
 
-# %% tags=[]
+# %%
+spredixcan_genes_models.shape
+
+# %%
+spredixcan_genes_models.head()
+
+# %%
+assert spredixcan_genes_models.index.is_unique
+
+# %% [markdown] tags=[]
+# ## Get common genes
+
+# %%
+with open(INPUT_DIR / "common_genes.pkl", "rb") as handle:
+    common_genes = pickle.load(handle)
+
+# %%
+len(common_genes)
+
+# %%
+sorted(list(common_genes))[:5]
+
+# %% [markdown] tags=[]
+# ## Gene info
+
+# %%
+genes_info = pd.read_pickle(INPUT_DIR / "genes_info.pkl")
+
+# %%
 genes_info.shape
 
-# %% tags=[]
+# %%
 genes_info.head()
 
 # %% [markdown] tags=[]
-# # Test
-
-# %%
-chromosome_genes_info = genes_info[genes_info["chr"] == chromosome]
-display(chromosome_genes_info)
-
-# %%
-seed(0)
-_gene_list_ids = sample(chromosome_genes_info["id"].tolist(), 5)
-selected_chromosome_genes_obj = [Gene(ensembl_id=g_id) for g_id in _gene_list_ids]
-display(len(selected_chromosome_genes_obj))
-
-# %%
-for gene_idx1 in range(0, len(selected_chromosome_genes_obj) - 1):
-    gene_obj1 = selected_chromosome_genes_obj[gene_idx1]
-
-    for gene_idx2 in range(gene_idx1 + 1, len(selected_chromosome_genes_obj)):
-        gene_obj2 = selected_chromosome_genes_obj[gene_idx2]
-
-        c = gene_obj1.get_ssm_correlation(
-            gene_obj2,
-        )
-
-        print(f"{gene_obj1.name} / {gene_obj2.name}: {c}")
-
-# %% [markdown] tags=[]
-# # Compute correlation per chromosome
+# # Compute correlations
 
 # %%
 output_dir = OUTPUT_DIR_BASE / "by_chr"
 output_dir.mkdir(exist_ok=True, parents=True)
-output_file = output_dir / f"gene_corrs-chr{chromosome}.pkl"
+output_file = output_dir / f"gene_corrs-chr{CHROMOSOME}.pkl"
 display(output_file)
 
 # %%
 warnings.filterwarnings("error")
 
-# %% tags=[]
+# %%
 # standard checks
 all_chrs = genes_info["chr"].dropna().unique()
 assert all_chrs.shape[0] == 22
 
 # select chromosome given by the user
-assert chromosome in all_chrs
+assert CHROMOSOME in all_chrs
 
+# %%
 # run only on the chromosome specified
-all_chrs = [chromosome]
-genes_chr = genes_info[genes_info["chr"] == chromosome]
+all_chrs = [CHROMOSOME]
+genes_chr = genes_info[genes_info["chr"] == CHROMOSOME]
 
 # For testing purposes
 # genes_chr = genes_chr.sample(n=20)
 
 print(f"Number of genes in chromosome: {genes_chr.shape[0]}", flush=True)
 
+# %%
 # sort genes by starting position to make visualizations better later
 genes_chr = genes_chr.sort_values("start_position")
 
+# %%
 gene_chr_objs = [Gene(ensembl_id=gene_id) for gene_id in genes_chr["id"]]
-gene_chr_ids = [g.ensembl_id for g in gene_chr_objs]
 
+# %%
 n = len(gene_chr_objs)
 n_comb = int(n * (n - 1) / 2.0)
 print(f"Number of gene combinations: {n_comb}", flush=True)
 
+# %% tags=[]
 gene_corrs = []
 
-pbar = tqdm(ncols=100, total=n_comb)
 i = 0
-for gene_idx1 in range(0, len(gene_chr_objs) - 1):
-    gene_obj1 = gene_chr_objs[gene_idx1]
+with tqdm(ncols=100, total=n_comb) as pbar:
+    for gene1_idx in range(0, len(gene_chr_objs) - 1):
+        gene1_obj = gene_chr_objs[gene1_idx]
+        gene1_tissues = spredixcan_genes_models.loc[gene1_obj.ensembl_id, "tissue"]
 
-    for gene_idx2 in range(gene_idx1 + 1, len(gene_chr_objs)):
-        gene_obj2 = gene_chr_objs[gene_idx2]
+        for gene2_idx in range(gene1_idx + 1, len(gene_chr_objs)):
+            gene2_obj = gene_chr_objs[gene2_idx]
+            gene2_tissues = spredixcan_genes_models.loc[gene2_obj.ensembl_id, "tissue"]
 
-        pbar.set_description(f"{gene_obj1.ensembl_id} / {gene_obj2.ensembl_id}")
+            pbar.set_description(f"{gene1_obj.ensembl_id} / {gene2_obj.ensembl_id}")
 
-        try:
-            # FIXME: compute the correlation of the sum of squares of the model using all
-            # the available tissues; this could be problematic because for some results
-            # (computed on a specific phenotype/GWAS) we might not have all the tissues
-            # available, which can certainly bias the correlation estimation.
-            # Since this depends on the GWAS on a specific phenotype, we should ideally have
-            # one correlation matrix per GWAS. I should look at how we can improve this.
-            r = gene_obj1.get_ssm_correlation(
-                other_gene=gene_obj2,
-                condition_number=SMULTIXCAN_CONDITION_NUMBER,
-                reference_panel=REFERENCE_PANEL,
-                model_type=EQTL_MODEL,
-                use_within_distance=COMPUTE_CORRELATIONS_WITHIN_DISTANCE,
-            )
+            try:
+                r = gene1_obj.get_ssm_correlation(
+                    other_gene=gene2_obj,
+                    tissues=gene1_tissues,
+                    other_tissues=gene2_tissues,
+                    snps_subset=gwas_variants_ids_set,
+                    condition_number=SMULTIXCAN_CONDITION_NUMBER,
+                    reference_panel=REFERENCE_PANEL,
+                    model_type=EQTL_MODEL,
+                    use_within_distance=COMPUTE_CORRELATIONS_WITHIN_DISTANCE,
+                )
 
-            if r is None:
-                # if r is None, it's very likely because:
-                #  * one of the genes has no prediction models
-                #  * all the SNPs predictors for the gene are not present in the reference
-                #    panel
+                if r is None:
+                    # if r is None, it's very likely because:
+                    #  * one of the genes has no prediction models
+                    #  * all the SNPs predictors for the gene are not present in the reference
+                    #    panel
 
-                r = 0.0
+                    r = 0.0
 
-            gene_corrs.append(r)
-        except Warning:
-            print(
-                f"RuntimeWarning for genes {gene_obj1.ensembl_id} and {gene_obj2.ensembl_id}",
-                flush=True,
-            )
-            import traceback
+                gene_corrs.append(r)
+            except Warning as e:
+                if not DEBUG_MODE:
+                    raise e
 
-            print(traceback.format_exc(), flush=True)
-        except Exception as e:
-            print(
-                f"Exception for genes {gene_obj1.ensembl_id} and {gene_obj2.ensembl_id}",
-                flush=True,
-            )
-            import traceback
+                print(
+                    f"RuntimeWarning for genes {gene1_obj.ensembl_id} and {gene2_obj.ensembl_id}",
+                    flush=True,
+                )
+                print(traceback.format_exc(), flush=True)
 
-            print(traceback.format_exc(), flush=True)
-            gene_corrs.append(np.nan)
+                gene_corrs.append(np.nan)
+            except Exception as e:
+                if not DEBUG_MODE:
+                    raise e
 
-        pbar.update(1)
+                print(
+                    f"Exception for genes {gene1_obj.ensembl_id} and {gene2_obj.ensembl_id}",
+                    flush=True,
+                )
+                print(traceback.format_exc(), flush=True)
 
-pbar.close()
+                gene_corrs.append(np.nan)
+
+            pbar.update(1)
 
 # testing
 gene_corrs_flat = pd.Series(gene_corrs)
-print(f"Min/max values: {gene_corrs_flat.min()} / {gene_corrs_flat.max()}")
-assert gene_corrs_flat.min() >= -1.001
-assert gene_corrs_flat.max() <= 1.001
+display(gene_corrs_flat.describe())
+# assert gene_corrs_flat.min() >= 0.0
+# assert gene_corrs_flat.max() <= 1.0
 
 # save
 # FIXME: consider saving only the condenced matrix here. See here for
@@ -311,6 +354,7 @@ assert gene_corrs_flat.max() <= 1.001
 gene_corrs_data = squareform(np.array(gene_corrs, dtype=np.float64))
 np.fill_diagonal(gene_corrs_data, 1.0)
 
+gene_chr_ids = [g.ensembl_id for g in gene_chr_objs]
 gene_corrs_df = pd.DataFrame(
     data=gene_corrs_data,
     index=gene_chr_ids,
@@ -365,7 +409,7 @@ display(gene_corrs_quantiles)
 with sns.plotting_context("paper", font_scale=1.5):
     g = sns.displot(gene_corrs, kde=True, height=7)
     g.ax.set_title(
-        f"Distribution of gene correlation values in chromosome {chromosome}"
+        f"Distribution of gene correlation values in chromosome {CHROMOSOME}"
     )
 
 # %% [markdown]
@@ -388,6 +432,6 @@ sns.heatmap(
     cmap="YlGnBu",
     ax=ax,
 )
-ax.set_title(f"Gene correlations in chromosome {chromosome}")
+ax.set_title(f"Gene correlations in chromosome {CHROMOSOME}")
 
 # %%
