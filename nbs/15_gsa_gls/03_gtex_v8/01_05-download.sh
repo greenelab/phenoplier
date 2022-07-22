@@ -32,3 +32,10 @@ wget \
   https://storage.googleapis.com/gtex_analysis_v8/reference/GTEx_Analysis_2017-06-05_v8_WholeGenomeSeq_838Indiv_Analysis_Freeze.lookup_table.txt.gz \
   -P analysis_supplement/
 
+# # Commands to download other files (in case it's necessary)
+# mkdir variants_annotation
+# ${GEN3_BINARY} download-multiple \
+#   --profile=miltondp_gtex \
+#   --manifest=~/projects/anvil/file-manifest-variants_annotation-for-anni.json \
+#   --download-path=variants_annotation \
+#   --protocol=s3
