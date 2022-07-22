@@ -138,11 +138,6 @@ assert INPUT_DIR.exists()
 
 display(INPUT_DIR)
 
-# %%
-# TODO: remove if not needed
-# REFERENCE_PANEL_DIR = conf.PHENOMEXCAN["LD_BLOCKS"][f"{REFERENCE_PANEL}_GENOTYPE_DIR"]
-# display(f"Using reference panel folder: {str(REFERENCE_PANEL_DIR)}")
-
 # %% [markdown] tags=[]
 # # Load data
 
@@ -304,11 +299,8 @@ with tqdm(ncols=100, total=n_comb) as pbar:
 
             pbar.update(1)
 
-# testing
+# create a pandas series
 gene_corrs_flat = pd.Series(gene_corrs)
-display(gene_corrs_flat.describe())
-# assert gene_corrs_flat.min() >= 0.0
-# assert gene_corrs_flat.max() <= 1.0
 
 # save
 # FIXME: consider saving only the condenced matrix here. See here for
@@ -337,6 +329,9 @@ gene_corrs_df.shape
 # %%
 gene_corrs_df.head()
 
+# %% [markdown]
+# ## Standard checks and stats
+
 # %%
 assert not gene_corrs_df.isna().any().any()
 
@@ -355,21 +350,35 @@ assert _max_val <= 1.0
 assert len(gene_corrs) == int(genes_chr.shape[0] * (genes_chr.shape[0] - 1) / 2)
 
 # %%
-gene_corrs = pd.Series(gene_corrs)
+gene_corrs_flat.describe()
 
 # %%
-gene_corrs.describe()
-
-# %%
-gene_corrs_quantiles = gene_corrs.quantile(np.arange(0, 1, 0.05))
+gene_corrs_quantiles = gene_corrs_flat.quantile(np.arange(0, 1, 0.05))
 display(gene_corrs_quantiles)
+
+# %% [markdown]
+# ## Positive definiteness
+
+# %%
+# print negative eigenvalues
+eigs = np.linalg.eigvals(gene_corrs_df.to_numpy())
+display(len(eigs[eigs < 0]))
+display(eigs[eigs < 0])
+
+# %%
+try:
+    chol_mat = np.linalg.cholesky(gene_corrs_df.to_numpy())
+    cov_inv = np.linalg.inv(chol_mat)
+    print("Works!")
+except:
+    print("Cholesky decomposition failed")
 
 # %% [markdown]
 # ## Plot: distribution
 
 # %%
 with sns.plotting_context("paper", font_scale=1.5):
-    g = sns.displot(gene_corrs, kde=True, height=7)
+    g = sns.displot(gene_corrs_flat, kde=True, height=7)
     g.ax.set_title(
         f"Distribution of gene correlation values in chromosome {CHROMOSOME}"
     )
@@ -378,7 +387,7 @@ with sns.plotting_context("paper", font_scale=1.5):
 # ## Plot: heatmap
 
 # %%
-vmin_val = min(-0.05, gene_corrs_quantiles[0.10])
+vmin_val = min(0.00, gene_corrs_quantiles[0.10])
 vmax_val = max(0.05, gene_corrs_quantiles[0.90])
 display(f"{vmin_val} / {vmax_val}")
 
@@ -391,7 +400,7 @@ sns.heatmap(
     square=True,
     vmin=vmin_val,
     vmax=vmax_val,
-    cmap="YlGnBu",
+    cmap="rocket_r",
     ax=ax,
 )
 ax.set_title(f"Gene correlations in chromosome {CHROMOSOME}")
