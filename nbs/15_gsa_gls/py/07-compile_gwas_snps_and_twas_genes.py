@@ -136,7 +136,7 @@ assert (
 display(f"Using eQTL model: {EQTL_MODEL}")  # / {EQTL_MODEL_FILES_PREFIX}")
 
 # %%
-OUTPUT_DIR_BASE = conf.RESULTS["GLS"] / "cohorts_config" / COHORT_NAME
+OUTPUT_DIR_BASE = conf.RESULTS["GLS"] / "gene_corrs" / "cohorts" / COHORT_NAME
 OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 
 display(f"Using output dir base: {OUTPUT_DIR_BASE}")
