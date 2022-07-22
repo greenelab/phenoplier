@@ -73,8 +73,7 @@ CHROMOSOME = None
 # if True, then it will continue if a gene pair correlation fails,
 # printing the warning/error for debugging. If False, any warning/error
 # will be thrown
-# FIXME: make it False when all is working
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 # %%
 assert COHORT_NAME is not None or len(COHORT_NAME) == 0, "A cohort name must be given"
