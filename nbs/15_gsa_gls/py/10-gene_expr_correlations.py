@@ -70,6 +70,10 @@ SMULTIXCAN_CONDITION_NUMBER = 30
 # specifies a single chromosome value
 CHROMOSOME = None
 
+# If True, computes the correlation between closeby genes only;
+# otherwise, it computes correlations for all genes in a chromosome
+COMPUTE_CORRELATIONS_WITHIN_DISTANCE = False
+
 # if True, then it will continue if a gene pair correlation fails,
 # printing the warning/error for debugging. If False, any warning/error
 # will be thrown
@@ -112,10 +116,6 @@ CHROMOSOME = str(CHROMOSOME)
 display(f"Working on chromosome {CHROMOSOME}")
 
 # %%
-# TODO: see if this is necessary; if so, make it a parameter with default value True
-# This parameter, if True, computes the correlation between closeby genes only
-
-COMPUTE_CORRELATIONS_WITHIN_DISTANCE = True
 display(f"Compute correlation within distance {COMPUTE_CORRELATIONS_WITHIN_DISTANCE}")
 
 # %%
