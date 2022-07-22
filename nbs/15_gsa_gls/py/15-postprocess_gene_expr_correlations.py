@@ -305,7 +305,7 @@ if CHOL_DECOMPOSITION_FAILED:
     eigs = np.linalg.eigvals(full_corr_matrix_fixed.to_numpy())
     display(len(eigs[eigs < 0]))
     display(eigs[eigs < 0])
-    
+
     chol_mat = np.linalg.cholesky(full_corr_matrix_fixed.to_numpy())
     cov_inv = np.linalg.inv(chol_mat)
 
@@ -373,14 +373,10 @@ _corr_mat.describe().apply(str)
 display(_corr_mat.quantile(np.arange(0, 1, 0.05)))
 
 # %%
-display(_corr_mat.quantile(
-    np.arange(0, 0.001, 0.0001)
-))
+display(_corr_mat.quantile(np.arange(0, 0.001, 0.0001)))
 
 # %%
-display(_corr_mat.quantile(
-    np.arange(0.999, 1.0, 0.0001)
-))
+display(_corr_mat.quantile(np.arange(0.999, 1.0, 0.0001)))
 
 # %% [markdown]
 # ### Plot: distribution
@@ -434,14 +430,10 @@ _corr_mat.describe().apply(str)
 display(_corr_mat.quantile(np.arange(0, 1, 0.05)))
 
 # %%
-display(_corr_mat.quantile(
-    np.arange(0, 0.001, 0.0001)
-))
+display(_corr_mat.quantile(np.arange(0, 0.001, 0.0001)))
 
 # %%
-display(_corr_mat.quantile(
-    np.arange(0.999, 1.0, 0.0001)
-))
+display(_corr_mat.quantile(np.arange(0.999, 1.0, 0.0001)))
 
 # %% [markdown]
 # ### Plot: distribution
