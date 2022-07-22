@@ -58,7 +58,7 @@ from entity import Gene
 
 # %% tags=["parameters"]
 # a cohort name (it could be something like UK_BIOBANK, etc)
-COHORT_NAME = "1000G_EUR"
+COHORT_NAME = None
 
 # a string with a path pointing to an imputed GWAS
 GWAS_FILE = None
@@ -75,25 +75,14 @@ SMULTIXCAN_FILE = None
 # predictions models such as MASHR or ELASTIC_NET
 EQTL_MODEL = None
 
-# %% tags=["injected-parameters"]
-# FIXME: remove later
-# Parameters
-COHORT_NAME = "1000G_EUR"
-GWAS_FILE = "/opt/data/results/gls/null_sims/final_imputed_gwas/random.pheno0.glm-imputed.txt.gz"
-SPREDIXCAN_FOLDER = "/opt/data/results/gls/null_sims/twas/spredixcan/"
-SPREDIXCAN_FILE_PATTERN = "random.pheno0-gtex_v8-mashr-{tissue}.csv"
-SMULTIXCAN_FILE = "/opt/data/results/gls/null_sims/twas/smultixcan/random.pheno0-gtex_v8-mashr-smultixcan.txt"
-EQTL_MODEL = "MASHR"
-
-
 # %%
-assert COHORT_NAME is not None or len(COHORT_NAME) == 0, "A cohort name must be given"
+assert COHORT_NAME is not None and len(COHORT_NAME) > 0, "A cohort name must be given"
 
 COHORT_NAME = COHORT_NAME.lower()
 display(f"Cohort name: {COHORT_NAME}")
 
 # %%
-assert GWAS_FILE is not None or len(GWAS_FILE) == 0, "A GWAS file path must be given"
+assert GWAS_FILE is not None and len(GWAS_FILE) > 0, "A GWAS file path must be given"
 GWAS_FILE = Path(GWAS_FILE).resolve()
 assert GWAS_FILE.exists(), "GWAS file does not exist"
 
@@ -101,7 +90,7 @@ display(f"GWAS file path: {str(GWAS_FILE)}")
 
 # %%
 assert (
-    SPREDIXCAN_FOLDER is not None or len(SPREDIXCAN_FOLDER) == 0
+    SPREDIXCAN_FOLDER is not None and len(SPREDIXCAN_FOLDER) > 0
 ), "An S-PrediXcan folder path must be given"
 SPREDIXCAN_FOLDER = Path(SPREDIXCAN_FOLDER).resolve()
 assert SPREDIXCAN_FOLDER.exists(), "S-PrediXcan folder does not exist"
@@ -110,7 +99,7 @@ display(f"S-PrediXcan folder path: {str(SPREDIXCAN_FOLDER)}")
 
 # %%
 assert (
-    SPREDIXCAN_FILE_PATTERN is not None or len(SPREDIXCAN_FILE_PATTERN) == 0
+    SPREDIXCAN_FILE_PATTERN is not None and len(SPREDIXCAN_FILE_PATTERN) > 0
 ), "An S-PrediXcan file pattern must be given"
 assert (
     "{tissue}" in SPREDIXCAN_FILE_PATTERN
@@ -120,7 +109,7 @@ display(f"S-PrediXcan file template: {SPREDIXCAN_FILE_PATTERN}")
 
 # %%
 assert (
-    SMULTIXCAN_FILE is not None or len(SMULTIXCAN_FILE) == 0
+    SMULTIXCAN_FILE is not None and len(SMULTIXCAN_FILE) > 0
 ), "An S-MultiXcan result file path must be given"
 SMULTIXCAN_FILE = Path(SMULTIXCAN_FILE).resolve()
 assert SMULTIXCAN_FILE.exists(), "S-MultiXcan result file does not exist"
@@ -129,11 +118,10 @@ display(f"S-MultiXcan file path: {str(SMULTIXCAN_FILE)}")
 
 # %%
 assert (
-    EQTL_MODEL is not None or len(EQTL_MODEL) == 0
-), "An S-MultiXcan result file path must be given"
+    EQTL_MODEL is not None and len(EQTL_MODEL) > 0
+), "A prediction/eQTL model must be given"
 
-# EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
-display(f"Using eQTL model: {EQTL_MODEL}")  # / {EQTL_MODEL_FILES_PREFIX}")
+display(f"eQTL model: {EQTL_MODEL}")
 
 # %%
 OUTPUT_DIR_BASE = conf.RESULTS["GLS"] / "gene_corrs" / "cohorts" / COHORT_NAME
@@ -142,7 +130,7 @@ OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 display(f"Using output dir base: {OUTPUT_DIR_BASE}")
 
 # %% [markdown] tags=[]
-# ## Load MultiPLIER Z genes
+# # Load MultiPLIER Z genes
 
 # %% tags=[]
 multiplier_z_genes = pd.read_pickle(
@@ -403,7 +391,7 @@ smultixcan_results = smultixcan_results.drop_duplicates(
 display(smultixcan_results.shape)
 
 # %% [markdown] tags=[]
-# ## Get common genes with MultiPLIER
+# ### Get common genes with MultiPLIER
 
 # %%
 common_genes = set(multiplier_z_genes).intersection(
