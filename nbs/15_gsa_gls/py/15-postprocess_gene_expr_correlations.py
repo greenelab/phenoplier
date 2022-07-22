@@ -54,13 +54,6 @@ REFERENCE_PANEL = None
 # predictions models such as MASHR or ELASTIC_NET
 EQTL_MODEL = None
 
-# %% tags=["injected-parameters"]
-# Parameters
-COHORT_NAME = "1000G_EUR"
-REFERENCE_PANEL = "1000G"
-EQTL_MODEL = "MASHR"
-
-
 # %%
 assert COHORT_NAME is not None and len(COHORT_NAME) > 0, "A cohort name must be given"
 
@@ -87,7 +80,7 @@ OUTPUT_DIR_BASE = (
     conf.RESULTS["GLS"]
     / "gene_corrs"
     / "cohorts"
-    / COHORT_NAME
+    / COHORT_NAME.lower()
     / REFERENCE_PANEL.lower()
     / EQTL_MODEL.lower()
 )
