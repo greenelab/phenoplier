@@ -73,18 +73,8 @@ CHROMOSOME = None
 # if True, then it will continue if a gene pair correlation fails,
 # printing the warning/error for debugging. If False, any warning/error
 # will be thrown
-
 # FIXME: make it False when all is working
 DEBUG_MODE = True
-
-# %% tags=["injected-parameters"]
-# FIXME: remove later
-# Parameters
-COHORT_NAME = "1000G_EUR"
-REFERENCE_PANEL = "1000G"
-EQTL_MODEL = "MASHR"
-CHROMOSOME = 1
-
 
 # %%
 assert COHORT_NAME is not None or len(COHORT_NAME) == 0, "A cohort name must be given"
@@ -155,34 +145,6 @@ display(INPUT_DIR)
 
 # %% [markdown] tags=[]
 # # Load data
-
-# %% [markdown] tags=[]
-# ## Prediction model tissues
-
-# %%
-# prediction_model_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][
-#     f"{EQTL_MODEL}_TISSUES"
-# ].split(" ")
-
-# %%
-# len(prediction_model_tissues)
-
-# %%
-# prediction_model_tissues[:5]
-
-# %% [markdown] tags=[]
-# ## MultiPLIER Z
-
-# %% tags=[]
-# multiplier_z_genes = pd.read_pickle(
-#     conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]
-# ).index.tolist()
-
-# %% tags=[]
-# len(multiplier_z_genes)
-
-# %% tags=[]
-# multiplier_z_genes[:10]
 
 # %% [markdown] tags=[]
 # ## GWAS variants
