@@ -82,7 +82,9 @@ display(f"Using reference panel folder: {str(REFERENCE_PANEL_DIR)}")
 
 # %%
 OUTPUT_DIR_BASE = (
-    conf.PHENOMEXCAN["LD_BLOCKS"][f"GENE_CORRS_DIR"]
+    conf.RESULTS["GLS"]
+    / "gene_corrs"
+    / "reference_panels"
     / REFERENCE_PANEL.lower()
     / EQTL_MODEL.lower()
 )
