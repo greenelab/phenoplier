@@ -54,9 +54,6 @@ REFERENCE_PANEL = None
 # predictions models such as MASHR or ELASTIC_NET
 EQTL_MODEL = None
 
-# check that final correlation matrix works with statsmodels.GLS
-# COMPATIBLE_WITH_STATSMODELS_GLS = True
-
 # %% tags=["injected-parameters"]
 # Parameters
 COHORT_NAME = "1000G_EUR"
@@ -75,9 +72,6 @@ assert (
     REFERENCE_PANEL is not None and len(REFERENCE_PANEL) > 0
 ), "A reference panel must be given"
 
-# FIXME: see if this is necessary, otherwise remove
-# REFERENCE_PANEL_DIR = conf.PHENOMEXCAN["LD_BLOCKS"][f"{REFERENCE_PANEL}_GENOTYPE_DIR"]
-# assert REFERENCE_PANEL_DIR
 display(f"Reference panel: {REFERENCE_PANEL}")
 
 # %%
@@ -193,58 +187,6 @@ assert not genes_info.isna().any(None)
 genes_info.head()
 
 # %% [markdown] tags=[]
-# ## Get gene objects
-
-# %% tags=[]
-# multiplier_gene_obj = {
-#     gene_name: Gene(ensembl_id=gene_name)
-#     for gene_name in gene_ids
-#     if gene_name in Gene.GENE_ID_TO_NAME_MAP
-# }
-
-# %% tags=[]
-# len(multiplier_gene_obj)
-
-# %% tags=[]
-# assert multiplier_gene_obj["ENSG00000183087"].name == "GAS6"
-
-# %% tags=[]
-# _gene_obj = list(multiplier_gene_obj.values())
-
-# genes_info = pd.DataFrame(
-#     {
-#         "name": [g.name for g in _gene_obj],
-#         "id": [g.ensembl_id for g in _gene_obj],
-#         "chr": [g.chromosome for g in _gene_obj],
-#         "start_position": [g.get_attribute("start_position") for g in _gene_obj],
-#     }
-# ).dropna()
-
-# %%
-# assert not genes_info.isna().any().any()
-
-# %%
-# genes_info.dtypes
-
-# %%
-# genes_info["chr"] = genes_info["chr"].apply(pd.to_numeric, downcast="integer")
-# genes_info["start_position"] = genes_info["start_position"].astype(
-#     int
-# )  # .apply(pd.to_numeric, downcast="signed")
-
-# %%
-# genes_info.dtypes
-
-# %% tags=[]
-# genes_info.shape
-
-# %% tags=[]
-# genes_info.head()
-
-# %%
-# assert not genes_info.isna().any().any()
-
-# %% [markdown] tags=[]
 # # Create full correlation matrix
 
 # %%
@@ -274,11 +216,6 @@ for chr_corr_file in all_gene_corr_files:
 full_corr_matrix.shape
 
 # %%
-# # make sure all elements in the diagonal are ones/1.0
-# full_corr_matrix[full_corr_matrix > 1.0] = 1.0
-# np.fill_diagonal(full_corr_matrix.values, 1.0)
-
-# %%
 full_corr_matrix.head()
 
 # %%
@@ -288,18 +225,13 @@ np.all(full_corr_matrix.to_numpy().diagonal() == 1.0)
 # ## Some checks
 
 # %%
-# check that all genes have a value
 assert not full_corr_matrix.isna().any(None)
-
-# %%
 assert not np.isinf(full_corr_matrix.to_numpy()).any()
 assert not np.iscomplex(full_corr_matrix.to_numpy()).any()
 
 # %%
 _min_val = full_corr_matrix.min().min()
 display(_min_val)
-# sometimes, if using statsmodels.GLS and after adjusting correlation matrices,
-# correlations are lower than zero
 assert _min_val >= 0.0
 
 # %%
@@ -334,12 +266,6 @@ except Exception as e:
 # %%
 # %load_ext rpy2.ipython
 
-# %%
-# corr_mat_r = full_corr_matrix.to_numpy()
-
-# %%
-# # %Rpush corr_mat_r
-
 # %% language="R"
 # # taken and adapted from https://www.r-bloggers.com/2013/08/correcting-a-pseudo-correlation-matrix-to-be-positive-semidefinite/
 # CorrectCM <- function(CM, p = 0) {
@@ -367,42 +293,52 @@ if CHOL_DECOMPOSITION_FAILED:
     )
     display(full_corr_matrix_fixed.shape)
     display(full_corr_matrix_fixed)
+else:
+    print("No adjustment was necessary")
 
 # %% [markdown]
 # ## Make sure the new matrix is positive definite
 
 # %%
-# print negative eigenvalues
-eigs = np.linalg.eigvals(full_corr_matrix_fixed.to_numpy())
-display(len(eigs[eigs < 0]))
-display(eigs[eigs < 0])
+if CHOL_DECOMPOSITION_FAILED:
+    # print negative eigenvalues
+    eigs = np.linalg.eigvals(full_corr_matrix_fixed.to_numpy())
+    display(len(eigs[eigs < 0]))
+    display(eigs[eigs < 0])
+    
+    chol_mat = np.linalg.cholesky(full_corr_matrix_fixed.to_numpy())
+    cov_inv = np.linalg.inv(chol_mat)
 
-# %%
-chol_mat = np.linalg.cholesky(full_corr_matrix_fixed.to_numpy())
-cov_inv = np.linalg.inv(chol_mat)
+    assert not np.isnan(chol_mat).any()
+    assert not np.isinf(chol_mat).any()
+    assert not np.iscomplex(chol_mat).any()
 
-assert not np.isnan(chol_mat).any()
-assert not np.isinf(chol_mat).any()
-assert not np.iscomplex(chol_mat).any()
-
-assert not np.isnan(cov_inv).any()
-assert not np.isinf(cov_inv).any()
-assert not np.iscomplex(cov_inv).any()
+    assert not np.isnan(cov_inv).any()
+    assert not np.isinf(cov_inv).any()
+    assert not np.iscomplex(cov_inv).any()
+else:
+    print("No adjustment was necessary")
 
 # %% [markdown]
 # ## Compare adjusted and original correlation matrix
 
 # %%
-# print the element-wise difference between the original and the adjusted matrix
-_diff = ((full_corr_matrix - full_corr_matrix_fixed) ** 2).unstack().sum()
-display(_diff)
-assert _diff < 1e-5
+if CHOL_DECOMPOSITION_FAILED:
+    # print the element-wise difference between the original and the adjusted matrix
+    _diff = ((full_corr_matrix - full_corr_matrix_fixed) ** 2).unstack().sum()
+    display(_diff)
+    assert _diff < 1e-5
+else:
+    print("No adjustment was necessary")
 
 # %% [markdown]
 # ## Replace original matrix with adjusted one
 
 # %%
-full_corr_matrix = full_corr_matrix_fixed
+if CHOL_DECOMPOSITION_FAILED:
+    full_corr_matrix = full_corr_matrix_fixed
+else:
+    print("No adjustment was necessary")
 
 # %% [markdown] tags=[]
 # # Stats
@@ -418,42 +354,48 @@ assert full_corr_matrix_flat.shape[0] == int(
     full_corr_matrix.shape[0] * (full_corr_matrix.shape[0] - 1) / 2
 )
 
-# %%
-full_corr_matrix_flat.head()
-
-# %% tags=[]
-full_corr_matrix_flat.describe().apply(str)
+# %% [markdown]
+# ## On all correlations
 
 # %%
-full_corr_matrix_flat_quantiles = full_corr_matrix_flat.quantile(np.arange(0, 1, 0.05))
-display(full_corr_matrix_flat_quantiles)
+_corr_mat = full_corr_matrix_flat
 
 # %%
-full_corr_matrix_flat_quantiles = full_corr_matrix_flat.quantile(
-    np.arange(0, 0.01, 0.001)
-)
-display(full_corr_matrix_flat_quantiles)
+_corr_mat.shape
 
 # %%
-full_corr_matrix_flat_quantiles = full_corr_matrix_flat.quantile(
+_corr_mat.head()
+
+# %%
+_corr_mat.describe().apply(str)
+
+# %%
+display(_corr_mat.quantile(np.arange(0, 1, 0.05)))
+
+# %%
+display(_corr_mat.quantile(
+    np.arange(0, 0.001, 0.0001)
+))
+
+# %%
+display(_corr_mat.quantile(
     np.arange(0.999, 1.0, 0.0001)
-)
-display(full_corr_matrix_flat_quantiles)
+))
 
 # %% [markdown]
-# ## Plot: distribution
+# ### Plot: distribution
 
 # %%
 with sns.plotting_context("paper", font_scale=1.5):
-    g = sns.displot(full_corr_matrix_flat, kde=True, height=7)
+    g = sns.displot(_corr_mat, kde=True, height=7)
     g.ax.set_title("Distribution of gene correlation values in all chromosomes")
 
 # %% [markdown]
-# ## Plot: heatmap
+# ### Plot: heatmap
 
 # %%
 vmin_val = 0.0
-vmax_val = max(0.05, full_corr_matrix_flat.quantile(0.99))
+vmax_val = max(0.05, _corr_mat.quantile(0.99))
 display(f"{vmin_val} / {vmax_val}")
 
 # %%
@@ -469,6 +411,45 @@ sns.heatmap(
     ax=ax,
 )
 ax.set_title("Gene correlations in all chromosomes")
+
+# %% [markdown]
+# ## On nonzero correlations
+
+# %%
+nonzero_corrs = full_corr_matrix_flat[full_corr_matrix_flat > 0.0]
+
+# %%
+_corr_mat = nonzero_corrs
+
+# %%
+_corr_mat.shape
+
+# %%
+_corr_mat.head()
+
+# %%
+_corr_mat.describe().apply(str)
+
+# %%
+display(_corr_mat.quantile(np.arange(0, 1, 0.05)))
+
+# %%
+display(_corr_mat.quantile(
+    np.arange(0, 0.001, 0.0001)
+))
+
+# %%
+display(_corr_mat.quantile(
+    np.arange(0.999, 1.0, 0.0001)
+))
+
+# %% [markdown]
+# ### Plot: distribution
+
+# %%
+with sns.plotting_context("paper", font_scale=1.5):
+    g = sns.displot(_corr_mat, kde=True, height=7)
+    g.ax.set_title("Distribution of gene correlation values in all chromosomes")
 
 # %% [markdown] tags=[]
 # # Save
