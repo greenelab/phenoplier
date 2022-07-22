@@ -76,21 +76,21 @@ CHROMOSOME = None
 DEBUG_MODE = False
 
 # %%
-assert COHORT_NAME is not None or len(COHORT_NAME) == 0, "A cohort name must be given"
+assert COHORT_NAME is not None and len(COHORT_NAME) > 0, "A cohort name must be given"
 
 COHORT_NAME = COHORT_NAME.lower()
 display(f"Cohort name: {COHORT_NAME}")
 
 # %%
 assert (
-    REFERENCE_PANEL is not None or len(REFERENCE_PANEL) == 0
+    REFERENCE_PANEL is not None and len(REFERENCE_PANEL) > 0
 ), "A reference panel must be given"
 
 display(f"Reference panel: {REFERENCE_PANEL}")
 
 # %%
 assert (
-    EQTL_MODEL is not None or len(EQTL_MODEL) == 0
+    EQTL_MODEL is not None and len(EQTL_MODEL) > 0
 ), "A prediction/eQTL model must be given"
 
 EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
@@ -98,7 +98,7 @@ display(f"eQTL model: {EQTL_MODEL}) / {EQTL_MODEL_FILES_PREFIX}")
 
 # %%
 assert (
-    SMULTIXCAN_CONDITION_NUMBER is not None or SMULTIXCAN_CONDITION_NUMBER > 0
+    SMULTIXCAN_CONDITION_NUMBER is not None and SMULTIXCAN_CONDITION_NUMBER > 0
 ), "The S-MultiXcan condition number (positive integer) must be given"
 
 display(f"S-MultiXcan condition number: {SMULTIXCAN_CONDITION_NUMBER}")
