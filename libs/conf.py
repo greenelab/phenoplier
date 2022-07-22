@@ -277,19 +277,19 @@ PHENOMEXCAN["LD_BLOCKS"] = {}
 PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] = Path(
     PHENOMEXCAN["BASE_DIR"], "ld_blocks"
 ).resolve()
-PHENOMEXCAN["LD_BLOCKS"]["GENE_CORRS_DIR"] = Path(
-    PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "gene_corrs"
-).resolve()
+# PHENOMEXCAN["LD_BLOCKS"]["GENE_CORRS_DIR"] = Path(
+#     PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "gene_corrs"
+# ).resolve()
 PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"] = Path(
     PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "reference_panel_1000G"
 ).resolve()
 PHENOMEXCAN["LD_BLOCKS"]["GTEX_V8_GENOTYPE_DIR"] = Path(
     PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "reference_panel_gtex_v8"
 ).resolve()
-PHENOMEXCAN["LD_BLOCKS"]["GENE_CORRS_FILE_NAME_TEMPLATES"] = {
-    "SNPS_COVARIANCE": "{prefix}snps_chr_blocks_cov{suffix}.h5",
-    "GENE_CORR_AVG": "{prefix}multiplier_genes-gene_correlations{suffix}.pkl",
-}
+# PHENOMEXCAN["LD_BLOCKS"]["GENE_CORRS_FILE_NAME_TEMPLATES"] = {
+#     "SNPS_COVARIANCE": "{prefix}snps_chr_blocks_cov{suffix}.h5",
+#     "GENE_CORR_AVG": "{prefix}multiplier_genes-gene_correlations{suffix}.pkl",
+# }
 # PHENOMEXCAN["LD_BLOCKS"]["ELASTIC_NET"] = {
 #    "SNPS_COVARIANCE_FILE": PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"]
 #    / "en_snps_chr_blocks_cov.h5",

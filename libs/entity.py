@@ -759,19 +759,14 @@ class Gene(object):
 
             TODO: the index of the dataframe is sorted with sort_index
         """
-        snp_cov_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
-            "GENE_CORRS_FILE_NAME_TEMPLATES"
-        ]["SNPS_COVARIANCE"]
-        snp_cov_file_name = snp_cov_file_name_template.format(
-            prefix="",
-            suffix="",
-        )
         input_dir = (
-            conf.PHENOMEXCAN["LD_BLOCKS"][f"GENE_CORRS_DIR"]
+            conf.RESULTS["GLS"]
+            / "gene_corrs"
+            / "reference_panels"
             / reference_panel.lower()
             / model_type.lower()
         )
-        snps_cov_file = input_dir / snp_cov_file_name
+        snps_cov_file = input_dir / "snps_chr_blocks_cov.h5"
         assert snps_cov_file.exists(), f"Input file does not exist: {snps_cov_file}"
 
         # go to disk and read the data
