@@ -49,13 +49,14 @@ from entity import Gene
 # # Settings
 
 # %% tags=["parameters"]
-# reference panel
-# REFERENCE_PANEL = "GTEX_V8"
-REFERENCE_PANEL = "1000G"
+# a cohort name (it could be something like UK_BIOBANK, etc)
+COHORT_NAME = None
 
-# prediction models
-## mashr
-EQTL_MODEL = "MASHR"
+# reference panel such as 1000G or GTEX_V8
+REFERENCE_PANEL = None
+
+# predictions models such as MASHR or ELASTIC_NET
+EQTL_MODEL = None
 
 # This is one S-MultiXcan result file on the same target cohort
 # Genes will be read from here to align the correlation matrices
@@ -67,10 +68,33 @@ SMULTIXCAN_RESULTS_TEMPLATE = (
 )
 
 # %% tags=["injected-parameters"]
+# FIXME: remove later
 # Parameters
+COHORT_NAME = "1000G_EUR"
 REFERENCE_PANEL = "1000G"
 EQTL_MODEL = "MASHR"
 
+
+# %%
+assert COHORT_NAME is not None and len(COHORT_NAME) > 0, "A cohort name must be given"
+
+COHORT_NAME = COHORT_NAME.lower()
+display(f"Cohort name: {COHORT_NAME}")
+
+# %%
+assert (
+    REFERENCE_PANEL is not None and len(REFERENCE_PANEL) > 0
+), "A reference panel must be given"
+
+display(f"Reference panel: {REFERENCE_PANEL}")
+
+# %%
+assert (
+    EQTL_MODEL is not None and len(EQTL_MODEL) > 0
+), "A prediction/eQTL model must be given"
+
+EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
+display(f"eQTL model: {EQTL_MODEL}) / {EQTL_MODEL_FILES_PREFIX}")
 
 # %% tags=[]
 assert (SMULTIXCAN_RESULTS_TEMPLATE is not None) and (
@@ -78,22 +102,18 @@ assert (SMULTIXCAN_RESULTS_TEMPLATE is not None) and (
 ), "You have to provide the path to a S-MultiXcan results file"
 
 # %% tags=[]
-display(f"Using eQTL model: {EQTL_MODEL}")
-
-# %% tags=[]
-REFERENCE_PANEL_DIR = conf.PHENOMEXCAN["LD_BLOCKS"][f"{REFERENCE_PANEL}_GENOTYPE_DIR"]
-
-# %% tags=[]
-display(f"Using reference panel folder: {str(REFERENCE_PANEL_DIR)}")
-
-# %% tags=[]
 OUTPUT_DIR_BASE = (
-    conf.PHENOMEXCAN["LD_BLOCKS"][f"GENE_CORRS_DIR"]
+    conf.RESULTS["GLS"]
+    / "gene_corrs"
+    / "cohorts"
+    / COHORT_NAME.lower()
     / REFERENCE_PANEL.lower()
     / EQTL_MODEL.lower()
+    / "all_genes"  # FIXME: remove this later
 )
-display(OUTPUT_DIR_BASE)
 OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
+
+display(f"Using output dir base: {OUTPUT_DIR_BASE}")
 
 # %% [markdown] tags=[]
 # # Load data
@@ -125,20 +145,15 @@ smultixcan_genes = set(smultixcan_df["gene_name"].tolist())
 len(smultixcan_genes)
 
 # %% tags=[]
-list(smultixcan_genes)[:5]
+sorted(list(smultixcan_genes))[:5]
 
 # %% [markdown] tags=[]
 # ## Gene correlations
 
 # %% tags=[]
-input_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
-    "GENE_CORRS_FILE_NAME_TEMPLATES"
-]["GENE_CORR_AVG"]
-
-input_file = OUTPUT_DIR_BASE / input_file_name_template.format(
-    prefix="",
-    suffix=f"-gene_symbols",
-)
+input_file = OUTPUT_DIR_BASE / "gene_corrs-symbols.pkl"
+display(input_file)
+assert input_file.exists()
 
 # %% tags=[]
 # load correlation matrix
