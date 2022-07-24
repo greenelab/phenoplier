@@ -48,7 +48,7 @@ N_LVS = 9
 
 # %% tags=[]
 INPUT_DIR = (
-    conf.RESULTS["GLS_NULL_SIMS"] / "phenoplier" / "gls-1000g_mashr-test-full_corr"
+    conf.RESULTS["GLS_NULL_SIMS"] / "phenoplier" / "_within_distance" / "gls-1000g_mashr-test-full_corr"
 )
 display(INPUT_DIR)
 
@@ -430,11 +430,6 @@ show_prop(results, 0.20)
 
 # %%
 qqplot_unif(results)
-
-# %% [markdown]
-# The QQplot here is not the same as the LVs before. In previous LVs, there are very small pvalues, likely because of the genes from the same region at the top of the LV.
-#
-# Here p-values are consistently smaller than expected, but there are no very small p-values.
 
 # %% [markdown]
 # ## LV800
