@@ -48,7 +48,10 @@ N_LVS = 9
 
 # %% tags=[]
 INPUT_DIR = (
-    conf.RESULTS["GLS_NULL_SIMS"] / "phenoplier" / "_within_distance" / "gls-1000g_mashr-test-full_corr"
+    conf.RESULTS["GLS_NULL_SIMS"]
+    / "phenoplier"
+    / "_within_distance"
+    / "gls-1000g_mashr-test-full_corr"
 )
 display(INPUT_DIR)
 
