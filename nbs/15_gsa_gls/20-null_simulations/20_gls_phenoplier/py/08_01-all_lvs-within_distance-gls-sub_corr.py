@@ -47,7 +47,12 @@ N_PHENOTYPES = 1000
 N_LVS = 987
 
 # %% tags=[]
-INPUT_DIR = conf.RESULTS["GLS_NULL_SIMS"] / "phenoplier" / "_within_distance" / "gls-1000g_mashr-sub_corr"
+INPUT_DIR = (
+    conf.RESULTS["GLS_NULL_SIMS"]
+    / "phenoplier"
+    / "_within_distance"
+    / "gls-1000g_mashr-sub_corr"
+)
 display(INPUT_DIR)
 
 # %%
