@@ -48,6 +48,9 @@ N_LVS = 987
 INPUT_DIR = conf.RESULTS["GLS_NULL_SIMS"] / "phenoplier"
 display(INPUT_DIR)
 
+# %%
+PVALUE_COLUMN = "pvalue"
+
 # %% [markdown]
 # # Load MultiXcan genes present in results
 
@@ -118,18 +121,22 @@ assert get_prop(pd.Series(np.array([0.20, 0.50, 0.75, 0.10, 0.04])), 0.05) == 0.
 
 
 # %%
-def qqplot_unif(results, other_results=None):
-    data = results["pvalue"].to_numpy()
+def qqplot_unif(results, check_n_lvs=True, other_results=None):
+    data = results[PVALUE_COLUMN].to_numpy()
     n = data.shape[0]
     observed_data = -np.log10(data)
 
-    observed_lv = results["lv"].unique()
-    assert len(observed_lv) == 1
-    observed_lv = observed_lv[0]
+    observed_lvs = results["lv"].unique()
+    n_observed_lvs = len(observed_lvs)
+    if check_n_lvs:
+        assert n_observed_lvs == 1
+        observed_lv = observed_lvs[0]
+    else:
+        observed_lv = f"All LVs ({n_observed_lvs})"
 
     other_lv = ""
     if other_results is not None:
-        other_data = other_results["pvalue"].to_numpy()
+        other_data = other_results[PVALUE_COLUMN].to_numpy()
         expected_data = -np.log10(other_data)
 
         other_lv = other_results["lv"].unique()
@@ -150,7 +157,6 @@ def qqplot_unif(results, other_results=None):
 
         ax.set_xlabel(f"$-\log_{10}$(expected pvalue) - {other_lv}")
         ax.set_ylabel(f"$-\log_{10}$(observed pvalue) - {observed_lv}")
-        # ax.set_title("QQ-Plot")
 
 
 # %%
@@ -208,7 +214,10 @@ assert _tmp[0] == N_LVS
 show_prop(dfs)
 
 # %% [markdown]
-# It should be around 0.05. Let's check what happened at individual LVs.
+# # QQ-plot
+
+# %%
+qqplot_unif(dfs, check_n_lvs=False)
 
 # %% [markdown]
 # # Summary of mean type I error per LV
