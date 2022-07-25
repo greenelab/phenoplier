@@ -57,7 +57,7 @@ display(INPUT_DIR)
 
 # %%
 PVALUE_COLUMN = "pvalue_onesided"
-# PVALUE_COLUMN = "pvalue"
+
 
 # %% [markdown] tags=[]
 # # Functions
@@ -84,14 +84,18 @@ assert get_prop(pd.Series(np.array([0.20, 0.50, 0.75, 0.10, 0.04])), 0.05) == 0.
 
 
 # %%
-def qqplot_unif(results, other_results=None):
+def qqplot_unif(results, check_n_lvs=True, other_results=None):
     data = results[PVALUE_COLUMN].to_numpy()
     n = data.shape[0]
     observed_data = -np.log10(data)
 
-    observed_lv = results["lv"].unique()
-    assert len(observed_lv) == 1
-    observed_lv = observed_lv[0]
+    observed_lvs = results["lv"].unique()
+    n_observed_lvs = len(observed_lvs)
+    if check_n_lvs:
+        assert n_observed_lvs == 1
+        observed_lv = observed_lvs[0]
+    else:
+        observed_lv = f"All LVs ({n_observed_lvs})"
 
     other_lv = ""
     if other_results is not None:
@@ -159,7 +163,10 @@ assert _tmp[0] == N_LVS
 get_prop(dfs[PVALUE_COLUMN], frac=0.05)
 
 # %% [markdown]
-# It should be around 0.05. Let's check what happened at individual LVs.
+# # QQ-plot
+
+# %%
+qqplot_unif(dfs, check_n_lvs=False)
 
 # %% [markdown]
 # # Summary of mean type I error per LV
