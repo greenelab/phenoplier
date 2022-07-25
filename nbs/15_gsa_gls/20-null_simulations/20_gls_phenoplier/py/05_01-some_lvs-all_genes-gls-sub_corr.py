@@ -48,7 +48,10 @@ N_LVS = 9
 
 # %% tags=[]
 INPUT_DIR = (
-    conf.RESULTS["GLS_NULL_SIMS"] / "phenoplier" / "gls-1000g_mashr-test-sub_corr"
+    conf.RESULTS["GLS_NULL_SIMS"]
+    / "phenoplier"
+    / "_all_genes"
+    / "gls-1000g_mashr-test-sub_corr"
 )
 display(INPUT_DIR)
 
@@ -204,11 +207,6 @@ lvs_high_error = summary_df[summary_df["5"] > 0.06]
 display(lvs_high_error.shape)
 # display(lvs_high_error.sort_values("5").head(20))
 display(lvs_high_error.sort_values("5").tail(20))
-
-# %% [markdown]
-# Many LVs have a mean type I error greater than expected.
-#
-# LV45 has the largest mean type I error (0.158). Let's take a look at these LVs with poor mean type I errors.
 
 # %% [markdown]
 # # LVs with high mean type I error
@@ -432,11 +430,6 @@ show_prop(results, 0.20)
 qqplot_unif(results)
 
 # %% [markdown]
-# The QQplot here is not the same as the LVs before. In previous LVs, there are very small pvalues, likely because of the genes from the same region at the top of the LV.
-#
-# Here p-values are consistently smaller than expected, but there are no very small p-values.
-
-# %% [markdown]
 # ## LV800
 
 # %%
@@ -478,9 +471,6 @@ show_prop(results, 0.20)
 
 # %%
 qqplot_unif(results)
-
-# %% [markdown]
-# **Note**: looks similar to LV769. This one has smaller minimum p-values.
 
 # %% [markdown]
 # # LVs with expected mean type I error
