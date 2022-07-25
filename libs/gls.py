@@ -67,21 +67,8 @@ class GLSPhenoplier(object):
             self.smultixcan_result_set_filepath = smultixcan_result_set_filepath
 
         if gene_corrs_file_path is None:
-            # by default, it loads gene correlations from GTEX_V8 and MASHR models
-            input_dir_base = (
-                conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_CORRS_DIR"]
-                / "1000G".lower()
-                / "MASHR".lower()
-            )
-
-            input_filename = conf.PHENOMEXCAN["LD_BLOCKS"][
-                "GENE_CORRS_FILE_NAME_TEMPLATES"
-            ]["GENE_CORR_AVG"].format(
-                prefix="",
-                suffix=f"-gene_symbols",
-            )
-
-            self.gene_corrs_file_path = input_dir_base / input_filename
+            if not debug_use_ols:
+                raise ValueError("A gene correlation matrix must be provided")
         else:
             if isinstance(gene_corrs_file_path, str):
                 gene_corrs_file_path = Path(gene_corrs_file_path)
