@@ -29,7 +29,8 @@ class GLSPhenoplier(object):
       * `results_summary`: the object retuned by self.results.summary()
 
     Args:
-        TODO: finish docs
+        FIXME: finish docs and update
+
         smultixcan_result_set_filepath:
             Filepath where gene-trait associations will be loaded from. It has
             to be a python pickle file containing a pandas dataframe with gene
@@ -241,7 +242,7 @@ class GLSPhenoplier(object):
         self, lv_code: str, phenotype: pd.Series, lv_weights_file: str = None
     ):
         """
-        TODO
+        phenotype: could be pd.Series (no covariates) or pd.DataFrame
         """
         lv_weights = GLSPhenoplier._get_lv_weights(lv_weights_file)
         gene_corrs = None
@@ -315,13 +316,33 @@ class GLSPhenoplier(object):
             )
 
         # create training data
+        covars = None
+        predictor_cols = ["i", "lv"]
+        phenotype_col = "phenotype"
+
+        if len(y.shape) == 1:
+            dependent_var = y
+        elif len(y.shape) > 1:
+            dependent_var = y["y"]
+            extra_predictor_cols = [c for c in y.columns if c not in ("y",)]
+            covars = y[extra_predictor_cols]
+            predictor_cols.extend(extra_predictor_cols)
+        else:
+            raise ValueError(f"Wrong number of columns for y: {y.shape[1]}")
+
         data = pd.DataFrame(
             {
                 "i": 1.0,
                 "lv": (x - x.mean()) / x.std(),
-                "phenotype": (y - y.mean()) / y.std(),
+                phenotype_col: (dependent_var - dependent_var.mean())
+                / dependent_var.std(),
             }
         )
+
+        if covars is not None:
+            covars = (covars - covars.mean()) / covars.std()
+            data = pd.concat([data, covars], axis=1)
+
         assert not data.isna().any().any(), "Data contains NaN"
 
         self.log_info(f"Final number of genes in training data: {data.shape[0]}")
@@ -356,6 +377,10 @@ class GLSPhenoplier(object):
                 else:
                     raise ValueError("Bad combination of arguments")
             else:
+                # FIXME: if I cache chol(gene_corrs)^-1, then I should make
+                #  sure that if new calls to fit are done, then the new
+                #  phenotype should have exactly the same number of genes as the
+                #  one when the matrix was cached.
                 if self.cov_inv is None:
                     chol_mat = np.linalg.cholesky(gene_corrs)
                     cov_inv = np.linalg.inv(chol_mat)
@@ -363,23 +388,20 @@ class GLSPhenoplier(object):
                 else:
                     cov_inv = self.cov_inv
 
-            Xn_cols = ["i", "lv"]
-            Xn = data[Xn_cols].to_numpy()
-            y_col = "phenotype"
-            yn = data[y_col].to_numpy()
+            Xn = data[predictor_cols].to_numpy()
+            yn = data[phenotype_col].to_numpy()
 
             Xn = cov_inv @ Xn
             yn = cov_inv @ yn
 
-            data = pd.DataFrame(
-                {
-                    "i": Xn[:, 0],
-                    "lv": Xn[:, 1],
-                    "phenotype": yn,
-                }
-            )
+            data = {
+                col_name: Xn[:, col_idx]
+                for col_idx, col_name in enumerate(predictor_cols)
+            }
+            data[phenotype_col] = yn
+            data = pd.DataFrame(data)
 
-            gls_model = sm.OLS(data["phenotype"], data[["i", "lv"]])
+            gls_model = sm.OLS(data[phenotype_col], data[predictor_cols])
             gls_results = gls_model.fit()
 
             gls_results.pvalues_onesided = gls_results.pvalues.copy()
@@ -444,7 +466,7 @@ class GLSPhenoplier(object):
         """
         if isinstance(phenotype, str):
             return self._fit_named_internal(lv_code, phenotype)
-        elif isinstance(phenotype, pd.Series):
+        elif isinstance(phenotype, (pd.Series, pd.DataFrame)):
             return self._fit_named_cli(lv_code, phenotype)
         else:
             raise ValueError(
