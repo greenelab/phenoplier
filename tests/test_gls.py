@@ -9,7 +9,6 @@ This is reported in this issue: https://github.com/greenelab/phenoplier/issues/4
 from pathlib import Path
 
 import numpy as np
-from scipy import stats
 import pandas as pd
 import pytest
 
@@ -21,7 +20,7 @@ DATA_DIR = (Path(__file__).parent / "data" / "gls").resolve()
 assert DATA_DIR.exists()
 
 
-def test_gls_coef_positive_full_matrix_random_phenotype():
+def test_gls_coef_negative_full_matrix_random_phenotype():
     phenotype_code = 6
     lv_code = "LV45"
 
@@ -42,11 +41,11 @@ def test_gls_coef_positive_full_matrix_random_phenotype():
     obs_pval_twosided = model.results.pvalues.loc["lv"]
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
-    exp_coef = 0.003810795472142111
-    exp_coef_se = 0.012271545160174927
-    exp_tvalue = 0.310539171913685
-    exp_pval_twosided = 0.7561610253800751
-    exp_pval_onesided = 0.37808051269003756
+    exp_coef = -0.003281047962518868
+    exp_coef_se = 0.008589327735370812
+    exp_tvalue = -0.3819912411779944
+    exp_pval_twosided = 0.702480465360728
+    exp_pval_onesided = 0.6487597673196361
 
     # check
     assert obs_coef is not None
@@ -58,9 +57,9 @@ def test_gls_coef_positive_full_matrix_random_phenotype():
     assert obs_pval_onesided == pytest.approx(exp_pval_onesided, rel=1e-5)
 
 
-def test_gls_coef_negative_full_matrix_random_phenotype():
+def test_gls_coef_positive_full_matrix_random_phenotype():
     phenotype_code = 0
-    lv_code = "LV800"
+    lv_code = "LV801"
 
     y = pd.read_pickle(
         DATA_DIR / f"multixcan-random_phenotype{phenotype_code}-pvalues.pkl.xz"
@@ -79,11 +78,11 @@ def test_gls_coef_negative_full_matrix_random_phenotype():
     obs_pval_twosided = model.results.pvalues.loc["lv"]
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
-    exp_coef = -0.0008674165392909389
-    exp_coef_se = 0.0003192417956200798
-    exp_tvalue = -2.717114585845851
-    exp_pval_twosided = 0.0066029845360324755
-    exp_pval_onesided = 0.9966985077319838
+    exp_coef = 0.007927779814996835
+    exp_coef_se = 0.010957049553795768
+    exp_tvalue = 0.7235323502074036
+    exp_pval_twosided = 0.4693791652354944
+    exp_pval_onesided = 0.2346895826177472
 
     # check
     assert obs_coef is not None
@@ -120,11 +119,11 @@ def test_gls_full_matrix_same_model_different_lvs():
     obs_pval_twosided = model.results.pvalues.loc["lv"]
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
-    exp_coef = 0.003810795472142111
-    exp_coef_se = 0.012271545160174927
-    exp_tvalue = 0.310539171913685
-    exp_pval_twosided = 0.7561610253800751
-    exp_pval_onesided = 0.37808051269003756
+    exp_coef = -0.003281047962518868
+    exp_coef_se = 0.008589327735370812
+    exp_tvalue = -0.3819912411779944
+    exp_pval_twosided = 0.702480465360728
+    exp_pval_onesided = 0.6487597673196361
 
     # check
     assert obs_coef is not None
@@ -145,11 +144,11 @@ def test_gls_full_matrix_same_model_different_lvs():
     obs_pval_twosided = model.results.pvalues.loc["lv"]
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
-    exp_coef = 8.650711873537164e-05
-    exp_coef_se = 0.00018035107257825515
-    exp_tvalue = 0.47965957451035285
-    exp_pval_twosided = 0.6314857662460573
-    exp_pval_onesided = 0.3157428831230287
+    exp_coef = 0.0015604132867500819
+    exp_coef_se = 0.011025668844737165
+    exp_tvalue = 0.14152549915326973
+    exp_pval_twosided = 0.8874592440993045
+    exp_pval_onesided = 0.4437296220496523
 
     # check
     assert obs_coef is not None
@@ -182,11 +181,11 @@ def test_gls_coef_negative_sub_matrix_random_phenotype():
     obs_pval_twosided = model.results.pvalues.loc["lv"]
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
-    exp_coef = -0.012985100862501646
-    exp_coef_se = 0.011620815913625014
-    exp_tvalue = -1.117400099873973
-    exp_pval_twosided = 0.2638649762970155
-    exp_pval_onesided = 0.8680675118514922
+    exp_coef = -0.007758262616074735
+    exp_coef_se = 0.010320432763493127
+    exp_tvalue = -0.7517381096186531
+    exp_pval_twosided = 0.45223603891122643
+    exp_pval_onesided = 0.7738819805443868
 
     # check
     assert obs_coef is not None
@@ -198,7 +197,7 @@ def test_gls_coef_negative_sub_matrix_random_phenotype():
     assert obs_pval_onesided == pytest.approx(exp_pval_onesided, rel=1e-10)
 
 
-def test_gls_coef_positive_and_very_small_sub_matrix_random_phenotype():
+def test_gls_coef_positive_sub_matrix_random_phenotype():
     phenotype_code = 10
     lv_code = "LV100"
 
@@ -219,11 +218,11 @@ def test_gls_coef_positive_and_very_small_sub_matrix_random_phenotype():
     obs_pval_twosided = model.results.pvalues.loc["lv"]
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
-    exp_coef = 6.008877267380782e-08
-    exp_coef_se = 2.7345042158271415e-05
-    exp_tvalue = 0.0021974284159453007
-    exp_pval_twosided = 0.9982467752659725
-    exp_pval_onesided = 0.49912338763298625
+    exp_coef = 0.0004030553781634736
+    exp_coef_se = 0.004162484428442315
+    exp_tvalue = 0.0968304831146972
+    exp_pval_twosided = 0.9228640287589255
+    exp_pval_onesided = 0.46143201437946274
 
     # check
     assert obs_coef is not None
@@ -256,11 +255,11 @@ def test_gls_coef_positive_sub_matrix_random_phenotype0_lv800():
     obs_pval_twosided = model.results.pvalues.loc["lv"]
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
-    exp_coef = 0.006103958765364128
-    exp_coef_se = 0.013754152651896586
-    exp_tvalue = 0.4437902442883271
-    exp_pval_twosided = 0.6572091521023612
-    exp_pval_onesided = 0.3286045760511806
+    exp_coef = 0.004170133621705775
+    exp_coef_se = 0.014013329781567654
+    exp_tvalue = 0.2975833500465346
+    exp_pval_twosided = 0.7660307826493885
+    exp_pval_onesided = 0.38301539132469425
 
     # check
     assert obs_coef is not None
@@ -297,11 +296,11 @@ def test_gls_sub_matrix_same_model_different_lvs():
     obs_pval_twosided = model.results.pvalues.loc["lv"]
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
-    exp_coef = -0.012985100862501646
-    exp_coef_se = 0.011620815913625014
-    exp_tvalue = -1.117400099873973
-    exp_pval_twosided = 0.2638649762970155
-    exp_pval_onesided = 0.8680675118514922
+    exp_coef = -0.007758262616074735
+    exp_coef_se = 0.010320432763493127
+    exp_tvalue = -0.7517381096186531
+    exp_pval_twosided = 0.45223603891122643
+    exp_pval_onesided = 0.7738819805443868
 
     # check
     assert obs_coef is not None
@@ -322,11 +321,11 @@ def test_gls_sub_matrix_same_model_different_lvs():
     obs_pval_twosided = model.results.pvalues.loc["lv"]
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
-    exp_coef = 0.005579886461567623
-    exp_coef_se = 0.011701985846626066
-    exp_tvalue = 0.4768324397842631
-    exp_pval_twosided = 0.6334976228046719
-    exp_pval_onesided = 0.31674881140233596
+    exp_coef = 0.006302906163160309
+    exp_coef_se = 0.011669857436439947
+    exp_tvalue = 0.5401013849131561
+    exp_pval_twosided = 0.5891457914757958
+    exp_pval_onesided = 0.2945728957378979
 
     # check
     assert obs_coef is not None
@@ -363,11 +362,11 @@ def test_gls_sub_matrix_same_model_different_lvs_gene_corr_is_folder():
     obs_pval_twosided = model.results.pvalues.loc["lv"]
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
-    exp_coef = -0.012985100862501646
-    exp_coef_se = 0.011620815913625014
-    exp_tvalue = -1.117400099873973
-    exp_pval_twosided = 0.2638649762970155
-    exp_pval_onesided = 0.8680675118514922
+    exp_coef = -0.007758262616074735
+    exp_coef_se = 0.010320432763493127
+    exp_tvalue = -0.7517381096186531
+    exp_pval_twosided = 0.45223603891122643
+    exp_pval_onesided = 0.7738819805443868
 
     # check
     assert obs_coef is not None
@@ -388,11 +387,11 @@ def test_gls_sub_matrix_same_model_different_lvs_gene_corr_is_folder():
     obs_pval_twosided = model.results.pvalues.loc["lv"]
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
-    exp_coef = 0.005579886461567623
-    exp_coef_se = 0.011701985846626066
-    exp_tvalue = 0.4768324397842631
-    exp_pval_twosided = 0.6334976228046719
-    exp_pval_onesided = 0.31674881140233596
+    exp_coef = 0.006302906163160309
+    exp_coef_se = 0.011669857436439947
+    exp_tvalue = 0.5401013849131561
+    exp_pval_twosided = 0.5891457914757958
+    exp_pval_onesided = 0.2945728957378979
 
     # check
     assert obs_coef is not None
@@ -425,11 +424,11 @@ def test_gls_real_pheno_coef_positive_whooping_cough_lv570():
     obs_pval_twosided = model.results.pvalues.loc["lv"]
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
-    exp_coef = 0.010052199503207914
-    exp_coef_se = 0.010343425212644251
-    exp_tvalue = 0.971844364565006
-    exp_pval_twosided = 0.3311644354099884
-    exp_pval_onesided = 0.1655822177049942
+    exp_coef = 0.0049802005250721
+    exp_coef_se = 0.010338597588777377
+    exp_tvalue = 0.4817094854797467
+    exp_pval_twosided = 0.6300287052648046
+    exp_pval_onesided = 0.3150143526324023
 
     # check
     assert obs_coef is not None
@@ -462,11 +461,11 @@ def test_gls_real_pheno_coef_negative_wheezing_lv400():
     obs_pval_twosided = model.results.pvalues.loc["lv"]
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
 
-    exp_coef = -0.09501682279807443
-    exp_coef_se = 0.01198940412636518
-    exp_tvalue = -7.925066316609398
-    exp_pval_twosided = 2.6672597928016686e-15
-    exp_pval_onesided = 0.9999999999999987
+    exp_coef = -0.1787005272685236
+    exp_coef_se = 0.012616403393185567
+    exp_tvalue = -14.164141847671436
+    exp_pval_twosided = 7.167212012881414e-45
+    exp_pval_onesided = 1.0
 
     # check
     assert obs_coef is not None
@@ -480,62 +479,39 @@ def test_gls_real_pheno_coef_negative_wheezing_lv400():
 
 def test_fit_with_phenotype_pandas_series():
     model = GLSPhenoplier(
-        smultixcan_result_set_filepath=conf.PHENOMEXCAN[
-            "SMULTIXCAN_MASHR_ZSCORES_FILE"
-        ],
         use_own_implementation=True,
-        debug_use_sub_gene_corr=True,
         gene_corrs_file_path=DATA_DIR / "corr_mat.pkl.xz",
     )
 
-    # get number of genes to simulated phenotype
-    lv_weights = GLSPhenoplier._get_lv_weights()
-
-    np.random.seed(0)
-    phenotype_data = pd.Series(
-        np.abs(np.random.normal(size=lv_weights.shape[0])),
-        index=lv_weights.index.copy(),
-        name="Random phenotype",
-    )
-    model.fit_named("LV270", phenotype_data)
+    y = pd.read_pickle(DATA_DIR / f"multixcan-random_phenotype0-pvalues.pkl.xz")
+    model.fit_named("LV270", y)
 
     # get observed two-sided pvalue
     obs_pval_twosided = model.results.pvalues.loc["lv"]
-
-    # check that pvalue is greater than zero and sufficiently small
     assert obs_pval_twosided is not None
+    assert isinstance(obs_pval_twosided, float)
     assert obs_pval_twosided > 0.0
     assert obs_pval_twosided < 1.0
 
     # get observed one-sided pvalue
     obs_pval_onesided = model.results.pvalues_onesided.loc["lv"]
-
     assert obs_pval_onesided is not None
+    assert isinstance(obs_pval_onesided, float)
     assert obs_pval_onesided > 0.0
     assert obs_pval_onesided < 1.0
-
-    assert obs_pval_onesided < obs_pval_twosided
 
 
 def test_fit_with_phenotype_pandas_series_genes_not_aligned():
     model = GLSPhenoplier(
-        smultixcan_result_set_filepath=conf.PHENOMEXCAN[
-            "SMULTIXCAN_MASHR_ZSCORES_FILE"
-        ],
         use_own_implementation=True,
-        debug_use_sub_gene_corr=True,
         gene_corrs_file_path=DATA_DIR / "corr_mat.pkl.xz",
     )
 
-    # get data and simulate phenotype
     lv_weights = GLSPhenoplier._get_lv_weights()
     gene_corrs = GLSPhenoplier._get_gene_corrs(model.gene_corrs_file_path)
 
-    np.random.seed(0)
-    phenotype_data = pd.Series(
-        np.abs(np.random.normal(size=lv_weights.shape[0])),
-        index=lv_weights.index.copy(),
-        name="Random phenotype",
+    phenotype_data = pd.read_pickle(
+        DATA_DIR / f"multixcan-random_phenotype6-pvalues.pkl.xz"
     )
 
     # match all genes and align
@@ -545,17 +521,19 @@ def test_fit_with_phenotype_pandas_series_genes_not_aligned():
 
     model.fit_named("LV270", phenotype_data)
     assert model.results.df_resid == phenotype_data.shape[0] - 2
+    exp_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+    assert exp_pval_onesided is not None
+    assert isinstance(exp_pval_onesided, float)
+    assert exp_pval_onesided > 0.0
+    assert exp_pval_onesided < 1.0
+
     expected_results = model.results
 
     # run again with genes reordered in the phenotype
     # results should be the same
     model = GLSPhenoplier(
-        smultixcan_result_set_filepath=conf.PHENOMEXCAN[
-            "SMULTIXCAN_MASHR_ZSCORES_FILE"
-        ],
         use_own_implementation=True,
-        debug_use_sub_gene_corr=True,
-        gene_corrs_file_path=model.gene_corrs_file_path,
+        gene_corrs_file_path=DATA_DIR / "corr_mat.pkl.xz",
     )
 
     # np.random.shuffle(phenotype_data)
@@ -571,11 +549,7 @@ def test_fit_with_phenotype_pandas_series_genes_not_aligned():
 
 def test_fit_with_phenotype_pandas_series_less_genes():
     model = GLSPhenoplier(
-        smultixcan_result_set_filepath=conf.PHENOMEXCAN[
-            "SMULTIXCAN_MASHR_ZSCORES_FILE"
-        ],
         use_own_implementation=True,
-        debug_use_sub_gene_corr=True,
         gene_corrs_file_path=DATA_DIR / "corr_mat.pkl.xz",
     )
 
@@ -583,13 +557,11 @@ def test_fit_with_phenotype_pandas_series_less_genes():
     lv_weights = GLSPhenoplier._get_lv_weights()
     gene_corrs = GLSPhenoplier._get_gene_corrs(model.gene_corrs_file_path)
 
-    np.random.seed(0)
     n_genes = 3000
-    phenotype_data = pd.Series(
-        np.abs(np.random.normal(size=n_genes)),
-        index=lv_weights.sample(n=n_genes, random_state=0).index.copy(),
-        name="Random phenotype",
+    phenotype_data = pd.read_pickle(
+        DATA_DIR / f"multixcan-random_phenotype6-pvalues.pkl.xz"
     )
+    phenotype_data = phenotype_data.sample(n=n_genes, random_state=0)
 
     # match all genes and align
     phenotype_data_aligned, lv_weights = GLSPhenoplier.match_and_align_genes(
@@ -598,16 +570,17 @@ def test_fit_with_phenotype_pandas_series_less_genes():
 
     model.fit_named("LV270", phenotype_data)
     assert model.results.df_resid == phenotype_data_aligned.shape[0] - 2
+    exp_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+    assert exp_pval_onesided is not None
+    assert isinstance(exp_pval_onesided, float)
+    assert exp_pval_onesided > 0.0
+    assert exp_pval_onesided < 1.0
     expected_results = model.results
 
     # run again with genes reordered in the phenotype
     # results should be the same
     model = GLSPhenoplier(
-        smultixcan_result_set_filepath=conf.PHENOMEXCAN[
-            "SMULTIXCAN_MASHR_ZSCORES_FILE"
-        ],
         use_own_implementation=True,
-        debug_use_sub_gene_corr=True,
         gene_corrs_file_path=model.gene_corrs_file_path,
     )
 
@@ -624,11 +597,7 @@ def test_fit_with_phenotype_pandas_series_less_genes():
 
 def test_fit_with_phenotype_pandas_series_more_genes():
     model = GLSPhenoplier(
-        smultixcan_result_set_filepath=conf.PHENOMEXCAN[
-            "SMULTIXCAN_MASHR_ZSCORES_FILE"
-        ],
         use_own_implementation=True,
-        debug_use_sub_gene_corr=True,
         gene_corrs_file_path=DATA_DIR / "corr_mat.pkl.xz",
     )
 
@@ -637,12 +606,11 @@ def test_fit_with_phenotype_pandas_series_more_genes():
     gene_corrs = GLSPhenoplier._get_gene_corrs(model.gene_corrs_file_path)
 
     np.random.seed(0)
-    # add a gene (I made up a name: AGENE) that does not exist in LV models
-    phenotype_data = pd.Series(
-        np.abs(np.random.normal(size=lv_weights.shape[0] + 1)),
-        index=lv_weights.index.tolist() + ["AGENE"],
-        name="Random phenotype",
+    phenotype_data = pd.read_pickle(
+        DATA_DIR / f"multixcan-random_phenotype6-pvalues.pkl.xz"
     )
+    # add a gene (I made up a name: AGENE) that does not exist in LV models
+    phenotype_data.loc["AGENE"] = np.random.rand()
 
     # match all genes and align
     phenotype_data_aligned, lv_weights = GLSPhenoplier.match_and_align_genes(
@@ -652,20 +620,20 @@ def test_fit_with_phenotype_pandas_series_more_genes():
     with pytest.warns(UserWarning):
         model.fit_named("LV270", phenotype_data)
     assert model.results.df_resid == phenotype_data_aligned.shape[0] - 2
+    exp_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+    assert exp_pval_onesided is not None
+    assert isinstance(exp_pval_onesided, float)
+    assert exp_pval_onesided > 0.0
+    assert exp_pval_onesided < 1.0
     expected_results = model.results
 
     # run again with genes reordered in the phenotype
     # results should be the same
     model = GLSPhenoplier(
-        smultixcan_result_set_filepath=conf.PHENOMEXCAN[
-            "SMULTIXCAN_MASHR_ZSCORES_FILE"
-        ],
         use_own_implementation=True,
-        debug_use_sub_gene_corr=True,
         gene_corrs_file_path=model.gene_corrs_file_path,
     )
 
-    # np.random.shuffle(phenotype_data)
     phenotype_data = phenotype_data.sample(frac=1, random_state=0)
     with pytest.warns(UserWarning):
         model.fit_named("LV270", phenotype_data)
@@ -679,11 +647,7 @@ def test_fit_with_phenotype_pandas_series_more_genes():
 
 def test_fit_with_phenotype_pandas_series_with_nan_extra_genes_not_in_lv_models():
     model = GLSPhenoplier(
-        smultixcan_result_set_filepath=conf.PHENOMEXCAN[
-            "SMULTIXCAN_MASHR_ZSCORES_FILE"
-        ],
         use_own_implementation=True,
-        debug_use_sub_gene_corr=True,
         gene_corrs_file_path=DATA_DIR / "corr_mat.pkl.xz",
     )
 
@@ -692,11 +656,8 @@ def test_fit_with_phenotype_pandas_series_with_nan_extra_genes_not_in_lv_models(
     lv_weights = GLSPhenoplier._get_lv_weights()
     gene_corrs = GLSPhenoplier._get_gene_corrs(model.gene_corrs_file_path)
 
-    np.random.seed(0)
-    phenotype_data = pd.Series(
-        np.abs(np.random.normal(size=lv_weights.shape[0])),
-        index=lv_weights.index.copy(),
-        name="Random phenotype",
+    phenotype_data = pd.read_pickle(
+        DATA_DIR / f"multixcan-random_phenotype6-pvalues.pkl.xz"
     )
 
     # match all genes and align
@@ -706,16 +667,17 @@ def test_fit_with_phenotype_pandas_series_with_nan_extra_genes_not_in_lv_models(
 
     model.fit_named("LV270", phenotype_data)
     assert model.results.df_resid == phenotype_data_aligned.shape[0] - 2
+    exp_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+    assert exp_pval_onesided is not None
+    assert isinstance(exp_pval_onesided, float)
+    assert exp_pval_onesided > 0.0
+    assert exp_pval_onesided < 1.0
     expected_results = model.results
 
     # run again with extra genes with missing data
     # results should be the same
     model = GLSPhenoplier(
-        smultixcan_result_set_filepath=conf.PHENOMEXCAN[
-            "SMULTIXCAN_MASHR_ZSCORES_FILE"
-        ],
         use_own_implementation=True,
-        debug_use_sub_gene_corr=True,
         gene_corrs_file_path=model.gene_corrs_file_path,
     )
 
@@ -741,11 +703,7 @@ def test_fit_with_phenotype_pandas_series_with_nan_extra_genes_not_in_lv_models(
 
 def test_fit_with_phenotype_pandas_series_with_nan():
     model = GLSPhenoplier(
-        smultixcan_result_set_filepath=conf.PHENOMEXCAN[
-            "SMULTIXCAN_MASHR_ZSCORES_FILE"
-        ],
         use_own_implementation=True,
-        debug_use_sub_gene_corr=True,
         gene_corrs_file_path=DATA_DIR / "corr_mat.pkl.xz",
     )
 
@@ -754,11 +712,8 @@ def test_fit_with_phenotype_pandas_series_with_nan():
     lv_weights = GLSPhenoplier._get_lv_weights()
     gene_corrs = GLSPhenoplier._get_gene_corrs(model.gene_corrs_file_path)
 
-    np.random.seed(0)
-    phenotype_data = pd.Series(
-        np.abs(np.random.normal(size=lv_weights.shape[0])),
-        index=lv_weights.index.copy(),
-        name="Random phenotype",
+    phenotype_data = pd.read_pickle(
+        DATA_DIR / f"multixcan-random_phenotype6-pvalues.pkl.xz"
     )
 
     # match all genes and align
@@ -768,16 +723,17 @@ def test_fit_with_phenotype_pandas_series_with_nan():
 
     model.fit_named("LV270", phenotype_data)
     assert model.results.df_resid == phenotype_data_aligned.shape[0] - 2
+    exp_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+    assert exp_pval_onesided is not None
+    assert isinstance(exp_pval_onesided, float)
+    assert exp_pval_onesided > 0.0
+    assert exp_pval_onesided < 1.0
     expected_results = model.results
 
     # run again with _existing_ genes with missing data
-    # results should be the same
+    # results should NOT be the same
     model = GLSPhenoplier(
-        smultixcan_result_set_filepath=conf.PHENOMEXCAN[
-            "SMULTIXCAN_MASHR_ZSCORES_FILE"
-        ],
         use_own_implementation=True,
-        debug_use_sub_gene_corr=True,
         gene_corrs_file_path=model.gene_corrs_file_path,
     )
 
@@ -805,9 +761,7 @@ def test_fit_with_phenotype_pandas_series_with_nan():
 
 def test_gls_different_prediction_models_gls_fit_named():
     model = GLSPhenoplier(
-        conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"],
         use_own_implementation=True,
-        debug_use_sub_gene_corr=True,
         gene_corrs_file_path=DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl",
     )
 
@@ -815,11 +769,8 @@ def test_gls_different_prediction_models_gls_fit_named():
     lv_weights = GLSPhenoplier._get_lv_weights()
     gene_corrs = GLSPhenoplier._get_gene_corrs(model.gene_corrs_file_path)
 
-    np.random.seed(0)
-    phenotype_data = pd.Series(
-        np.abs(np.random.normal(size=lv_weights.shape[0])),
-        index=lv_weights.index.tolist(),
-        name="Random phenotype",
+    phenotype_data = pd.read_pickle(
+        DATA_DIR / f"multixcan-random_phenotype6-pvalues.pkl.xz"
     )
 
     # match all genes and align
@@ -827,21 +778,29 @@ def test_gls_different_prediction_models_gls_fit_named():
         phenotype_data, lv_weights, gene_corrs
     )[0:2]
 
-    # fit with mashr
+    # fit with gtex/mashr
     model.fit_named("LV270", phenotype_data)
     assert model.results.df_resid == phenotype_data.shape[0] - 2
+    exp_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+    assert exp_pval_onesided is not None
+    assert isinstance(exp_pval_onesided, float)
+    assert exp_pval_onesided > 0.0
+    assert exp_pval_onesided < 1.0
     model1_results = model.results
 
-    # fit with elastic net
+    # fit with 1000g/elastic net
     model = GLSPhenoplier(
-        conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"],
         use_own_implementation=True,
-        debug_use_sub_gene_corr=True,
         gene_corrs_file_path=DATA_DIR / "sample-gene_corrs-1000g-en.pkl",
     )
 
     model.fit_named("LV270", phenotype_data)
     assert model.results.df_resid == phenotype_data.shape[0] - 2
+    exp_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+    assert exp_pval_onesided is not None
+    assert isinstance(exp_pval_onesided, float)
+    assert exp_pval_onesided > 0.0
+    assert exp_pval_onesided < 1.0
     model2_results = model.results
 
     assert not np.allclose(
@@ -857,9 +816,7 @@ def test_gls_different_prediction_models_gls_fit_named():
 
 def test_gls_debug_use_ols():
     model = GLSPhenoplier(
-        conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"],
         use_own_implementation=True,
-        debug_use_sub_gene_corr=True,
         gene_corrs_file_path=DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl",
     )
 
@@ -867,11 +824,8 @@ def test_gls_debug_use_ols():
     lv_weights = GLSPhenoplier._get_lv_weights()
     gene_corrs = GLSPhenoplier._get_gene_corrs(model.gene_corrs_file_path)
 
-    np.random.seed(0)
-    phenotype_data = pd.Series(
-        np.abs(np.random.normal(size=lv_weights.shape[0])),
-        index=lv_weights.index.tolist(),
-        name="Random phenotype",
+    phenotype_data = pd.read_pickle(
+        DATA_DIR / f"multixcan-random_phenotype6-pvalues.pkl.xz"
     )
 
     # match all genes and align
@@ -882,16 +836,25 @@ def test_gls_debug_use_ols():
     # fit with using GLS model
     model.fit_named("LV270", phenotype_data)
     assert model.results.df_resid == phenotype_data.shape[0] - 2
+    exp_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+    assert exp_pval_onesided is not None
+    assert isinstance(exp_pval_onesided, float)
+    assert exp_pval_onesided > 0.0
+    assert exp_pval_onesided < 1.0
     model1_results = model.results
 
     # now fit with OLS, results should be different
     model = GLSPhenoplier(
-        conf.PHENOMEXCAN["SMULTIXCAN_MASHR_ZSCORES_FILE"],
         debug_use_ols=True,
     )
 
     model.fit_named("LV270", phenotype_data)
     assert model.results.df_resid == phenotype_data.shape[0] - 2
+    exp_pval_onesided = model.results.pvalues_onesided.loc["lv"]
+    assert exp_pval_onesided is not None
+    assert isinstance(exp_pval_onesided, float)
+    assert exp_pval_onesided > 0.0
+    assert exp_pval_onesided < 1.0
     model2_results = model.results
 
     assert not np.allclose(
