@@ -1,4 +1,4 @@
-# Notes on module calibration
+# Model calibration
 
 ## Some definitions
 
@@ -39,3 +39,52 @@ Here I continue the analysis using `corr_all_genes` only.
 Other important highlights:
 
 * From an implementation point of view, `full_corr` is easier, since for `sub_corr` we need to compute a matrix for each LV to make it faster.
+
+
+## With covariates
+
+Here I continue the analysis using `corr_all_genes` only.
+
+There are some potential covariates that could confound LV-trait associations:
+
+* Number of predictor SNPs for a gene across tissues.
+* Number of principal components (PCs) for a gene in S-MultiXcan.
+
+Below I tested some of these and others derived from them.
+
+### Adding "effective gene size"
+
+"Effective gene size" is the number of PCs after pruning in S-MultiXcan.
+
+Using `full_corr` or `sub_corr`:
+* Using `gene_size` as covariate alone does NOT change results.
+  * Mean type I error does not change when using `gene_size` as covariate.
+  * It does not correct some special LVs, like LV769
+  * `full_corr` is still very conservative on LV412 (0.009 at p < 0.05) (well-calibrated with simple OLS) compared with `sub_corr` (0.051)
+
+
+CHANGE BELOW IF THERE IS A DIFFERENCE BETWEEN FULL_CORR OR SUB_CORR, OTHERWISE REMOVE:
+
+* Using `gene_size` + `gene_size_log` ADD CONCLUSION
+* ADD COMPARISON WITH OLS MODEL
+
+Using `sub_corr`:
+* Using `gene_size` as covariate alone does NOT change results.
+
+* Using `gene_size` + `gene_size_log` ADD CONCLUSION
+* ADD COMPARISON WITH OLS MODEL
+
+
+### Adding "gene density"
+
+"Gene density" is the ratio of "effective gene size" and the total number of tissue results for that gene in S-PrediXcan.
+
+Using `full_corr`:
+* Using `gene_density` as covariate alone DOES NOT IMPROVE RESULTS (CHECK THIS)
+* Using `gene_density` + `gene_density_log` ADD CONCLUSION
+* ADD COMPARISON WITH OLS MODEL
+
+Using `sub_corr`:
+* Using `gene_density` as covariate alone DOES NOT IMPROVE RESULTS (CHECK THIS)
+* Using `gene_density` + `gene_density_log` ADD CONCLUSION
+* ADD COMPARISON WITH OLS MODEL
