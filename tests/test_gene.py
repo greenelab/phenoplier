@@ -642,7 +642,9 @@ def test_get_tissues_correlations_same_gene():
     gene1 = Gene(ensembl_id="ENSG00000122025")
 
     # get the correlation matrix of the gene expression across all tissues
-    genes_corrs = gene1.get_tissues_correlations(gene1)
+    genes_corrs = gene1.get_tissues_correlations(
+        gene1, reference_panel="1000G", model_type="MASHR"
+    )
 
     # check shape
     assert genes_corrs is not None
@@ -653,15 +655,15 @@ def test_get_tissues_correlations_same_gene():
     assert genes_corrs_diag_unique_values[0] == 1.0
     np.testing.assert_array_almost_equal(genes_corrs, genes_corrs.T)
 
-    # check some values precomputed in a notebook
+    # check some values precomputed using tests/test_cases/predict_gene_expression.py
     # all values for Kidney_Cortex are zero
     assert "Kidney_Cortex" not in genes_corrs.index
-    assert genes_corrs.loc["Skin_Not_Sun_Exposed_Suprapubic", "Spleen"].round(
-        5
-    ) == pytest.approx(0.97219, rel=1e-5)
+    assert genes_corrs.loc[
+        "Skin_Not_Sun_Exposed_Suprapubic", "Spleen"
+    ] == pytest.approx(0.9730644425264104, rel=1e-5)
     assert genes_corrs.loc[
         "Brain_Substantia_nigra", "Skin_Not_Sun_Exposed_Suprapubic"
-    ].round(5) == pytest.approx(-0.00591, rel=1e-5)
+    ] == pytest.approx(-0.07524348080571082, rel=1e-5)
 
 
 def test_get_tissues_correlations_different_gene():
