@@ -2942,3 +2942,177 @@ def test_gls_cli_use_covar_all_with_logs_lv801_random_phenotype_0(
     assert results.iloc[0].loc["pvalue_onesided"] == pytest.approx(
         exp_pval_onesided, rel=1e-10
     )
+
+
+def test_gls_cli_use_covar_debug_use_ols_vs_ols_without_covars(output_file):
+    # tests that covars are used when debug_use_ols is employed
+
+    # first, run OLS without covars
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
+            "--debug-use-ols",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " not in r_output
+
+    assert output_file.exists()
+    results_ols_no_covars = pd.read_csv(output_file, sep="\t")
+    assert results_ols_no_covars.shape[0] == 5  # 5 lvs tested
+    assert not results_ols_no_covars.isna().any().any()
+    output_file.unlink()
+
+    # now run an OLS with covars
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
+            "--covars",
+            "all",
+            "--debug-use-ols",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using gene correlation file:" not in r_output
+    assert "No gene correlations file specified" not in r_output
+    assert "Using a Ordinary Least Squares (OLS) model" in r_output
+    assert "Using covariates: " in r_output
+    assert "gene_size" not in r_output
+    assert "gene_density" not in r_output
+    assert "all" in r_output
+
+    assert output_file.exists()
+    results_ols = pd.read_csv(output_file, sep="\t")
+    assert results_ols.shape[0] == results_ols_no_covars.shape[0]
+    assert not results_ols.isna().any().any()
+
+    # results should be different across batches
+    assert not np.allclose(
+        results_ols_no_covars["beta"].to_numpy(),
+        results_ols["beta"].to_numpy(),
+    )
+    assert not np.allclose(
+        results_ols_no_covars["pvalue_onesided"].to_numpy(),
+        results_ols["pvalue_onesided"].to_numpy(),
+    )
+
+
+def test_gls_cli_use_covar_debug_use_ols_vs_gls(output_file):
+    # tests that covars are used when debug_use_ols is employed
+
+    # first, run GLS with covars
+    # run using all available covars
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+            "--covars",
+            "all",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using gene correlation file:" in r_output
+    assert "Using covariates: " in r_output
+    assert "gene_size" not in r_output
+    assert "gene_density" not in r_output
+    assert "all" in r_output
+
+    assert output_file.exists()
+    results_gls = pd.read_csv(output_file, sep="\t")
+    assert results_gls.shape[0] == 5  # 5 lvs tested
+    assert not results_gls.isna().any().any()
+    output_file.unlink()
+
+    # now run an OLS with covars
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-p",
+            str(DATA_DIR / "sample-lv-model.pkl"),
+            "--covars",
+            "all",
+            "--debug-use-ols",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using gene correlation file:" not in r_output
+    assert "No gene correlations file specified" not in r_output
+    assert "Using a Ordinary Least Squares (OLS) model" in r_output
+    assert "Using covariates: " in r_output
+    assert "gene_size" not in r_output
+    assert "gene_density" not in r_output
+    assert "all" in r_output
+
+    assert output_file.exists()
+    results_ols = pd.read_csv(output_file, sep="\t")
+    assert results_ols.shape[0] == results_gls.shape[0]
+    assert not results_ols.isna().any().any()
+
+    # results should be different across batches
+    assert not np.allclose(
+        results_gls["beta"].to_numpy(),
+        results_ols["beta"].to_numpy(),
+    )
+    assert not np.allclose(
+        results_gls["pvalue_onesided"].to_numpy(),
+        results_ols["pvalue_onesided"].to_numpy(),
+    )
