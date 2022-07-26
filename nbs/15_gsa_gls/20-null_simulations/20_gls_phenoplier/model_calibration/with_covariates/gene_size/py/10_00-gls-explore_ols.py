@@ -48,7 +48,11 @@ N_LVS = 987
 
 # %% tags=[]
 INPUT_DIR = (
-    conf.RESULTS["GLS_NULL_SIMS"] / "phenoplier" / "_with_covars" / "gene_size" / "gls-debug_use_ols"
+    conf.RESULTS["GLS_NULL_SIMS"]
+    / "phenoplier"
+    / "_with_covars"
+    / "gene_size"
+    / "gls-debug_use_ols"
 )
 display(INPUT_DIR)
 
