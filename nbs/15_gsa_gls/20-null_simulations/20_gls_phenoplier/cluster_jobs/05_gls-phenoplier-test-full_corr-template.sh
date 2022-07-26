@@ -36,5 +36,6 @@ bash ${CODE_DIR}/01_gls_phenoplier.sh \
   --input-file ${INPUT_SMULTIXCAN_DIR}/random.pheno${pheno_id}-gtex_v8-mashr-smultixcan.txt \
   --gene-corr-file ${GENE_CORR_FILE} \
   --lv-list "LV45 LV234 LV847 LV110 LV769 LV800 LV412 LV57 LV647" \
+  --covars "gene_size" \
   --output-file ${OUTPUT_DIR}/random.pheno${pheno_id}-gls_phenoplier.tsv.gz
 
