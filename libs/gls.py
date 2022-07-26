@@ -417,12 +417,12 @@ class GLSPhenoplier(object):
             if gene_corrs is not None:
                 self.log_info("Using a Generalized Least Squares (GLS) model")
                 gls_model = sm.GLS(
-                    data["phenotype"], data[["i", "lv"]], sigma=gene_corrs
+                    data[phenotype_col], data[predictor_cols], sigma=gene_corrs
                 )
                 gls_results = gls_model.fit()
             else:
                 self.log_info("Using a Ordinary Least Squares (OLS) model")
-                gls_model = sm.OLS(data["phenotype"], data[["i", "lv"]])
+                gls_model = sm.OLS(data[phenotype_col], data[predictor_cols])
                 gls_results = gls_model.fit()
 
             # add one-sided pvalue
