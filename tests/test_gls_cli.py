@@ -40,6 +40,7 @@ def test_gls_cli_without_parameters():
     assert r.returncode == 2
     r_output = r.stdout.decode("utf-8")
     assert r_output is not None
+    print(r_output)
     assert len(r_output) > 1, r_output
     assert "error:" in r_output
 
@@ -54,6 +55,7 @@ def test_gls_cli_help():
     assert r.returncode == 0
     r_output = r.stdout.decode("utf-8")
     assert r_output is not None
+    print(r_output)
     assert len(r_output) > 1, r_output
     assert "PhenoPLIER command line tool" in r_output
 
@@ -75,6 +77,7 @@ def test_gls_cli_input_file_does_not_exist(output_file):
     assert r.returncode == 2
     r_output = r.stdout.decode("utf-8")
     assert r_output is not None
+    print(r_output)
     assert len(r_output) > 1, r_output
     assert "ERROR" in r_output
     assert "Input file does not exist" in r_output
@@ -233,6 +236,8 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_firs
             str(DATA_DIR / "sample-lv-model.pkl"),
             "--duplicated-genes-action",
             "keep-first",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -273,6 +278,8 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
             "-l",
             "LV1",
             "LV5",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -305,6 +312,8 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_keep_last
             "-l",
             "LV1",
             "LV5",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -358,6 +367,8 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
             "-l",
             "LV1",
             "LV5",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -390,6 +401,8 @@ def test_gls_cli_single_smultixcan_repeated_gene_names_remove_repeated_remove_al
             "-l",
             "LV1",
             "LV5",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -435,6 +448,8 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
             "LV1",
             "LV2",
             "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -447,7 +462,6 @@ def test_gls_cli_single_smultixcan_input_full_subset_of_lvs(output_file):
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Reading input file" in r_output
-    assert "No gene correlations file specified. The default will be used" in r_output
     assert "Input file has 54 genes" in r_output
     assert "3 genes with missing values have been removed" in r_output
     assert (
@@ -509,6 +523,8 @@ def test_gls_cli_single_smultixcan_input_full_all_lvs_in_model_file(output_file)
             output_file,
             "-p",
             str(DATA_DIR / "sample-lv-model.pkl"),
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -1068,6 +1084,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
             "1",
             "--batch-n-splits",
             "3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -1109,6 +1127,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
             "2",
             "--batch-n-splits",
             "3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -1150,6 +1170,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits(output_f
             "3",
             "--batch-n-splits",
             "3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -1221,6 +1243,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             "1",
             "--batch-n-splits",
             "5",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -1260,6 +1284,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             "2",
             "--batch-n-splits",
             "5",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -1299,6 +1325,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             "3",
             "--batch-n-splits",
             "5",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -1338,6 +1366,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             "4",
             "--batch-n-splits",
             "5",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -1377,6 +1407,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_chunks_s
             "5",
             "--batch-n-splits",
             "5",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -1419,6 +1451,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_is_1(
             "1",
             "--batch-n-splits",
             "1",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -1468,6 +1502,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
             "1",
             "--batch-n-splits",
             "4",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -1509,6 +1545,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
             "2",
             "--batch-n-splits",
             "4",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -1549,6 +1587,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
             "3",
             "--batch-n-splits",
             "4",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -1589,6 +1629,8 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
             "4",
             "--batch-n-splits",
             "4",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-gtex_v8-mashr.pkl"),
         ],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
