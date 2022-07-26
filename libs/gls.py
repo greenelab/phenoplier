@@ -239,7 +239,7 @@ class GLSPhenoplier(object):
         return self._fit_general(x, y, gene_corrs)
 
     def _fit_named_cli(
-        self, lv_code: str, phenotype: pd.Series, lv_weights_file: str = None
+        self, lv_code: str, phenotype, lv_weights_file: str = None
     ):
         """
         phenotype: could be pd.Series (no covariates) or pd.DataFrame

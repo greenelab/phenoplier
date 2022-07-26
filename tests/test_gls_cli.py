@@ -20,8 +20,23 @@ TEMP_DIR = tempfile.mkdtemp()
 
 @pytest.fixture()
 def output_file():
-    # print("setup")
     out_file = Path(TEMP_DIR) / "out.tsv"
+    yield out_file
+    if out_file.exists():
+        out_file.unlink()
+
+
+@pytest.fixture()
+def full_gene_corrs_filepath():
+    from scipy import sparse
+
+    out_file = Path(TEMP_DIR) / "gene_corrs.pkl"
+
+    gene_corrs = sparse.load_npz(DATA_DIR / "gene_corrs.npz").toarray()
+    gene_names = np.load(DATA_DIR / "gene_corrs-gene_names.npz")["gene_names"]
+    gene_corrs = pd.DataFrame(gene_corrs, index=gene_names, columns=gene_names)
+    gene_corrs.to_pickle(out_file)
+
     yield out_file
     if out_file.exists():
         out_file.unlink()
@@ -1655,3 +1670,1275 @@ def test_gls_cli_single_smultixcan_input_full_use_batches_with_n_splits_problema
     assert "LV9" in _lvs
     assert not output_data.isna().any().any()
     output_file.unlink()
+
+
+def test_gls_cli_use_covar_gene_size(output_file):
+    # run first without covariates
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+
+    assert output_file.exists()
+    output_data = pd.read_csv(output_file, sep="\t")
+    assert output_data.shape[0] == 3  # 3 lvs tested
+    assert "lv" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
+    assert output_data["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    _lvs = set(output_data["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not output_data.isna().any().any()
+    output_file.unlink()
+
+    # run using gene_size as covariate
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+            "--covars",
+            "gene_size",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "gene_size" in r_output
+
+    assert output_file.exists()
+    output_data2 = pd.read_csv(output_file, sep="\t")
+    assert output_data2.shape[0] == 3  # 3 lvs tested
+    assert "lv" in output_data2.columns
+    assert "beta" in output_data2.columns
+    assert "pvalue_onesided" in output_data2.columns
+    assert output_data2["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    _lvs = set(output_data2["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not output_data2.isna().any().any()
+
+    # make sure results differ
+    assert not np.allclose(
+        output_data["beta"].to_numpy(),
+        output_data2["beta"].to_numpy(),
+    )
+
+    assert not np.allclose(
+        output_data["beta_se"].to_numpy(),
+        output_data2["beta_se"].to_numpy(),
+    )
+
+    assert not np.allclose(
+        output_data["pvalue_onesided"].to_numpy(),
+        output_data2["pvalue_onesided"].to_numpy(),
+    )
+
+
+def test_gls_cli_use_covar_gene_density(output_file):
+    # run first without covariates
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+
+    assert output_file.exists()
+    output_data = pd.read_csv(output_file, sep="\t")
+    assert output_data.shape[0] == 3  # 3 lvs tested
+    assert "lv" in output_data.columns
+    assert "beta" in output_data.columns
+    assert "pvalue_onesided" in output_data.columns
+    assert output_data["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    _lvs = set(output_data["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not output_data.isna().any().any()
+    output_file.unlink()
+
+    # run using gene_density as covariate
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+            "--covars",
+            "gene_density",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "gene_density" in r_output
+
+    assert output_file.exists()
+    output_data2 = pd.read_csv(output_file, sep="\t")
+    assert output_data2.shape[0] == 3  # 3 lvs tested
+    assert "lv" in output_data2.columns
+    assert "beta" in output_data2.columns
+    assert "pvalue_onesided" in output_data2.columns
+    assert output_data2["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+    _lvs = set(output_data2["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not output_data2.isna().any().any()
+
+    # make sure results differ
+    assert not np.allclose(
+        output_data["beta"].to_numpy(),
+        output_data2["beta"].to_numpy(),
+    )
+
+    assert not np.allclose(
+        output_data["beta_se"].to_numpy(),
+        output_data2["beta_se"].to_numpy(),
+    )
+
+    assert not np.allclose(
+        output_data["pvalue_onesided"].to_numpy(),
+        output_data2["pvalue_onesided"].to_numpy(),
+    )
+
+
+def test_gls_cli_use_covar_gene_size_and_its_log(output_file):
+    # run first without covariates
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+
+    assert output_file.exists()
+    results_without_covars = pd.read_csv(output_file, sep="\t")
+    assert results_without_covars.shape[0] == 3  # 3 lvs tested
+    assert "lv" in results_without_covars.columns
+    assert "beta" in results_without_covars.columns
+    assert "pvalue_onesided" in results_without_covars.columns
+    assert (
+        results_without_covars["pvalue_onesided"]
+        .between(0.0, 1.0, inclusive="neither")
+        .all()
+    )
+    _lvs = set(results_without_covars["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not results_without_covars.isna().any().any()
+    output_file.unlink()
+
+    # run using gene_size as covariate
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+            "--covars",
+            "gene_size",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "gene_size" in r_output
+
+    assert output_file.exists()
+    results_covar_gene_size = pd.read_csv(output_file, sep="\t")
+    assert results_covar_gene_size.shape[0] == 3  # 3 lvs tested
+    assert "lv" in results_covar_gene_size.columns
+    assert "beta" in results_covar_gene_size.columns
+    assert "pvalue_onesided" in results_covar_gene_size.columns
+    assert (
+        results_covar_gene_size["pvalue_onesided"]
+        .between(0.0, 1.0, inclusive="neither")
+        .all()
+    )
+    _lvs = set(results_covar_gene_size["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not results_covar_gene_size.isna().any().any()
+    output_file.unlink()
+
+    # run using gene_size and gene_size_log
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+            "--covars",
+            "gene_size",
+            "gene_size_log",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "gene_size" in r_output
+    assert "gene_size_log" in r_output
+
+    assert output_file.exists()
+    results_covar_gene_size_and_log = pd.read_csv(output_file, sep="\t")
+    assert results_covar_gene_size_and_log.shape[0] == 3  # 3 lvs tested
+    assert "lv" in results_covar_gene_size_and_log.columns
+    assert "beta" in results_covar_gene_size_and_log.columns
+    assert "pvalue_onesided" in results_covar_gene_size_and_log.columns
+    assert (
+        results_covar_gene_size_and_log["pvalue_onesided"]
+        .between(0.0, 1.0, inclusive="neither")
+        .all()
+    )
+    _lvs = set(results_covar_gene_size_and_log["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not results_covar_gene_size_and_log.isna().any().any()
+
+    # make sure results differ
+    # no covars vs gene size + log
+    assert not np.allclose(
+        results_without_covars["beta"].to_numpy(),
+        results_covar_gene_size_and_log["beta"].to_numpy(),
+    )
+
+    assert not np.allclose(
+        results_without_covars["pvalue_onesided"].to_numpy(),
+        results_covar_gene_size_and_log["pvalue_onesided"].to_numpy(),
+    )
+
+    # gene size covar vs gene size + log
+    assert not np.allclose(
+        results_covar_gene_size["beta"].to_numpy(),
+        results_covar_gene_size_and_log["beta"].to_numpy(),
+    )
+
+    assert not np.allclose(
+        results_covar_gene_size["pvalue_onesided"].to_numpy(),
+        results_covar_gene_size_and_log["pvalue_onesided"].to_numpy(),
+    )
+
+
+def test_gls_cli_use_covar_gene_density_and_its_log(output_file):
+    # run first without covariates
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+
+    assert output_file.exists()
+    results_without_covars = pd.read_csv(output_file, sep="\t")
+    assert results_without_covars.shape[0] == 3  # 3 lvs tested
+    assert "lv" in results_without_covars.columns
+    assert "beta" in results_without_covars.columns
+    assert "pvalue_onesided" in results_without_covars.columns
+    assert (
+        results_without_covars["pvalue_onesided"]
+        .between(0.0, 1.0, inclusive="neither")
+        .all()
+    )
+    _lvs = set(results_without_covars["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not results_without_covars.isna().any().any()
+    output_file.unlink()
+
+    # run using gene_density as covariate
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+            "--covars",
+            "gene_density",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "gene_density" in r_output
+
+    assert output_file.exists()
+    results_covar_gene_density = pd.read_csv(output_file, sep="\t")
+    assert results_covar_gene_density.shape[0] == 3  # 3 lvs tested
+    assert "lv" in results_covar_gene_density.columns
+    assert "beta" in results_covar_gene_density.columns
+    assert "pvalue_onesided" in results_covar_gene_density.columns
+    assert (
+        results_covar_gene_density["pvalue_onesided"]
+        .between(0.0, 1.0, inclusive="neither")
+        .all()
+    )
+    _lvs = set(results_covar_gene_density["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not results_covar_gene_density.isna().any().any()
+    output_file.unlink()
+
+    # run using gene_density and gene_size_log
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+            "--covars",
+            "gene_density",
+            "gene_density_log",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "gene_density" in r_output
+    assert "gene_density_log" in r_output
+
+    assert output_file.exists()
+    results_covar_gene_density_and_log = pd.read_csv(output_file, sep="\t")
+    assert results_covar_gene_density_and_log.shape[0] == 3  # 3 lvs tested
+    assert "lv" in results_covar_gene_density_and_log.columns
+    assert "beta" in results_covar_gene_density_and_log.columns
+    assert "pvalue_onesided" in results_covar_gene_density_and_log.columns
+    assert (
+        results_covar_gene_density_and_log["pvalue_onesided"]
+        .between(0.0, 1.0, inclusive="neither")
+        .all()
+    )
+    _lvs = set(results_covar_gene_density_and_log["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not results_covar_gene_density_and_log.isna().any().any()
+
+    # make sure results differ
+    # no covars vs gene density + log
+    assert not np.allclose(
+        results_without_covars["beta"].to_numpy(),
+        results_covar_gene_density_and_log["beta"].to_numpy(),
+    )
+
+    assert not np.allclose(
+        results_without_covars["pvalue_onesided"].to_numpy(),
+        results_covar_gene_density_and_log["pvalue_onesided"].to_numpy(),
+    )
+
+    # gene density covar vs gene density + log
+    assert not np.allclose(
+        results_covar_gene_density["beta"].to_numpy(),
+        results_covar_gene_density_and_log["beta"].to_numpy(),
+    )
+
+    assert not np.allclose(
+        results_covar_gene_density["pvalue_onesided"].to_numpy(),
+        results_covar_gene_density_and_log["pvalue_onesided"].to_numpy(),
+    )
+
+
+def test_gls_cli_use_covar_all(output_file):
+    # run first without covariates
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+
+    assert output_file.exists()
+    results_without_covars = pd.read_csv(output_file, sep="\t")
+    assert results_without_covars.shape[0] == 3  # 3 lvs tested
+    assert "lv" in results_without_covars.columns
+    assert "beta" in results_without_covars.columns
+    assert "pvalue_onesided" in results_without_covars.columns
+    assert (
+        results_without_covars["pvalue_onesided"]
+        .between(0.0, 1.0, inclusive="neither")
+        .all()
+    )
+    _lvs = set(results_without_covars["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not results_without_covars.isna().any().any()
+    output_file.unlink()
+
+    # run using gene_density as covariate
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+            "--covars",
+            "gene_density",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "gene_density" in r_output
+
+    assert output_file.exists()
+    results_covar_gene_density = pd.read_csv(output_file, sep="\t")
+    assert results_covar_gene_density.shape[0] == 3  # 3 lvs tested
+    assert "lv" in results_covar_gene_density.columns
+    assert "beta" in results_covar_gene_density.columns
+    assert "pvalue_onesided" in results_covar_gene_density.columns
+    assert (
+        results_covar_gene_density["pvalue_onesided"]
+        .between(0.0, 1.0, inclusive="neither")
+        .all()
+    )
+    _lvs = set(results_covar_gene_density["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not results_covar_gene_density.isna().any().any()
+    output_file.unlink()
+
+    # run using gene_size as covariate
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+            "--covars",
+            "gene_size",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "gene_size" in r_output
+
+    assert output_file.exists()
+    results_covar_gene_size = pd.read_csv(output_file, sep="\t")
+    assert results_covar_gene_size.shape[0] == 3  # 3 lvs tested
+    assert "lv" in results_covar_gene_size.columns
+    assert "beta" in results_covar_gene_size.columns
+    assert "pvalue_onesided" in results_covar_gene_size.columns
+    assert (
+        results_covar_gene_size["pvalue_onesided"]
+        .between(0.0, 1.0, inclusive="neither")
+        .all()
+    )
+    _lvs = set(results_covar_gene_size["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not results_covar_gene_size.isna().any().any()
+    output_file.unlink()
+
+    # run using all available covars
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+            "--covars",
+            "all",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "gene_size" not in r_output
+    assert "gene_density" not in r_output
+    assert "all" in r_output
+
+    assert output_file.exists()
+    results_covar_all = pd.read_csv(output_file, sep="\t")
+    assert results_covar_all.shape[0] == 3  # 3 lvs tested
+    assert "lv" in results_covar_all.columns
+    assert "beta" in results_covar_all.columns
+    assert "pvalue_onesided" in results_covar_all.columns
+    assert (
+        results_covar_all["pvalue_onesided"]
+        .between(0.0, 1.0, inclusive="neither")
+        .all()
+    )
+    _lvs = set(results_covar_all["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not results_covar_all.isna().any().any()
+
+    # make sure results differ
+    # no covars vs all covars
+    assert not np.allclose(
+        results_without_covars["beta"].to_numpy(),
+        results_covar_all["beta"].to_numpy(),
+    )
+
+    assert not np.allclose(
+        results_without_covars["pvalue_onesided"].to_numpy(),
+        results_covar_all["pvalue_onesided"].to_numpy(),
+    )
+
+    # gene size covar vs all covars
+    assert not np.allclose(
+        results_covar_gene_size["beta"].to_numpy(),
+        results_covar_all["beta"].to_numpy(),
+    )
+
+    assert not np.allclose(
+        results_covar_gene_size["pvalue_onesided"].to_numpy(),
+        results_covar_all["pvalue_onesided"].to_numpy(),
+    )
+
+    # gene density covar vs all covars
+    assert not np.allclose(
+        results_covar_gene_density["beta"].to_numpy(),
+        results_covar_all["beta"].to_numpy(),
+    )
+
+    assert not np.allclose(
+        results_covar_gene_density["pvalue_onesided"].to_numpy(),
+        results_covar_all["pvalue_onesided"].to_numpy(),
+    )
+
+
+def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
+    # run first without covariates
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+
+    assert output_file.exists()
+    results_without_covars = pd.read_csv(output_file, sep="\t")
+    assert results_without_covars.shape[0] == 3  # 3 lvs tested
+    assert "lv" in results_without_covars.columns
+    assert "beta" in results_without_covars.columns
+    assert "pvalue_onesided" in results_without_covars.columns
+    assert (
+        results_without_covars["pvalue_onesided"]
+        .between(0.0, 1.0, inclusive="neither")
+        .all()
+    )
+    _lvs = set(results_without_covars["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not results_without_covars.isna().any().any()
+    output_file.unlink()
+
+    # run using all covariates specified separately
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+            "--covars",
+            "gene_size",
+            "gene_size_log",
+            "gene_density",
+            "gene_density_log",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "gene_size" in r_output
+    assert "gene_size_log" in r_output
+    assert "gene_density" in r_output
+    assert "gene_density_log" in r_output
+
+    assert output_file.exists()
+    results_covar_all_separately = pd.read_csv(output_file, sep="\t")
+    assert results_covar_all_separately.shape[0] == 3  # 3 lvs tested
+    assert "lv" in results_covar_all_separately.columns
+    assert "beta" in results_covar_all_separately.columns
+    assert "pvalue_onesided" in results_covar_all_separately.columns
+    assert (
+        results_covar_all_separately["pvalue_onesided"]
+        .between(0.0, 1.0, inclusive="neither")
+        .all()
+    )
+    _lvs = set(results_covar_all_separately["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not results_covar_all_separately.isna().any().any()
+    output_file.unlink()
+
+    # run using all available covars
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
+            "-o",
+            output_file,
+            "-l",
+            "LV1",
+            "LV2",
+            "LV3",
+            "-g",
+            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
+            "--covars",
+            "all",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "gene_size" not in r_output
+    assert "gene_density" not in r_output
+    assert "all" in r_output
+
+    assert output_file.exists()
+    results_covar_all = pd.read_csv(output_file, sep="\t")
+    assert results_covar_all.shape[0] == 3  # 3 lvs tested
+    assert "lv" in results_covar_all.columns
+    assert "beta" in results_covar_all.columns
+    assert "pvalue_onesided" in results_covar_all.columns
+    assert (
+        results_covar_all["pvalue_onesided"]
+        .between(0.0, 1.0, inclusive="neither")
+        .all()
+    )
+    _lvs = set(results_covar_all["lv"].tolist())
+    assert "LV1" in _lvs
+    assert "LV2" in _lvs
+    assert "LV3" in _lvs
+    assert not results_covar_all.isna().any().any()
+
+    # compare results
+    # no covars vs all covars should be different
+    assert not np.allclose(
+        results_without_covars["beta"].to_numpy(),
+        results_covar_all["beta"].to_numpy(),
+    )
+
+    assert not np.allclose(
+        results_without_covars["pvalue_onesided"].to_numpy(),
+        results_covar_all["pvalue_onesided"].to_numpy(),
+    )
+
+    # all separately vs "all" should be equal
+    assert np.array_equal(
+        results_covar_all_separately["beta"].to_numpy(),
+        results_covar_all["beta"].to_numpy(),
+    )
+
+    assert np.array_equal(
+        results_covar_all_separately["pvalue_onesided"].to_numpy(),
+        results_covar_all["pvalue_onesided"].to_numpy(),
+    )
+
+
+def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_random_phenotype_6(
+    output_file,
+    full_gene_corrs_filepath,
+):
+    # in this test, I make sure that the output values are the expected ones
+    # generated in notebook nbs/15_gsa_gls/misc/10_10-gls-generate_cases-cases.ipynb
+    # run using all covariates specified separately
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno6-gtex_v8-mashr-smultixcan.txt.gz"),
+            "-o",
+            output_file,
+            "-l",
+            "LV45",
+            "-g",
+            full_gene_corrs_filepath,
+            "--duplicated-genes-action",
+            "keep-first",
+            "--covars",
+            "gene_size",
+            "gene_density",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "gene_size" in r_output
+    assert "gene_density" in r_output
+
+    assert output_file.exists()
+    results = pd.read_csv(output_file, sep="\t")
+
+    assert results.shape[0] == 1  # only 1 LV tested
+    assert "lv" in results.columns
+    assert "beta" in results.columns
+    assert "beta_se" in results.columns
+    assert "t" in results.columns
+    assert "pvalue_twosided" in results.columns
+    assert "pvalue_onesided" in results.columns
+
+    assert results["pvalue_twosided"].between(0.0, 1.0, inclusive="neither").all()
+    assert results["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+
+    _lvs = set(results["lv"].tolist())
+    assert "LV45" in _lvs
+    assert not results.isna().any().any()
+
+    # check values
+    exp_coef = -0.0032326620431897984
+    exp_coef_se = 0.008590802143381404
+    exp_tvalue = -0.37629338788582534
+    exp_pval_twosided = 0.7067111941216788
+    exp_pval_onesided = 0.6466444029391605
+
+    assert results.iloc[0].loc["beta"] == pytest.approx(exp_coef, rel=1e-10)
+    assert results.iloc[0].loc["beta_se"] == pytest.approx(exp_coef_se, rel=1e-10)
+    assert results.iloc[0].loc["t"] == pytest.approx(exp_tvalue, rel=1e-10)
+    assert results.iloc[0].loc["pvalue_twosided"] == pytest.approx(
+        exp_pval_twosided, rel=1e-10
+    )
+    assert results.iloc[0].loc["pvalue_onesided"] == pytest.approx(
+        exp_pval_onesided, rel=1e-10
+    )
+
+
+def test_gls_cli_use_covar_gene_size_and_gene_density_lv455_random_phenotype_6(
+    output_file,
+    full_gene_corrs_filepath,
+):
+    # in this test, I make sure that the output values are the expected ones
+    # generated in notebook nbs/15_gsa_gls/misc/10_10-gls-generate_cases-cases.ipynb
+    # run using all covariates specified separately
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno6-gtex_v8-mashr-smultixcan.txt.gz"),
+            "-o",
+            output_file,
+            "-l",
+            "LV455",
+            "-g",
+            full_gene_corrs_filepath,
+            "--duplicated-genes-action",
+            "keep-first",
+            "--covars",
+            "gene_size",
+            "gene_density",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "gene_size" in r_output
+    assert "gene_density" in r_output
+
+    assert output_file.exists()
+    results = pd.read_csv(output_file, sep="\t")
+
+    assert results.shape[0] == 1  # only 1 LV tested
+    assert "lv" in results.columns
+    assert "beta" in results.columns
+    assert "beta_se" in results.columns
+    assert "t" in results.columns
+    assert "pvalue_twosided" in results.columns
+    assert "pvalue_onesided" in results.columns
+
+    assert results["pvalue_twosided"].between(0.0, 1.0, inclusive="neither").all()
+    assert results["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+
+    _lvs = set(results["lv"].tolist())
+    assert "LV455" in _lvs
+    assert not results.isna().any().any()
+
+    # check values
+    exp_coef = 0.0014516113831524813
+    exp_coef_se = 0.011295356092071307
+    exp_tvalue = 0.12851399914442976
+    exp_pval_twosided = 0.8977462345701058
+    exp_pval_onesided = 0.4488731172850529
+
+    assert results.iloc[0].loc["beta"] == pytest.approx(exp_coef, rel=1e-10)
+    assert results.iloc[0].loc["beta_se"] == pytest.approx(exp_coef_se, rel=1e-10)
+    assert results.iloc[0].loc["t"] == pytest.approx(exp_tvalue, rel=1e-10)
+    assert results.iloc[0].loc["pvalue_twosided"] == pytest.approx(
+        exp_pval_twosided, rel=1e-10
+    )
+    assert results.iloc[0].loc["pvalue_onesided"] == pytest.approx(
+        exp_pval_onesided, rel=1e-10
+    )
+
+
+def test_gls_cli_use_covar_gene_size_and_gene_density_lv45_and_lv455_random_phenotype_6(
+    output_file, full_gene_corrs_filepath
+):
+    # in this test, I make sure that the output values are the expected ones
+    # generated in notebook nbs/15_gsa_gls/misc/10_10-gls-generate_cases-cases.ipynb
+    #
+    # the difference with the previous test, is that this one computes two LVs
+    # in the same run, checking results are the same as if run separately
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno6-gtex_v8-mashr-smultixcan.txt.gz"),
+            "-o",
+            output_file,
+            "-l",
+            "LV45",
+            "LV455",
+            "-g",
+            full_gene_corrs_filepath,
+            "--duplicated-genes-action",
+            "keep-first",
+            "--covars",
+            "gene_size",
+            "gene_density",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "gene_size" in r_output
+    assert "gene_density" in r_output
+
+    assert output_file.exists()
+    results = pd.read_csv(output_file, sep="\t")
+
+    assert results.shape[0] == 2  # only 1 LV tested
+    assert "lv" in results.columns
+    assert "beta" in results.columns
+    assert "beta_se" in results.columns
+    assert "t" in results.columns
+    assert "pvalue_twosided" in results.columns
+    assert "pvalue_onesided" in results.columns
+
+    assert results["pvalue_twosided"].between(0.0, 1.0, inclusive="neither").all()
+    assert results["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+
+    _lvs = set(results["lv"].tolist())
+    assert "LV45" in _lvs
+    assert "LV455" in _lvs
+    assert not results.isna().any().any()
+
+    results = results.set_index("lv")
+
+    # check values for LV45
+    _lv_code = "LV45"
+
+    exp_coef = -0.0032326620431897984
+    exp_coef_se = 0.008590802143381404
+    exp_tvalue = -0.37629338788582534
+    exp_pval_twosided = 0.7067111941216788
+    exp_pval_onesided = 0.6466444029391605
+
+    assert results.loc[_lv_code, "beta"] == pytest.approx(exp_coef, rel=1e-10)
+    assert results.loc[_lv_code, "beta_se"] == pytest.approx(exp_coef_se, rel=1e-10)
+    assert results.loc[_lv_code, "t"] == pytest.approx(exp_tvalue, rel=1e-10)
+    assert results.loc[_lv_code, "pvalue_twosided"] == pytest.approx(
+        exp_pval_twosided, rel=1e-10
+    )
+    assert results.loc[_lv_code, "pvalue_onesided"] == pytest.approx(
+        exp_pval_onesided, rel=1e-10
+    )
+
+    # check values for LV455
+    _lv_code = "LV455"
+
+    exp_coef = 0.0014516113831524813
+    exp_coef_se = 0.011295356092071307
+    exp_tvalue = 0.12851399914442976
+    exp_pval_twosided = 0.8977462345701058
+    exp_pval_onesided = 0.4488731172850529
+
+    assert results.loc[_lv_code, "beta"] == pytest.approx(exp_coef, rel=1e-10)
+    assert results.loc[_lv_code, "beta_se"] == pytest.approx(exp_coef_se, rel=1e-10)
+    assert results.loc[_lv_code, "t"] == pytest.approx(exp_tvalue, rel=1e-10)
+    assert results.loc[_lv_code, "pvalue_twosided"] == pytest.approx(
+        exp_pval_twosided, rel=1e-10
+    )
+    assert results.loc[_lv_code, "pvalue_onesided"] == pytest.approx(
+        exp_pval_onesided, rel=1e-10
+    )
+
+
+def test_gls_cli_use_covar_all_with_logs_lv801_random_phenotype_0(
+    output_file, full_gene_corrs_filepath
+):
+    # in this test, I make sure that the output values are the expected ones
+    # generated in notebook nbs/15_gsa_gls/misc/10_10-gls-generate_cases-cases.ipynb
+    r = subprocess.run(
+        [
+            "python",
+            GLS_CLI_PATH,
+            "-i",
+            str(DATA_DIR / "random.pheno0-gtex_v8-mashr-smultixcan.txt.gz"),
+            "-o",
+            output_file,
+            "-l",
+            "LV801",
+            "-g",
+            full_gene_corrs_filepath,
+            "--duplicated-genes-action",
+            "keep-first",
+            "--covars",
+            "all",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    assert r is not None
+    r_output = r.stdout.decode("utf-8")
+    print("\n" + r_output)
+
+    assert r.returncode == 0
+    assert r_output is not None
+    assert len(r_output) > 1, r_output
+    assert "Using covariates: " in r_output
+    assert "all" in r_output
+    assert "gene_size" not in r_output
+    assert "gene_density" not in r_output
+
+    assert output_file.exists()
+    results = pd.read_csv(output_file, sep="\t")
+
+    assert results.shape[0] == 1  # only 1 LV tested
+    assert "lv" in results.columns
+    assert "beta" in results.columns
+    assert "beta_se" in results.columns
+    assert "t" in results.columns
+    assert "pvalue_twosided" in results.columns
+    assert "pvalue_onesided" in results.columns
+
+    assert results["pvalue_twosided"].between(0.0, 1.0, inclusive="neither").all()
+    assert results["pvalue_onesided"].between(0.0, 1.0, inclusive="neither").all()
+
+    _lvs = set(results["lv"].tolist())
+    assert "LV801" in _lvs
+    assert not results.isna().any().any()
+
+    # check values
+    exp_coef = 0.008380935035632255
+    exp_coef_se = 0.010981760912289579
+    exp_tvalue = 0.7631685940506349
+    exp_pval_twosided = 0.4453908279763241
+    exp_pval_onesided = 0.22269541398816206
+
+    assert results.iloc[0].loc["beta"] == pytest.approx(exp_coef, rel=1e-10)
+    assert results.iloc[0].loc["beta_se"] == pytest.approx(exp_coef_se, rel=1e-10)
+    assert results.iloc[0].loc["t"] == pytest.approx(exp_tvalue, rel=1e-10)
+    assert results.iloc[0].loc["pvalue_twosided"] == pytest.approx(
+        exp_pval_twosided, rel=1e-10
+    )
+    assert results.iloc[0].loc["pvalue_onesided"] == pytest.approx(
+        exp_pval_onesided, rel=1e-10
+    )

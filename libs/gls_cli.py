@@ -17,6 +17,15 @@ logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
 logger = logging.getLogger("root")
 
 
+COVAR_OPTIONS = [
+    "all",
+    "gene_size",
+    "gene_size_log",
+    "gene_density",
+    "gene_density_log",
+]
+
+
 def run():
     parser = argparse.ArgumentParser(
         description="""
@@ -72,6 +81,14 @@ def run():
         nargs="+",
         default=[],
         help="List of LV (gene modules) identifiers on which an association will be computed.",
+    )
+    parser.add_argument(
+        "--covars",
+        required=False,
+        nargs="+",
+        choices=COVAR_OPTIONS,
+        # default="keep-first",
+        help="List of covariates to use.",
     )
     parser.add_argument(
         "--batch-id",
@@ -162,18 +179,10 @@ def run():
         logger.error("Mandatory columns not present in data 'pvalue'")
         sys.exit(1)
 
-    input_phenotype_name = input_file.stem
-    data = (
-        data[["gene_name", "pvalue"]]
-        .set_index("gene_name")
-        .squeeze()
-        .rename(input_phenotype_name)
-    )
+    data = data.set_index("gene_name")  # [["gene_name", "pvalue"]]
 
     # remove duplicated gene entries
     if args.duplicated_genes_action is not None:
-        keep_action = None
-
         if args.duplicated_genes_action.startswith("keep"):
             keep_action = args.duplicated_genes_action.split("-")[1]
         elif args.duplicated_genes_action == "remove-all":
@@ -195,11 +204,12 @@ def run():
         sys.exit(1)
 
     # pvalues stats
-    n_missing = data.isna().sum()
-    n = data.shape[0]
-    min_pval = data.min()
-    mean_pval = data.mean()
-    max_pval = data.max()
+    _data_pvalues = data["pvalue"]
+    n_missing = _data_pvalues.isna().sum()
+    n = _data_pvalues.shape[0]
+    min_pval = _data_pvalues.min()
+    mean_pval = _data_pvalues.mean()
+    max_pval = _data_pvalues.max()
 
     logger.info(
         f"p-values statistics: min={min_pval:.1e} | mean={mean_pval:.1e} | max={max_pval:.1e} | # missing={n_missing} ({(n_missing / n) * 100:.1f}%)"
@@ -211,9 +221,49 @@ def run():
     if max_pval > 1.0:
         logger.warning("Some p-values are greater than 1.0")
 
+    final_data = data.loc[:, ["pvalue"]].rename(
+        columns={
+            "pvalue": "y",
+        }
+    )
+
+    if args.covars is not None and len(args.covars) > 0:
+        logger.info(f"Using covariates: {args.covars}")
+        covars_selected = args.covars
+
+        if "all" in covars_selected:
+            covars_selected = [c for c in COVAR_OPTIONS if c != "all"]
+
+        covars_selected = sorted(covars_selected)
+
+        # get necessary columns from results
+        covars = data[["pvalue", "n", "n_indep"]]
+        covars = covars.rename(
+            columns={
+                "n_indep": "gene_size",
+            }
+        )
+
+        if "gene_size_log" in covars_selected:
+            covars["gene_size_log"] = np.log(covars["gene_size"])
+
+        if "gene_density" in covars_selected:
+            covars = covars.assign(
+                gene_density=covars.apply(lambda x: x["gene_size"] / x["n"], axis=1)
+            )
+
+        if "gene_density_log" in covars_selected:
+            covars["gene_density_log"] = -np.log(covars["gene_density"])
+
+        final_data = pd.concat([final_data, covars[covars_selected]], axis=1)
+
+    # convert p-values
     # TODO: add optional parameter to convert using either -log10 or z-score
-    data = pd.Series(data=np.abs(stats.norm.ppf(data / 2)), index=data.index.copy())
-    # data = -np.log10(data)
+    final_data["y"] = np.abs(stats.norm.ppf(final_data["y"] / 2))
+    # final_data["y"] = -np.log10(final_data)
+
+    if final_data.shape[1] == 1:
+        final_data = final_data.squeeze().rename(input_file.stem)
 
     if args.debug_use_ols and args.gene_corr_file is not None:
         logger.error(
@@ -289,7 +339,7 @@ def run():
         else:
             model.set_logger(None)
 
-        model.fit_named(lv_code, data)
+        model.fit_named(lv_code, final_data)
 
         res = model.results
 

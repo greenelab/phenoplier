@@ -18,21 +18,37 @@ z.iloc[:, :9].astype("float32").to_pickle("tests/data/gls/sample-lv-model-n9.pkl
 import conf
 
 # load gene corrs computed with gtex v8 and mashr
-input_dir_base = (
-    conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_CORRS_DIR"]
-    / "GTEX_V8".lower()
-    / "MASHR".lower()
+input_dir = (
+    conf.RESULTS["GLS"]
+    / "gene_corrs"
+    / "cohorts"
+    / "1000g_eur"
+    / "1000g"
+    / "mashr"
 )
-input_filename = conf.PHENOMEXCAN["LD_BLOCKS"][
-    "GENE_CORRS_FILE_NAME_TEMPLATES"
-]["GENE_CORR_AVG"].format(
-    prefix="",
-    suffix=f"-mean-gene_symbols",
-)
-gene_corrs = pd.read_pickle(input_dir_base / input_filename)
+input_filepath = input_dir / "gene_corrs-symbols.pkl"
+gene_corrs = pd.read_pickle(input_filepath)
 
 gene_names = list(set(data["gene_name"].tolist()).intersection(set(gene_corrs.index)))
-gene_corrs.loc[gene_names, gene_names].to_pickle("sample-gene_corrs-gtex_v8-mashr.pkl")
+gene_corrs.loc[gene_names, gene_names].to_pickle("sample-gene_corrs-1000g-mashr.pkl")
+
+
+# save full gene correlation matrix
+import numpy as np
+from scipy import sparse
+from utils import get_git_repository_path
+
+sparse.save_npz(
+    get_git_repository_path() / "tests" / "data" / "gls" / "gene_corrs.npz",
+    sparse.csc_matrix(gene_corrs.to_numpy()),
+    compressed=True,
+)
+
+np.savez_compressed(
+    get_git_repository_path() / "tests" / "data" / "gls" / "gene_corrs-gene_names.npz",
+    gene_names=np.array(gene_corrs.index.tolist())
+)
+
 
 
 # load gene corrs computed with 1000 genomes and elastic net
