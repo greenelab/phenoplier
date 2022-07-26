@@ -656,15 +656,12 @@ def test_get_tissues_correlations_same_gene():
     # check some values precomputed in a notebook
     # all values for Kidney_Cortex are zero
     assert "Kidney_Cortex" not in genes_corrs.index
-    assert (
-        genes_corrs.loc["Skin_Not_Sun_Exposed_Suprapubic", "Spleen"].round(5) == 0.97219
-    )
-    assert (
-        genes_corrs.loc[
-            "Brain_Substantia_nigra", "Skin_Not_Sun_Exposed_Suprapubic"
-        ].round(5)
-        == -0.00591
-    )
+    assert genes_corrs.loc["Skin_Not_Sun_Exposed_Suprapubic", "Spleen"].round(
+        5
+    ) == pytest.approx(0.97219, rel=1e-5)
+    assert genes_corrs.loc[
+        "Brain_Substantia_nigra", "Skin_Not_Sun_Exposed_Suprapubic"
+    ].round(5) == pytest.approx(-0.00591, rel=1e-5)
 
 
 def test_get_tissues_correlations_different_gene():
