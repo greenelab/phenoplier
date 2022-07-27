@@ -26,6 +26,7 @@ CODE_DIR=${PHENOPLIER_CODE_DIR}/nbs/15_gsa_gls/20-null_simulations/20_gls_phenop
 INPUT_SMULTIXCAN_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan"
 
 # 1000G / MASHR
+COHORT_NAME="1000g_eur"
 GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/1000g_eur/1000g/mashr/all_genes/gene_corrs-symbols.per_lv/"
 #GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/1000g_eur/1000g/mashr/within_distance/gene_corrs-symbols.per_lv/"
 OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-1000g_mashr-sub_corr"
@@ -36,6 +37,7 @@ bash ${CODE_DIR}/01_gls_phenoplier.sh \
   --input-file ${INPUT_SMULTIXCAN_DIR}/random.pheno${pheno_id}-gtex_v8-mashr-smultixcan.txt \
   --gene-corr-file ${GENE_CORR_FILE} \
   --covars "all" \
+  --cohort-name ${COHORT_NAME} \
   --debug-use-sub-gene-corr 1 \
   --output-file ${OUTPUT_DIR}/random.pheno${pheno_id}-gls_phenoplier.tsv.gz
 
