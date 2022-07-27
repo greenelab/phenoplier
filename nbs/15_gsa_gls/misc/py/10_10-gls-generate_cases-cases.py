@@ -148,6 +148,34 @@ orig_corr_mat.shape
 orig_corr_mat.head()
 
 # %% [markdown] tags=[]
+# ## Load cohort metadata
+
+# %%
+gene_tissues_df = pd.read_pickle(
+    utils.get_git_repository_path()
+    / "tests"
+    / "data"
+    / "gls"
+    / "cohort_1000g_eur_metadata"
+    / "gene_tissues.pkl.gz"
+).set_index("gene_name")
+
+# %%
+gene_tissues_df.shape
+
+# %%
+gene_tissues_df = gene_tissues_df.loc[~gene_tissues_df.index.duplicated(keep="first")]
+
+# %%
+gene_tissues_df.shape
+
+# %%
+assert gene_tissues_df.index.is_unique
+
+# %%
+gene_tissues_df.head()
+
+# %% [markdown] tags=[]
 # # Functions
 
 # %% tags=[]
@@ -161,6 +189,7 @@ def get_data(
     random_phenotype_code=None,
     real_phenotype_code=None,
     add_covars=False,
+    add_snplevel_covars=False,
     add_covars_logs=False,
 ):
     if random_phenotype_code is not None:
@@ -183,12 +212,14 @@ def get_data(
     X = X.loc[common_genes]
     X = sm.add_constant(X)
 
-    if add_covars:
+    if add_covars or add_snplevel_covars:
         covars = load_multixcan_random_phenotype(random_phenotype_code)[
             ["n", "n_indep"]
         ]
         covars = covars[~covars.index.duplicated(keep="first")]
         covars = covars.loc[X.index]
+
+    if add_covars:
         covars = covars.rename(
             columns={
                 "n_indep": "gene_size",
@@ -202,7 +233,43 @@ def get_data(
             covars["gene_size_log"] = np.log(covars["gene_size"])
             covars["gene_density_log"] = -np.log(covars["gene_density"])
 
-        covars = covars.drop(columns=["n"])
+    if add_snplevel_covars:
+        covars = covars.assign(gene_n_snps_used=gene_tissues_df["n_snps_used_sum"])
+
+        covars = covars.assign(
+            gene_n_snps_used_density=gene_tissues_df.apply(
+                lambda x: x["n_snps_used_sum"] / x["n_snps_in_model_sum"], axis=1
+            )
+        )
+
+        if add_covars_logs:
+            covars["gene_n_snps_used_log"] = np.log(covars["gene_n_snps_used"])
+            covars["gene_n_snps_used_density_log"] = -np.log(
+                covars["gene_n_snps_used_density"]
+            )
+
+    if add_covars or add_snplevel_covars:
+        if not add_covars:
+            covars = covars.drop(
+                columns=[
+                    c
+                    for c in covars.columns
+                    if c.startswith(("gene_size", "gene_density"))
+                ]
+            )
+
+        if not add_snplevel_covars:
+            covars = covars.drop(
+                columns=[
+                    c
+                    for c in covars.columns
+                    if c.startswith(("gene_n_snps_used", "gene_n_snps_used_density"))
+                ]
+            )
+
+        covars = covars.drop(
+            columns=[c for c in covars.columns if c in ("n", "n_indep")]
+        )
 
         X = X.join(covars)
 
@@ -245,25 +312,98 @@ assert not _y.isna().any(None)
 _X.head()
 
 # %%
+# load_multixcan_random_phenotype(10).loc["TNFRSF18"]
+
+# %%
+assert _X.loc["TNFRSF18", "gene_size"] == 4.0
+assert _X.loc["TNFRSF18", "gene_density"] == 4 / 45.0
+
+# %%
 _y.head()
 
 # %%
 # testing
-_X, _y = get_data("LV7", 10, add_covars=True, add_covars_logs=True)
+_X, _y = get_data("LV7", 10, add_snplevel_covars=True)
+assert _X.shape[0] < 7000
+assert _X.shape[1] == 4
+assert "LV7" in _X.columns
+assert "const" in _X.columns
+assert "gene_n_snps_used" in _X.columns
+assert "gene_n_snps_used_density" in _X.columns
+assert not _X.isna().any(None)
+
+assert _y.shape[0] == _X.shape[0]
+assert not _y.isna().any(None)
+
+# %%
+_X.head()
+
+# %%
+# gene_tissues_df.loc["AGRN"]
+
+# %%
+assert _X.loc["AGRN", "gene_n_snps_used"] == 75.0
+assert _X.loc["AGRN", "gene_n_snps_used_density"] == 75 / 103.0
+
+# %%
+_y.head()
+
+# %%
+# testing
+_X, _y = get_data("LV7", 10, add_covars=True, add_snplevel_covars=True)
 assert _X.shape[0] < 7000
 assert _X.shape[1] == 6
+assert "LV7" in _X.columns
+assert "const" in _X.columns
+assert "gene_size" in _X.columns
+assert "gene_density" in _X.columns
+assert "gene_n_snps_used" in _X.columns
+assert "gene_n_snps_used_density" in _X.columns
+assert not _X.isna().any(None)
+
+assert _y.shape[0] == _X.shape[0]
+assert not _y.isna().any(None)
+
+# %%
+_X.head()
+
+# %%
+# gene_tissues_df.loc["AGRN"]
+
+# %%
+assert _X.loc["AGRN", "gene_n_snps_used"] == 75.0
+assert _X.loc["AGRN", "gene_n_snps_used_density"] == 75 / 103.0
+
+# %%
+_y.head()
+
+# %%
+# testing
+_X, _y = get_data(
+    "LV7", 10, add_covars=True, add_snplevel_covars=True, add_covars_logs=True
+)
+assert _X.shape[0] < 7000
+assert _X.shape[1] == 10
 assert "LV7" in _X.columns
 assert "const" in _X.columns
 assert "gene_size" in _X.columns
 assert "gene_size_log" in _X.columns
 assert "gene_density" in _X.columns
 assert "gene_density_log" in _X.columns
+assert "gene_n_snps_used" in _X.columns
+assert "gene_n_snps_used_log" in _X.columns
+assert "gene_n_snps_used_density" in _X.columns
+assert "gene_n_snps_used_density_log" in _X.columns
 assert not _X.isna().any(None)
 
 assert _X["gene_density"].between(0.0, 1.0, inclusive="right").all()
 assert _X["gene_density_log"].min() >= 0.0
 assert _X["gene_size"].min() >= 0.0
 assert _X["gene_size_log"].min() >= 0.0
+assert _X["gene_n_snps_used"].min() >= 0.0
+assert _X["gene_n_snps_used_log"].min() >= 0.0
+assert _X["gene_n_snps_used_density"].between(0.0, 1.0, inclusive="right").all()
+assert _X["gene_n_snps_used_density_log"].min() >= 0.0
 
 assert _y.shape[0] == _X.shape[0]
 assert not _y.isna().any(None)
@@ -273,6 +413,12 @@ _X["gene_size_log"].describe()
 
 # %%
 _X["gene_density_log"].describe()
+
+# %%
+_X["gene_n_snps_used_log"].describe()
+
+# %%
+_X["gene_n_snps_used_density_log"].describe()
 
 # %%
 _X.head()
@@ -812,7 +958,7 @@ y.to_pickle(OUTPUT_DIR / f"{phenotype_name}.pkl.xz")
 y
 
 # %% [markdown] tags=[]
-# # [full corr matrix] GLS on randomly generated phenotypes using covariates
+# # [full corr matrix] GLS on randomly generated phenotypes using gene-level covariates
 
 # %%
 PERC_NONZERO_GENES = None
@@ -1038,6 +1184,259 @@ y.to_pickle(OUTPUT_DIR / f"{phenotype_name}.pkl.xz")
 # %%
 # save covariates
 phenotype_covars_name = f"{phenotype_name_base}-covars"
+display(phenotype_covars_name)
+
+# %%
+y_covars = X[[c for c in X.columns if c not in ("const", lv_code)]]
+display(y_covars.head())
+assert not y_covars.isna().any(None)
+
+# %%
+# save covariates
+y_covars.to_pickle(OUTPUT_DIR / f"{phenotype_covars_name}.pkl.xz")
+
+# %%
+# for debugging purposes I print the OLS results also
+_tmp_model = sm.OLS(ys, Xs)
+_tmp_results = _tmp_model.fit()
+print(_tmp_results.summary())
+
+# %% [markdown] tags=[]
+# # [full corr matrix] GLS on randomly generated phenotypes using SNP-level covariates
+
+# %%
+PERC_NONZERO_GENES = None
+
+# %% [markdown]
+# ## Random phenotype 6 / LV45
+
+# %%
+lv_code = "LV45"
+phenotype_code = 6
+
+phenotype_name_base = f"multixcan-random_phenotype{phenotype_code}"
+phenotype_name = f"{phenotype_name_base}-pvalues"
+display(phenotype_name)
+
+# %%
+X, y = get_data(lv_code, random_phenotype_code=phenotype_code, add_snplevel_covars=True)
+corr_mat = get_aligned_corr_mat(X, perc=PERC_NONZERO_GENES)
+
+# %%
+X.head()
+
+# %%
+y.head()
+
+# %%
+Xs, ys = standardize_data(X, y)
+
+# %%
+_Xs_desc = Xs[[lv_code, "gene_n_snps_used", "gene_n_snps_used_density"]].describe()
+display(_Xs_desc)
+assert (_Xs_desc.loc["mean"] < 1e-10).all()
+assert (_Xs_desc.loc["std"].between(0.9999, 1.00001)).all()
+
+# %%
+Xs.head()
+
+# %%
+ys.head()
+
+# %%
+_gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
+
+# %%
+print(_gls_results.summary())
+
+# %%
+_gls_results.params
+
+# %%
+# print full numbers
+with np.printoptions(threshold=sys.maxsize, precision=20):
+    print(_gls_results.params.to_numpy()[1])
+    print(_gls_results.bse.to_numpy()[1])
+    print(_gls_results.tvalues.to_numpy()[1])
+    print(_gls_results.pvalues.to_numpy()[1])
+    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+
+# %%
+# save phenotype
+y.to_pickle(OUTPUT_DIR / f"{phenotype_name}.pkl.xz")
+
+# %%
+# save covariates
+phenotype_covars_name = f"{phenotype_name_base}-snplevel_covars"
+display(phenotype_covars_name)
+
+# %%
+y_covars = X[[c for c in X.columns if c not in ("const", lv_code)]]
+display(y_covars.head())
+assert not y_covars.isna().any(None)
+
+# %%
+# save covariates
+y_covars.to_pickle(OUTPUT_DIR / f"{phenotype_covars_name}.pkl.xz")
+
+# %%
+# for debugging purposes I print the OLS results also
+_tmp_model = sm.OLS(ys, Xs)
+_tmp_results = _tmp_model.fit()
+print(_tmp_results.summary())
+
+# %% [markdown]
+# ## Random phenotype 6 / LV455
+
+# %%
+lv_code = "LV455"
+phenotype_code = 6
+
+phenotype_name_base = f"multixcan-random_phenotype{phenotype_code}"
+phenotype_name = f"{phenotype_name_base}-pvalues"
+display(phenotype_name)
+
+# %%
+X, y = get_data(lv_code, random_phenotype_code=phenotype_code, add_snplevel_covars=True)
+corr_mat = get_aligned_corr_mat(X, perc=PERC_NONZERO_GENES)
+
+# %%
+X.head()
+
+# %%
+y.head()
+
+# %%
+Xs, ys = standardize_data(X, y)
+
+# %%
+_Xs_desc = Xs[[lv_code, "gene_n_snps_used", "gene_n_snps_used_density"]].describe()
+display(_Xs_desc)
+assert (_Xs_desc.loc["mean"] < 1e-10).all()
+assert (_Xs_desc.loc["std"].between(0.9999, 1.00001)).all()
+
+# %%
+Xs.head()
+
+# %%
+ys.head()
+
+# %%
+_gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
+
+# %%
+print(_gls_results.summary())
+
+# %%
+_gls_results.params
+
+# %%
+# print full numbers
+with np.printoptions(threshold=sys.maxsize, precision=20):
+    print(_gls_results.params.to_numpy()[1])
+    print(_gls_results.bse.to_numpy()[1])
+    print(_gls_results.tvalues.to_numpy()[1])
+    print(_gls_results.pvalues.to_numpy()[1])
+    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+
+# %%
+# save phenotype
+y.to_pickle(OUTPUT_DIR / f"{phenotype_name}.pkl.xz")
+
+# %%
+# save covariates
+phenotype_covars_name = f"{phenotype_name_base}-snplevel_covars"
+display(phenotype_covars_name)
+
+# %%
+y_covars = X[[c for c in X.columns if c not in ("const", lv_code)]]
+display(y_covars.head())
+assert not y_covars.isna().any(None)
+
+# %%
+# save covariates
+y_covars.to_pickle(OUTPUT_DIR / f"{phenotype_covars_name}.pkl.xz")
+
+# %%
+# for debugging purposes I print the OLS results also
+_tmp_model = sm.OLS(ys, Xs)
+_tmp_results = _tmp_model.fit()
+print(_tmp_results.summary())
+
+# %% [markdown]
+# ## Random phenotype 0 / LV801 (using logarithms)
+
+# %%
+lv_code = "LV801"
+phenotype_code = 0
+
+phenotype_name_base = f"multixcan-random_phenotype{phenotype_code}"
+phenotype_name = f"{phenotype_name_base}-pvalues"
+display(phenotype_name)
+
+# %%
+X, y = get_data(
+    lv_code,
+    random_phenotype_code=phenotype_code,
+    add_snplevel_covars=True,
+    add_covars_logs=True,
+)
+corr_mat = get_aligned_corr_mat(X, perc=PERC_NONZERO_GENES)
+
+# %%
+X.head()
+
+# %%
+y.head()
+
+# %%
+Xs, ys = standardize_data(X, y)
+
+# %%
+_Xs_desc = Xs[
+    [
+        lv_code,
+        "gene_n_snps_used",
+        "gene_n_snps_used_log",
+        "gene_n_snps_used_density",
+        "gene_n_snps_used_density_log",
+    ]
+].describe()
+display(_Xs_desc)
+assert (_Xs_desc.loc["mean"] < 1e-10).all()
+assert (_Xs_desc.loc["std"].between(0.9999, 1.00001)).all()
+
+# %%
+Xs.head()
+
+# %%
+ys.head()
+
+# %%
+_gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
+
+# %%
+print(_gls_results.summary())
+
+# %%
+_gls_results.params
+
+# %%
+# print full numbers
+with np.printoptions(threshold=sys.maxsize, precision=20):
+    print(_gls_results.params.to_numpy()[1])
+    print(_gls_results.bse.to_numpy()[1])
+    print(_gls_results.tvalues.to_numpy()[1])
+    print(_gls_results.pvalues.to_numpy()[1])
+    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+
+# %%
+# save phenotype
+y.to_pickle(OUTPUT_DIR / f"{phenotype_name}.pkl.xz")
+
+# %%
+# save covariates
+phenotype_covars_name = f"{phenotype_name_base}-snplevel_covars"
 display(phenotype_covars_name)
 
 # %%
