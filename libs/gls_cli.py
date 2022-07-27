@@ -111,7 +111,6 @@ def run():
     )
     # FIXME: add debug level
     # FIXME: add z-score or -log10(p) transformations
-    # FIXME: covariates
 
     # FIXME: when building the files related to a prediction model (mashr, etc), cnosider this:
     #  - a file with lv weights (independent of predixcan prediction model type)
@@ -228,13 +227,14 @@ def run():
     )
 
     if args.covars is not None and len(args.covars) > 0:
-        logger.info(f"Using covariates: {args.covars}")
         covars_selected = args.covars
 
         if "all" in covars_selected:
             covars_selected = [c for c in COVAR_OPTIONS if c != "all"]
 
         covars_selected = sorted(covars_selected)
+
+        logger.info(f"Using covariates: {covars_selected}")
 
         # get necessary columns from results
         covars = data[["pvalue", "n", "n_indep"]]

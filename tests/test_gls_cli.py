@@ -2389,9 +2389,10 @@ def test_gls_cli_use_covar_all(output_file):
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
-    assert "gene_size" not in r_output
-    assert "gene_density" not in r_output
-    assert "all" in r_output
+    assert "gene_size" in r_output
+    assert "gene_size_log" in r_output
+    assert "gene_density" in r_output
+    assert "gene_density_log" in r_output
 
     assert output_file.exists()
     results_covar_all = pd.read_csv(output_file, sep="\t")
@@ -2575,9 +2576,10 @@ def test_gls_cli_use_covar_all_vs_all_specified_separately(output_file):
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
-    assert "gene_size" not in r_output
-    assert "gene_density" not in r_output
-    assert "all" in r_output
+    assert "gene_size" in r_output
+    assert "gene_size_log" in r_output
+    assert "gene_density" in r_output
+    assert "gene_density_log" in r_output
 
     assert output_file.exists()
     results_covar_all = pd.read_csv(output_file, sep="\t")
@@ -2904,9 +2906,10 @@ def test_gls_cli_use_covar_all_with_logs_lv801_random_phenotype_0(
     assert r_output is not None
     assert len(r_output) > 1, r_output
     assert "Using covariates: " in r_output
-    assert "all" in r_output
-    assert "gene_size" not in r_output
-    assert "gene_density" not in r_output
+    assert "gene_size" in r_output
+    assert "gene_size_log" in r_output
+    assert "gene_density" in r_output
+    assert "gene_density_log" in r_output
 
     assert output_file.exists()
     results = pd.read_csv(output_file, sep="\t")
@@ -3007,9 +3010,10 @@ def test_gls_cli_use_covar_debug_use_ols_vs_ols_without_covars(output_file):
     assert "No gene correlations file specified" not in r_output
     assert "Using a Ordinary Least Squares (OLS) model" in r_output
     assert "Using covariates: " in r_output
-    assert "gene_size" not in r_output
-    assert "gene_density" not in r_output
-    assert "all" in r_output
+    assert "gene_size" in r_output
+    assert "gene_size_log" in r_output
+    assert "gene_density" in r_output
+    assert "gene_density_log" in r_output
 
     assert output_file.exists()
     results_ols = pd.read_csv(output_file, sep="\t")
@@ -3059,9 +3063,10 @@ def test_gls_cli_use_covar_debug_use_ols_vs_gls(output_file):
     assert len(r_output) > 1, r_output
     assert "Using gene correlation file:" in r_output
     assert "Using covariates: " in r_output
-    assert "gene_size" not in r_output
-    assert "gene_density" not in r_output
-    assert "all" in r_output
+    assert "gene_size" in r_output
+    assert "gene_size_log" in r_output
+    assert "gene_density" in r_output
+    assert "gene_density_log" in r_output
 
     assert output_file.exists()
     results_gls = pd.read_csv(output_file, sep="\t")
@@ -3098,9 +3103,10 @@ def test_gls_cli_use_covar_debug_use_ols_vs_gls(output_file):
     assert "No gene correlations file specified" not in r_output
     assert "Using a Ordinary Least Squares (OLS) model" in r_output
     assert "Using covariates: " in r_output
-    assert "gene_size" not in r_output
-    assert "gene_density" not in r_output
-    assert "all" in r_output
+    assert "gene_size" in r_output
+    assert "gene_size_log" in r_output
+    assert "gene_density" in r_output
+    assert "gene_density_log" in r_output
 
     assert output_file.exists()
     results_ols = pd.read_csv(output_file, sep="\t")
