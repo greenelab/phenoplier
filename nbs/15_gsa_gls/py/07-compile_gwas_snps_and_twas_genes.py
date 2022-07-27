@@ -36,19 +36,13 @@
 # %autoreload 2
 
 # %% tags=[]
-# from random import sample, seed
-# import warnings
 from pathlib import Path
 import pickle
 
 import numpy as np
 
-# from scipy.spatial.distance import squareform
 import pandas as pd
 from tqdm import tqdm
-
-# import matplotlib.pyplot as plt
-# import seaborn as sns
 
 import conf
 from entity import Gene
@@ -233,11 +227,19 @@ assert len(spredixcan_result_files) == len(prediction_model_tissues)
 display(list(spredixcan_result_files.values())[:5])
 
 # %%
+# look at the structure of one result
+pd.read_csv(spredixcan_result_files["Whole_Blood"]).head()
+
+# %%
 assert all(f.exists() for f in spredixcan_result_files.values())
 
 # %%
 spredixcan_dfs = [
-    pd.read_csv(f, usecols=["gene", "zscore", "pvalue"]).dropna().assign(tissue=t)
+    pd.read_csv(
+        f, usecols=["gene", "zscore", "pvalue", "n_snps_used", "n_snps_in_model"]
+    )
+    .dropna(subset=["gene", "zscore", "pvalue"])
+    .assign(tissue=t)
     for t, f in spredixcan_result_files.items()
 ]
 
@@ -254,13 +256,18 @@ assert spredixcan_dfs["tissue"].unique().shape[0] == len(prediction_model_tissue
 spredixcan_dfs.shape
 
 # %%
+spredixcan_dfs = spredixcan_dfs.assign(
+    gene_id=spredixcan_dfs["gene"].apply(lambda g: g.split(".")[0])
+)
+
+# %%
 spredixcan_dfs.head()
 
 # %% [markdown] tags=[]
 # ### Count number of tissues available per gene
 
 # %%
-spredixcan_genes_n_models = spredixcan_dfs.groupby("gene")["tissue"].nunique()
+spredixcan_genes_n_models = spredixcan_dfs.groupby("gene_id")["tissue"].nunique()
 
 # %%
 spredixcan_genes_n_models
@@ -269,7 +276,7 @@ spredixcan_genes_n_models
 # ### Get tissues available per gene
 
 # %%
-spredixcan_genes_models = spredixcan_dfs.groupby("gene")["tissue"].apply(
+spredixcan_genes_models = spredixcan_dfs.groupby("gene_id")["tissue"].apply(
     lambda x: frozenset(x.tolist())
 )
 
@@ -297,18 +304,10 @@ assert (
 )
 
 # %% [markdown]
-# ### Get simple gene id and add gene name
+# ### Add gene name and set index
 
 # %%
 spredixcan_genes_models = spredixcan_genes_models.to_frame().reset_index()
-
-# %%
-spredixcan_genes_models.head()
-
-# %%
-spredixcan_genes_models = spredixcan_genes_models.assign(
-    gene_id=spredixcan_genes_models["gene"].apply(lambda g: g.split(".")[0])
-)
 
 # %%
 spredixcan_genes_models.head()
@@ -322,6 +321,177 @@ spredixcan_genes_models = spredixcan_genes_models.assign(
 
 # %%
 spredixcan_genes_models = spredixcan_genes_models[["gene_id", "gene_name", "tissue"]]
+
+# %%
+spredixcan_genes_models = spredixcan_genes_models.set_index("gene_id")
+
+# %%
+spredixcan_genes_models.head()
+
+# %% [markdown]
+# ### Add number of tissues
+
+# %%
+spredixcan_genes_models = spredixcan_genes_models.assign(
+    n_tissues=spredixcan_genes_models["tissue"].apply(len)
+)
+
+# %%
+spredixcan_genes_models.head()
+
+# %% [markdown]
+# ### Count number of SNPs predictors used across tissue models
+
+# %%
+spredixcan_genes_sum_of_n_snps_used = (
+    spredixcan_dfs.groupby("gene_id")["n_snps_used"].sum().rename("n_snps_used_sum")
+)
+
+# %%
+spredixcan_genes_sum_of_n_snps_used
+
+# %%
+# add sum of snps used to spredixcan_genes_models
+spredixcan_genes_models = spredixcan_genes_models.join(
+    spredixcan_genes_sum_of_n_snps_used
+)
+
+# %%
+spredixcan_genes_models.shape
+
+# %%
+spredixcan_genes_models.head()
+
+# %% [markdown]
+# ### Count number of SNPs predictors in models across tissue models
+
+# %%
+spredixcan_genes_sum_of_n_snps_in_model = (
+    spredixcan_dfs.groupby("gene_id")["n_snps_in_model"]
+    .sum()
+    .rename("n_snps_in_model_sum")
+)
+
+# %%
+spredixcan_genes_sum_of_n_snps_in_model
+
+# %%
+# add sum of snps in model to spredixcan_genes_models
+spredixcan_genes_models = spredixcan_genes_models.join(
+    spredixcan_genes_sum_of_n_snps_in_model
+)
+
+# %%
+spredixcan_genes_models.shape
+
+# %%
+spredixcan_genes_models.head()
+
+# %% [markdown]
+# ### Count number of _unique_ SNPs predictors used and available across tissue models
+
+# %%
+spredixcan_gene_obj = {
+    gene_id: Gene(ensembl_id=gene_id) for gene_id in spredixcan_genes_models.index
+}
+
+# %%
+len(spredixcan_gene_obj)
+
+
+# %%
+def _count_unique_snps(gene_id):
+    """
+    For a gene_id, it counts unique SNPs in all models and their intersection with GWAS SNPs (therefore, used by S-PrediXcan).
+    """
+    gene_obj = spredixcan_gene_obj[gene_id]
+    gene_tissues = spredixcan_genes_models.loc[gene_id, "tissue"]
+
+    gene_unique_snps = set()
+    for t in gene_tissues:
+        t_snps = set(
+            gene_obj.get_prediction_weights(tissue=t, model_type=EQTL_MODEL).index
+        )
+        gene_unique_snps.update(t_snps)
+
+    gene_unique_snps_in_gwas = gwas_variants_ids_set.intersection(gene_unique_snps)
+
+    return pd.Series(
+        {
+            "unique_n_snps_in_model": len(gene_unique_snps),
+            "unique_n_snps_used": len(gene_unique_snps_in_gwas),
+        }
+    )
+
+
+# %%
+# testing
+spredixcan_genes_models[spredixcan_genes_models["n_snps_used_sum"] == 2].head()
+
+# %%
+# case with two snps, not repeated across tissues
+_gene_id = "ENSG00000000419"
+display(
+    spredixcan_gene_obj[_gene_id].get_prediction_weights(
+        tissue="Brain_Hypothalamus", model_type=EQTL_MODEL
+    )
+)
+display(
+    spredixcan_gene_obj[_gene_id].get_prediction_weights(
+        tissue="Brain_Substantia_nigra", model_type=EQTL_MODEL
+    )
+)
+
+# %%
+_tmp = _count_unique_snps(_gene_id)
+assert _tmp.shape[0] == 2
+assert _tmp["unique_n_snps_in_model"] == 2
+assert _tmp["unique_n_snps_used"] == 2
+
+# %%
+# case with two snps, repeated across tissues
+_gene_id = "ENSG00000007202"
+display(
+    spredixcan_gene_obj[_gene_id].get_prediction_weights(
+        tissue="Adipose_Subcutaneous", model_type=EQTL_MODEL
+    )
+)
+display(
+    spredixcan_gene_obj[_gene_id].get_prediction_weights(
+        tissue="Esophagus_Mucosa", model_type=EQTL_MODEL
+    )
+)
+
+# %%
+"chr17_28638994_C_T_b38" in gwas_variants_ids_set
+
+# %%
+_tmp = _count_unique_snps(_gene_id)
+assert _tmp.shape[0] == 2
+assert _tmp["unique_n_snps_in_model"] == 1
+assert _tmp["unique_n_snps_used"] == 1
+
+# %%
+# get unique snps for all genes
+spredixcan_genes_unique_n_snps = spredixcan_genes_models.groupby("gene_id").apply(
+    lambda x: _count_unique_snps(x.name)
+)
+
+# %%
+spredixcan_genes_unique_n_snps.head()
+
+# %%
+assert (
+    spredixcan_genes_unique_n_snps["unique_n_snps_in_model"]
+    >= spredixcan_genes_unique_n_snps["unique_n_snps_used"]
+).all()
+
+# %%
+# add unique snps to spredixcan_genes_models
+spredixcan_genes_models = spredixcan_genes_models.join(spredixcan_genes_unique_n_snps)
+
+# %%
+spredixcan_genes_models.shape
 
 # %%
 spredixcan_genes_models.head()
@@ -351,15 +521,20 @@ smultixcan_results = smultixcan_results.dropna()
 smultixcan_results.shape
 
 # %%
+smultixcan_results = smultixcan_results.assign(
+    gene_id=smultixcan_results["gene"].apply(lambda g: g.split(".")[0])
+)
+
+# %%
 smultixcan_results.head()
 
 # %%
-assert smultixcan_results["gene"].is_unique
+assert smultixcan_results["gene_id"].is_unique
 
 # %%
 # testing
 _tmp_smultixcan_results_n_models = (
-    smultixcan_results.set_index("gene")["n"].astype(int).rename("tissue")
+    smultixcan_results.set_index("gene_id")["n"].astype(int).rename("tissue")
 )
 
 assert spredixcan_genes_n_models.shape[0] == _tmp_smultixcan_results_n_models.shape[0]
