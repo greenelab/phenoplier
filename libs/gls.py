@@ -356,10 +356,18 @@ class GLSPhenoplier(object):
             if self.debug_use_sub_gene_corr:
                 if gene_corrs is not None:
                     # gene_corrs was given, meaning that it is a file
+                    self.log_info(
+                        f"Correlation matrix is a file, computing the inverse of Cholesky decomposition for each LV"
+                    )
+
                     chol_mat = np.linalg.cholesky(gene_corrs)
                     cov_inv = np.linalg.inv(chol_mat)
                 elif self.gene_corrs_file_path.is_dir():
                     # gene_corrs is None and file to gene_corrs is directory
+                    self.log_info(
+                        f"Correlation matrix is a directory, reading inverse of Cholesky decomposition for each LV"
+                    )
+
                     gene_names = GLSPhenoplier.load_chol_inv_data(
                         self.gene_corrs_file_path, "gene_names"
                     )
