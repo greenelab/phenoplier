@@ -23,6 +23,15 @@ COVAR_OPTIONS = [
     "gene_size_log",
     "gene_density",
     "gene_density_log",
+    "gene_n_snps_used",
+    "gene_n_snps_used_log",
+    "gene_n_snps_used_density",
+    "gene_n_snps_used_density_log",
+]
+
+SNPLEVEL_COVAR_OPTIONS_PREFIXES = [
+    "gene_n_snps_used",
+    "gene_n_snps_used_density",
 ]
 
 
@@ -89,6 +98,12 @@ def run():
         choices=COVAR_OPTIONS,
         # default="keep-first",
         help="List of covariates to use.",
+    )
+    parser.add_argument(
+        "--cohort-metadata-dir",
+        required=False,
+        type=str,
+        help="Directory where cohort metadata files are stored.",
     )
     parser.add_argument(
         "--batch-id",
@@ -244,16 +259,81 @@ def run():
             }
         )
 
-        if "gene_size_log" in covars_selected:
-            covars["gene_size_log"] = np.log(covars["gene_size"])
-
         if "gene_density" in covars_selected:
             covars = covars.assign(
                 gene_density=covars.apply(lambda x: x["gene_size"] / x["n"], axis=1)
             )
 
-        if "gene_density_log" in covars_selected:
-            covars["gene_density_log"] = -np.log(covars["gene_density"])
+        # process snp-level covariates
+        if any(
+            c.startswith(snplevel_c)
+            for c in covars_selected
+            for snplevel_c in SNPLEVEL_COVAR_OPTIONS_PREFIXES
+        ):
+            # first load the cohort metadata gene tissues file
+            if args.cohort_metadata_dir is None:
+                logger.error(
+                    "To use SNP-level covariates, a cohort metadata folder must be provided (--cohort-metadata-dir)"
+                )
+                sys.exit(1)
+
+            cohort_metadata_dir = Path(args.cohort_metadata_dir).resolve()
+            cohort_gene_tissues_filepath = cohort_metadata_dir / "gene_tissues.pkl"
+            if not cohort_gene_tissues_filepath.exists():
+                cohort_gene_tissues_filepath = cohort_gene_tissues_filepath.with_suffix(
+                    ".pkl.gz"
+                )
+                assert (
+                    cohort_gene_tissues_filepath.exists()
+                ), "No gene_tissues.pkl[.gz] exists in cohort metadata folder"
+
+            logger.info(f"Loading cohort metadata: {str(cohort_gene_tissues_filepath)}")
+            cohort_gene_tissues = pd.read_pickle(
+                cohort_gene_tissues_filepath
+            ).set_index("gene_name")
+            # remove duplicated gene names
+            if not cohort_gene_tissues.index.is_unique:
+                if args.duplicated_genes_action is None:
+                    logger.error(
+                        "There are duplicated gene names in cohort metadat files, --duplicated-genes-action must be specified"
+                    )
+                    sys.exit(1)
+
+                cohort_gene_tissues = cohort_gene_tissues.loc[
+                    ~cohort_gene_tissues.index.duplicated(keep=keep_action)
+                ]
+
+            common_genes = final_data.index.intersection(cohort_gene_tissues.index)
+            cohort_gene_tissues = cohort_gene_tissues.loc[common_genes]
+
+            # check individual covariates
+            if "gene_n_snps_used" in covars_selected:
+                covars = covars.assign(
+                    gene_n_snps_used=cohort_gene_tissues["n_snps_used_sum"]
+                )
+
+            if "gene_n_snps_used_density" in covars_selected:
+                covars = covars.assign(
+                    gene_n_snps_used_density=cohort_gene_tissues.apply(
+                        lambda x: x["n_snps_used_sum"] / x["n_snps_in_model_sum"],
+                        axis=1,
+                    )
+                )
+
+        # add log columns
+        for c in covars_selected:
+            if c.endswith("_log"):
+                c_prefix = c.split("_log")[0]
+
+                if c_prefix not in covars.columns:
+                    logger.error(
+                        f"If log version of covar is selected, covar has to be selected as well ({c_prefix} not present)"
+                    )
+                    sys.exit(1)
+
+                covars[c] = np.log(covars[c_prefix])
+                if "density" in c_prefix:
+                    covars[c] = -1 * covars[c]
 
         final_data = pd.concat([final_data, covars[covars_selected]], axis=1)
 
