@@ -36,7 +36,7 @@ mkdir -p ${OUTPUT_DIR}
 bash ${CODE_DIR}/01_gls_phenoplier.sh \
   --input-file ${INPUT_SMULTIXCAN_DIR}/random.pheno${pheno_id}-gtex_v8-mashr-smultixcan.txt \
   --gene-corr-file ${GENE_CORR_FILE} \
-  --covars "all" \
+  --covars "gene_n_snps_used_density gene_n_snps_used_density_log" \
   --cohort-name ${COHORT_NAME} \
   --output-file ${OUTPUT_DIR}/random.pheno${pheno_id}-gls_phenoplier.tsv.gz
 
