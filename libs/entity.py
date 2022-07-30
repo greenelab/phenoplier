@@ -1107,6 +1107,7 @@ class Gene(object):
                     model_type=model_type,
                     use_within_distance=use_within_distance,
                 )
+
                 # ec could be None; that means that there are no SNP preditors for one
                 # of the genes in the tissue
                 res[t1_idx, t2_idx] = ec
@@ -1133,7 +1134,7 @@ class Gene(object):
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
         condition_number: float = 30,
-        use_within_distance=True,
+        use_covariance_matrix: bool = False,
     ):
         """
         FIXME: add documentation
@@ -1144,19 +1145,24 @@ class Gene(object):
             s_max = np.max(s)
             return [i for i, x in enumerate(s) if x >= s_max * ratio]
 
-        gene_corrs = self.get_tissues_correlations(
+        if use_covariance_matrix:
+            get_tissue_corr_func = getattr(self, "get_tissues_covariances")
+        else:
+            get_tissue_corr_func = getattr(self, "get_tissues_correlations")
+
+        gene_corrs = get_tissue_corr_func(
             other_gene=self,
             tissues=tissues,
             other_tissues=tissues,
             snps_subset=snps_subset,
             reference_panel=reference_panel,
             model_type=model_type,
-            use_within_distance=use_within_distance,
         )
         if gene_corrs is None:
             return None
         u_i, s_i, V_i = np.linalg.svd(gene_corrs)
         selected = _filter_eigen_values_from_max(s_i, 1.0 / condition_number)
+        u_i = u_i[:, selected]
         s_i = s_i[selected]
         V_i = V_i[selected]
 
@@ -1202,7 +1208,6 @@ class Gene(object):
             reference_panel=reference_panel,
             model_type=model_type,
             condition_number=condition_number,
-            use_within_distance=use_within_distance,
         )
         if gene0_svd is None:
             return None
@@ -1215,7 +1220,6 @@ class Gene(object):
             reference_panel=reference_panel,
             model_type=model_type,
             condition_number=condition_number,
-            use_within_distance=use_within_distance,
         )
         if gene1_svd is None:
             return None
