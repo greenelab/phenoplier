@@ -269,33 +269,32 @@ def test_gene_get_snps_cov_genes_different_chromosomes():
 @pytest.mark.parametrize(
     "gene_id,tissue,expected_var",
     [
-        # FIXME add real expected values
         (
             "ENSG00000157227",
             "Whole_Blood",
             0.001,
-        ),  # FIXME THIS IS NOT THE REAL VARIANCE VALUE!
+        ),
         (
             "ENSG00000157227",
             "Testis",
             0.0001,
-        ),  # FIXME THIS IS NOT THE REAL VARIANCE VALUE!
+        ),
         (
             "ENSG00000096696",
             "Adipose_Subcutaneous",
             0.0712,
-        ),  # FIXME THIS IS NOT THE REAL VARIANCE VALUE!
+        ),
         (
             "ENSG00000096696",
             "Colon_Transverse",
             0.0002,
-        ),  # FIXME THIS IS NOT THE REAL VARIANCE VALUE!
+        ),
     ],
 )
 def test_gene_get_pred_expression_variance(gene_id, tissue, expected_var):
     g = Gene(ensembl_id=gene_id)
     g_var = g.get_pred_expression_variance(
-        tissue, reference_panel="1000g", model_type="MASHR"
+        tissue, reference_panel="1000G", model_type="MASHR"
     )
     assert g_var is not None
     assert isinstance(g_var, float)
@@ -761,6 +760,65 @@ def test_get_tissues_correlations_gene_without_prediction_models():
 
     # check shape
     assert genes_corrs is None
+
+
+def test_get_tissues_covariances_same_gene():
+    # ENSG00000122025
+    # FLT3
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000122025")
+    gene1_tissues = ("Small_Intestine_Terminal_Ileum", "Uterus")
+
+    # get the correlation matrix of the gene expression across all tissues
+    genes_corrs = gene1.get_tissues_covariances(
+        gene1,
+        tissues=gene1_tissues,
+        other_tissues=gene1_tissues,
+        reference_panel="1000G",
+        model_type="MASHR",
+    )
+
+    # check shape
+    assert genes_corrs is not None
+    assert not genes_corrs.isna().any().any()
+    assert genes_corrs.shape == (2, 2)
+    np.testing.assert_array_almost_equal(genes_corrs, genes_corrs.T)
+
+    expected_genes_cov = np.array(
+        [[1.98515754e-02, -4.47984702e-05], [-4.47984702e-05, 1.88315869e-05]]
+    )
+
+    np.testing.assert_array_almost_equal(genes_corrs, expected_genes_cov)
+
+
+def test_get_tissues_covariances_different_gene():
+    gene1 = Gene(ensembl_id="ENSG00000180596")
+    gene1_tissues = ("Small_Intestine_Terminal_Ileum", "Uterus")
+
+    gene2 = Gene(ensembl_id="ENSG00000180573")
+    gene2_tissues = ("Nerve_Tibial", "Lung", "Testis")
+
+    # get the correlation matrix of the gene expression across all tissues
+    genes_corrs = gene1.get_tissues_covariances(
+        gene2,
+        tissues=gene1_tissues,
+        other_tissues=gene2_tissues,
+        reference_panel="1000G",
+        model_type="MASHR",
+    )
+
+    # check shape
+    assert genes_corrs is not None
+    assert not genes_corrs.isna().any().any()
+    assert genes_corrs.shape == (2, 3)
+
+    expected_genes_cov = np.array(
+        [
+            [-6.37965457e-05, -4.96063897e-05, 1.27066555e-04],
+            [-6.97638808e-05, 6.98772264e-05, -6.23564904e-04],
+        ]
+    )
+    np.testing.assert_array_almost_equal(genes_corrs, expected_genes_cov)
 
 
 @pytest.mark.parametrize(

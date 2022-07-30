@@ -1010,6 +1010,62 @@ class Gene(object):
         return tuple(sorted(all_tissues))
 
     @lru_cache(maxsize=None)
+    def get_tissues_covariances(
+        self,
+        other_gene,
+        tissues: tuple = None,
+        other_tissues: tuple = None,
+        snps_subset: frozenset = None,
+        reference_panel: str = "GTEX_V8",
+        model_type: str = "MASHR",
+        use_within_distance=True,
+    ):
+        """
+        TODO
+        """
+        df = self.get_tissues_correlations(
+            other_gene=other_gene,
+            tissues=tissues,
+            other_tissues=other_tissues,
+            snps_subset=snps_subset,
+            reference_panel=reference_panel,
+            model_type=model_type,
+            use_within_distance=use_within_distance,
+        )
+
+        if df is None:
+            return None
+
+        for t1_idx, t1 in enumerate(df.index):
+            for t2_idx, t2 in enumerate(df.columns):
+                ec = df.iloc[t1_idx, t2_idx]
+
+                if ec is None or ec == 0.0:
+                    continue
+
+                # multiply correlation by sqrt(this_gene_var * other_gene_var)
+                this_gene_variance = self.get_pred_expression_variance(
+                    tissue=t1,
+                    reference_panel=reference_panel,
+                    model_type=model_type,
+                    snps_subset=snps_subset,
+                )
+
+                other_gene_variance = other_gene.get_pred_expression_variance(
+                    tissue=t2,
+                    reference_panel=reference_panel,
+                    model_type=model_type,
+                    snps_subset=snps_subset,
+                )
+
+                df.iloc[t1_idx, t2_idx] = ec * np.sqrt(
+                    this_gene_variance * other_gene_variance
+                )
+
+        # now it's the covariance matrix
+        return df
+
+    @lru_cache(maxsize=None)
     def get_tissues_correlations(
         self,
         other_gene,
