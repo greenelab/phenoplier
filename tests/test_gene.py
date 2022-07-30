@@ -821,6 +821,133 @@ def test_get_tissues_covariances_different_gene():
     np.testing.assert_array_almost_equal(genes_corrs, expected_genes_cov)
 
 
+def test_get_tissues_correlations_svd_two_tissues():
+    gene1 = Gene(ensembl_id="ENSG00000010256")
+    gene1_tissues = ("Thyroid", "Whole_Blood")
+
+    u, s, vt = gene1.get_tissues_correlations_svd(
+        tissues=gene1_tissues,
+        reference_panel="1000G",
+        model_type="MASHR",
+    )
+
+    np.testing.assert_array_almost_equal(
+        u, np.array([[-0.70710678, 0.70710678], [0.70710678, 0.70710678]])
+    )
+
+    np.testing.assert_array_almost_equal(s, np.array([1.00936897, 0.99063103]))
+
+    np.testing.assert_array_almost_equal(
+        vt, np.array([[-0.70710678, 0.70710678], [0.70710678, 0.70710678]])
+    )
+
+
+def test_get_tissues_correlations_svd_five_tissues():
+    gene1 = Gene(ensembl_id="ENSG00000009709")
+    gene1_tissues = (
+        "Brain_Amygdala",
+        "Brain_Cortex",
+        "Brain_Substantia_nigra",
+        "Muscle_Skeletal",
+        "Pituitary",
+    )
+
+    u, s, vt = gene1.get_tissues_correlations_svd(
+        tissues=gene1_tissues,
+        reference_panel="1000G",
+        model_type="MASHR",
+    )
+
+    np.testing.assert_array_almost_equal(
+        u,
+        np.array(
+            [
+                [-0.49909521, -0.03006604],
+                [0.06013209, -0.99819043],
+                [-0.49909521, -0.03006604],
+                [-0.49909521, -0.03006604],
+                [-0.49909521, -0.03006604],
+            ]
+        ),
+    )
+
+    np.testing.assert_array_almost_equal(s, np.array([4.01092662, 0.98907338]))
+
+    np.testing.assert_array_almost_equal(
+        vt,
+        np.array(
+            [
+                [-0.49909521, 0.06013209, -0.49909521, -0.49909521, -0.49909521],
+                [-0.03006604, -0.99819043, -0.03006604, -0.03006604, -0.03006604],
+            ]
+        ),
+    )
+
+
+def test_get_tissues_covariances_svd_two_tissues():
+    gene1 = Gene(ensembl_id="ENSG00000010256")
+    gene1_tissues = ("Thyroid", "Whole_Blood")
+
+    u, s, vt = gene1.get_tissues_correlations_svd(
+        tissues=gene1_tissues,
+        reference_panel="1000G",
+        model_type="MASHR",
+        use_covariance_matrix=True,
+    )
+
+    np.testing.assert_array_almost_equal(
+        u, np.array([[-0.9999842, 0.0056221], [0.0056221, 0.9999842]])
+    )
+
+    np.testing.assert_array_almost_equal(s, np.array([0.00092732, 0.00020345]))
+
+    np.testing.assert_array_almost_equal(
+        vt, np.array([[-0.9999842, 0.0056221], [0.0056221, 0.9999842]])
+    )
+
+
+def test_get_tissues_covariances_svd_five_tissues():
+    gene1 = Gene(ensembl_id="ENSG00000009709")
+    gene1_tissues = (
+        "Brain_Amygdala",
+        "Brain_Cortex",
+        "Brain_Substantia_nigra",
+        "Muscle_Skeletal",
+        "Pituitary",
+    )
+
+    u, s, vt = gene1.get_tissues_correlations_svd(
+        tissues=gene1_tissues,
+        reference_panel="1000G",
+        model_type="MASHR",
+        use_covariance_matrix=True,
+    )
+
+    np.testing.assert_array_almost_equal(
+        u,
+        np.array(
+            [
+                [-0.00248747],
+                [0.99994296],
+                [-0.00359127],
+                [-0.00787331],
+                [-0.00574532],
+            ]
+        ),
+    )
+
+    np.testing.assert_array_almost_equal(s, np.array([0.00299917]))
+
+    np.testing.assert_array_almost_equal(
+        vt,
+        np.array(
+            [
+                [-0.00248747, 0.99994296, -0.00359127, -0.00787331, -0.00574532],
+            ]
+        ),
+    )
+
+
 @pytest.mark.parametrize(
     "gene_id1,gene_id2,expected_corr",
     [
