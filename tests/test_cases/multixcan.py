@@ -99,7 +99,9 @@ def predict_expression(
         gene_data = all_genes_data[
             all_genes_data["gene"].str.startswith(gene_id + ".")
             & (all_genes_data["tissue"] == tissue_name)
-        ]
+        ].drop_duplicates(
+            subset=["gene", "varID", "tissue"]
+        )  # needed when the same gene/tissues are given
 
         gene_expr = (
             ind_data[["individual"] + gene_data["varID"].tolist()].set_index(
@@ -201,16 +203,20 @@ def _pca_data(e_, model_keys, unit_var=True):
     _data = {pca_keys[i]: x for i, x in enumerate(Xc_t_)}
     _data["pheno"] = e_.pheno
     pca_data = pd.DataFrame(_data)
-    return (
-        pca_data,
-        pca_keys,
-        original_keys,
-        np.max(s),
-        np.min(s),
-        np.min(s[selected]),
-        vt_projection,
-        variance,
-    )
+
+    return (pca_data, pca_keys, selected, u, s, vt)
+
+    # original return:
+    # return (
+    #     pca_data,
+    #     pca_keys,
+    #     original_keys,
+    #     np.max(s),
+    #     np.min(s),
+    #     np.min(s[selected]),
+    #     vt_projection,
+    #     variance,
+    # )
 
 
 def run_multixcan(y, gene_pred_expr):
@@ -248,6 +254,17 @@ gene1_tissues = (
     "Esophagus_Gastroesophageal_Junction",
     "Artery_Coronary",
 )
+# when interested in one gene only, the following code can be useful to
+# "ignore" gene1
+# gene1_id = gene0_id
+# gene1_tissues = gene0_tissues
+
+# code to select all tissues
+# gene0_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_TISSUES"].split(" ")
+
+# code to disable snps_subset:
+# snps_subset = None
+
 snps_subset = {
     # first gene:
     #  Small_Intestine_Terminal_Ileum
