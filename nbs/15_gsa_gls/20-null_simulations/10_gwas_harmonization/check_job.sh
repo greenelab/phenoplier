@@ -10,6 +10,11 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -f|--file-pattern)
+      FILE_PATTERN="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -p|--success-pattern)
       SUCCESS_PATTERN="$2"
       shift # past argument
@@ -42,6 +47,11 @@ if [ -z "${INPUT_DIR}" ]; then
     exit 1
 fi
 
+if [ -z "${FILE_PATTERN}" ]; then
+    FILE_PATTERN="*.error"
+    echo "WARNING: File pattern (--file-pattern) not provided, using default: '${FILE_PATTERN}'"
+fi
+
 if [ -z "${SUCCESS_PATTERN}" ]; then
     SUCCESS_PATTERN="INFO - Finished "
     echo "WARNING: Success pattern (--success-pattern) not provided, using default: '${SUCCESS_PATTERN}'"
@@ -56,7 +66,7 @@ fi
 total_count=0
 not_finished_jobs=0
 
-for logfile in $(find ${INPUT_DIR} -name "*.error"); do
+for logfile in $(find ${INPUT_DIR} -name "${FILE_PATTERN}"); do
     ((total_count++))
 
     count=`grep -c "${SUCCESS_PATTERN}" ${logfile}`
