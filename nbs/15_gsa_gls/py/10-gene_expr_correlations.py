@@ -131,12 +131,6 @@ OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 
 display(f"Using output dir base: {OUTPUT_DIR_BASE}")
 
-# %%
-INPUT_DIR = conf.RESULTS["GLS"] / "gene_corrs" / "cohorts" / COHORT_NAME
-assert INPUT_DIR.exists()
-
-display(INPUT_DIR)
-
 # %% [markdown] tags=[]
 # # Load data
 
@@ -144,7 +138,7 @@ display(INPUT_DIR)
 # ## GWAS variants
 
 # %%
-with open(INPUT_DIR / "gwas_variant_ids.pkl", "rb") as handle:
+with open(OUTPUT_DIR_BASE / "gwas_variant_ids.pkl", "rb") as handle:
     gwas_variants_ids_set = pickle.load(handle)
 
 # %%
@@ -157,9 +151,7 @@ list(gwas_variants_ids_set)[:5]
 # ## S-PrediXcan tissue models
 
 # %%
-spredixcan_genes_models = pd.read_pickle(INPUT_DIR / "gene_tissues.pkl").set_index(
-    "gene_id"
-)
+spredixcan_genes_models = pd.read_pickle(OUTPUT_DIR_BASE / "gene_tissues.pkl")
 
 # %%
 spredixcan_genes_models.shape
@@ -174,7 +166,7 @@ assert spredixcan_genes_models.index.is_unique
 # ## Get common genes
 
 # %%
-with open(INPUT_DIR / "common_genes.pkl", "rb") as handle:
+with open(OUTPUT_DIR_BASE / "common_genes.pkl", "rb") as handle:
     common_genes = pickle.load(handle)
 
 # %%
@@ -187,7 +179,7 @@ sorted(list(common_genes))[:5]
 # ## Gene info
 
 # %%
-genes_info = pd.read_pickle(INPUT_DIR / "genes_info.pkl")
+genes_info = pd.read_pickle(OUTPUT_DIR_BASE / "genes_info.pkl")
 
 # %%
 genes_info.shape
