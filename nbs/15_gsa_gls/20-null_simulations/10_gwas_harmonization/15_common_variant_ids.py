@@ -47,7 +47,7 @@ def run():
 
     output_file = output_dir / input_file.name
     print(f"Saving output file: {output_file}")
-    gwas_data.to_csv(output_file, sep="\t", na_rep="NA", quoting=csv.QUOTE_MINIMAL)
+    gwas_data.to_csv(output_file, sep="\t", index=False, na_rep="NA", quoting=csv.QUOTE_MINIMAL)
 
 
 if __name__ == "__main__":
