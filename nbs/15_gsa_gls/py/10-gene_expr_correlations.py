@@ -163,19 +163,6 @@ spredixcan_genes_models.head()
 assert spredixcan_genes_models.index.is_unique
 
 # %% [markdown] tags=[]
-# ## Get common genes
-
-# %%
-with open(OUTPUT_DIR_BASE / "common_genes.pkl", "rb") as handle:
-    common_genes = pickle.load(handle)
-
-# %%
-len(common_genes)
-
-# %%
-sorted(list(common_genes))[:5]
-
-# %% [markdown] tags=[]
 # ## Gene info
 
 # %%
