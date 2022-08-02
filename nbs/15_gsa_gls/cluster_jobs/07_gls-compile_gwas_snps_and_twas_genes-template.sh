@@ -14,7 +14,10 @@
 #   see README.md to know how to generate the actual job scripts.
 
 # make sure we use the number of CPUs specified
-export n_jobs=1
+export n_jobs="${PHENOPLIER_N_JOBS}"
+if [ -z "${n_jobs}" ]; then
+  n_jobs=1
+fi
 export PHENOPLIER_N_JOBS=${n_jobs}
 export NUMBA_NUM_THREADS=${n_jobs}
 export MKL_NUM_THREADS=${n_jobs}
