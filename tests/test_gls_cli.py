@@ -1911,41 +1911,6 @@ def test_gls_cli_use_covar_gene_n_snps_used_without_cohort_metadata_dir_specifie
     assert "cohort metadata folder must be provided" in r_output
 
 
-def test_gls_cli_use_covar_gene_n_snps_used_without_duplicated_gene_action_specified(
-    output_file,
-):
-    r = subprocess.run(
-        [
-            "python",
-            GLS_CLI_PATH,
-            "-i",
-            str(DATA_DIR / "random.pheno0-smultixcan-full.txt"),
-            "-o",
-            output_file,
-            "-l",
-            "LV1",
-            "LV2",
-            "LV3",
-            "-g",
-            str(DATA_DIR / "sample-gene_corrs-1000g-mashr.pkl"),
-            "--covars",
-            "gene_n_snps_used",
-            "--cohort-metadata-dir",
-            str(DATA_DIR / "cohort_1000g_eur_metadata"),
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-    )
-    assert r is not None
-    assert r.returncode == 1
-    r_output = r.stdout.decode("utf-8")
-    assert r_output is not None
-    assert len(r_output) > 1, r_output
-    print(r_output)
-    assert "ERROR" in r_output
-    assert "--duplicated-genes-action" in r_output
-
-
 def test_gls_cli_use_covar_gene_n_snps_used(output_file):
     # run first without covariates
     r = subprocess.run(
