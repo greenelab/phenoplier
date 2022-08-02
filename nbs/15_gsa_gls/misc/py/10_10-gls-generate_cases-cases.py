@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# **TODO:** update
+# It generates tests cases for the GLS model.
 
 # %% [markdown] tags=[]
 # # Modules
@@ -31,12 +31,9 @@
 import sys
 
 import numpy as np
-from scipy.spatial.distance import squareform
 import pandas as pd
 from scipy import stats
-
-# import matplotlib.pyplot as plt
-# import seaborn as sns
+import statsmodels.api as sm
 
 import conf
 import utils
@@ -54,20 +51,6 @@ REFERENCE_PANEL = "1000G"
 
 # predictions models such as MASHR or ELASTIC_NET
 EQTL_MODEL = "MASHR"
-
-# %% tags=[]
-OUTPUT_DIR_BASE = (
-    conf.RESULTS["GLS"]
-    / "gene_corrs"
-    / "cohorts"
-    / COHORT_NAME.lower()
-    / REFERENCE_PANEL.lower()
-    / EQTL_MODEL.lower()
-)
-display(OUTPUT_DIR_BASE)
-assert OUTPUT_DIR_BASE.exists()
-
-# OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 
 # %%
 OUTPUT_DIR = utils.get_git_repository_path() / "tests" / "data" / "gls"
@@ -152,12 +135,7 @@ orig_corr_mat.head()
 
 # %%
 gene_tissues_df = pd.read_pickle(
-    utils.get_git_repository_path()
-    / "tests"
-    / "data"
-    / "gls"
-    / "cohort_1000g_eur_metadata"
-    / "gene_tissues.pkl.gz"
+    OUTPUT_DIR / "cohort_1000g_eur_metadata" / "gene_tissues.pkl.gz"
 ).set_index("gene_name")
 
 # %%
@@ -175,13 +153,9 @@ assert gene_tissues_df.index.is_unique
 # %%
 gene_tissues_df.head()
 
+
 # %% [markdown] tags=[]
 # # Functions
-
-# %% tags=[]
-import statsmodels.api as sm
-from sklearn.preprocessing import scale
-
 
 # %%
 def get_data(
@@ -189,7 +163,7 @@ def get_data(
     random_phenotype_code=None,
     real_phenotype_code=None,
     add_covars=False,
-    add_snplevel_covars=False,
+    # add_snplevel_covars=False,
     add_covars_logs=False,
 ):
     if random_phenotype_code is not None:
@@ -212,14 +186,14 @@ def get_data(
     X = X.loc[common_genes]
     X = sm.add_constant(X)
 
-    if add_covars or add_snplevel_covars:
+    if add_covars:
         covars = load_multixcan_random_phenotype(random_phenotype_code)[
             ["n", "n_indep"]
         ]
         covars = covars[~covars.index.duplicated(keep="first")]
         covars = covars.loc[X.index]
 
-    if add_covars:
+        # gene-level covariates (S-MultiXcan)
         covars = covars.rename(
             columns={
                 "n_indep": "gene_size",
@@ -233,43 +207,22 @@ def get_data(
             covars["gene_size_log"] = np.log(covars["gene_size"])
             covars["gene_density_log"] = -np.log(covars["gene_density"])
 
-    if add_snplevel_covars:
+        # snp-level covariates (S-PrediXcan)
         covars = covars.assign(gene_n_snps_used=gene_tissues_df["n_snps_used_sum"])
-
         covars = covars.assign(
-            gene_n_snps_used_density=gene_tissues_df.apply(
-                lambda x: x["n_snps_used_sum"] / x["n_snps_in_model_sum"], axis=1
+            gene_n_snps_used_sharing=gene_tissues_df.apply(
+                lambda x: x["n_snps_used_sum"] / x["unique_n_snps_used"], axis=1
             )
         )
 
         if add_covars_logs:
             covars["gene_n_snps_used_log"] = np.log(covars["gene_n_snps_used"])
-            covars["gene_n_snps_used_density_log"] = -np.log(
-                covars["gene_n_snps_used_density"]
+            covars["gene_n_snps_used_sharing_log"] = np.log(
+                covars["gene_n_snps_used_sharing"]
             )
 
-    if add_covars or add_snplevel_covars:
-        if not add_covars:
-            covars = covars.drop(
-                columns=[
-                    c
-                    for c in covars.columns
-                    if c.startswith(("gene_size", "gene_density"))
-                ]
-            )
-
-        if not add_snplevel_covars:
-            covars = covars.drop(
-                columns=[
-                    c
-                    for c in covars.columns
-                    if c.startswith(("gene_n_snps_used", "gene_n_snps_used_density"))
-                ]
-            )
-
-        covars = covars.drop(
-            columns=[c for c in covars.columns if c in ("n", "n_indep")]
-        )
+        # if add_covars:
+        covars = covars.drop(columns=[c for c in covars.columns if c in ("n",)])
 
         X = X.join(covars)
 
@@ -298,11 +251,13 @@ _y.head()
 # testing
 _X, _y = get_data("LV7", 10, add_covars=True)
 assert _X.shape[0] < 7000
-assert _X.shape[1] == 4
+assert _X.shape[1] == 2 + 4
 assert "LV7" in _X.columns
 assert "const" in _X.columns
 assert "gene_size" in _X.columns
 assert "gene_density" in _X.columns
+assert "gene_n_snps_used" in _X.columns
+assert "gene_n_snps_used_sharing" in _X.columns
 assert not _X.isna().any(None)
 
 assert _y.shape[0] == _X.shape[0]
@@ -313,77 +268,22 @@ _X.head()
 
 # %%
 # load_multixcan_random_phenotype(10).loc["TNFRSF18"]
+gene_tissues_df.loc["TNFRSF18"]
 
 # %%
 assert _X.loc["TNFRSF18", "gene_size"] == 4.0
 assert _X.loc["TNFRSF18", "gene_density"] == 4 / 45.0
+assert _X.loc["TNFRSF18", "gene_n_snps_used"] == 65
+assert _X.loc["TNFRSF18", "gene_n_snps_used_sharing"] == 65 / 27.0
 
 # %%
 _y.head()
 
 # %%
 # testing
-_X, _y = get_data("LV7", 10, add_snplevel_covars=True)
+_X, _y = get_data("LV7", 10, add_covars=True, add_covars_logs=True)
 assert _X.shape[0] < 7000
-assert _X.shape[1] == 4
-assert "LV7" in _X.columns
-assert "const" in _X.columns
-assert "gene_n_snps_used" in _X.columns
-assert "gene_n_snps_used_density" in _X.columns
-assert not _X.isna().any(None)
-
-assert _y.shape[0] == _X.shape[0]
-assert not _y.isna().any(None)
-
-# %%
-_X.head()
-
-# %%
-# gene_tissues_df.loc["AGRN"]
-
-# %%
-assert _X.loc["AGRN", "gene_n_snps_used"] == 75.0
-assert _X.loc["AGRN", "gene_n_snps_used_density"] == 75 / 103.0
-
-# %%
-_y.head()
-
-# %%
-# testing
-_X, _y = get_data("LV7", 10, add_covars=True, add_snplevel_covars=True)
-assert _X.shape[0] < 7000
-assert _X.shape[1] == 6
-assert "LV7" in _X.columns
-assert "const" in _X.columns
-assert "gene_size" in _X.columns
-assert "gene_density" in _X.columns
-assert "gene_n_snps_used" in _X.columns
-assert "gene_n_snps_used_density" in _X.columns
-assert not _X.isna().any(None)
-
-assert _y.shape[0] == _X.shape[0]
-assert not _y.isna().any(None)
-
-# %%
-_X.head()
-
-# %%
-# gene_tissues_df.loc["AGRN"]
-
-# %%
-assert _X.loc["AGRN", "gene_n_snps_used"] == 75.0
-assert _X.loc["AGRN", "gene_n_snps_used_density"] == 75 / 103.0
-
-# %%
-_y.head()
-
-# %%
-# testing
-_X, _y = get_data(
-    "LV7", 10, add_covars=True, add_snplevel_covars=True, add_covars_logs=True
-)
-assert _X.shape[0] < 7000
-assert _X.shape[1] == 10
+assert _X.shape[1] == 2 + 4 + 4
 assert "LV7" in _X.columns
 assert "const" in _X.columns
 assert "gene_size" in _X.columns
@@ -392,8 +292,8 @@ assert "gene_density" in _X.columns
 assert "gene_density_log" in _X.columns
 assert "gene_n_snps_used" in _X.columns
 assert "gene_n_snps_used_log" in _X.columns
-assert "gene_n_snps_used_density" in _X.columns
-assert "gene_n_snps_used_density_log" in _X.columns
+assert "gene_n_snps_used_sharing" in _X.columns
+assert "gene_n_snps_used_sharing_log" in _X.columns
 assert not _X.isna().any(None)
 
 assert _X["gene_density"].between(0.0, 1.0, inclusive="right").all()
@@ -402,26 +302,17 @@ assert _X["gene_size"].min() >= 0.0
 assert _X["gene_size_log"].min() >= 0.0
 assert _X["gene_n_snps_used"].min() >= 0.0
 assert _X["gene_n_snps_used_log"].min() >= 0.0
-assert _X["gene_n_snps_used_density"].between(0.0, 1.0, inclusive="right").all()
-assert _X["gene_n_snps_used_density_log"].min() >= 0.0
+assert _X["gene_n_snps_used_sharing"].min() >= 0.0
+assert _X["gene_n_snps_used_sharing_log"].min() >= 0.0
 
 assert _y.shape[0] == _X.shape[0]
 assert not _y.isna().any(None)
 
 # %%
-_X["gene_size_log"].describe()
-
-# %%
-_X["gene_density_log"].describe()
-
-# %%
-_X["gene_n_snps_used_log"].describe()
-
-# %%
-_X["gene_n_snps_used_density_log"].describe()
-
-# %%
 _X.head()
+
+# %%
+_X.describe()
 
 # %%
 _y.head()
@@ -558,19 +449,17 @@ _gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
 print(_gls_results.summary())
 
 # %%
-# for debugging purposes I print the OLS results also
-_tmp_model = sm.OLS(y, X)
-_tmp_results = _tmp_model.fit()
-print(_tmp_results.summary())
-
-# %%
 # print full numbers
 with np.printoptions(threshold=sys.maxsize, precision=20):
-    print(_gls_results.params.to_numpy()[1])
-    print(_gls_results.bse.to_numpy()[1])
-    print(_gls_results.tvalues.to_numpy()[1])
-    print(_gls_results.pvalues.to_numpy()[1])
-    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+    print(
+        f"""
+exp_coef = {_gls_results.params.to_numpy()[1]}
+exp_coef_se = {_gls_results.bse.to_numpy()[1]}
+exp_tvalue = {_gls_results.tvalues.to_numpy()[1]}
+exp_pval_twosided = {_gls_results.pvalues.to_numpy()[1]}
+exp_pval_onesided = {stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid)}
+    """
+    )
 
 # %%
 X.sort_values(lv_code, ascending=False)
@@ -587,6 +476,12 @@ ys.sort_values(ascending=False)
 # %%
 # save phenotype
 y.to_pickle(OUTPUT_DIR / f"{phenotype_name}.pkl.xz")
+
+# %%
+# for debugging purposes I print the OLS results also
+_tmp_model = sm.OLS(ys, Xs)
+_tmp_results = _tmp_model.fit()
+print(_tmp_results.summary())
 
 # %% [markdown]
 # ## Random phenotype 6 / LV455
@@ -609,19 +504,17 @@ _gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
 print(_gls_results.summary())
 
 # %%
-# for debugging purposes I print the OLS results also
-_tmp_model = sm.OLS(y, X)
-_tmp_results = _tmp_model.fit()
-print(_tmp_results.summary())
-
-# %%
 # print full numbers
 with np.printoptions(threshold=sys.maxsize, precision=20):
-    print(_gls_results.params.to_numpy()[1])
-    print(_gls_results.bse.to_numpy()[1])
-    print(_gls_results.tvalues.to_numpy()[1])
-    print(_gls_results.pvalues.to_numpy()[1])
-    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+    print(
+        f"""
+exp_coef = {_gls_results.params.to_numpy()[1]}
+exp_coef_se = {_gls_results.bse.to_numpy()[1]}
+exp_tvalue = {_gls_results.tvalues.to_numpy()[1]}
+exp_pval_twosided = {_gls_results.pvalues.to_numpy()[1]}
+exp_pval_onesided = {stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid)}
+    """
+    )
 
 # %%
 X.sort_values(lv_code, ascending=False)
@@ -632,6 +525,12 @@ y.sort_values(ascending=False)
 # %%
 # save phenotype
 y.to_pickle(OUTPUT_DIR / f"{phenotype_name}.pkl.xz")
+
+# %%
+# for debugging purposes I print the OLS results also
+_tmp_model = sm.OLS(y, X)
+_tmp_results = _tmp_model.fit()
+print(_tmp_results.summary())
 
 # %% [markdown]
 # ## Random phenotype 0 / LV801
@@ -654,19 +553,17 @@ _gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
 print(_gls_results.summary())
 
 # %%
-# for debugging purposes I print the OLS results also
-_tmp_model = sm.OLS(y, X)
-_tmp_results = _tmp_model.fit()
-print(_tmp_results.summary())
-
-# %%
 # print full numbers
 with np.printoptions(threshold=sys.maxsize, precision=20):
-    print(_gls_results.params.to_numpy()[1])
-    print(_gls_results.bse.to_numpy()[1])
-    print(_gls_results.tvalues.to_numpy()[1])
-    print(_gls_results.pvalues.to_numpy()[1])
-    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+    print(
+        f"""
+exp_coef = {_gls_results.params.to_numpy()[1]}
+exp_coef_se = {_gls_results.bse.to_numpy()[1]}
+exp_tvalue = {_gls_results.tvalues.to_numpy()[1]}
+exp_pval_twosided = {_gls_results.pvalues.to_numpy()[1]}
+exp_pval_onesided = {stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid)}
+    """
+    )
 
 # %%
 X.sort_values(lv_code, ascending=False).head()
@@ -677,6 +574,12 @@ y.sort_values(ascending=False).head()
 # %%
 # save phenotype
 y.to_pickle(OUTPUT_DIR / f"{phenotype_name}.pkl.xz")
+
+# %%
+# for debugging purposes I print the OLS results also
+_tmp_model = sm.OLS(y, X)
+_tmp_results = _tmp_model.fit()
+print(_tmp_results.summary())
 
 # %% [markdown] tags=[]
 # # [sub corr matrix ] GLS on randomly generated phenotypes
@@ -868,7 +771,7 @@ y.to_pickle(OUTPUT_DIR / f"{phenotype_name}.pkl.xz")
 # # GLS on real phenotypes
 
 # %%
-PERC_NONZERO_GENES = 1.00
+PERC_NONZERO_GENES = None
 
 # %%
 multixcan_real_results.columns
@@ -878,7 +781,7 @@ multixcan_real_results.columns
 
 # %%
 lv_code = "LV570"
-phenotype_code = "whooping cough"
+phenotype_code = "visual impairment"
 
 phenotype_name = f"multixcan-phenomexcan-{phenotype_code.replace(' ', '_')}-pvalues"
 display(phenotype_name)
@@ -887,26 +790,39 @@ display(phenotype_name)
 X, y = get_data(lv_code, real_phenotype_code=phenotype_code)
 corr_mat = get_aligned_corr_mat(X, perc=PERC_NONZERO_GENES)
 
+# %%
+X.head()
+
+# %%
+y.head()
+
+# %%
 Xs, ys = standardize_data(X, y)
+
+# %%
+_Xs_desc = Xs[[lv_code]].describe()
+display(_Xs_desc)
+assert (_Xs_desc.loc["mean"] < 1e-10).all()
+assert (_Xs_desc.loc["std"].between(0.9999, 1.00001)).all()
+
+# %%
 _gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
 
 # %%
 print(_gls_results.summary())
 
 # %%
-# for debugging purposes I print the OLS results also
-_tmp_model = sm.OLS(y, X)
-_tmp_results = _tmp_model.fit()
-print(_tmp_results.summary())
-
-# %%
 # print full numbers
 with np.printoptions(threshold=sys.maxsize, precision=20):
-    print(_gls_results.params.to_numpy()[1])
-    print(_gls_results.bse.to_numpy()[1])
-    print(_gls_results.tvalues.to_numpy()[1])
-    print(_gls_results.pvalues.to_numpy()[1])
-    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+    print(
+        f"""
+exp_coef = {_gls_results.params.to_numpy()[1]}
+exp_coef_se = {_gls_results.bse.to_numpy()[1]}
+exp_tvalue = {_gls_results.tvalues.to_numpy()[1]}
+exp_pval_twosided = {_gls_results.pvalues.to_numpy()[1]}
+exp_pval_onesided = {stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid)}
+    """
+    )
 
 # %%
 # save phenotype
@@ -914,48 +830,77 @@ y.to_pickle(OUTPUT_DIR / f"{phenotype_name}.pkl.xz")
 
 # %%
 y
+
+# %%
+# for debugging purposes I print the OLS results also
+_tmp_model = sm.OLS(ys, Xs)
+_tmp_results = _tmp_model.fit()
+print(_tmp_results.summary())
 
 # %% [markdown]
-# ## wheezing and LV400
+# # Test different covariates
 
 # %%
-lv_code = "LV400"
-phenotype_code = "wheezing"
-
-phenotype_name = f"multixcan-phenomexcan-{phenotype_code.replace(' ', '_')}-pvalues"
-display(phenotype_name)
-
-# %%
-X, y = get_data(lv_code, real_phenotype_code=phenotype_code)
-corr_mat = get_aligned_corr_mat(X, perc=PERC_NONZERO_GENES)
-
-Xs, ys = standardize_data(X, y)
-_gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
+covars = load_multixcan_random_phenotype(0)[["n", "n_indep"]]
+covars = covars[~covars.index.duplicated(keep="first")]
+covars = covars.dropna()
+covars = covars.join(gene_tissues_df, how="inner")
+assert not covars.isna().any(None)
 
 # %%
-print(_gls_results.summary())
+covars = covars.drop(columns=[c for c in covars.columns if "model" in c])
 
 # %%
-# for debugging purposes I print the OLS results also
-_tmp_model = sm.OLS(y, X)
-_tmp_results = _tmp_model.fit()
-print(_tmp_results.summary())
+covars.shape
 
 # %%
-# print full numbers
-with np.printoptions(threshold=sys.maxsize, precision=20):
-    print(_gls_results.params.to_numpy()[1])
-    print(_gls_results.bse.to_numpy()[1])
-    print(_gls_results.tvalues.to_numpy()[1])
-    print(_gls_results.pvalues.to_numpy()[1])
-    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+covars.head()
 
 # %%
-# save phenotype
-y.to_pickle(OUTPUT_DIR / f"{phenotype_name}.pkl.xz")
+# gene_size and gene_density
+covars = covars.rename(
+    columns={
+        "n_indep": "gene_size",
+    }
+)
+covars = covars.assign(
+    gene_density=covars.apply(lambda x: x["gene_size"] / x["n"], axis=1)
+)
+covars = covars.drop(columns=["n"])
 
 # %%
-y
+# gene_n_snps_used and gene_n_snps_used_sharing
+covars = covars.assign(gene_n_snps_used=gene_tissues_df["n_snps_used_sum"])
+
+covars = covars.assign(
+    gene_n_snps_used_sharing=gene_tissues_df.apply(
+        lambda x: x["n_snps_used_sum"] / x["unique_n_snps_used"], axis=1
+    )
+)
+
+# %%
+_final_covars = [
+    "gene_size",
+    "gene_density",
+    "gene_n_snps_used",
+    "gene_n_snps_used_sharing",
+]
+
+# %%
+covars[_final_covars].head()
+
+# %%
+covars[_final_covars].describe()
+
+# %%
+_tmp = covars.assign(**{f"{c}_log": np.log(covars[c]) for c in _final_covars})
+display(_tmp[[c for c in _tmp.columns if "_log" in c]].describe())
+
+# %%
+covars[_final_covars].corr()
+
+# %%
+_tmp[[c for c in _tmp.columns if "_log" in c]].corr()
 
 # %% [markdown] tags=[]
 # # [full corr matrix] GLS on randomly generated phenotypes using gene-level covariates
@@ -976,6 +921,8 @@ display(phenotype_name)
 
 # %%
 X, y = get_data(lv_code, random_phenotype_code=phenotype_code, add_covars=True)
+# keep only covars that we are testing
+X = X.drop(columns=["gene_n_snps_used", "gene_n_snps_used_sharing"])
 corr_mat = get_aligned_corr_mat(X, perc=PERC_NONZERO_GENES)
 
 # %%
@@ -1006,16 +953,17 @@ _gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
 print(_gls_results.summary())
 
 # %%
-_gls_results.params
-
-# %%
 # print full numbers
 with np.printoptions(threshold=sys.maxsize, precision=20):
-    print(_gls_results.params.to_numpy()[1])
-    print(_gls_results.bse.to_numpy()[1])
-    print(_gls_results.tvalues.to_numpy()[1])
-    print(_gls_results.pvalues.to_numpy()[1])
-    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+    print(
+        f"""
+exp_coef = {_gls_results.params.to_numpy()[1]}
+exp_coef_se = {_gls_results.bse.to_numpy()[1]}
+exp_tvalue = {_gls_results.tvalues.to_numpy()[1]}
+exp_pval_twosided = {_gls_results.pvalues.to_numpy()[1]}
+exp_pval_onesided = {stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid)}
+    """
+    )
 
 # %%
 # save phenotype
@@ -1054,6 +1002,7 @@ display(phenotype_name)
 
 # %%
 X, y = get_data(lv_code, random_phenotype_code=phenotype_code, add_covars=True)
+X = X.drop(columns=["gene_n_snps_used", "gene_n_snps_used_sharing"])
 corr_mat = get_aligned_corr_mat(X, perc=PERC_NONZERO_GENES)
 
 # %%
@@ -1084,16 +1033,17 @@ _gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
 print(_gls_results.summary())
 
 # %%
-_gls_results.params
-
-# %%
 # print full numbers
 with np.printoptions(threshold=sys.maxsize, precision=20):
-    print(_gls_results.params.to_numpy()[1])
-    print(_gls_results.bse.to_numpy()[1])
-    print(_gls_results.tvalues.to_numpy()[1])
-    print(_gls_results.pvalues.to_numpy()[1])
-    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+    print(
+        f"""
+exp_coef = {_gls_results.params.to_numpy()[1]}
+exp_coef_se = {_gls_results.bse.to_numpy()[1]}
+exp_tvalue = {_gls_results.tvalues.to_numpy()[1]}
+exp_pval_twosided = {_gls_results.pvalues.to_numpy()[1]}
+exp_pval_onesided = {stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid)}
+    """
+    )
 
 # %%
 # save phenotype
@@ -1134,6 +1084,14 @@ display(phenotype_name)
 X, y = get_data(
     lv_code, random_phenotype_code=phenotype_code, add_covars=True, add_covars_logs=True
 )
+X = X.drop(
+    columns=[
+        "gene_n_snps_used",
+        "gene_n_snps_used_sharing",
+        "gene_n_snps_used_log",
+        "gene_n_snps_used_sharing_log",
+    ]
+)
 corr_mat = get_aligned_corr_mat(X, perc=PERC_NONZERO_GENES)
 
 # %%
@@ -1166,16 +1124,17 @@ _gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
 print(_gls_results.summary())
 
 # %%
-_gls_results.params
-
-# %%
 # print full numbers
 with np.printoptions(threshold=sys.maxsize, precision=20):
-    print(_gls_results.params.to_numpy()[1])
-    print(_gls_results.bse.to_numpy()[1])
-    print(_gls_results.tvalues.to_numpy()[1])
-    print(_gls_results.pvalues.to_numpy()[1])
-    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+    print(
+        f"""
+exp_coef = {_gls_results.params.to_numpy()[1]}
+exp_coef_se = {_gls_results.bse.to_numpy()[1]}
+exp_tvalue = {_gls_results.tvalues.to_numpy()[1]}
+exp_pval_twosided = {_gls_results.pvalues.to_numpy()[1]}
+exp_pval_onesided = {stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid)}
+    """
+    )
 
 # %%
 # save phenotype
@@ -1219,7 +1178,8 @@ phenotype_name = f"{phenotype_name_base}-pvalues"
 display(phenotype_name)
 
 # %%
-X, y = get_data(lv_code, random_phenotype_code=phenotype_code, add_snplevel_covars=True)
+X, y = get_data(lv_code, random_phenotype_code=phenotype_code, add_covars=True)
+X = X.drop(columns=["gene_size", "gene_density"])
 corr_mat = get_aligned_corr_mat(X, perc=PERC_NONZERO_GENES)
 
 # %%
@@ -1232,7 +1192,7 @@ y.head()
 Xs, ys = standardize_data(X, y)
 
 # %%
-_Xs_desc = Xs[[lv_code, "gene_n_snps_used", "gene_n_snps_used_density"]].describe()
+_Xs_desc = Xs[[lv_code, "gene_n_snps_used", "gene_n_snps_used_sharing"]].describe()
 display(_Xs_desc)
 assert (_Xs_desc.loc["mean"] < 1e-10).all()
 assert (_Xs_desc.loc["std"].between(0.9999, 1.00001)).all()
@@ -1250,16 +1210,17 @@ _gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
 print(_gls_results.summary())
 
 # %%
-_gls_results.params
-
-# %%
 # print full numbers
 with np.printoptions(threshold=sys.maxsize, precision=20):
-    print(_gls_results.params.to_numpy()[1])
-    print(_gls_results.bse.to_numpy()[1])
-    print(_gls_results.tvalues.to_numpy()[1])
-    print(_gls_results.pvalues.to_numpy()[1])
-    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+    print(
+        f"""
+exp_coef = {_gls_results.params.to_numpy()[1]}
+exp_coef_se = {_gls_results.bse.to_numpy()[1]}
+exp_tvalue = {_gls_results.tvalues.to_numpy()[1]}
+exp_pval_twosided = {_gls_results.pvalues.to_numpy()[1]}
+exp_pval_onesided = {stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid)}
+    """
+    )
 
 # %%
 # save phenotype
@@ -1297,7 +1258,8 @@ phenotype_name = f"{phenotype_name_base}-pvalues"
 display(phenotype_name)
 
 # %%
-X, y = get_data(lv_code, random_phenotype_code=phenotype_code, add_snplevel_covars=True)
+X, y = get_data(lv_code, random_phenotype_code=phenotype_code, add_covars=True)
+X = X.drop(columns=["gene_size", "gene_density"])
 corr_mat = get_aligned_corr_mat(X, perc=PERC_NONZERO_GENES)
 
 # %%
@@ -1310,7 +1272,7 @@ y.head()
 Xs, ys = standardize_data(X, y)
 
 # %%
-_Xs_desc = Xs[[lv_code, "gene_n_snps_used", "gene_n_snps_used_density"]].describe()
+_Xs_desc = Xs[[lv_code, "gene_n_snps_used", "gene_n_snps_used_sharing"]].describe()
 display(_Xs_desc)
 assert (_Xs_desc.loc["mean"] < 1e-10).all()
 assert (_Xs_desc.loc["std"].between(0.9999, 1.00001)).all()
@@ -1328,16 +1290,17 @@ _gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
 print(_gls_results.summary())
 
 # %%
-_gls_results.params
-
-# %%
 # print full numbers
 with np.printoptions(threshold=sys.maxsize, precision=20):
-    print(_gls_results.params.to_numpy()[1])
-    print(_gls_results.bse.to_numpy()[1])
-    print(_gls_results.tvalues.to_numpy()[1])
-    print(_gls_results.pvalues.to_numpy()[1])
-    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+    print(
+        f"""
+exp_coef = {_gls_results.params.to_numpy()[1]}
+exp_coef_se = {_gls_results.bse.to_numpy()[1]}
+exp_tvalue = {_gls_results.tvalues.to_numpy()[1]}
+exp_pval_twosided = {_gls_results.pvalues.to_numpy()[1]}
+exp_pval_onesided = {stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid)}
+    """
+    )
 
 # %%
 # save phenotype
@@ -1378,9 +1341,10 @@ display(phenotype_name)
 X, y = get_data(
     lv_code,
     random_phenotype_code=phenotype_code,
-    add_snplevel_covars=True,
+    add_covars=True,
     add_covars_logs=True,
 )
+X = X.drop(columns=["gene_size", "gene_density", "gene_size_log", "gene_density_log"])
 corr_mat = get_aligned_corr_mat(X, perc=PERC_NONZERO_GENES)
 
 # %%
@@ -1398,8 +1362,8 @@ _Xs_desc = Xs[
         lv_code,
         "gene_n_snps_used",
         "gene_n_snps_used_log",
-        "gene_n_snps_used_density",
-        "gene_n_snps_used_density_log",
+        "gene_n_snps_used_sharing",
+        "gene_n_snps_used_sharing_log",
     ]
 ].describe()
 display(_Xs_desc)
@@ -1419,16 +1383,17 @@ _gls_results = train_statsmodels_gls(Xs, ys, corr_mat)
 print(_gls_results.summary())
 
 # %%
-_gls_results.params
-
-# %%
 # print full numbers
 with np.printoptions(threshold=sys.maxsize, precision=20):
-    print(_gls_results.params.to_numpy()[1])
-    print(_gls_results.bse.to_numpy()[1])
-    print(_gls_results.tvalues.to_numpy()[1])
-    print(_gls_results.pvalues.to_numpy()[1])
-    print(stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid))
+    print(
+        f"""
+exp_coef = {_gls_results.params.to_numpy()[1]}
+exp_coef_se = {_gls_results.bse.to_numpy()[1]}
+exp_tvalue = {_gls_results.tvalues.to_numpy()[1]}
+exp_pval_twosided = {_gls_results.pvalues.to_numpy()[1]}
+exp_pval_onesided = {stats.t.sf(_gls_results.tvalues.to_numpy()[1], _gls_results.df_resid)}
+    """
+    )
 
 # %%
 # save phenotype
