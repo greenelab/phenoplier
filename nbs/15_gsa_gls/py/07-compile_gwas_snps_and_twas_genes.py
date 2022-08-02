@@ -38,10 +38,7 @@ from pathlib import Path
 import pickle
 
 import numpy as np
-
 import pandas as pd
-from tqdm import tqdm
-import pytest
 
 import conf
 from entity import Gene
@@ -255,29 +252,6 @@ smultixcan_results.head()
 # %%
 assert smultixcan_results["gene_id"].is_unique
 
-# %% [markdown]
-# ### Remove duplicated gene names
-
-# %%
-smultixcan_results["gene_name"].is_unique
-
-# %%
-# list duplicated gene names
-_smultixcan_duplicated_gene_names = smultixcan_results[
-    smultixcan_results["gene_name"].duplicated(keep=False)
-]
-display(_smultixcan_duplicated_gene_names)
-
-# %%
-# TODO: my strategy below to handle duplicated gene names is to keep the first one
-#  it might be better to have another strategy, maybe keeping the most significant
-
-# %%
-smultixcan_results = smultixcan_results.drop_duplicates(
-    subset=["gene_name"], keep="first"
-)
-display(smultixcan_results.shape)
-
 # %% [markdown] tags=[]
 # ### Get common genes with MultiPLIER
 
@@ -292,32 +266,6 @@ len(common_genes)
 # %%
 sorted(list(common_genes))[:5]
 
-# %%
-assert smultixcan_results[smultixcan_results["gene_name"].isin(common_genes)].shape[
-    0
-] == len(common_genes)
-
-# %%
-smultixcan_gene_id_common = smultixcan_results[
-    smultixcan_results["gene_name"].isin(common_genes)
-]["gene_id"]
-
-# %%
-smultixcan_gene_id_common.shape
-
-# %%
-assert smultixcan_gene_id_common.is_unique
-
-# %%
-smultixcan_gene_id_common = set(smultixcan_gene_id_common)
-
-# %% [markdown]
-# ### Save
-
-# %%
-with open(OUTPUT_DIR_BASE / "common_genes.pkl", "wb") as handle:
-    pickle.dump(common_genes, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
 # %% [markdown] tags=[]
 # ## Genes info
 
@@ -327,6 +275,10 @@ multiplier_gene_obj = {
     for gene_name in common_genes
     if gene_name in Gene.GENE_NAME_TO_ID_MAP
 }
+
+# %%
+# delete common_genes, from now on, genes_info should be used for common genes
+del common_genes
 
 # %% tags=[]
 len(multiplier_gene_obj)
@@ -354,6 +306,12 @@ genes_info = genes_info.assign(
         lambda x: x["end_position"] - x["start_position"], axis=1
     )
 )
+
+# %%
+assert genes_info["name"].is_unique
+
+# %%
+assert genes_info["id"].is_unique
 
 # %% tags=[]
 genes_info.shape
@@ -399,7 +357,6 @@ spredixcan_dfs = [
         f,
         usecols=[
             "gene",
-            "gene_name",
             "zscore",
             "pvalue",
             "n_snps_used",
@@ -433,9 +390,7 @@ spredixcan_dfs.head()
 
 # %%
 # leave only common genes
-spredixcan_dfs = spredixcan_dfs[
-    spredixcan_dfs["gene_id"].isin(smultixcan_gene_id_common)
-].drop(columns=["gene_name"])
+spredixcan_dfs = spredixcan_dfs[spredixcan_dfs["gene_id"].isin(set(genes_info["id"]))]
 
 # %%
 spredixcan_dfs.shape
@@ -875,7 +830,6 @@ def _count_unique_snps(gene_id):
     """
     For a gene_id, it counts unique SNPs in all models and their intersection with GWAS SNPs (therefore, used by S-PrediXcan).
     """
-    gene_obj = spredixcan_gene_obj[gene_id]
     gene_tissues = spredixcan_genes_models.loc[gene_id, "tissue"]
 
     gene_unique_snps = set()
