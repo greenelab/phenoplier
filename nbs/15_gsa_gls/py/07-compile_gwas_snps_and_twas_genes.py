@@ -946,6 +946,7 @@ spredixcan_genes_models.head()
 # ### Save
 
 # %%
+# this is important, other scripts depend on gene_name to be unique
 assert spredixcan_genes_models["gene_name"].is_unique
 
 # %%
