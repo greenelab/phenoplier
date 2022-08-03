@@ -1,6 +1,6 @@
 #!/bin/bash
 # BSUB -J random_pheno${pheno_id}
-# BSUB -cwd _tmp/gls_phenoplier
+# BSUB -cwd _tmp/gls_phenoplier_ols
 # BSUB -oo random_pheno${pheno_id}.%J.out
 # BSUB -eo random_pheno${pheno_id}.%J.error
 # -#BSUB -u miltondp@gmail.com
@@ -22,21 +22,20 @@ export OPEN_BLAS_NUM_THREADS=${n_jobs}
 export NUMEXPR_NUM_THREADS=${n_jobs}
 export OMP_NUM_THREADS=${n_jobs}
 
+# Settings
+COHORT_NAME="1000g_eur"
+# REFERENCE_PANEL="1000g"
+USING_COVARS="no_covars"
+
+# Paths
 CODE_DIR=${PHENOPLIER_CODE_DIR}/nbs/15_gsa_gls/20-null_simulations/20_gls_phenoplier
 INPUT_SMULTIXCAN_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan"
 
-# 1000G / MASHR
-COHORT_NAME="1000g_eur"
-GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/1000g_eur/1000g/mashr/all_genes/gene_corrs-symbols.pkl"
-#GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/1000g_eur/1000g/mashr/within_distance/gene_corrs-symbols.pkl"
-OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-1000g_mashr-full_corr"
-
+OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/${COHORT_NAME}/${USING_COVARS}/gls-debug_use_ols"
 mkdir -p ${OUTPUT_DIR}
 
 bash ${CODE_DIR}/01_gls_phenoplier.sh \
   --input-file ${INPUT_SMULTIXCAN_DIR}/random.pheno${pheno_id}-gtex_v8-mashr-smultixcan.txt \
-  --gene-corr-file ${GENE_CORR_FILE} \
-  --covars "gene_n_snps_used_density gene_n_snps_used_density_log" \
+  --debug-use-ols 1 \
   --cohort-name ${COHORT_NAME} \
   --output-file ${OUTPUT_DIR}/random.pheno${pheno_id}-gls_phenoplier.tsv.gz
-
