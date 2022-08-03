@@ -80,19 +80,13 @@ OUTPUT_DIR_BASE = (
     conf.RESULTS["GLS"]
     / "gene_corrs"
     / "cohorts"
-    / COHORT_NAME.lower()
+    / COHORT_NAME
     / REFERENCE_PANEL.lower()
     / EQTL_MODEL.lower()
 )
 OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 
 display(f"Using output dir base: {OUTPUT_DIR_BASE}")
-
-# %%
-COHORT_INPUT_DIR = conf.RESULTS["GLS"] / "gene_corrs" / "cohorts" / COHORT_NAME
-
-display(f"Cohort input dir: {COHORT_INPUT_DIR}")
-assert COHORT_INPUT_DIR.exists()
 
 # %%
 INPUT_DIR = OUTPUT_DIR_BASE / "by_chr"
@@ -143,7 +137,7 @@ sorted(list(gene_ids))[:5]
 # ## Gene info
 
 # %%
-genes_info = pd.read_pickle(COHORT_INPUT_DIR / "genes_info.pkl")
+genes_info = pd.read_pickle(OUTPUT_DIR_BASE / "genes_info.pkl")
 
 # %%
 genes_info.shape
