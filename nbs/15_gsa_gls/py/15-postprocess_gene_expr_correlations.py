@@ -72,8 +72,7 @@ assert (
     EQTL_MODEL is not None and len(EQTL_MODEL) > 0
 ), "A prediction/eQTL model must be given"
 
-EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
-display(f"eQTL model: {EQTL_MODEL}) / {EQTL_MODEL_FILES_PREFIX}")
+display(f"eQTL model: {EQTL_MODEL})")
 
 # %%
 OUTPUT_DIR_BASE = (
@@ -225,6 +224,42 @@ assert _min_val >= 0.0
 _max_val = full_corr_matrix.max().max()  # this will capture the 1.0 in the diagonal
 display(_max_val)
 assert _max_val <= 1.00
+
+# %% [markdown] tags=[]
+# ## Save original matrix
+
+# %% [markdown] tags=[]
+# ### With gene symbols
+
+# %%
+output_file = OUTPUT_DIR_BASE / "gene_corrs-symbols-orig.pkl"
+display(output_file)
+
+# %% tags=[]
+gene_corrs = full_corr_matrix.rename(
+    index=Gene.GENE_ID_TO_NAME_MAP, columns=Gene.GENE_ID_TO_NAME_MAP
+)
+
+# %%
+assert not gene_corrs.isna().any(None)
+assert not np.isinf(gene_corrs.to_numpy()).any()
+assert not np.iscomplex(gene_corrs.to_numpy()).any()
+
+# %% tags=[]
+assert gene_corrs.index.is_unique
+assert gene_corrs.columns.is_unique
+
+# %% tags=[]
+gene_corrs.shape
+
+# %% tags=[]
+gene_corrs.head()
+
+# %% tags=[]
+gene_corrs.to_pickle(output_file)
+
+# %%
+del gene_corrs
 
 # %% [markdown]
 # # Positive definiteness
