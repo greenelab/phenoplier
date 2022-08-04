@@ -60,20 +60,9 @@ EQTL_MODEL = None
 
 # This is one S-MultiXcan result file on the same target cohort
 # Genes will be read from here to align the correlation matrices
-SMULTIXCAN_RESULTS_TEMPLATE = (
-    conf.RESULTS["GLS_NULL_SIMS"]
-    / "twas"
-    / "smultixcan"
-    / "random.pheno0-gtex_v8-mashr-smultixcan.txt"
-)
+SMULTIXCAN_FILE = None
 
-# %% tags=["injected-parameters"]
-# FIXME: remove later
-# Parameters
-COHORT_NAME = "1000G_EUR"
-REFERENCE_PANEL = "1000G"
-EQTL_MODEL = "MASHR"
-
+LV_CODE = None
 
 # %%
 assert COHORT_NAME is not None and len(COHORT_NAME) > 0, "A cohort name must be given"
@@ -97,9 +86,18 @@ EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_P
 display(f"eQTL model: {EQTL_MODEL}) / {EQTL_MODEL_FILES_PREFIX}")
 
 # %% tags=[]
-assert (SMULTIXCAN_RESULTS_TEMPLATE is not None) and (
-    SMULTIXCAN_RESULTS_TEMPLATE.exists()
-), "You have to provide the path to a S-MultiXcan results file"
+assert (
+    SMULTIXCAN_FILE is not None and len(SMULTIXCAN_FILE) > 0
+), "An S-MultiXcan result file path must be given"
+SMULTIXCAN_FILE = Path(SMULTIXCAN_FILE).resolve()
+assert SMULTIXCAN_FILE.exists(), "S-MultiXcan result file does not exist"
+
+display(f"S-MultiXcan file path: {str(SMULTIXCAN_FILE)}")
+
+# %%
+assert LV_CODE is not None and len(LV_CODE) > 0, "An LV code must be given"
+
+display(f"LV code: {LV_CODE})")
 
 # %% tags=[]
 OUTPUT_DIR_BASE = (
@@ -109,7 +107,6 @@ OUTPUT_DIR_BASE = (
     / COHORT_NAME.lower()
     / REFERENCE_PANEL.lower()
     / EQTL_MODEL.lower()
-    / "all_genes"  # FIXME: remove this later
 )
 OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 
@@ -122,7 +119,7 @@ display(f"Using output dir base: {OUTPUT_DIR_BASE}")
 # ## S-MultiXcan genes
 
 # %% tags=[]
-smultixcan_df = pd.read_csv(SMULTIXCAN_RESULTS_TEMPLATE, sep="\t")
+smultixcan_df = pd.read_csv(SMULTIXCAN_FILE, sep="\t")
 
 # %% tags=[]
 smultixcan_df.shape
@@ -244,7 +241,8 @@ def compute_chol_inv(lv_codes):
 
 # %% tags=[]
 # divide LVs in chunks for parallel processing
-lvs_chunks = list(chunker(list(multiplier_z.columns), 50))
+# lvs_chunks = list(chunker(list(multiplier_z.columns), 50))
+lvs_chunks = [[LV_CODE]]
 
 # %% tags=[]
 # metadata
@@ -295,24 +293,25 @@ assert _metadata[0] == REFERENCE_PANEL
 assert _metadata[1] == EQTL_MODEL
 
 # %% tags=[]
-lv1_inv = load_df("LV1")
+# lv1_inv = load_df("LV1")
 
 # %% tags=[]
-lv2_inv = load_df("LV2")
+# lv2_inv = load_df("LV2")
 
 # %% tags=[]
-lv_last_inv = load_df("LV987")
+# lv_last_inv = load_df("LV987")
+lv_last_inv = load_df(LV_CODE)
 
 # %% tags=[]
-assert lv1_inv.shape == lv2_inv.shape
+# assert lv1_inv.shape == lv2_inv.shape
 
 # %% tags=[]
-assert not np.allclose(lv1_inv, lv2_inv)
+# assert not np.allclose(lv1_inv, lv2_inv)
 
 # %% tags=[]
-assert not np.allclose(lv1_inv, lv_last_inv)
+# assert not np.allclose(lv1_inv, lv_last_inv)
 
 # %% tags=[]
-assert not np.allclose(lv2_inv, lv_last_inv)
+# assert not np.allclose(lv2_inv, lv_last_inv)
 
 # %% tags=[]
