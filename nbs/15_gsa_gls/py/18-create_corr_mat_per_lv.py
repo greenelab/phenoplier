@@ -205,6 +205,13 @@ common_genes[:5]
 # # Compute inverse correlation matrix for each LV
 
 # %% tags=[]
+def exists_df(base_filename):
+    full_filepath = output_dir / (base_filename + ".npz")
+
+    return full_filepath.exists()
+
+
+# %% tags=[]
 def store_df(nparray, base_filename):
     if base_filename in ("metadata", "gene_names"):
         np.savez_compressed(output_dir / (base_filename + ".npz"), data=nparray)
@@ -246,12 +253,18 @@ lvs_chunks = [[LV_CODE]]
 
 # %% tags=[]
 # metadata
-metadata = np.array([REFERENCE_PANEL, EQTL_MODEL])
-store_df(metadata, "metadata")
+if not exists_df("metadata"):
+    metadata = np.array([REFERENCE_PANEL, EQTL_MODEL])
+    store_df(metadata, "metadata")
+else:
+    display("Metadata file already exists")
 
 # gene names
-gene_names = np.array(common_genes)
-store_df(gene_names, "gene_names")
+if not exists_df("gene_names"):
+    gene_names = np.array(common_genes)
+    store_df(gene_names, "gene_names")
+else:
+    display("Gene names file already exists")
 
 # pbar = tqdm(total=multiplier_z.columns.shape[0])
 
