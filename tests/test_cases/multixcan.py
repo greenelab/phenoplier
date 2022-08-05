@@ -3,6 +3,7 @@ It has code to run MultiXcan on randomly generated phenotypes and compute
 the correlation between two genes' sum of squares for model (SSM).
 """
 import sqlite3
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from fastparquet import ParquetFile
 from tqdm import tqdm
@@ -40,6 +41,7 @@ def predict_expression(
     gene0_tissues=None,
     gene1_tissues=None,
     snps_subset: set = None,
+    reference_panel: str = "1000G",
     center_gene_expr=False,
 ):
     if gene0_tissues is None:
@@ -76,10 +78,19 @@ def predict_expression(
         print(f"Number of variants after filtering: {len(gene_variants)}")
 
     # get intersection of gene variants with variants in parquet file
-    base_reference_panel_dir = conf.PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"]
+    base_reference_panel_dir = conf.PHENOMEXCAN["LD_BLOCKS"][
+        f"{reference_panel}_GENOTYPE_DIR"
+    ]
 
-    chr_parquet_file = (
-        base_reference_panel_dir / f"chr{gene0_obj.chromosome}.variants.parquet"
+    if reference_panel == "1000G":
+        chr_file_template = "chr{chromosome}.variants.parquet"
+    elif reference_panel == "GTEX_V8":
+        chr_file_template = "gtex_v8_eur_filtered_maf0.01_monoallelic_variants.chr{chromosome}.variants.parquet"
+    else:
+        raise ValueError(f"Invalid reference panel: {reference_panel}")
+
+    chr_parquet_file = base_reference_panel_dir / chr_file_template.format(
+        chromosome=gene0_obj.chromosome
     )
     pf = ParquetFile(str(chr_parquet_file))
     pf_variants = set(pf.columns)
@@ -245,6 +256,8 @@ def get_ssm(multixcan_model_result, X_data, y_data):
 # Main
 
 N_PHENOTYPES = 10000
+REFERENCE_PANEL = "GTEX_V8"
+# ALL_TISSUES = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_TISSUES"].split(" ")
 
 gene0_id = "ENSG00000180596"
 gene0_tissues = ("Small_Intestine_Terminal_Ileum", "Uterus")
@@ -260,7 +273,7 @@ gene1_tissues = (
 # gene1_tissues = gene0_tissues
 
 # code to select all tissues
-# gene0_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_TISSUES"].split(" ")
+# gene0_tissues = ALL_TISSUES
 
 # code to disable snps_subset:
 # snps_subset = None
@@ -268,22 +281,22 @@ gene1_tissues = (
 snps_subset = {
     # first gene:
     #  Small_Intestine_Terminal_Ileum
-    "chr6_26124075_T_C_b38",
-    # "chr6_26124202_C_T_b38",    # this SNP is not in the genotype
+    # "chr6_26124075_T_C_b38",  # remove, this removes this tissue
+    "chr6_26124202_C_T_b38",  # this SNP is not in the genotype
     #  Uterus
-    "chr6_26124075_T_C_b38",
-    # "chr6_26124406_C_T_b38",  # removed
+    # "chr6_26124075_T_C_b38",  # (same as other one)
+    "chr6_26124406_C_T_b38",
     # second gene:
     #  Brain_Cerebellum
-    "chr6_26124075_T_C_b38",
-    # "chr6_26124015_G_A_b38",  # removed
-    # "chr6_26124406_C_T_b38",  # (same as other one)
+    # "chr6_26124075_T_C_b38",  # (same as other one)
+    "chr6_26124015_G_A_b38",
+    "chr6_26124406_C_T_b38",
     #  Esophagus_Gastroesophageal_Junction
-    "chr6_26124075_T_C_b38",
-    # "chr6_26124015_G_A_b38",  # (same as other one)
+    # "chr6_26124075_T_C_b38",  # (same as other one)
+    "chr6_26124015_G_A_b38",
     # Artery_Coronary
-    "chr6_26124075_T_C_b38",
-    # "chr6_26124015_G_A_b38",  # (same as other one)
+    # "chr6_26124075_T_C_b38",  # (same as other one)
+    "chr6_26124015_G_A_b38",
 }
 
 gene0_obj = Gene(ensembl_id=gene0_id)
@@ -310,9 +323,10 @@ gene0_pred_expr, gene1_pred_expr = predict_expression(
     gene0_tissues=gene0_tissues,
     gene1_tissues=gene1_tissues,
     snps_subset=snps_subset,
+    reference_panel=REFERENCE_PANEL,
 )
-assert gene0_pred_expr.shape[1] == len(gene0_tissues)
-assert gene1_pred_expr.shape[1] == len(gene1_tissues)
+# assert gene0_pred_expr.shape[1] == len(gene0_tissues)
+# assert gene1_pred_expr.shape[1] == len(gene1_tissues)
 
 # generate random phenotypes
 rs = np.random.RandomState(0)
@@ -326,16 +340,28 @@ for pheno_i in range(N_PHENOTYPES):
     random_phenotypes.append(y)
 
 # run multixcan, get SSMs
-gene0_ssms = []
-gene1_ssms = []
-for y_idx, y in tqdm(
-    enumerate(random_phenotypes), total=len(random_phenotypes), ncols=100
-):
+def _run_job(y):
     gene0_model_result, gene0_data = run_multixcan(y, gene0_pred_expr)
     gene1_model_result, gene1_data = run_multixcan(y, gene1_pred_expr)
 
-    gene0_ssms.append(get_ssm(gene0_model_result, gene0_data, y))
-    gene1_ssms.append(get_ssm(gene1_model_result, gene1_data, y))
+    return (
+        get_ssm(gene0_model_result, gene0_data, y),
+        gene0_data,
+        get_ssm(gene1_model_result, gene1_data, y),
+        gene1_data,
+    )
+
+
+gene0_ssms = []
+gene1_ssms = []
+with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
+    futures = {executor.submit(_run_job, y) for y in random_phenotypes}
+
+    for fut in tqdm(as_completed(futures), total=len(random_phenotypes), ncols=100):
+        gene0_result, gene0_data, gene1_result, gene1_data = fut.result()
+
+        gene0_ssms.append(gene0_result)
+        gene1_ssms.append(gene1_result)
 
 gene0_ssms = pd.Series(gene0_ssms)
 gene1_ssms = pd.Series(gene1_ssms)
