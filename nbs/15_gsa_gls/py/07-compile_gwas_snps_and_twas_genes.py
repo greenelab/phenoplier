@@ -308,6 +308,26 @@ genes_info = genes_info.assign(
 )
 
 # %%
+genes_info.dtypes
+
+# %%
+_tmp = genes_info[genes_info.isna().any(axis=1)]
+display(_tmp)
+assert _tmp.shape[0] < 5
+
+# %%
+genes_info = genes_info.dropna()
+
+# %%
+genes_info["chr"] = genes_info["chr"].apply(pd.to_numeric, downcast="integer")
+genes_info["start_position"] = genes_info["start_position"].astype(int)
+genes_info["end_position"] = genes_info["end_position"].astype(int)
+genes_info["gene_length"] = genes_info["gene_length"].astype(int)
+
+# %%
+genes_info.dtypes
+
+# %%
 assert genes_info["name"].is_unique
 
 # %%
@@ -485,6 +505,28 @@ spredixcan_genes_models = spredixcan_genes_models.assign(
 
 # %%
 spredixcan_genes_models.head()
+
+# %% [markdown]
+# ### Save
+
+# %% [markdown] tags=[]
+# Here I quickly save these results to a file, given that the next steps (covariates) are slow to compute.
+
+# %%
+# this is important, other scripts depend on gene_name to be unique
+assert spredixcan_genes_models["gene_name"].is_unique
+
+# %%
+assert not spredixcan_genes_models.isna().any(None)
+
+# %%
+spredixcan_genes_models.to_pickle(OUTPUT_DIR_BASE / "gene_tissues.pkl")
+
+# %% [markdown] tags=[]
+# ## Add covariates based on S-PrediXcan results
+
+# %% [markdown] tags=[]
+# This extend the previous file with more columns
 
 # %% [markdown]
 # ### Get gene's objects
