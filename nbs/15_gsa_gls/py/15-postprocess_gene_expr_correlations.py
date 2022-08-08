@@ -152,22 +152,10 @@ genes_info = genes_info[genes_info["id"].isin(gene_ids)]
 genes_info.shape
 
 # %%
-assert not genes_info.isna().any().any()
-
-# %%
-genes_info.dtypes
-
-# %%
-genes_info["chr"] = genes_info["chr"].apply(pd.to_numeric, downcast="integer")
-genes_info["start_position"] = genes_info["start_position"].astype(int)
-genes_info["end_position"] = genes_info["end_position"].astype(int)
-genes_info["gene_length"] = genes_info["gene_length"].astype(int)
-
-# %%
-genes_info.dtypes
-
-# %%
 assert not genes_info.isna().any(None)
+
+# %%
+genes_info.dtypes
 
 # %%
 genes_info.head()
