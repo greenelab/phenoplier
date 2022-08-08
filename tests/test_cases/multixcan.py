@@ -438,10 +438,15 @@ print(f"Correlation from genotype: {cov_ssm / (t0_ssm_sd * t1_ssm_sd)}")
 REFERENCE_PANEL = "1000G"
 EQTL_MODEL = "MASHR"
 PHENOTYPE_CODE = "pheno0"
-SPREDIXCAN_FOLDER = Path("/opt/data/results/gls/null_sims/twas/spredixcan/").resolve()
+SPREDIXCAN_FOLDER = Path(
+    conf.RESULTS["GLS_NULL_SIMS"] / "twas" / "spredixcan"
+).resolve()
 SPREDIXCAN_FILE_PATTERN = f"random.{PHENOTYPE_CODE}-gtex_v8-mashr-" + "{tissue}.csv"
 SMULTIXCAN_FILE = Path(
-    f"/opt/data/results/gls/null_sims/twas/smultixcan/random.{PHENOTYPE_CODE}-gtex_v8-mashr-smultixcan.txt"
+    conf.RESULTS["GLS_NULL_SIMS"]
+    / "twas"
+    / "smultixcan"
+    / f"random.{PHENOTYPE_CODE}-gtex_v8-mashr-smultixcan.txt"
 ).resolve()
 
 EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
@@ -512,8 +517,60 @@ gwas_phenotypes = pd.read_csv(
     sep=" ",
     index_col="IID",
 )
+
+# get residuals of phenotype by adjusting to covariates
+pca_eigenvec = (
+    pd.read_csv(
+        conf.A1000G["GENOTYPES_DIR"] / "subsets" / "all_phase3.7.pca_covar.eigenvec",
+        sep=" ",
+        header=None,
+    )
+    .rename(columns={1: "IID"})
+    .drop(columns=[0])
+    .set_index("IID")
+)
+assert pca_eigenvec.index.is_unique
+pca_eigenvec = pca_eigenvec.rename(
+    columns={c: f"pc{c-1}" for c in pca_eigenvec.columns}
+)
+
+assert gwas_phenotypes.index.equals(pca_eigenvec.index)
+
+individuals_sex = (
+    pd.read_csv(
+        conf.A1000G["GENOTYPES_DIR"] / "subsets" / "all_phase3.8.fam",
+        sep=" ",
+        header=None,
+        usecols=[1, 4],
+    )
+    .rename(columns={1: "IID", 4: "sex"})
+    .set_index("IID")
+)
+
+assert individuals_sex.index.equals(pca_eigenvec.index)
+
+covariates = pd.concat([individuals_sex, pca_eigenvec], axis=1)
+assert gwas_phenotypes.index.equals(covariates.index)
+
+
+def _get_residual(pheno):
+    keys = covariates.columns.tolist()
+    e_ = covariates.assign(pheno=pheno)
+    assert not e_.isna().any(None)
+
+    y, X = dmatrices(
+        "pheno ~ {}".format(" + ".join(keys)), data=e_, return_type="dataframe"
+    )
+    model = sm.OLS(y, X)
+    result = model.fit()
+    e_["residual"] = result.resid
+    return e_["residual"].rename(pheno.name)
+
+
 random_phenotypes = [
-    gwas_phenotypes[c] for c in gwas_phenotypes.columns if c.startswith("pheno")
+    _get_residual(gwas_phenotypes[c])
+    for c in gwas_phenotypes.columns
+    if c.startswith("pheno")
 ]
 
 # get all variants in prediction models
@@ -548,6 +605,7 @@ all_snps_in_models_per_chr = {
     for chromosome in all_gene_snps.index.unique()
 }
 
+# get common genes
 multiplier_genes = pd.read_pickle(conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]).index
 multiplier_genes = set(
     [Gene(name=g).ensembl_id for g in multiplier_genes if g in Gene.GENE_NAME_TO_ID_MAP]
@@ -558,6 +616,12 @@ common_genes = multiplier_genes.intersection(
 
 
 # predict expression for genes in all tissues
+#  or load the results with:
+# import pickle
+# with open(conf.DATA_DIR / "tmp" / "genes_predicted_expression.pkl", "rb") as h:
+#     genes_predicted_expression = pickle.load(h)
+
+
 def _run_predict_expression(gene_id, genotypes_filepath):
     gene_tissues = smultixcan_genes_tissues[gene_id]
 
@@ -608,6 +672,37 @@ with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
             gene_pred_expr = fut.result()
             genes_predicted_expression[gene_id] = gene_pred_expr
 
+# save results
+# import pickle
+# with open(conf.DATA_DIR / "tmp" / "genes_predicted_expression.pkl", "wb") as h:
+#     pickle.dump(genes_predicted_expression, h)
+
+# Free some memory
+del (
+    spredixcan_dfs,
+    spredixcan_result_files,
+    smultixcan_results,
+    smultixcan_genes_tissues,
+    mashr_models_db_files,
+    _genes,
+    selected_genes,
+    prediction_model_tissues,
+    pca_eigenvec,
+    individuals_sex,
+    covariates,
+    multiplier_genes,
+    gwas_phenotypes,
+    all_gene_snps,
+    all_snps_in_models_per_chr,
+    all_variants_ids,
+    common_genes,
+    gene_id_to_full_id_map,
+)
+
+import gc
+
+n = gc.collect()
+print("Number of unreachable objects collected by GC:", n)
 
 # run MultiXcan
 def _run_multixcan(y, gene_id):
@@ -655,21 +750,23 @@ with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
         # save
         if (fut_idx > 0) and (fut_idx % int(10 * len(genes_predicted_expression)) == 0):
             pd.DataFrame(gene_pheno_assoc).to_pickle(
-                f"base/data/tmp/res_{current_batch_number}.pkl"
+                conf.DATA_DIR / "tmp" / f"res_{current_batch_number}.pkl"
             )
             current_batch_number += 1
             gene_pheno_assoc = []
 
 # save
 pd.DataFrame(gene_pheno_assoc).to_pickle(
-    f"base/data/tmp/res_{current_batch_number}.pkl"
+    conf.DATA_DIR / "tmp" / f"res_{current_batch_number}.pkl"
 )
 
 # save results separately
-multixcan_nulls_dir = Path("base/results/gls/null_sims/twas/multixcan/").resolve()
+multixcan_nulls_dir = Path(
+    conf.RESULTS["GLS_NULL_SIMS"] / "twas" / "multixcan"
+).resolve()
 multixcan_nulls_dir.mkdir(exist_ok=True, parents=True)
 
-results_files = list(Path("base/data/tmp/").glob("res_*.pkl"))
+results_files = list(Path(conf.DATA_DIR / "tmp").glob("res_*.pkl"))
 all_results = []
 
 for res_f in results_files:
