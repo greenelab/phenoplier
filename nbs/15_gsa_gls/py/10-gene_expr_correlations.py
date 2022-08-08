@@ -112,7 +112,7 @@ assert CHROMOSOME is not None and (
     1 <= CHROMOSOME <= 22
 ), "You have to select one chromosome (format: number between 1 and 22)"
 
-CHROMOSOME = str(CHROMOSOME)
+# CHROMOSOME = str(CHROMOSOME)
 display(f"Working on chromosome {CHROMOSOME}")
 
 # %%
