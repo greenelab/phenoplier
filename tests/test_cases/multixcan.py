@@ -2,6 +2,7 @@
 It has code to run MultiXcan on randomly generated phenotypes and compute
 the correlation between two genes' sum of squares for model (SSM).
 """
+import pickle
 import sqlite3
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from functools import lru_cache
@@ -140,7 +141,7 @@ def predict_expression(
         ind_data, pf_variants = load_genotypes_from_chr(
             chromosome=int(gene0_obj.chromosome),
             reference_panel=reference_panel,
-            snps_subset=snps_subset,
+            snps_subset=frozenset(gene_variants),
         )
 
     gene_variants = [gv for gv in gene_variants if gv in pf_variants]
@@ -435,6 +436,7 @@ print(f"Correlation from genotype: {cov_ssm / (t0_ssm_sd * t1_ssm_sd)}")
 # attempt to run multixcan on null results from 1000G
 #
 
+COHORT_NAME = "1000G_EUR"
 REFERENCE_PANEL = "1000G"
 EQTL_MODEL = "MASHR"
 PHENOTYPE_CODE = "pheno0"
@@ -450,6 +452,16 @@ SMULTIXCAN_FILE = Path(
 ).resolve()
 
 EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
+
+INPUT_DIR_BASE = (
+    conf.RESULTS["GLS"]
+    / "gene_corrs"
+    / "cohorts"
+    / COHORT_NAME.lower()
+    / REFERENCE_PANEL.lower()
+    / EQTL_MODEL.lower()
+)
+assert INPUT_DIR_BASE.exists()
 
 prediction_model_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][
     f"{EQTL_MODEL}_TISSUES"
@@ -600,8 +612,16 @@ all_gene_snps = all_gene_snps.set_index("chr")
 all_gene_snps = (
     all_gene_snps.sort_index()
 )  # to improve performance in prediction expression
+
+# get intersection with 1000G GWAS' variants also
+# so it's compatible with gene expression correlations
+with open(INPUT_DIR_BASE / "gwas_variant_ids.pkl", "rb") as handle:
+    gwas_variants_ids_set = pickle.load(handle)
+
 all_snps_in_models_per_chr = {
-    chromosome: frozenset(all_gene_snps.loc[chromosome, "varID"])
+    chromosome: frozenset(
+        set(all_gene_snps.loc[chromosome, "varID"]).intersection(gwas_variants_ids_set)
+    )
     for chromosome in all_gene_snps.index.unique()
 }
 
@@ -617,7 +637,6 @@ common_genes = multiplier_genes.intersection(
 
 # predict expression for genes in all tissues
 #  or load the results with:
-# import pickle
 # with open(conf.DATA_DIR / "tmp" / "genes_predicted_expression.pkl", "rb") as h:
 #     genes_predicted_expression = pickle.load(h)
 
@@ -673,9 +692,8 @@ with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
             genes_predicted_expression[gene_id] = gene_pred_expr
 
 # save results
-# import pickle
-# with open(conf.DATA_DIR / "tmp" / "genes_predicted_expression.pkl", "wb") as h:
-#     pickle.dump(genes_predicted_expression, h)
+with open(conf.DATA_DIR / "tmp" / "genes_predicted_expression.pkl", "wb") as h:
+    pickle.dump(genes_predicted_expression, h)
 
 # Free some memory
 del (
@@ -696,7 +714,6 @@ del (
     all_snps_in_models_per_chr,
     all_variants_ids,
     common_genes,
-    gene_id_to_full_id_map,
 )
 
 import gc
@@ -728,6 +745,7 @@ def _run_multixcan(y, gene_id):
         "n_indep": gene_data.shape[1] - 1,  # minus intercept
     }
 
+assert _run_multixcan(random_phenotypes[0], "ENSG00000142166") is not None
 
 gene_pheno_assoc = []
 current_batch_number = 0
