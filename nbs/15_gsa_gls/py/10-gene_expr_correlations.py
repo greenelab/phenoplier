@@ -316,12 +316,12 @@ assert not gene_corrs_df.isna().any().any()
 # %%
 _min_val = gene_corrs_df.min().min()
 display(_min_val)
-assert _min_val >= 0.0
+assert _min_val >= -0.05
 
 # %%
 _max_val = gene_corrs_df.max().max()  # this captures the diagonal
 display(_max_val)
-assert _max_val <= 1.0
+assert _max_val <= 1.05
 
 # %%
 # check upper triangular values
@@ -348,8 +348,16 @@ try:
     chol_mat = np.linalg.cholesky(gene_corrs_df.to_numpy())
     cov_inv = np.linalg.inv(chol_mat)
     print("Works!")
-except:
-    print("Cholesky decomposition failed")
+except Exception as e:
+    print(f"Cholesky decomposition failed: {str(e)}")
+
+# %%
+try:
+    # decomposition used by statsmodels.GLS
+    cholsigmainv = np.linalg.cholesky(np.linalg.inv(gene_corrs_df.to_numpy())).T
+    print("Works!")
+except Exception as e:
+    print(f"Cholesky decomposition failed (statsmodels.GLS): {str(e)}")
 
 # %% [markdown]
 # ## Plot: distribution
