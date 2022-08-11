@@ -11,6 +11,15 @@ if [ -z "${NOTEBOOK}" ]; then
   exit 1
 fi
 
+# if file is python script (.py), then just run black on
+filename=$(basename -- "${NOTEBOOK}")
+extension="${filename##*.}"
+if [ "$extension" = "py" ]; then
+  echo "Input file is python script, running black only"
+  black ${NOTEBOOK}
+  exit 0
+fi
+
 # capture whether notebook has a python or R kernel
 regex="\"file_extension\": \"(\.[a-zA-Z]+)\"\,"
 value=`cat ${NOTEBOOK} | grep "file_extension"`
