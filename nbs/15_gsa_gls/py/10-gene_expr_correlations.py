@@ -218,14 +218,19 @@ print(f"Number of gene combinations: {n_comb}", flush=True)
 
 # %% tags=[]
 gene_corrs = []
+gene_corrs_data = np.full(
+    (n, n),
+    np.nan,
+    dtype=np.float64,
+)
 
 i = 0
 with tqdm(ncols=100, total=n_comb) as pbar:
-    for gene1_idx in range(0, len(gene_chr_objs) - 1):
+    for gene1_idx in range(0, len(gene_chr_objs)):
         gene1_obj = gene_chr_objs[gene1_idx]
         gene1_tissues = spredixcan_genes_models.loc[gene1_obj.ensembl_id, "tissue"]
 
-        for gene2_idx in range(gene1_idx + 1, len(gene_chr_objs)):
+        for gene2_idx in range(gene1_idx, len(gene_chr_objs)):
             gene2_obj = gene_chr_objs[gene2_idx]
             gene2_tissues = spredixcan_genes_models.loc[gene2_obj.ensembl_id, "tissue"]
 
@@ -252,6 +257,9 @@ with tqdm(ncols=100, total=n_comb) as pbar:
                     r = 0.0
 
                 gene_corrs.append(r)
+
+                gene_corrs_data[gene1_idx, gene2_idx] = r
+                gene_corrs_data[gene2_idx, gene1_idx] = r
             except Warning as e:
                 if not DEBUG_MODE:
                     raise e
@@ -283,8 +291,8 @@ gene_corrs_flat = pd.Series(gene_corrs)
 # save
 # FIXME: consider saving only the condenced matrix here. See here for
 # more details: https://github.com/greenelab/phenoplier/pull/38#discussion_r634600813
-gene_corrs_data = squareform(np.array(gene_corrs, dtype=np.float64))
-np.fill_diagonal(gene_corrs_data, 1.0)
+# gene_corrs_data = squareform(np.array(gene_corrs, dtype=np.float64))
+# np.fill_diagonal(gene_corrs_data, 1.0)
 
 gene_chr_ids = [g.ensembl_id for g in gene_chr_objs]
 gene_corrs_df = pd.DataFrame(
@@ -325,7 +333,7 @@ assert _max_val <= 1.05
 
 # %%
 # check upper triangular values
-assert len(gene_corrs) == int(genes_chr.shape[0] * (genes_chr.shape[0] - 1) / 2)
+# assert len(gene_corrs) == int(genes_chr.shape[0] * (genes_chr.shape[0] - 1) / 2)
 
 # %%
 gene_corrs_flat.describe()
