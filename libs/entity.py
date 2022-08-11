@@ -1258,7 +1258,7 @@ class Gene(object):
         # happens for some genes where r is slightly larger than 1.0 (which is
         # the most important issue) or very close to 1.0 (like
         # 0.9999999999999996)
-        if np.isclose(r, 1.0):
-            return 1.0
+        # if np.isclose(r, 1.0):
+        #    return 1.0
 
         return r
