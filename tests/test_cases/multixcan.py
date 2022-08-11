@@ -291,15 +291,15 @@ def run_multixcan(y, gene_pred_expr):
 
     model = sm.OLS(y, X)
     result = model.fit()
-    return result, X
+    return result, X, y
 
 
-def get_y_hat(multixcan_model_result, X_data):
-    return multixcan_model_result.predict(X_data)
+def get_y_hat(multixcan_model_result):
+    return multixcan_model_result.fittedvalues
 
 
-def get_ssm(multixcan_model_result, X_data, y_data):
-    y_hat = get_y_hat(multixcan_model_result, X_data)
+def get_ssm(multixcan_model_result, y_data):
+    y_hat = get_y_hat(multixcan_model_result)
     return np.power(y_hat - y_data.mean(), 2).sum()
 
 
@@ -391,13 +391,13 @@ for pheno_i in range(N_PHENOTYPES):
 
 # run multixcan, get SSMs
 def _run_job(y):
-    gene0_model_result, gene0_data = run_multixcan(y, gene0_pred_expr)
-    gene1_model_result, gene1_data = run_multixcan(y, gene1_pred_expr)
+    gene0_model_result, gene0_data, y_scaled = run_multixcan(y, gene0_pred_expr)
+    gene1_model_result, gene1_data, y_scaled = run_multixcan(y, gene1_pred_expr)
 
     return (
-        get_ssm(gene0_model_result, gene0_data, y),
+        get_ssm(gene0_model_result, y),
         gene0_data,
-        get_ssm(gene1_model_result, gene1_data, y),
+        get_ssm(gene1_model_result, y),
         gene1_data,
     )
 
