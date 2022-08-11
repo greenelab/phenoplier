@@ -64,26 +64,30 @@ SMULTIXCAN_FILE = None
 
 LV_CODE = None
 
-# %%
+# a number from 0.0 to 1.0 indicating a percentile of the genes in the LV to keep
+# if zero, then all nonzero weighted genes in the LV will be kept
+LV_PERCENTILE = None
+
+# %% tags=[]
 assert COHORT_NAME is not None and len(COHORT_NAME) > 0, "A cohort name must be given"
 
 COHORT_NAME = COHORT_NAME.lower()
 display(f"Cohort name: {COHORT_NAME}")
 
-# %%
+# %% tags=[]
 assert (
     REFERENCE_PANEL is not None and len(REFERENCE_PANEL) > 0
 ), "A reference panel must be given"
 
 display(f"Reference panel: {REFERENCE_PANEL}")
 
-# %%
+# %% tags=[]
 assert (
     EQTL_MODEL is not None and len(EQTL_MODEL) > 0
 ), "A prediction/eQTL model must be given"
 
 EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
-display(f"eQTL model: {EQTL_MODEL}) / {EQTL_MODEL_FILES_PREFIX}")
+display(f"eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
 
 # %% tags=[]
 assert (
@@ -94,10 +98,16 @@ assert SMULTIXCAN_FILE.exists(), "S-MultiXcan result file does not exist"
 
 display(f"S-MultiXcan file path: {str(SMULTIXCAN_FILE)}")
 
-# %%
+# %% tags=[]
 assert LV_CODE is not None and len(LV_CODE) > 0, "An LV code must be given"
 
-display(f"LV code: {LV_CODE})")
+display(f"LV code: {LV_CODE}")
+
+# %% tags=[]
+if LV_PERCENTILE is not None:
+    LV_PERCENTILE = float(LV_PERCENTILE)
+
+display(f"LV percentile: {LV_PERCENTILE}")
 
 # %% tags=[]
 OUTPUT_DIR_BASE = (
@@ -223,22 +233,34 @@ def store_df(nparray, base_filename):
         )
 
 
+# %%
+def get_sub_mat(corr_matrix, lv_data, lv_perc=None):
+    sub_mat = pd.DataFrame(
+        np.diag(np.diag(corr_matrix)),
+        index=corr_matrix.index.copy(),
+        columns=corr_matrix.columns.copy(),
+    )
+
+    lv_thres = 0.0
+    if lv_perc is not None and lv_perc > 0.0:
+        lv_thres = lv_data[lv_data > 0.0].quantile(lv_perc)
+
+    lv_selected_genes = lv_data[lv_data > lv_thres].index
+    lv_selected_genes = lv_selected_genes.intersection(corr_matrix.index)
+
+    sub_mat.loc[lv_selected_genes, lv_selected_genes] = corr_matrix.loc[
+        lv_selected_genes, lv_selected_genes
+    ]
+    return sub_mat
+
+
 # %% tags=[]
 def compute_chol_inv(lv_codes):
     for lv_code in lv_codes:
-        corr_mat_sub = pd.DataFrame(
-            np.identity(len(common_genes)),
-            index=common_genes.copy(),
-            columns=common_genes.copy(),
-        )
-
         lv_data = multiplier_z[lv_code]
-        lv_nonzero_genes = lv_data[lv_data > 0].index
-        lv_nonzero_genes = lv_nonzero_genes.intersection(corr_mat_sub.index)
 
-        corr_mat_sub.loc[lv_nonzero_genes, lv_nonzero_genes] = gene_corrs.loc[
-            lv_nonzero_genes, lv_nonzero_genes
-        ]
+        corr_mat_sub = get_sub_mat(gene_corrs, lv_data, LV_PERCENTILE)
+        store_df(corr_mat_sub.to_numpy(), f"{lv_code}_corr_mat")
 
         chol_mat = np.linalg.cholesky(corr_mat_sub)
         chol_inv = np.linalg.inv(chol_mat)
@@ -314,6 +336,7 @@ assert _metadata[1] == EQTL_MODEL
 # %% tags=[]
 # lv_last_inv = load_df("LV987")
 lv_last_inv = load_df(LV_CODE)
+display(lv_last_inv)
 
 # %% tags=[]
 # assert lv1_inv.shape == lv2_inv.shape
