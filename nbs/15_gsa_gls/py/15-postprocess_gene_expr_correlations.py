@@ -160,6 +160,87 @@ genes_info.dtypes
 # %%
 genes_info.head()
 
+
+# %% [markdown] tags=[]
+# # Functions to check positive definiteness
+
+# %%
+def check_pos_def(matrix):
+    # show negative eigenvalues
+    eigs = np.linalg.eigvals(matrix.to_numpy())
+    neg_eigs = eigs[eigs < 0]
+    display(f"Number of negative eigenvalues: {len(neg_eigs)}")
+    display(f"Negative eigenvalues:\n{neg_eigs}")
+
+    # check what statsmodels.GLS expects
+    try:
+        # decomposition used by statsmodels.GLS
+        cholsigmainv = np.linalg.cholesky(np.linalg.inv(matrix.to_numpy())).T
+        print("Works! (statsmodels.GLS)")
+    except Exception as e:
+        print(f"Cholesky decomposition failed (statsmodels.GLS): {str(e)}")
+
+    # check
+    CHOL_DECOMPOSITION_WORKED = None
+    chol_mat = None
+    chol_inv = None
+
+    try:
+        chol_mat = np.linalg.cholesky(matrix.to_numpy())
+        chol_inv = np.linalg.inv(chol_mat)
+        print("Works!")
+        CHOL_DECOMPOSITION_WORKED = True
+    except Exception as e:
+        print(f"Cholesky decomposition failed: {str(e)}")
+        CHOL_DECOMPOSITION_WORKED = False
+
+    return CHOL_DECOMPOSITION_WORKED, chol_mat, chol_inv
+
+
+# %%
+def compare_matrices(matrix1, matrix2, check_max=1e-10):
+    _diff = (matrix1 - matrix1).unstack()
+    display(_diff.describe())
+    display(_diff.sort_values())
+
+    if check_max is not None:
+        assert _diff.abs().max() < check_max
+
+
+# %%
+# %load_ext rpy2.ipython
+
+# %% language="R"
+# # taken and adapted from https://www.r-bloggers.com/2013/08/correcting-a-pseudo-correlation-matrix-to-be-positive-semidefinite/
+# CorrectCM <- function(CM, p = 0) {
+#   n <- dim(CM)[1L]
+#   E <- eigen(CM)
+#   CM1 <- E$vectors %*% tcrossprod(diag(pmax(E$values, p), n), E$vectors)
+#   Balance <- diag(1 / sqrt(diag(CM1)))
+#   CM2 <- Balance %*% CM1 %*% Balance
+#   return(CM2)
+# }
+
+# %%
+def adjust_non_pos_def(matrix, threshold=1e-5):
+    corr_mat_r = matrix.to_numpy()
+
+    # %Rpush corr_mat_r threshold
+    # %R -o corr_mat_r_fixed corr_mat_r_fixed <- CorrectCM(corr_mat_r, threshold)
+
+    # display(corr_mat_r_fixed.shape)
+
+    matrix_fixed = pd.DataFrame(
+        corr_mat_r_fixed,
+        index=matrix.index.copy(),
+        columns=matrix.columns.copy(),
+    )
+    # display(matrix_fixed.shape)
+    # display(matrix_fixed)
+
+    return matrix_fixed
+
+
 # %% [markdown] tags=[]
 # # Create full correlation matrix
 
@@ -180,47 +261,114 @@ full_corr_matrix = pd.DataFrame(
 assert full_corr_matrix.index.is_unique & full_corr_matrix.columns.is_unique
 
 # %%
-for chr_corr_file in all_gene_corr_files:
-    print(chr_corr_file.name, flush=True)
+# full_inv_chol_corr_matrix = pd.DataFrame(
+#     np.zeros((full_corr_matrix.shape[0], full_corr_matrix.shape[1])),
+#     index=full_corr_matrix.index.tolist(),
+#     columns=full_corr_matrix.columns.tolist(),
+# )
 
+# %%
+# assert (
+#     full_inv_chol_corr_matrix.index.is_unique
+#     & full_inv_chol_corr_matrix.columns.is_unique
+# )
+
+# %%
+for chr_corr_file in all_gene_corr_files:
+    print(chr_corr_file.name, flush=True, end="... ")
+
+    # get correlation matrix for this chromosome
     corr_data = pd.read_pickle(chr_corr_file)
+
+    # save gene correlation matrix
     full_corr_matrix.loc[corr_data.index, corr_data.columns] = corr_data
 
-# %%
-full_corr_matrix.shape
+    # save inverse of Cholesky decomposition of gene correlation matrix
+    # first, adjust correlation matrix if it is not positive definite
+    is_pos_def, chol_mat, chol_inv = check_pos_def(corr_data)
+
+    if is_pos_def:
+        print("all good.", flush=True, end="\n")
+        # full_inv_chol_corr_matrix.loc[corr_data.index, corr_data.columns] = chol_inv
+    else:
+        print("not positive definite, fixing... ", flush=True, end="")
+        corr_data_adjusted = adjust_non_pos_def(corr_data)
+
+        is_pos_def, chol_mat, chol_inv = check_pos_def(corr_data_adjusted)
+        assert is_pos_def, "Could not adjust gene correlation matrix"
+
+        print("fixed! comparing...", flush=True, end="\n")
+        compare_matrices(corr_data, corr_data_adjusted)
+
+        corr_data = corr_data_adjusted
+
+        # save
+        full_corr_matrix.loc[corr_data.index, corr_data.columns] = corr_data
+        # full_inv_chol_corr_matrix.loc[corr_data.index, corr_data.columns] = chol_inv
+
+    print("\n")
 
 # %%
-full_corr_matrix.head()
+# full_corr_matrix.shape
 
 # %%
-np.all(full_corr_matrix.to_numpy().diagonal() == 1.0)
+# full_corr_matrix.head()
+
+# %%
+# np.all(full_corr_matrix.to_numpy().diagonal() == 1.0)
+
+# %%
+# full_inv_chol_corr_matrix.shape
+
+# %%
+# full_inv_chol_corr_matrix.head()
 
 # %% [markdown] tags=[]
 # ## Some checks
 
 # %%
-assert not full_corr_matrix.isna().any(None)
-assert not np.isinf(full_corr_matrix.to_numpy()).any()
-assert not np.iscomplex(full_corr_matrix.to_numpy()).any()
-
-# %%
 _min_val = full_corr_matrix.min().min()
 display(_min_val)
-assert _min_val >= 0.0
+# assert _min_val >= -0.05
 
 # %%
-_max_val = full_corr_matrix.max().max()  # this will capture the 1.0 in the diagonal
+_max_val = full_corr_matrix.max().max()
 display(_max_val)
-assert _max_val <= 1.00
+# assert _max_val <= 1.05
 
 # %% [markdown] tags=[]
-# ## Save original matrix
+# ## Positive definiteness
 
 # %% [markdown] tags=[]
-# ### With gene symbols
+# In some cases, even if the submatrices are adjusted, the whole one is not.
+#
+# So here I check that again.
 
 # %%
-output_file = OUTPUT_DIR_BASE / "gene_corrs-symbols-orig.pkl"
+is_pos_def, chol_mat, chol_inv = check_pos_def(full_corr_matrix)
+
+if is_pos_def:
+    print("all good.", flush=True, end="\n")
+else:
+    print("not positive definite, fixing... ", flush=True, end="")
+    corr_data_adjusted = adjust_non_pos_def(full_corr_matrix)
+
+    is_pos_def, chol_mat, chol_inv = check_pos_def(corr_data_adjusted)
+    assert is_pos_def, "Could not adjust gene correlation matrix"
+
+    print("fixed! comparing...", flush=True, end="\n")
+    compare_matrices(full_corr_matrix, corr_data_adjusted)
+
+    full_corr_matrix = corr_data_adjusted
+
+# %% [markdown] tags=[]
+# ## Save
+
+# %% [markdown] tags=[]
+# ### Gene corrs with gene symbols
+
+# %%
+output_file = OUTPUT_DIR_BASE / "gene_covars-symbols.pkl"
 display(output_file)
 
 # %% tags=[]
@@ -249,106 +397,38 @@ gene_corrs.to_pickle(output_file)
 # %%
 del gene_corrs
 
-# %% [markdown]
-# # Positive definiteness
+# %% [markdown] tags=[]
+# ### Inverse of Cholesky decomposition with gene symbols
 
 # %%
-# print negative eigenvalues
-eigs = np.linalg.eigvals(full_corr_matrix.to_numpy())
-display(len(eigs[eigs < 0]))
-display(eigs[eigs < 0])
+# output_file = OUTPUT_DIR_BASE / "gene_covars-chol_inv-symbols.pkl"
+# display(output_file)
+
+# %% tags=[]
+# gene_corrs = full_inv_chol_corr_matrix.rename(
+#     index=Gene.GENE_ID_TO_NAME_MAP, columns=Gene.GENE_ID_TO_NAME_MAP
+# )
 
 # %%
-CHOL_DECOMPOSITION_FAILED = None
+# assert not gene_corrs.isna().any(None)
+# assert not np.isinf(gene_corrs.to_numpy()).any()
+# assert not np.iscomplex(gene_corrs.to_numpy()).any()
 
-try:
-    chol_mat = np.linalg.cholesky(full_corr_matrix.to_numpy())
-    cov_inv = np.linalg.inv(chol_mat)
-    print("Works!")
-    CHOL_DECOMPOSITION_FAILED = False
-except Exception as e:
-    print(f"Cholesky decomposition failed: {str(e)}")
-    CHOL_DECOMPOSITION_FAILED = True
+# %% tags=[]
+# assert gene_corrs.index.is_unique
+# assert gene_corrs.columns.is_unique
 
-# %% [markdown]
-# ## Adjust
+# %% tags=[]
+# gene_corrs.shape
 
-# %%
-# %load_ext rpy2.ipython
+# %% tags=[]
+# gene_corrs.head()
 
-# %% language="R"
-# # taken and adapted from https://www.r-bloggers.com/2013/08/correcting-a-pseudo-correlation-matrix-to-be-positive-semidefinite/
-# CorrectCM <- function(CM, p = 0) {
-#   n <- dim(CM)[1L]
-#   E <- eigen(CM)
-#   CM1 <- E$vectors %*% tcrossprod(diag(pmax(E$values, p), n), E$vectors)
-#   Balance <- diag(1 / sqrt(diag(CM1)))
-#   CM2 <- Balance %*% CM1 %*% Balance
-#   return(CM2)
-# }
+# %% tags=[]
+# gene_corrs.to_pickle(output_file)
 
 # %%
-if CHOL_DECOMPOSITION_FAILED:
-    corr_mat_r = full_corr_matrix.to_numpy()
-
-    # %Rpush corr_mat_r
-    # %R -o corr_mat_r_fixed corr_mat_r_fixed <- CorrectCM(corr_mat_r, 1e-5)
-
-    display(corr_mat_r_fixed.shape)
-
-    full_corr_matrix_fixed = pd.DataFrame(
-        corr_mat_r_fixed,
-        index=full_corr_matrix.index.copy(),
-        columns=full_corr_matrix.columns.copy(),
-    )
-    display(full_corr_matrix_fixed.shape)
-    display(full_corr_matrix_fixed)
-else:
-    print("No adjustment was necessary")
-
-# %% [markdown]
-# ## Make sure the new matrix is positive definite
-
-# %%
-if CHOL_DECOMPOSITION_FAILED:
-    # print negative eigenvalues
-    eigs = np.linalg.eigvals(full_corr_matrix_fixed.to_numpy())
-    display(len(eigs[eigs < 0]))
-    display(eigs[eigs < 0])
-
-    chol_mat = np.linalg.cholesky(full_corr_matrix_fixed.to_numpy())
-    cov_inv = np.linalg.inv(chol_mat)
-
-    assert not np.isnan(chol_mat).any()
-    assert not np.isinf(chol_mat).any()
-    assert not np.iscomplex(chol_mat).any()
-
-    assert not np.isnan(cov_inv).any()
-    assert not np.isinf(cov_inv).any()
-    assert not np.iscomplex(cov_inv).any()
-else:
-    print("No adjustment was necessary")
-
-# %% [markdown]
-# ## Compare adjusted and original correlation matrix
-
-# %%
-if CHOL_DECOMPOSITION_FAILED:
-    # print the element-wise difference between the original and the adjusted matrix
-    _diff = ((full_corr_matrix - full_corr_matrix_fixed) ** 2).unstack().sum()
-    display(_diff)
-    assert _diff < 1e-5
-else:
-    print("No adjustment was necessary")
-
-# %% [markdown]
-# ## Replace original matrix with adjusted one
-
-# %%
-if CHOL_DECOMPOSITION_FAILED:
-    full_corr_matrix = full_corr_matrix_fixed
-else:
-    print("No adjustment was necessary")
+# del gene_corrs
 
 # %% [markdown] tags=[]
 # # Stats
@@ -452,41 +532,5 @@ display(_corr_mat.quantile(np.arange(0.999, 1.0, 0.0001)))
 with sns.plotting_context("paper", font_scale=1.5):
     g = sns.displot(_corr_mat, kde=True, height=7)
     g.ax.set_title("Distribution of gene correlation values in all chromosomes")
-
-# %% [markdown] tags=[]
-# # Save
-
-# %% [markdown] tags=[]
-# ## With ensemble ids
-
-# %% [markdown] tags=[]
-# ## With gene symbols
-
-# %%
-output_file = OUTPUT_DIR_BASE / "gene_corrs-symbols.pkl"
-display(output_file)
-
-# %% tags=[]
-gene_corrs = full_corr_matrix.rename(
-    index=Gene.GENE_ID_TO_NAME_MAP, columns=Gene.GENE_ID_TO_NAME_MAP
-)
-
-# %%
-assert not gene_corrs.isna().any(None)
-assert not np.isinf(gene_corrs.to_numpy()).any()
-assert not np.iscomplex(gene_corrs.to_numpy()).any()
-
-# %% tags=[]
-assert gene_corrs.index.is_unique
-assert gene_corrs.columns.is_unique
-
-# %% tags=[]
-gene_corrs.shape
-
-# %% tags=[]
-gene_corrs.head()
-
-# %% tags=[]
-gene_corrs.to_pickle(output_file)
 
 # %% tags=[]
