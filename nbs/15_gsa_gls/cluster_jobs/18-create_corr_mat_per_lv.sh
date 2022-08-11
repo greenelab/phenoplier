@@ -35,13 +35,13 @@ create_corr_mat_per_lv () {
 
   cd ${PHENOPLIER_CODE_DIR}
   
-  notebook_output_folder="gene_corrs/cohorts/${cohort_name,,}/${ref_panel,,}/${eqtl_models,,}"
+  notebook_output_folder="gene_corrs/cohorts/${cohort_name,,}/${ref_panel,,}/${eqtl_models,,}/18-corr_mat_per_lv"
   full_notebook_output_folder="nbs/15_gsa_gls/${notebook_output_folder}"
   mkdir -p $full_notebook_output_folder
   
   bash nbs/run_nbs.sh \
     nbs/15_gsa_gls/18-create_corr_mat_per_lv.ipynb \
-    ${notebook_output_folder}/18-create_corr_mat_per_lv.ipynb \
+    ${notebook_output_folder}/18-create_corr_mat_per_lv-${lv_code}.run.ipynb \
     -p COHORT_NAME $cohort_name \
     -p REFERENCE_PANEL $ref_panel \
     -p EQTL_MODEL $eqtl_models \
