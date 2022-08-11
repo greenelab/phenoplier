@@ -745,6 +745,7 @@ def _run_multixcan(y, gene_id):
         "n_indep": gene_data.shape[1] - 1,  # minus intercept
     }
 
+
 assert _run_multixcan(random_phenotypes[0], "ENSG00000142166") is not None
 
 gene_pheno_assoc = []
