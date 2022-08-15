@@ -368,7 +368,7 @@ else:
 # ### Gene corrs with gene symbols
 
 # %%
-output_file = OUTPUT_DIR_BASE / "gene_covars-symbols.pkl"
+output_file = OUTPUT_DIR_BASE / "gene_corrs-symbols.pkl"
 display(output_file)
 
 # %% tags=[]
@@ -401,7 +401,7 @@ del gene_corrs
 # ### Inverse of Cholesky decomposition with gene symbols
 
 # %%
-# output_file = OUTPUT_DIR_BASE / "gene_covars-chol_inv-symbols.pkl"
+# output_file = OUTPUT_DIR_BASE / "gene_corrs-chol_inv-symbols.pkl"
 # display(output_file)
 
 # %% tags=[]
