@@ -2,321 +2,37 @@
 It has code to run MultiXcan on randomly generated phenotypes and compute
 the correlation between two genes' sum of squares for model (SSM).
 """
-import pickle
 import sqlite3
-from concurrent.futures import ProcessPoolExecutor, as_completed
-from functools import lru_cache
+import pickle
 from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
-from fastparquet import ParquetFile
-from tqdm import tqdm
+import numpy as np
 import pandas as pd
+from tqdm import tqdm
+from sklearn.preprocessing import scale
 
+from predixcan.expression_prediction import load_genotypes_from_chr, predict_expression
+from predixcan.multixcan import run_multixcan, get_ssm
 import conf
 from entity import Gene
 
-
-def get_gene_prediction_weights(gene_obj, gene_tissues, debug_messages: bool = True):
-    base_prediction_model_dir = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"]
-
-    all_genes_data = []
-
-    for tissue_name in gene_tissues:
-        if debug_messages:
-            print(tissue_name)
-
-        input_db_file = base_prediction_model_dir / f"mashr_{tissue_name}.db"
-        with sqlite3.connect(input_db_file) as cnx:
-            gene0 = pd.read_sql_query(
-                f'select * from weights where gene like "{gene_obj.ensembl_id}.%"', cnx
-            )
-            if gene0.shape[0] > 0:
-                gene0["tissue"] = tissue_name
-                all_genes_data.append(gene0)
-
-    if len(all_genes_data) == 0:
-        raise ValueError(f"No predictor SNPs for gene {gene_obj.ensembl_id}")
-
-    return all_genes_data
-
-
-@lru_cache(maxsize=1)
-def load_genotypes_from_chr(
-    chromosome: int, reference_panel: str, snps_subset: set = None
-):
-    base_reference_panel_dir = conf.PHENOMEXCAN["LD_BLOCKS"][
-        f"{reference_panel}_GENOTYPE_DIR"
-    ]
-
-    if reference_panel == "1000G":
-        chr_file_template = "chr{chromosome}.variants.parquet"
-    elif reference_panel == "GTEX_V8":
-        chr_file_template = "gtex_v8_eur_filtered_maf0.01_monoallelic_variants.chr{chromosome}.variants.parquet"
-    else:
-        raise ValueError(f"Invalid reference panel: {reference_panel}")
-
-    chr_parquet_file = base_reference_panel_dir / chr_file_template.format(
-        chromosome=chromosome
-    )
-    pf = ParquetFile(str(chr_parquet_file))
-    pf_variants = set(pf.columns)
-    if snps_subset is not None:
-        pf_variants = snps_subset.intersection(pf_variants)
-
-    # get individual level data
-    ind_data = pd.read_parquet(
-        chr_parquet_file,
-        columns=["individual"] + list(pf_variants),
-    )
-
-    return ind_data, pf_variants
-
-
-def predict_expression(
-    gene0_id,
-    gene1_id,
-    gene0_tissues=None,
-    gene1_tissues=None,
-    snps_subset: frozenset = None,
-    reference_panel: str = "1000G",
-    center_gene_expr=False,
-    genotypes_filepath: str = None,
-    debug_messages: bool = True,
-):
-    if gene0_tissues is None:
-        gene0_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_TISSUES"].split(
-            " "
-        )
-        gene0_tissues = sorted(gene0_tissues)
-
-    if gene0_id != gene1_id:
-        if gene1_tissues is None:
-            gene1_tissues = conf.PHENOMEXCAN["PREDICTION_MODELS"][
-                "MASHR_TISSUES"
-            ].split(" ")
-            gene1_tissues = sorted(gene1_tissues)
-    else:
-        gene1_tissues = gene0_tissues
-
-    # get genes' chromosomes
-    gene0_obj = Gene(ensembl_id=gene0_id)
-    if gene0_id != gene1_id:
-        gene1_obj = Gene(ensembl_id=gene1_id)
-        assert gene0_obj.chromosome == gene1_obj.chromosome
-    else:
-        gene1_obj = gene0_obj
-
-    if debug_messages:
-        print(f"Genes chromosome: {gene0_obj.chromosome}")
-
-    # get gene prediction weights
-    gene0_data = get_gene_prediction_weights(gene0_obj, gene0_tissues, debug_messages)
-    if gene0_id != gene1_id:
-        gene1_data = get_gene_prediction_weights(
-            gene1_obj, gene1_tissues, debug_messages
-        )
-    else:
-        gene1_data = gene0_data
-
-    if gene0_id != gene1_id:
-        all_genes_data = pd.concat(gene0_data + gene1_data, axis=0)
-    else:
-        all_genes_data = pd.concat(gene0_data, axis=0)
-    assert not all_genes_data.isna().any().any()
-
-    # get gene variants
-    gene_variants = list(set(all_genes_data["varID"].tolist()))
-    if debug_messages:
-        print(f"Number of unique variants: {len(gene_variants)}")
-    # keep only variants in snps_subset
-    if snps_subset is not None:
-        gene_variants = list(snps_subset.intersection(gene_variants))
-        if debug_messages:
-            print(f"Number of variants after filtering: {len(gene_variants)}")
-
-    if genotypes_filepath is not None:
-        ind_data = pd.read_pickle(genotypes_filepath)
-        pf_variants = set([c for c in ind_data.columns if c.startswith("chr")])
-    else:
-        ind_data, pf_variants = load_genotypes_from_chr(
-            chromosome=int(gene0_obj.chromosome),
-            reference_panel=reference_panel,
-            snps_subset=frozenset(gene_variants),
-        )
-
-    gene_variants = [gv for gv in gene_variants if gv in pf_variants]
-
-    all_genes_data = all_genes_data[all_genes_data["varID"].isin(gene_variants)]
-    if debug_messages:
-        print(all_genes_data)
-
-    ind_data = ind_data[["individual"] + gene_variants]
-
-    # predict expression for the two genes
-    def _predict_expression(gene_id, tissue_name):
-        gene_data = all_genes_data[
-            all_genes_data["gene"].str.startswith(gene_id + ".")
-            & (all_genes_data["tissue"] == tissue_name)
-        ].drop_duplicates(
-            subset=["gene", "varID", "tissue"]
-        )  # needed when the same gene/tissues are given
-
-        gene_expr = (
-            ind_data[["individual"] + gene_data["varID"].tolist()].set_index(
-                "individual"
-            )
-            @ gene_data[["varID", "weight"]].set_index("varID")
-        ).squeeze()
-
-        if gene_expr.sum() == 0.0:
-            return None
-
-        if center_gene_expr:
-            gene_expr = gene_expr - gene_expr.mean()
-
-        return gene_expr
-
-    gene0_pred_expr = pd.DataFrame(
-        {t: _predict_expression(gene0_id, t) for t in gene0_tissues}
-    ).dropna(how="all", axis=1)
-    assert not gene0_pred_expr.isna().any().any()
-
-    if gene0_id != gene1_id:
-        gene1_pred_expr = pd.DataFrame(
-            {t: _predict_expression(gene1_id, t) for t in gene1_tissues}
-        ).dropna(how="all", axis=1)
-        assert not gene1_pred_expr.isna().any().any()
-    else:
-        gene1_pred_expr = gene0_pred_expr
-
-    return gene0_pred_expr, gene1_pred_expr
-
-
-# MultiXcan
-
-
-# modules
-from patsy import dmatrices
-import numpy as np
-from numpy import dot as _dot
-import statsmodels.api as sm
-import pandas as pd
-
-from sklearn.preprocessing import scale
-
-# functions
-def _design_matrices(e_, keys):
-    formula = "pheno ~ {}".format(" + ".join(keys))
-    y, X = dmatrices(formula, data=e_, return_type="dataframe")
-    return y, X
-
-
-def _filter_eigen_values_from_max(s, ratio):
-    s_max = np.max(s)
-    return [i for i, x in enumerate(s) if x >= s_max * ratio]
-
-
-def pc_filter(x, cond_num=30):
-    return _filter_eigen_values_from_max(x, 1.0 / cond_num)
-
-
-class Math:
-    def standardize(x, unit_var=True):
-        mean = np.mean(x)
-        # follow R's convention, ddof=1
-        scale = np.std(x, ddof=1)
-        if scale == 0:
-            return None
-        x = x - mean
-        if unit_var:
-            x = x / scale
-        return x
-
-
-def _get_pc_input(e_, model_keys, unit_var=True):
-    Xc = []
-    _mk = []
-    for key in model_keys:
-        x = Math.standardize(e_[key], unit_var)
-        if x is not None:
-            Xc.append(x)
-            _mk.append(key)
-    return Xc, _mk
-
-
-def _pca_data(e_, model_keys, unit_var=True):
-    if e_.shape[1] == 2:
-        return e_, model_keys, model_keys, 1, 1, 1, 1, 1
-    # numpy.svd can't handle typical data size in UK Biobank. So we do PCA through the covariance matrix
-    # That is: we compute ths SVD of a covariance matrix, and use those coefficients to get the SVD of input data
-    # Shamelessly designed from https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca
-    # In numpy.cov, each row is a variable and each column an observation. Exactly opposite to standard PCA notation: it is transposed, then.
-    Xc_t, original_keys = _get_pc_input(e_, model_keys, unit_var)
-    k = np.cov(Xc_t)
-    u, s, vt = np.linalg.svd(k)
-    # we want to keep only those components with significant variance, to reduce dimensionality
-    selected = pc_filter(s)
-
-    variance = s[selected]
-    vt_projection = vt[selected]
-    Xc_t_ = _dot(vt_projection, Xc_t)
-    pca_keys = ["pc{}".format(i) for i in range(0, len(selected))]
-    _data = {pca_keys[i]: x for i, x in enumerate(Xc_t_)}
-    _data["pheno"] = e_.pheno
-    pca_data = pd.DataFrame(_data)
-
-    return (pca_data, pca_keys, selected, u, s, vt)
-
-    # original return:
-    # return (
-    #     pca_data,
-    #     pca_keys,
-    #     original_keys,
-    #     np.max(s),
-    #     np.min(s),
-    #     np.min(s[selected]),
-    #     vt_projection,
-    #     variance,
-    # )
-
-
-def run_multixcan(y, gene_pred_expr):
-    model_keys = gene_pred_expr.columns.tolist()
-
-    e_ = gene_pred_expr.assign(pheno=y)
-
-    e_, model_keys, *_tmp_rest = _pca_data(e_, model_keys)
-
-    y, X = _design_matrices(e_, model_keys)
-
-    model = sm.OLS(y, X)
-    result = model.fit()
-    return result, X, y
-
-
-def get_y_hat(multixcan_model_result):
-    return multixcan_model_result.fittedvalues
-
-
-def get_ssm(multixcan_model_result, y_data):
-    y_hat = get_y_hat(multixcan_model_result)
-    return np.power(y_hat - y_data.mean(), 2).sum()
-
-
-# Main
+#
+# Compute correlations between two genes
+#
 
 N_PHENOTYPES = 10000
 REFERENCE_PANEL = "GTEX_V8"
 ALL_TISSUES = conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_TISSUES"].split(" ")
 
-gene0_id = "ENSG00000180596"
-gene0_tissues = ("Small_Intestine_Terminal_Ileum", "Uterus")
-gene1_id = "ENSG00000180573"
-gene1_tissues = (
-    "Brain_Cerebellum",
-    "Esophagus_Gastroesophageal_Junction",
-    "Artery_Coronary",
-)
+# this is for testing purposes, but MultiXcan standardizes (x - mean / std) gene
+# expression data before running PCA
+USE_CORR_MATRIX_BEFORE_PCA = True
+
+gene0_id = "ENSG00000000938"
+gene0_tissues = tuple(ALL_TISSUES)
+gene1_id = "ENSG00000004455"
+gene1_tissues = tuple(ALL_TISSUES)
 # when interested in one gene only, the following code can be useful to
 # "ignore" gene1
 # gene1_id = gene0_id
@@ -326,28 +42,28 @@ gene1_tissues = (
 # gene0_tissues = ALL_TISSUES
 
 # code to disable snps_subset:
-# snps_subset = None
+snps_subset = None
 
-snps_subset = {
-    # first gene:
-    #  Small_Intestine_Terminal_Ileum
-    # "chr6_26124075_T_C_b38",  # remove, this removes this tissue
-    "chr6_26124202_C_T_b38",  # this SNP is not in the genotype
-    #  Uterus
-    # "chr6_26124075_T_C_b38",  # (same as other one)
-    "chr6_26124406_C_T_b38",
-    # second gene:
-    #  Brain_Cerebellum
-    # "chr6_26124075_T_C_b38",  # (same as other one)
-    "chr6_26124015_G_A_b38",
-    "chr6_26124406_C_T_b38",
-    #  Esophagus_Gastroesophageal_Junction
-    # "chr6_26124075_T_C_b38",  # (same as other one)
-    "chr6_26124015_G_A_b38",
-    # Artery_Coronary
-    # "chr6_26124075_T_C_b38",  # (same as other one)
-    "chr6_26124015_G_A_b38",
-}
+# snps_subset = {
+#     # first gene:
+#     #  Small_Intestine_Terminal_Ileum
+#     # "chr6_26124075_T_C_b38",  # remove, this removes this tissue
+#     "chr6_26124202_C_T_b38",  # this SNP is not in the genotype
+#     #  Uterus
+#     # "chr6_26124075_T_C_b38",  # (same as other one)
+#     "chr6_26124406_C_T_b38",
+#     # second gene:
+#     #  Brain_Cerebellum
+#     # "chr6_26124075_T_C_b38",  # (same as other one)
+#     "chr6_26124015_G_A_b38",
+#     "chr6_26124406_C_T_b38",
+#     #  Esophagus_Gastroesophageal_Junction
+#     # "chr6_26124075_T_C_b38",  # (same as other one)
+#     "chr6_26124015_G_A_b38",
+#     # Artery_Coronary
+#     # "chr6_26124075_T_C_b38",  # (same as other one)
+#     "chr6_26124015_G_A_b38",
+# }
 
 gene0_obj = Gene(ensembl_id=gene0_id)
 gene1_obj = Gene(ensembl_id=gene1_id)
@@ -375,8 +91,9 @@ gene0_pred_expr, gene1_pred_expr = predict_expression(
     snps_subset=snps_subset,
     reference_panel=REFERENCE_PANEL,
 )
-assert gene0_pred_expr.shape[1] == len(gene0_tissues)
-assert gene1_pred_expr.shape[1] == len(gene1_tissues)
+# the checks below might not be necessary if you are considering all tissues
+# assert gene0_pred_expr.shape[1] == len(gene0_tissues)
+# assert gene1_pred_expr.shape[1] == len(gene1_tissues)
 
 # generate random phenotypes
 rs = np.random.RandomState(0)
@@ -385,16 +102,20 @@ random_phenotypes = []
 for pheno_i in range(N_PHENOTYPES):
     y = pd.Series(
         rs.normal(size=gene0_pred_expr.shape[0]), index=gene0_pred_expr.index.tolist()
-    )
-    # y = y - y.mean()
+    ).rename(f"pheno{pheno_i}")
     random_phenotypes.append(y)
 
 # run multixcan, get SSMs
-def _run_job(y):
-    gene0_model_result, gene0_data, y_scaled = run_multixcan(y, gene0_pred_expr)
-    gene1_model_result, gene1_data, y_scaled = run_multixcan(y, gene1_pred_expr)
+def _run_job(y, y_idx):
+    gene0_model_result, gene0_data, _ = run_multixcan(
+        y, gene0_pred_expr, unit_var=USE_CORR_MATRIX_BEFORE_PCA
+    )
+    gene1_model_result, gene1_data, _ = run_multixcan(
+        y, gene1_pred_expr, unit_var=USE_CORR_MATRIX_BEFORE_PCA
+    )
 
     return (
+        y_idx,
         get_ssm(gene0_model_result, y),
         gene0_data,
         get_ssm(gene1_model_result, y),
@@ -402,19 +123,23 @@ def _run_job(y):
     )
 
 
+y_indices = []
 gene0_ssms = []
 gene1_ssms = []
 with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
-    futures = {executor.submit(_run_job, y) for y in random_phenotypes}
+    futures = {
+        executor.submit(_run_job, y, y_idx) for y_idx, y in enumerate(random_phenotypes)
+    }
 
     for fut in tqdm(as_completed(futures), total=len(random_phenotypes), ncols=100):
-        gene0_result, gene0_data, gene1_result, gene1_data = fut.result()
+        y_idx, gene0_result, gene0_data, gene1_result, gene1_data = fut.result()
 
+        y_indices.append(y_idx)
         gene0_ssms.append(gene0_result)
         gene1_ssms.append(gene1_result)
 
-gene0_ssms = pd.Series(gene0_ssms)
-gene1_ssms = pd.Series(gene1_ssms)
+gene0_ssms = pd.Series(gene0_ssms, y_indices).sort_index()
+gene1_ssms = pd.Series(gene1_ssms, y_indices).sort_index()
 
 # compute empirical correlation between SSMs
 print(f"Correlation from null: {gene0_ssms.corr(gene1_ssms)}")
@@ -437,7 +162,7 @@ print(f"Correlation from genotype: {cov_ssm / (t0_ssm_sd * t1_ssm_sd)}")
 #
 
 COHORT_NAME = "1000G_EUR"
-REFERENCE_PANEL = "1000G"
+REFERENCE_PANEL = "GTEX_V8"
 EQTL_MODEL = "MASHR"
 PHENOTYPE_CODE = "pheno0"
 SPREDIXCAN_FOLDER = Path(
@@ -674,6 +399,7 @@ with open(
 rs = np.random.RandomState(0)
 
 random_phenotypes = []
+gene_pred_expr = genes_predicted_expression["ENSG00000173614"]
 for pheno_i in range(N_PHENOTYPES):
     y = pd.Series(
         rs.normal(size=gene_pred_expr.shape[0]), index=gene_pred_expr.index.tolist()
@@ -762,6 +488,7 @@ with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor:
             )
             current_batch_number += 1
             gene_pheno_assoc = []
+            gc.collect()
 
 # save
 pd.DataFrame(gene_pheno_assoc).to_pickle(
@@ -775,6 +502,7 @@ multixcan_nulls_dir = Path(
 multixcan_nulls_dir.mkdir(exist_ok=True, parents=True)
 
 results_files = list(Path(output_dir / "multixcan").glob("res_*.pkl"))
+assert len(results_files) > 0
 all_results = []
 
 for res_f in results_files:
@@ -784,7 +512,7 @@ for res_f in results_files:
 all_results = pd.concat(all_results, axis=0)
 phenotypes_genes_count = all_results["phenotype"].value_counts()
 phenotypes_ready = phenotypes_genes_count[phenotypes_genes_count > 10].index
-# assert phenotypes_genes_count.unique().shape[0] == 1
+assert len(phenotypes_ready) > 0
 
 for pheno_number in phenotypes_ready:
     pheno_res = (
@@ -798,3 +526,130 @@ for pheno_number in phenotypes_ready:
         index=False,
         sep="\t",
     )
+
+
+#
+# Generate an empirical sampling distribution of SSM values per gene in
+# random phenotypes.
+#
+
+# # FIRST, generate a single file with random phenotypes
+# # this only needs to be run once
+# # read predicted expression
+# REFERENCE_PANEL = "1000G"
+# N_PHENOTYPES = 10000
+#
+# PREDICTED_EXPRESSION_FILE = (
+#     conf.DATA_DIR
+#     / "tmp"
+#     / "predict_expression"
+#     / REFERENCE_PANEL.lower()
+#     / "genes_predicted_expression.pkl"
+# )
+# assert PREDICTED_EXPRESSION_FILE.exists(), "Predicted expression does not exist"
+# with open(PREDICTED_EXPRESSION_FILE, "rb") as h:
+#     genes_predicted_expression = pickle.load(h)
+#
+# _gene_id = list(genes_predicted_expression.keys())[0]
+# _samples_ids = genes_predicted_expression[_gene_id].index.tolist()
+#
+# # generate random phenotypes
+# rs = np.random.RandomState(0)
+#
+# random_phenotypes = {}
+# for pheno_i in range(N_PHENOTYPES):
+#     y = pd.Series(rs.normal(size=len(_samples_ids)), index=_samples_ids).rename(
+#         f"pheno{pheno_i}"
+#     )
+#     random_phenotypes[y.name] = y
+#
+# pd.DataFrame(random_phenotypes).to_pickle(OUTPUT_DIR.parent / "random_phenotypes.pkl")
+#
+# # THEN, continue:
+#
+# COHORT_NAME = os.environ["PHENOPLIER_COHORT_NAME"]  # "1000G_EUR"
+# assert COHORT_NAME is not None and len(COHORT_NAME) > 0, "Cohort wrong"
+#
+# REFERENCE_PANEL = os.environ["PHENOPLIER_REFERENCE_PANEL"]  # "1000G"
+# assert REFERENCE_PANEL is not None and len(REFERENCE_PANEL) > 0, "Reference wrong"
+#
+# EQTL_MODEL = os.environ["PHENOPLIER_EQTL_MODEL"]  # "MASHR"
+# assert EQTL_MODEL is not None and len(EQTL_MODEL) > 0, "eQTL wrong"
+#
+# N_BATCHES = int(os.environ["PHENOPLIER_N_BATCHES"])
+# BATCH_ID = int(os.environ["PHENOPLIER_BATCH_ID"])
+# assert BATCH_ID < N_BATCHES, "batches wrong"
+#
+# INPUT_DIR_BASE = (
+#     conf.RESULTS["GLS"]
+#     / "gene_corrs"
+#     / "cohorts"
+#     / COHORT_NAME.lower()
+#     / REFERENCE_PANEL.lower()
+#     / EQTL_MODEL.lower()
+# )
+# assert INPUT_DIR_BASE.exists(), "Does not exist"
+#
+# OUTPUT_DIR = (
+#     conf.DATA_DIR
+#     / "tmp"
+#     / "predict_expression"
+#     / REFERENCE_PANEL.lower()
+#     / "ssms_nulls"
+#     / "batches"
+# )
+# OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
+#
+# # read predicted expression
+# PREDICTED_EXPRESSION_FILE = (
+#     conf.DATA_DIR
+#     / "tmp"
+#     / "predict_expression"
+#     / REFERENCE_PANEL.lower()
+#     / "genes_predicted_expression.pkl"
+# )
+# assert PREDICTED_EXPRESSION_FILE.exists(), "Predicted expression does not exist"
+# with open(PREDICTED_EXPRESSION_FILE, "rb") as h:
+#     genes_predicted_expression = pickle.load(h)
+#
+# # _gene_id = list(genes_predicted_expression.keys())[0]
+# # _samples_ids = genes_predicted_expression[_gene_id].index.tolist()
+# #
+# # # generate random phenotypes
+# # rs = np.random.RandomState(0)
+# #
+# # random_phenotypes = []
+# # for pheno_i in range(N_PHENOTYPES):
+# #     y = pd.Series(rs.normal(size=len(_samples_ids)), index=_samples_ids).rename(
+# #         f"pheno{pheno_i}"
+# #     )
+# #     random_phenotypes.append(y)
+#
+# random_phenotypes = pd.read_pickle(OUTPUT_DIR.parent / "random_phenotypes.pkl")
+#
+# # get genes chunk
+# genes_info = pd.read_pickle(INPUT_DIR_BASE / "genes_info.pkl")
+# genes_info = genes_info.sort_values(["chr", "start_position"])
+#
+# genes_chunks = np.array_split(genes_info, N_BATCHES)
+# selected_genes_chunk = genes_chunks[BATCH_ID]
+#
+# # run multixcan, get SSMs
+# all_genes_ssm = {}
+# for gene_id in selected_genes_chunk["id"]:
+#     print(gene_id)
+#
+#     gene_expression = genes_predicted_expression[gene_id]
+#
+#     gene_ssms = {}
+#     for y in tqdm(random_phenotypes, ncols=100):
+#         gene_model_result, gene_data, _ = run_multixcan(
+#             y, gene_expression, unit_var=False
+#         )
+#         y_ssm = get_ssm(gene_model_result, y)
+#         gene_ssms[y.name] = y_ssm
+#
+#     all_genes_ssm[gene_id] = pd.Series(gene_ssms)
+#
+# all_genes_ssm_df = pd.DataFrame(all_genes_ssm)
+# all_genes_ssm_df.to_pickle(OUTPUT_DIR / f"ssms-batch{BATCH_ID}_{N_BATCHES}.pkl")
