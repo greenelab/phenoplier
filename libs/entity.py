@@ -1010,62 +1010,6 @@ class Gene(object):
         return tuple(sorted(all_tissues))
 
     @lru_cache(maxsize=None)
-    def get_tissues_covariances(
-        self,
-        other_gene,
-        tissues: tuple = None,
-        other_tissues: tuple = None,
-        snps_subset: frozenset = None,
-        reference_panel: str = "GTEX_V8",
-        model_type: str = "MASHR",
-        use_within_distance=True,
-    ):
-        """
-        TODO
-        """
-        df = self.get_tissues_correlations(
-            other_gene=other_gene,
-            tissues=tissues,
-            other_tissues=other_tissues,
-            snps_subset=snps_subset,
-            reference_panel=reference_panel,
-            model_type=model_type,
-            use_within_distance=use_within_distance,
-        )
-
-        if df is None:
-            return None
-
-        for t1_idx, t1 in enumerate(df.index):
-            for t2_idx, t2 in enumerate(df.columns):
-                ec = df.iloc[t1_idx, t2_idx]
-
-                if ec is None or ec == 0.0:
-                    continue
-
-                # multiply correlation by sqrt(this_gene_var * other_gene_var)
-                this_gene_variance = self.get_pred_expression_variance(
-                    tissue=t1,
-                    reference_panel=reference_panel,
-                    model_type=model_type,
-                    snps_subset=snps_subset,
-                )
-
-                other_gene_variance = other_gene.get_pred_expression_variance(
-                    tissue=t2,
-                    reference_panel=reference_panel,
-                    model_type=model_type,
-                    snps_subset=snps_subset,
-                )
-
-                df.iloc[t1_idx, t2_idx] = ec * np.sqrt(
-                    this_gene_variance * other_gene_variance
-                )
-
-        # now it's the covariance matrix
-        return df
-
-    @lru_cache(maxsize=None)
     def get_tissues_correlations(
         self,
         other_gene,
@@ -1075,6 +1019,7 @@ class Gene(object):
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
         use_within_distance=True,
+        return_covariance: bool = False,
     ):
         """
         It computes the correlation matrix for two genes across all tissues.
@@ -1108,6 +1053,23 @@ class Gene(object):
                     use_within_distance=use_within_distance,
                 )
 
+                if ec is not None and ec != 0.0 and return_covariance:
+                    this_gene_variance = self.get_pred_expression_variance(
+                        tissue=t1,
+                        reference_panel=reference_panel,
+                        model_type=model_type,
+                        snps_subset=snps_subset,
+                    )
+
+                    other_gene_variance = other_gene.get_pred_expression_variance(
+                        tissue=t2,
+                        reference_panel=reference_panel,
+                        model_type=model_type,
+                        snps_subset=snps_subset,
+                    )
+
+                    ec = ec * np.sqrt(this_gene_variance * other_gene_variance)
+
                 # ec could be None; that means that there are no SNP preditors for one
                 # of the genes in the tissue
                 res[t1_idx, t2_idx] = ec
@@ -1119,10 +1081,6 @@ class Gene(object):
         df = df.dropna(axis=0, how="all").dropna(axis=1, how="all")
         if df.shape == (0, 0):
             return None
-
-        # if the diagonal are all close to 1.0, then round it to 1.0
-        if all([np.isclose(v, 1.0) for v in np.diag(df)]):
-            np.fill_diagonal(df.values, 1.0)
 
         return df
 
@@ -1145,19 +1103,17 @@ class Gene(object):
             s_max = np.max(s)
             return [i for i, x in enumerate(s) if x >= s_max * ratio]
 
-        if use_covariance_matrix:
-            get_tissue_corr_func = getattr(self, "get_tissues_covariances")
-        else:
-            get_tissue_corr_func = getattr(self, "get_tissues_correlations")
-
-        gene_corrs = get_tissue_corr_func(
+        gene_corrs = self.get_tissues_correlations(
             other_gene=self,
             tissues=tissues,
             other_tissues=tissues,
             snps_subset=snps_subset,
             reference_panel=reference_panel,
             model_type=model_type,
+            use_within_distance=True,
+            return_covariance=use_covariance_matrix,
         )
+
         if gene_corrs is None:
             return None
         u_i, s_i, V_i = np.linalg.svd(gene_corrs)

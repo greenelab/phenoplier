@@ -770,12 +770,13 @@ def test_get_tissues_covariances_same_gene():
     gene1_tissues = ("Small_Intestine_Terminal_Ileum", "Uterus")
 
     # get the correlation matrix of the gene expression across all tissues
-    genes_corrs = gene1.get_tissues_covariances(
+    genes_corrs = gene1.get_tissues_correlations(
         gene1,
         tissues=gene1_tissues,
         other_tissues=gene1_tissues,
         reference_panel="1000G",
         model_type="MASHR",
+        return_covariance=True,
     )
 
     # check shape
@@ -799,12 +800,13 @@ def test_get_tissues_covariances_different_gene():
     gene2_tissues = ("Nerve_Tibial", "Lung", "Testis")
 
     # get the correlation matrix of the gene expression across all tissues
-    genes_corrs = gene1.get_tissues_covariances(
+    genes_corrs = gene1.get_tissues_correlations(
         gene2,
         tissues=gene1_tissues,
         other_tissues=gene2_tissues,
         reference_panel="1000G",
         model_type="MASHR",
+        return_covariance=True,
     )
 
     # check shape
@@ -1794,6 +1796,23 @@ def test_ssm_correlation_same_gene():
     gene1 = Gene(ensembl_id="ENSG00000122025")
 
     genes_corr = gene1.get_ssm_correlation(gene1)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert genes_corr == pytest.approx(1.0)
+
+
+def test_ssm_correlation_same_gene_using_within_distance():
+    # ENSG00000122025
+    # FLT3
+    # chr 13
+    gene1 = Gene(ensembl_id="ENSG00000122025")
+
+    genes_corr = gene1.get_ssm_correlation(gene1, use_within_distance=True)
+    assert genes_corr is not None
+    assert isinstance(genes_corr, float)
+    assert genes_corr == pytest.approx(1.0)
+
+    genes_corr = gene1.get_ssm_correlation(gene1, use_within_distance=False)
     assert genes_corr is not None
     assert isinstance(genes_corr, float)
     assert genes_corr == pytest.approx(1.0)
