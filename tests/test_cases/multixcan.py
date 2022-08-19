@@ -10,12 +10,16 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from sklearn.preprocessing import scale
 
 from predixcan.expression_prediction import load_genotypes_from_chr, predict_expression
 from predixcan.multixcan import run_multixcan, get_ssm
 import conf
 from entity import Gene
+
+
+def scale(x):
+    return (x - x.mean()) / x.std(ddof=1)
+
 
 #
 # Compute correlations between two genes
@@ -158,7 +162,7 @@ print(f"Correlation from genotype: {cov_ssm / (t0_ssm_sd * t1_ssm_sd)}")
 
 
 #
-# attempt to run multixcan on null results from 1000G
+# Run multixcan on null results from 1000G or GTEX_V8
 #
 
 COHORT_NAME = "1000G_EUR"
