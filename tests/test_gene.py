@@ -2041,3 +2041,39 @@ def test_ssm_correlation_genes_in_same_band_within_distance_2():
 
     # check symmetry
     assert gene2.get_ssm_correlation(gene1) == pytest.approx(genes_corr, rel=1e-10)
+
+
+@pytest.mark.parametrize(
+    "tissue,snps_list,variances",
+    [
+        (
+            "Lung",
+            ("chr1_27634321_C_G_b38",),
+            [
+                0.1360539913529474,
+            ],
+        ),
+        (
+            "Whole_Blood",
+            ("chr7_26912520_T_C_b38",),
+            [
+                0.5072360250445618,
+            ],
+        ),
+        (
+            "Artery_Tibial",
+            (
+                "chr1_27631734_A_G_b38",
+                "chr1_27634321_C_G_b38",
+            ),
+            [
+                0.13112781954887204,
+                0.1326271561256085,
+            ],
+        ),
+    ],
+)
+def test_get_snps_variance(tissue, snps_list, variances):
+    obs_vars = Gene.get_snps_variance(tissue, snps_list, model_type="MASHR")
+    exp_vars = pd.Series({s: v for s, v in zip(snps_list, variances)})
+    pd.testing.assert_series_equal(obs_vars, exp_vars)
