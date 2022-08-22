@@ -806,9 +806,10 @@ class Gene(object):
             data = snps_var_data[
                 (snps_var_data["RSID1"] == snp_id) & (snps_var_data["RSID2"] == snp_id)
             ]
-            data = data.drop_duplicates(subset=["VALUE"])
-            assert data.shape[0] == 1
-            snp_vars[snp_id] = data.iloc[0]["VALUE"]
+            data = data.iloc[0]
+            # data = data.drop_duplicates(subset=["VALUE"])
+            # assert data.shape[0] == 1, (tissue, snp_id)
+            snp_vars[snp_id] = data["VALUE"]
 
         return pd.Series(snp_vars)
 
