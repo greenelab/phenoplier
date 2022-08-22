@@ -37,7 +37,7 @@ def get_gene_prediction_weights(gene_obj, gene_tissues, debug_messages: bool = T
 
 @lru_cache(maxsize=1)
 def load_genotypes_from_chr(
-    chromosome: int, reference_panel: str, snps_subset: set = None
+    chromosome: int, reference_panel: str, snps_subset: frozenset = None
 ):
     base_reference_panel_dir = conf.PHENOMEXCAN["LD_BLOCKS"][
         f"{reference_panel}_GENOTYPE_DIR"
