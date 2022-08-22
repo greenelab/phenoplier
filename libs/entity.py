@@ -780,6 +780,39 @@ class Gene(object):
             return snp_cov.to_numpy(), snp_cov_variants, snp_index_dict
 
     @staticmethod
+    @lru_cache(maxsize=None)
+    def get_snps_variance(tissue: str, snps_list: tuple, model_type: str):
+        """
+        TODO: complete
+        returns the variance for all snps
+        """
+        # check that the file for the tissue exists
+        model_prefix = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{model_type}_PREFIX"]
+
+        tissue_snps_var_file = (
+            conf.PHENOMEXCAN["PREDICTION_MODELS"][model_type]
+            / f"{model_prefix}{tissue}.txt.gz"
+        )
+
+        if not tissue_snps_var_file.exists():
+            raise ValueError(
+                f"SNPs variance file for tissue does not exist: {str(tissue_snps_var_file)}"
+            )
+
+        snps_var_data = pd.read_csv(tissue_snps_var_file, sep=" ")
+
+        snp_vars = {}
+        for snp_id in snps_list:
+            data = snps_var_data[
+                (snps_var_data["RSID1"] == snp_id) & (snps_var_data["RSID2"] == snp_id)
+            ]
+            data = data.drop_duplicates(subset=["VALUE"])
+            assert data.shape[0] == 1
+            snp_vars[snp_id] = data.iloc[0]["VALUE"]
+
+        return pd.Series(snp_vars)
+
+    @staticmethod
     def _get_snps_cov(
         snps_ids_list1,
         snps_ids_list2=None,
