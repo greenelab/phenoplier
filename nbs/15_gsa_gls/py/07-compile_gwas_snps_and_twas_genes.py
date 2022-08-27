@@ -708,6 +708,107 @@ spredixcan_genes_models.head()
 
 
 # %% [markdown]
+# ### Summarize prediction models for each gene
+
+# %%
+def _summarize_gene_models(gene_id):
+    """
+    For a given gene ID, it returns a dataframe with predictor SNPs in rows and tissues in columns, where
+    values are the weights of SNPs in those tissues.
+    It can contain NaNs.
+    """
+    gene_obj = spredixcan_gene_obj[gene_id]
+    gene_tissues = spredixcan_genes_models.loc[gene_id, "tissue"]
+
+    gene_models = {}
+    gene_unique_snps = set()
+    for t in gene_tissues:
+        gene_model = gene_obj.get_prediction_weights(tissue=t, model_type=EQTL_MODEL)
+        gene_models[t] = gene_model
+
+        gene_unique_snps.update(set(gene_model.index))
+
+    df = pd.DataFrame(
+        data=np.nan, index=list(gene_unique_snps), columns=list(gene_tissues)
+    )
+
+    for t in df.columns:
+        for snp in df.index:
+            gene_model = gene_models[t]
+
+            if snp in gene_model.index:
+                df.loc[snp, t] = gene_model.loc[snp]
+
+    return df
+
+
+# %%
+# testing
+spredixcan_gene_obj["ENSG00000000419"].get_prediction_weights(
+    tissue="Brain_Hypothalamus", model_type=EQTL_MODEL
+)
+
+# %%
+spredixcan_gene_obj["ENSG00000000419"].get_prediction_weights(
+    tissue="Brain_Substantia_nigra", model_type=EQTL_MODEL
+)
+
+# %%
+# # testing
+# _gene_id = "ENSG00000000419"
+
+# _gene_model = _summarize_gene_models(_gene_id)
+# assert (
+#     _gene_model.loc["chr20_50862947_C_T_b38", "Brain_Hypothalamus"].round(5) == 0.43138
+# )
+# assert pd.isnull(_gene_model.loc["chr20_50957480_C_T_b38", "Brain_Hypothalamus"])
+
+# assert pd.isnull(_gene_model.loc["chr20_50862947_C_T_b38", "Brain_Substantia_nigra"])
+# assert (
+#     _gene_model.loc["chr20_50957480_C_T_b38", "Brain_Substantia_nigra"].round(5)
+#     == -0.1468
+# )
+
+# %%
+gene_models = {}
+
+for gene_id in spredixcan_genes_models.index:
+    gene_models[gene_id] = _summarize_gene_models(gene_id)
+
+# %%
+# # testing
+# _gene_id = "ENSG00000000419"
+
+# _gene_model = gene_models[_gene_id]
+# assert (
+#     _gene_model.loc["chr20_50862947_C_T_b38", "Brain_Hypothalamus"].round(5) == 0.43138
+# )
+# assert pd.isnull(_gene_model.loc["chr20_50957480_C_T_b38", "Brain_Hypothalamus"])
+
+# assert pd.isnull(_gene_model.loc["chr20_50862947_C_T_b38", "Brain_Substantia_nigra"])
+# assert (
+#     _gene_model.loc["chr20_50957480_C_T_b38", "Brain_Substantia_nigra"].round(5)
+#     == -0.1468
+# )
+
+# %%
+# save
+import gzip
+
+with gzip.GzipFile(OUTPUT_DIR_BASE / "gene_tissues_models.pkl.gz", "w") as f:
+    pickle.dump(gene_models, f)
+
+# %%
+# testing saved file
+with gzip.GzipFile(OUTPUT_DIR_BASE / "gene_tissues_models.pkl.gz", "r") as f:
+    _tmp = pickle.load(f)
+
+# %%
+assert len(gene_models) == len(_tmp)
+assert gene_models["ENSG00000000419"].equals(_tmp["ENSG00000000419"])
+
+
+# %% [markdown]
 # ### Count number of _unique_ SNPs predictors used and available across tissue models
 
 # %%
