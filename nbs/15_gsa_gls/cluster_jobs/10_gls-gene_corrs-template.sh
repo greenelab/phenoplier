@@ -34,7 +34,7 @@ compute_correlations () {
 
   cd ${PHENOPLIER_CODE_DIR}
   
-  notebook_output_folder="gene_corrs/cohorts/${cohort_name,,}/${ref_panel,,}/${eqtl_models,,}"
+  notebook_output_folder="gene_corrs/cohorts/${cohort_name,,}/${ref_panel,,}/${eqtl_models,,}/10-gene_expr_corrs"
   full_notebook_output_folder="nbs/15_gsa_gls/${notebook_output_folder}"
   mkdir -p $full_notebook_output_folder
   
