@@ -208,35 +208,40 @@ def compare_matrices(matrix1, matrix2, check_max=1e-10):
 
 
 # %%
-# %load_ext rpy2.ipython
+def correct_corr_mat(corr_mat, threshold=1e-15):
+    """
+    It fixes a correlation matrix using its eigenvalues. The approach uses this function:
 
-# %% language="R"
-# # taken and adapted from https://www.r-bloggers.com/2013/08/correcting-a-pseudo-correlation-matrix-to-be-positive-semidefinite/
-# CorrectCM <- function(CM, p = 0) {
-#   n <- dim(CM)[1L]
-#   E <- eigen(CM)
-#   CM1 <- E$vectors %*% tcrossprod(diag(pmax(E$values, p), n), E$vectors)
-#   Balance <- diag(1 / sqrt(diag(CM1)))
-#   CM2 <- Balance %*% CM1 %*% Balance
-#   return(CM2)
-# }
+        https://www.statsmodels.org/dev/generated/statsmodels.stats.correlation_tools.corr_nearest.html
+
+    However, it could be slow in some cases. An alternative implementation is commented out below (read
+    details below).
+    """
+
+    from statsmodels.stats.correlation_tools import corr_nearest
+
+    return corr_nearest(corr_mat, threshold=threshold, n_fact=100)
+
+    # commented out below there is a manual method that is faster and computes the
+    # eigenvalues only once; it should be equivalent to the function corr_clipped from statsmodels.
+    # Compared to corr_neareast, the difference with the original correlation matrix is larger with
+    # the implementation below
+    #
+    # eigvals, eigvects = np.linalg.eigh(corr_mat)
+    # eigvals = np.maximum(eigvals, threshold)
+    # corr_mat_fixed = eigvects @ np.diag(eigvals) @ eigvects.T
+    # return corr_mat_fixed
+
 
 # %%
 def adjust_non_pos_def(matrix, threshold=1e-5):
-    corr_mat_r = matrix.to_numpy()
-
-    # %Rpush corr_mat_r threshold
-    # %R -o corr_mat_r_fixed corr_mat_r_fixed <- CorrectCM(corr_mat_r, threshold)
-
-    # display(corr_mat_r_fixed.shape)
+    corr_mat_r = correct_corr_mat(matrix, threshold)
 
     matrix_fixed = pd.DataFrame(
         corr_mat_r_fixed,
         index=matrix.index.copy(),
         columns=matrix.columns.copy(),
     )
-    # display(matrix_fixed.shape)
-    # display(matrix_fixed)
 
     return matrix_fixed
 
@@ -259,19 +264,6 @@ full_corr_matrix = pd.DataFrame(
 
 # %%
 assert full_corr_matrix.index.is_unique & full_corr_matrix.columns.is_unique
-
-# %%
-# full_inv_chol_corr_matrix = pd.DataFrame(
-#     np.zeros((full_corr_matrix.shape[0], full_corr_matrix.shape[1])),
-#     index=full_corr_matrix.index.tolist(),
-#     columns=full_corr_matrix.columns.tolist(),
-# )
-
-# %%
-# assert (
-#     full_inv_chol_corr_matrix.index.is_unique
-#     & full_inv_chol_corr_matrix.columns.is_unique
-# )
 
 # %%
 for chr_corr_file in all_gene_corr_files:
@@ -309,19 +301,13 @@ for chr_corr_file in all_gene_corr_files:
     print("\n")
 
 # %%
-# full_corr_matrix.shape
+full_corr_matrix.shape
 
 # %%
-# full_corr_matrix.head()
+full_corr_matrix.head()
 
 # %%
-# np.all(full_corr_matrix.to_numpy().diagonal() == 1.0)
-
-# %%
-# full_inv_chol_corr_matrix.shape
-
-# %%
-# full_inv_chol_corr_matrix.head()
+np.all(full_corr_matrix.to_numpy().diagonal() == 1.0)
 
 # %% [markdown] tags=[]
 # ## Some checks
@@ -396,39 +382,6 @@ gene_corrs.to_pickle(output_file)
 
 # %%
 del gene_corrs
-
-# %% [markdown] tags=[]
-# ### Inverse of Cholesky decomposition with gene symbols
-
-# %%
-# output_file = OUTPUT_DIR_BASE / "gene_corrs-chol_inv-symbols.pkl"
-# display(output_file)
-
-# %% tags=[]
-# gene_corrs = full_inv_chol_corr_matrix.rename(
-#     index=Gene.GENE_ID_TO_NAME_MAP, columns=Gene.GENE_ID_TO_NAME_MAP
-# )
-
-# %%
-# assert not gene_corrs.isna().any(None)
-# assert not np.isinf(gene_corrs.to_numpy()).any()
-# assert not np.iscomplex(gene_corrs.to_numpy()).any()
-
-# %% tags=[]
-# assert gene_corrs.index.is_unique
-# assert gene_corrs.columns.is_unique
-
-# %% tags=[]
-# gene_corrs.shape
-
-# %% tags=[]
-# gene_corrs.head()
-
-# %% tags=[]
-# gene_corrs.to_pickle(output_file)
-
-# %%
-# del gene_corrs
 
 # %% [markdown] tags=[]
 # # Stats
