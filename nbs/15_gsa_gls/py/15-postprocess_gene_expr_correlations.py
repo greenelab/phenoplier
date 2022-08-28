@@ -235,15 +235,13 @@ def correct_corr_mat(corr_mat, threshold=1e-15):
 
 # %%
 def adjust_non_pos_def(matrix, threshold=1e-5):
-    corr_mat_r = correct_corr_mat(matrix, threshold)
+    matrix_fixed = correct_corr_mat(matrix, threshold)
 
-    matrix_fixed = pd.DataFrame(
-        corr_mat_r_fixed,
+    return pd.DataFrame(
+        matrix_fixed,
         index=matrix.index.copy(),
         columns=matrix.columns.copy(),
     )
-
-    return matrix_fixed
 
 
 # %% [markdown] tags=[]

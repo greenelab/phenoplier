@@ -39,7 +39,7 @@ postprocess_correlation_matrices () {
   
   bash nbs/run_nbs.sh \
     nbs/15_gsa_gls/15-postprocess_gene_expr_correlations.ipynb \
-    ${notebook_output_folder}/15-postprocess_gene_expr_correlations.ipynb \
+    ${notebook_output_folder}/15-postprocess_gene_expr_correlations.run.ipynb \
     -p COHORT_NAME $cohort_name \
     -p REFERENCE_PANEL $ref_panel \
     -p EQTL_MODEL $eqtl_models
