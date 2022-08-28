@@ -181,7 +181,8 @@ class GLSPhenoplier(object):
         common_genes = gene_phenotype_assoc.index.intersection(gene_lv_weights.index)
 
         if gene_correlations is not None:
-            common_genes = common_genes.intersection(gene_correlations.index)
+            # keep order of genes in gene_correlations
+            common_genes = [g for g in gene_correlations.index if g in common_genes]
 
         return (
             gene_phenotype_assoc.loc[common_genes],
@@ -238,6 +239,27 @@ class GLSPhenoplier(object):
 
         return self._fit_general(x, y, gene_corrs)
 
+    @staticmethod
+    def get_sub_mat(corr_matrix, lv_data, lv_perc=None):
+        sub_mat = pd.DataFrame(
+            np.eye(corr_matrix.shape[0]),
+            index=corr_matrix.index.copy(),
+            columns=corr_matrix.columns.copy(),
+        )
+
+        lv_thres = 0.0
+        if lv_perc is not None and lv_perc > 0.0:
+            # lv_thres = lv_data[lv_data > 0.0].quantile(lv_perc)
+            lv_thres = lv_data.quantile(1.0 - lv_perc)
+
+        lv_selected_genes = lv_data[lv_data >= lv_thres].index
+        lv_selected_genes = lv_selected_genes.intersection(corr_matrix.index)
+
+        sub_mat.loc[lv_selected_genes, lv_selected_genes] = corr_matrix.loc[
+            lv_selected_genes, lv_selected_genes
+        ]
+        return sub_mat
+
     def _fit_named_cli(self, lv_code: str, phenotype, lv_weights_file: str = None):
         """
         phenotype: could be pd.Series (no covariates) or pd.DataFrame
@@ -250,23 +272,17 @@ class GLSPhenoplier(object):
         x = lv_weights[lv_code]
 
         if self.debug_use_sub_gene_corr and self.gene_corrs_file_path.is_file():
+            perc = 0.01
             self.log_info(
-                f"Using submatrix of gene correlations with nonzero genes in {lv_code}"
+                f"Using submatrix of gene correlations with perc {perc} for {lv_code}"
             )
+            gene_corrs = GLSPhenoplier.get_sub_mat(gene_corrs, x, perc)
 
-            corr_mat_sub = pd.DataFrame(
-                np.identity(gene_corrs.shape[0]),
-                index=gene_corrs.index.copy(),
-                columns=gene_corrs.columns.copy(),
+            genes_corrs_sum = gene_corrs.sum()
+            n_genes_included = genes_corrs_sum[genes_corrs_sum > 1.0].shape[0]
+            self.log_info(
+                f"Submatrix of correlations has {n_genes_included} genes correlated with others"
             )
-
-            lv_nonzero_genes = x[x > 0].index
-            lv_nonzero_genes = lv_nonzero_genes.intersection(gene_corrs.index)
-            corr_mat_sub.loc[lv_nonzero_genes, lv_nonzero_genes] = gene_corrs.loc[
-                lv_nonzero_genes, lv_nonzero_genes
-            ]
-
-            gene_corrs = corr_mat_sub
 
         return self._fit_general(x, phenotype, gene_corrs)
 
@@ -383,16 +399,20 @@ class GLSPhenoplier(object):
                 else:
                     raise ValueError("Bad combination of arguments")
             else:
-                # FIXME: if I cache chol(gene_corrs)^-1, then I should make
-                #  sure that if new calls to fit are done, then the new
-                #  phenotype should have exactly the same number of genes as the
-                #  one when the matrix was cached.
                 if self.cov_inv is None:
                     chol_mat = np.linalg.cholesky(gene_corrs)
                     cov_inv = np.linalg.inv(chol_mat)
                     self.cov_inv = cov_inv
+
+                    # I cache also the gene names from the correlation matrix.
+                    # This have to be the same if new data is fitted using the same
+                    # GLSPhenoplier object.
+                    self.cov_inv_genes = gene_corrs.index.tolist()
                 else:
                     cov_inv = self.cov_inv
+                    assert (
+                        data.index.tolist() == self.cov_inv_genes
+                    ), "Cached inverse matrix is not compatible with new data"
 
             Xn = data[predictor_cols].to_numpy()
             yn = data[phenotype_col].to_numpy()
