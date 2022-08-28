@@ -339,6 +339,7 @@ def run():
 
     # convert p-values
     # final_data["y"] = np.abs(stats.norm.ppf(final_data["y"] / 2))
+    logger.info("Using -log10(pvalue)")
     final_data["y"] = -np.log10(final_data["y"])
 
     if final_data.shape[1] == 1:
@@ -437,7 +438,7 @@ def run():
             }
         )
 
-    results = pd.DataFrame(results).set_index("lv")
+    results = pd.DataFrame(results).set_index("lv").sort_values("pvalue_onesided")
     logger.info(f"Writing results to {str(output_file)}")
     results.to_csv(output_file, sep="\t", na_rep="NA")
 
