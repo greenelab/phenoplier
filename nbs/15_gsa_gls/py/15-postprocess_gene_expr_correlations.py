@@ -166,9 +166,9 @@ genes_info.head()
 
 # %%
 def check_pos_def(matrix):
-    # show negative eigenvalues
+    # show nonpositive eigenvalues
     eigs = np.linalg.eigvals(matrix.to_numpy())
-    neg_eigs = eigs[eigs < 0]
+    neg_eigs = eigs[eigs <= 0]
     display(f"Number of negative eigenvalues: {len(neg_eigs)}")
     display(f"Negative eigenvalues:\n{neg_eigs}")
 
@@ -208,7 +208,7 @@ def compare_matrices(matrix1, matrix2, check_max=1e-10):
 
 
 # %%
-def correct_corr_mat(corr_mat, threshold=1e-15):
+def correct_corr_mat(corr_mat, threshold):
     """
     It fixes a correlation matrix using its eigenvalues. The approach uses this function:
 
@@ -234,7 +234,7 @@ def correct_corr_mat(corr_mat, threshold=1e-15):
 
 
 # %%
-def adjust_non_pos_def(matrix, threshold=1e-5):
+def adjust_non_pos_def(matrix, threshold=1e-15):
     matrix_fixed = correct_corr_mat(matrix, threshold)
 
     return pd.DataFrame(
