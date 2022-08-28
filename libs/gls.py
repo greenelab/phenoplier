@@ -344,10 +344,26 @@ class GLSPhenoplier(object):
         else:
             raise ValueError(f"Wrong number of columns for y: {y.shape[1]}")
 
+        # binarize x using top genes in LV
+        # FIXME: here x_perc is hardcoded at 1%, but the correlation matrices
+        #  must be constructed with the same number for each individual LV (if
+        #  using a submatrix of the correlation matrices).
+        x_perc = 0.01
+        x_q = x.quantile(1.0 - x_perc)
+        x_binarized = x.copy()
+        x_cond = (x_binarized > 0.0) & (x_binarized >= x_q)
+        x_binarized[x_cond] = 1.0
+        x_binarized[~x_cond] = 0.0
+        x_summary = x_binarized.value_counts()
+        assert x_summary.shape[0] == 2, "Wrong binarization"
+        n_pos = int(x_summary.loc[1.0])
+        n_neg = int(x_summary.loc[0.0])
+        self.log_info(f"Using binarized LV at {int(100 * x_perc)}% ({n_pos} / {n_neg})")
+
         data = pd.DataFrame(
             {
                 "i": 1.0,
-                "lv": (x - x.mean()) / x.std(),
+                "lv": x_binarized,
                 phenotype_col: (dependent_var - dependent_var.mean())
                 / dependent_var.std(),
             }
