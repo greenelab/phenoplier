@@ -30,12 +30,12 @@ create_corr_mat_per_lv () {
   cohort_name="$1"
   ref_panel="$2"
   eqtl_models="$3"
-  smultixcan_file="$4"
-  lv_code="$5"
+  lv_code="$4"
+  lv_perc="$5"
 
   cd ${PHENOPLIER_CODE_DIR}
   
-  notebook_output_folder="gene_corrs/cohorts/${cohort_name,,}/${ref_panel,,}/${eqtl_models,,}/18-corr_mat_per_lv"
+  notebook_output_folder="gene_corrs/cohorts/${cohort_name,,}/${ref_panel,,}/${eqtl_models,,}/18-corr_mat_per_lv/lv_perc-${lv_perc}"
   full_notebook_output_folder="nbs/15_gsa_gls/${notebook_output_folder}"
   mkdir -p $full_notebook_output_folder
   
@@ -45,8 +45,8 @@ create_corr_mat_per_lv () {
     -p COHORT_NAME $cohort_name \
     -p REFERENCE_PANEL $ref_panel \
     -p EQTL_MODEL $eqtl_models \
-    -p SMULTIXCAN_FILE $smultixcan_file \
-    -p LV_CODE $lv_code
+    -p LV_CODE $lv_code \
+    -p LV_PERCENTILE $lv_perc
 }
 export -f create_corr_mat_per_lv
 
@@ -54,6 +54,6 @@ create_corr_mat_per_lv \
     ${cohort_name_param} \
     ${ref_panel_param} \
     ${eqtl_model_param} \
-    ${smultixcan_file_param} \
-    ${lv_code_param}
+    ${lv_code_param} \
+    ${lv_perc_param}
 
