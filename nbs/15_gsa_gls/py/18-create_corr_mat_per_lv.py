@@ -44,6 +44,7 @@ from tqdm import tqdm
 import conf
 from utils import chunker
 from entity import Gene
+from gls import GLSPhenoplier
 
 # %% [markdown] tags=[]
 # # Settings
@@ -58,14 +59,11 @@ REFERENCE_PANEL = None
 # predictions models such as MASHR or ELASTIC_NET
 EQTL_MODEL = None
 
-# This is one S-MultiXcan result file on the same target cohort
-# Genes will be read from here to align the correlation matrices
-SMULTIXCAN_FILE = None
-
 LV_CODE = None
 
-# a number from 0.0 to 1.0 indicating a percentile of the genes in the LV to keep
-# if zero, then all nonzero weighted genes in the LV will be kept
+# A number from 0.0 to 1.0 indicating the top percentile of the genes in the LV to keep.
+# A value of 0.01 would take the top 1% of the genes in the LV.
+# If zero or None, then all nonzero weighted genes in the LV will be kept.
 LV_PERCENTILE = None
 
 # %% tags=[]
@@ -88,15 +86,6 @@ assert (
 
 EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
 display(f"eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
-
-# %% tags=[]
-assert (
-    SMULTIXCAN_FILE is not None and len(SMULTIXCAN_FILE) > 0
-), "An S-MultiXcan result file path must be given"
-SMULTIXCAN_FILE = Path(SMULTIXCAN_FILE).resolve()
-assert SMULTIXCAN_FILE.exists(), "S-MultiXcan result file does not exist"
-
-display(f"S-MultiXcan file path: {str(SMULTIXCAN_FILE)}")
 
 # %% tags=[]
 assert LV_CODE is not None and len(LV_CODE) > 0, "An LV code must be given"
@@ -124,35 +113,6 @@ display(f"Using output dir base: {OUTPUT_DIR_BASE}")
 
 # %% [markdown] tags=[]
 # # Load data
-
-# %% [markdown] tags=[]
-# ## S-MultiXcan genes
-
-# %% tags=[]
-smultixcan_df = pd.read_csv(SMULTIXCAN_FILE, sep="\t")
-
-# %% tags=[]
-smultixcan_df.shape
-
-# %% tags=[]
-smultixcan_df.head()
-
-# %% tags=[]
-assert not smultixcan_df.isin([np.inf, -np.inf]).any().any()
-
-# %% tags=[]
-# remove NaNs
-smultixcan_df = smultixcan_df.dropna(subset=["pvalue"])
-display(smultixcan_df.shape)
-
-# %% tags=[]
-smultixcan_genes = set(smultixcan_df["gene_name"].tolist())
-
-# %% tags=[]
-len(smultixcan_genes)
-
-# %% tags=[]
-sorted(list(smultixcan_genes))[:5]
 
 # %% [markdown] tags=[]
 # ## Gene correlations
@@ -198,11 +158,7 @@ multiplier_z.head()
 # ## Common genes
 
 # %% tags=[]
-common_genes = sorted(
-    list(
-        smultixcan_genes.intersection(multiplier_z.index).intersection(gene_corrs.index)
-    )
-)
+common_genes = sorted(list(gene_corrs.index))
 
 # %% tags=[]
 len(common_genes)
@@ -233,33 +189,12 @@ def store_df(nparray, base_filename):
         )
 
 
-# %%
-def get_sub_mat(corr_matrix, lv_data, lv_perc=None):
-    sub_mat = pd.DataFrame(
-        np.diag(np.diag(corr_matrix)),
-        index=corr_matrix.index.copy(),
-        columns=corr_matrix.columns.copy(),
-    )
-
-    lv_thres = 0.0
-    if lv_perc is not None and lv_perc > 0.0:
-        lv_thres = lv_data[lv_data > 0.0].quantile(lv_perc)
-
-    lv_selected_genes = lv_data[lv_data > lv_thres].index
-    lv_selected_genes = lv_selected_genes.intersection(corr_matrix.index)
-
-    sub_mat.loc[lv_selected_genes, lv_selected_genes] = corr_matrix.loc[
-        lv_selected_genes, lv_selected_genes
-    ]
-    return sub_mat
-
-
 # %% tags=[]
 def compute_chol_inv(lv_codes):
     for lv_code in lv_codes:
         lv_data = multiplier_z[lv_code]
 
-        corr_mat_sub = get_sub_mat(gene_corrs, lv_data, LV_PERCENTILE)
+        corr_mat_sub = GLSPhenoplier.get_sub_mat(gene_corrs, lv_data, LV_PERCENTILE)
         store_df(corr_mat_sub.to_numpy(), f"{lv_code}_corr_mat")
 
         chol_mat = np.linalg.cholesky(corr_mat_sub)
