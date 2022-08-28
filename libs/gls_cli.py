@@ -285,7 +285,7 @@ def run():
                 )
                 assert (
                     cohort_gene_tissues_filepath.exists()
-                ), "No gene_tissues.pkl[.gz] exists in cohort metadata folder"
+                ), f"No gene_tissues.pkl[.gz] exists in cohort metadata folder: {cohort_metadata_dir}"
 
             logger.info(f"Loading cohort metadata: {str(cohort_gene_tissues_filepath)}")
             cohort_gene_tissues = pd.read_pickle(
@@ -315,7 +315,7 @@ def run():
             if "gene_n_snps_used_density" in covars_selected:
                 covars = covars.assign(
                     gene_n_snps_used_density=cohort_gene_tissues.apply(
-                        lambda x: x["n_snps_used_sum"] / x["n_snps_in_model_sum"],
+                        lambda x: x["n_snps_used_sum"] / x["unique_n_snps_used"],
                         axis=1,
                     )
                 )
@@ -338,9 +338,8 @@ def run():
         final_data = pd.concat([final_data, covars[covars_selected]], axis=1)
 
     # convert p-values
-    # TODO: add optional parameter to convert using either -log10 or z-score
-    final_data["y"] = np.abs(stats.norm.ppf(final_data["y"] / 2))
-    # final_data["y"] = -np.log10(final_data)
+    # final_data["y"] = np.abs(stats.norm.ppf(final_data["y"] / 2))
+    final_data["y"] = -np.log10(final_data["y"])
 
     if final_data.shape[1] == 1:
         final_data = final_data.squeeze().rename(input_file.stem)
