@@ -8,7 +8,7 @@
 # BSUB -n 1
 # BSUB -R "rusage[mem=6GB]"
 # BSUB -M 10GB
-# BSUB -W 00:15
+# BSUB -W 00:30
 # BSUB -R 'select[hname!=lambda25]'
 
 # IMPORTANT: this is not a ready-for-submission script, it's a template.
