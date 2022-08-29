@@ -26,6 +26,11 @@ export OPEN_BLAS_NUM_THREADS=${n_jobs}
 export NUMEXPR_NUM_THREADS=${n_jobs}
 export OMP_NUM_THREADS=${n_jobs}
 
+# Helps to fix this issue:
+#  https://github.com/nteract/papermill/issues/511
+export JUPYTER_RUNTIME_DIR="${HOME}/tmp/jupyter/${cohort_name_param}/${lv_code_param}"
+mkdir -p ${JUPYTER_RUNTIME_DIR}
+
 create_corr_mat_per_lv () {
   cohort_name="$1"
   ref_panel="$2"
@@ -56,4 +61,7 @@ create_corr_mat_per_lv \
     ${eqtl_model_param} \
     ${lv_code_param} \
     ${lv_perc_param}
+
+
+rm -rf ${JUPYTER_RUNTIME_DIR}
 
