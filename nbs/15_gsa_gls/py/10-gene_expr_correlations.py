@@ -213,7 +213,8 @@ gene_chr_objs = [Gene(ensembl_id=gene_id) for gene_id in genes_chr["id"]]
 
 # %%
 n = len(gene_chr_objs)
-n_comb = int(n * (n - 1) / 2.0)
+# diagonal elements + upper triangular matrix
+n_comb = n + int(n * (n - 1) / 2.0)
 print(f"Number of gene combinations: {n_comb}", flush=True)
 
 # %% tags=[]
