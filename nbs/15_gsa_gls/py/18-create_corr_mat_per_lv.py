@@ -191,7 +191,7 @@ def compute_chol_inv(lv_codes):
     for gene_corr_filename, gene_corrs in gene_corrs_dict.items():
         output_dir = get_output_dir(gene_corr_filename)
         output_dir.mkdir(parents=True, exist_ok=True)
-        print(f"Output dir: {str(output_dir)}", flush=True)
+        display(f"Output dir: {str(output_dir)}")
 
         # save LV chol inverse
         for lv_code in lv_codes:
