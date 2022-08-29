@@ -249,14 +249,14 @@ def load_df(output_dir, base_filename):
 
 
 # %% tags=[]
-_genes = load_df("gene_names")
+_genes = load_df(get_output_dir(orig_corr_name), "gene_names")
 
 # %% tags=[]
 display(len(_genes))
 assert len(_genes) == gene_corrs_dict[orig_corr_name].index.shape[0]
 
 # %% tags=[]
-_metadata = load_df("metadata")
+_metadata = load_df(get_output_dir(orig_corr_name), "metadata")
 
 # %% tags=[]
 display(_metadata)
