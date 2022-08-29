@@ -129,27 +129,20 @@ assert len(input_files) > 0, "No input correlation files"
 # load correlation matrix
 gene_corrs_dict = {f.name: pd.read_pickle(f) for f in input_files}
 
-# %% tags=[]
-gene_corrs_dict[f.name].shape
+# %%
+orig_corr_name = "gene_corrs-symbols.pkl"
 
 # %% tags=[]
-gene_corrs_dict[f.name].head()
+gene_corrs_dict[orig_corr_name].shape
+
+# %% tags=[]
+gene_corrs_dict[orig_corr_name].head()
 
 # %%
-current_index = gene_corrs_dict[f.name]
+current_index = gene_corrs_dict[orig_corr_name]
 assert all(
     [current_index.equals(gc.index) for k, gc in gene_corrs_dict.items()]
 ), "Correlation matrices are not compatible"
-
-# %% [markdown] tags=[]
-# ## Define output dir (based on gene correlation's file)
-
-# %% tags=[]
-# # output file (hdf5)
-# output_dir = Path(input_file).with_suffix(".per_lv")
-# output_dir.mkdir(parents=True, exist_ok=True)
-
-# display(output_dir)
 
 # %% [markdown] tags=[]
 # ## MultiPLIER Z
@@ -163,18 +156,6 @@ multiplier_z.shape
 # %% tags=[]
 multiplier_z.head()
 
-
-# %% [markdown] tags=[]
-# ## Common genes
-
-# %% tags=[]
-# common_genes = gene_corrs_dict[f.name].index.tolist()
-
-# %% tags=[]
-# len(common_genes)
-
-# %% tags=[]
-# common_genes[:5]
 
 # %% [markdown] tags=[]
 # # Compute inverse correlation matrix for each LV
@@ -272,7 +253,7 @@ _genes = load_df("gene_names")
 
 # %% tags=[]
 display(len(_genes))
-assert len(_genes) == gene_corrs_dict[f.name].index.shape[0]
+assert len(_genes) == gene_corrs_dict[orig_corr_name].index.shape[0]
 
 # %% tags=[]
 _metadata = load_df("metadata")
