@@ -8,15 +8,16 @@ from statsmodels.stats.correlation_tools import corr_nearest
 from IPython.display import display
 
 
-def check_pos_def(matrix: pd.DataFrame):
+def check_pos_def(matrix: pd.DataFrame, debug_messages: bool = True):
     """
     Checks that a correlation matrix is positive definite.
     """
     # show nonpositive eigenvalues
-    eigs = np.linalg.eigvals(matrix.to_numpy())
-    neg_eigs = eigs[eigs <= 0]
-    display(f"Number of negative eigenvalues: {len(neg_eigs)}")
-    display(f"Negative eigenvalues:\n{neg_eigs}")
+    if debug_messages:
+        eigs = np.linalg.eigvals(matrix.to_numpy())
+        neg_eigs = eigs[eigs <= 0]
+        display(f"Number of negative eigenvalues: {len(neg_eigs)}")
+        display(f"Negative eigenvalues:\n{neg_eigs}")
 
     # check what statsmodels.GLS expects
     try:
@@ -52,7 +53,7 @@ def correct_corr_mat(corr_mat: pd.DataFrame, threshold):
     It always returns a numpy array.
     """
 
-    if check_pos_def(corr_mat):
+    if check_pos_def(corr_mat, debug_messages=False):
         return corr_mat.to_numpy()
 
     return corr_nearest(corr_mat, threshold=threshold, n_fact=100)
