@@ -112,6 +112,15 @@ gene_corrs.shape
 # %%
 gene_corrs.head()
 
+# %%
+genes_corrs_sum = gene_corrs.sum()
+n_genes_included = genes_corrs_sum[genes_corrs_sum > 1.0].shape[0]
+display(f"Number of genes with correlations with other genes: {n_genes_included}")
+
+# %%
+genes_corrs_nonzero_sum = (gene_corrs > 0.0).astype(int).sum().sum()
+display(f"Number of nonzero cells: {genes_corrs_nonzero_sum}")
+
 # %% [markdown] tags=[]
 # ## Get gene objects
 
@@ -182,6 +191,9 @@ for full_distance in DISTANCES:
     n_genes_included = genes_corrs_sum[genes_corrs_sum > 1.0].shape[0]
     display(f"Number of genes with correlations with other genes: {n_genes_included}")
 
+    genes_corrs_nonzero_sum = (gene_corrs_within_distance > 0.0).astype(int).sum().sum()
+    display(f"Number of nonzero cells: {genes_corrs_nonzero_sum}")
+
     corr_matrix_flat = gene_corrs_within_distance.mask(
         np.triu(np.ones(gene_corrs_within_distance.shape)).astype(bool)
     ).stack()
@@ -195,5 +207,7 @@ for full_distance in DISTANCES:
     display(output_filepath)
 
     gene_corrs_within_distance.to_pickle(output_filepath)
+
+    print("\n")
 
 # %% tags=[]
