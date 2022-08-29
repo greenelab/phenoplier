@@ -144,48 +144,46 @@ for full_distance in DISTANCES:
 
     genes_within_distance = pd.DataFrame(
         genes_within_distance,
-        index=corr_data_symbols.index.copy(),
-        columns=corr_data_symbols.columns.copy(),
+        index=gene_corrs.index.copy(),
+        columns=gene_corrs.columns.copy(),
     )
 
     # subset full correlation matrix
-    corr_data_symbols_within_distance = gene_corrs[genes_within_distance].fillna(0.0)
-    assert not corr_data_symbols_within_distance.equals(gene_corrs)
-    assert not np.allclose(
-        corr_data_symbols_within_distance.to_numpy(), gene_corrs.to_numpy()
-    )
-    display(corr_data_symbols_within_distance)
+    gene_corrs_within_distance = gene_corrs[genes_within_distance].fillna(0.0)
+    assert not gene_corrs_within_distance.equals(gene_corrs)
+    assert not np.allclose(gene_corrs_within_distance.to_numpy(), gene_corrs.to_numpy())
+    display(gene_corrs_within_distance)
 
     # check if the new matrix is positive definite
-    is_pos_def = check_pos_def(corr_data_symbols_within_distance)
+    is_pos_def = check_pos_def(gene_corrs_within_distance)
 
     if is_pos_def:
         print("all good.", flush=True, end="\n")
     else:
         print("not positive definite, fixing... ", flush=True, end="")
-        corr_data_adjusted = adjust_non_pos_def(corr_data_symbols_within_distance)
+        corr_data_adjusted = adjust_non_pos_def(gene_corrs_within_distance)
 
         is_pos_def = check_pos_def(corr_data_adjusted)
         assert is_pos_def, "Could not adjust gene correlation matrix"
 
         print("fixed! comparing...", flush=True, end="\n")
-        compare_matrices(corr_data_symbols_within_distance, corr_data_adjusted)
+        compare_matrices(gene_corrs_within_distance, corr_data_adjusted)
 
         # save
-        corr_data_symbols_within_distance = corr_data_adjusted
+        gene_corrs_within_distance = corr_data_adjusted
 
     # checks
-    assert not corr_data_symbols_within_distance.isna().any(None)
-    assert not np.isinf(corr_data_symbols_within_distance.to_numpy()).any()
-    assert not np.iscomplex(corr_data_symbols_within_distance.to_numpy()).any()
+    assert not gene_corrs_within_distance.isna().any(None)
+    assert not np.isinf(gene_corrs_within_distance.to_numpy()).any()
+    assert not np.iscomplex(gene_corrs_within_distance.to_numpy()).any()
 
     # show stats
-    genes_corrs_sum = corr_data_symbols_within_distance.sum()
+    genes_corrs_sum = gene_corrs_within_distance.sum()
     n_genes_included = genes_corrs_sum[genes_corrs_sum > 1.0].shape[0]
     display(f"Number of genes with correlations with other genes: {n_genes_included}")
 
-    corr_matrix_flat = corr_data_symbols_within_distance.mask(
-        np.triu(np.ones(corr_data_symbols_within_distance.shape)).astype(bool)
+    corr_matrix_flat = gene_corrs_within_distance.mask(
+        np.triu(np.ones(gene_corrs_within_distance.shape)).astype(bool)
     ).stack()
     display(corr_matrix_flat.describe().apply(str))
 
@@ -196,6 +194,6 @@ for full_distance in DISTANCES:
     )
     display(output_filepath)
 
-    corr_data_symbols_within_distance.to_pickle(output_filepath)
+    gene_corrs_within_distance.to_pickle(output_filepath)
 
 # %% tags=[]
