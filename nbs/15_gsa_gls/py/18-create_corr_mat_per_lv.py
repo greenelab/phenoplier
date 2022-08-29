@@ -139,7 +139,7 @@ gene_corrs_dict[orig_corr_name].shape
 gene_corrs_dict[orig_corr_name].head()
 
 # %%
-current_index = gene_corrs_dict[orig_corr_name]
+current_index = gene_corrs_dict[orig_corr_name].index
 assert all(
     [current_index.equals(gc.index) for k, gc in gene_corrs_dict.items()]
 ), "Correlation matrices are not compatible"
