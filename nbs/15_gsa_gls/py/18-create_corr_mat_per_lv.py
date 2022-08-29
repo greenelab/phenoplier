@@ -66,6 +66,9 @@ LV_CODE = None
 # If zero or None, then all nonzero weighted genes in the LV will be kept.
 LV_PERCENTILE = None
 
+# %%
+N_JOBS = 1
+
 # %% tags=[]
 assert COHORT_NAME is not None and len(COHORT_NAME) > 0, "A cohort name must be given"
 
@@ -118,29 +121,35 @@ display(f"Using output dir base: {OUTPUT_DIR_BASE}")
 # ## Gene correlations
 
 # %% tags=[]
-input_file = OUTPUT_DIR_BASE / "gene_corrs-symbols.pkl"
-display(input_file)
-assert input_file.exists()
+input_files = list(OUTPUT_DIR_BASE.glob("gene_corrs-symbols*.pkl"))
+display(input_files)
+assert len(input_files) > 0, "No input correlation files"
 
 # %% tags=[]
 # load correlation matrix
-gene_corrs = pd.read_pickle(input_file)
+gene_corrs_dict = {f.name: pd.read_pickle(f) for f in input_files}
 
 # %% tags=[]
-gene_corrs.shape
+gene_corrs_dict[f.name].shape
 
 # %% tags=[]
-gene_corrs.head()
+gene_corrs_dict[f.name].head()
+
+# %%
+current_index = gene_corrs_dict[f.name]
+assert all(
+    [current_index.equals(gc.index) for k, gc in gene_corrs_dict.items()]
+), "Correlation matrices are not compatible"
 
 # %% [markdown] tags=[]
 # ## Define output dir (based on gene correlation's file)
 
 # %% tags=[]
-# output file (hdf5)
-output_dir = Path(input_file).with_suffix(".per_lv")
-output_dir.mkdir(parents=True, exist_ok=True)
+# # output file (hdf5)
+# output_dir = Path(input_file).with_suffix(".per_lv")
+# output_dir.mkdir(parents=True, exist_ok=True)
 
-display(output_dir)
+# display(output_dir)
 
 # %% [markdown] tags=[]
 # ## MultiPLIER Z
@@ -154,31 +163,31 @@ multiplier_z.shape
 # %% tags=[]
 multiplier_z.head()
 
+
 # %% [markdown] tags=[]
 # ## Common genes
 
 # %% tags=[]
-common_genes = sorted(list(gene_corrs.index))
+# common_genes = gene_corrs_dict[f.name].index.tolist()
 
 # %% tags=[]
-len(common_genes)
+# len(common_genes)
 
 # %% tags=[]
-common_genes[:5]
-
+# common_genes[:5]
 
 # %% [markdown] tags=[]
 # # Compute inverse correlation matrix for each LV
 
 # %% tags=[]
-def exists_df(base_filename):
+def exists_df(output_dir, base_filename):
     full_filepath = output_dir / (base_filename + ".npz")
 
     return full_filepath.exists()
 
 
 # %% tags=[]
-def store_df(nparray, base_filename):
+def store_df(output_dir, nparray, base_filename):
     if base_filename in ("metadata", "gene_names"):
         np.savez_compressed(output_dir / (base_filename + ".npz"), data=nparray)
     else:
@@ -189,18 +198,45 @@ def store_df(nparray, base_filename):
         )
 
 
+# %%
+def get_output_dir(gene_corr_filename):
+    path = OUTPUT_DIR_BASE / gene_corr_filename
+    assert path.exists()
+    return path.with_suffix(".per_lv")
+
+
 # %% tags=[]
 def compute_chol_inv(lv_codes):
-    for lv_code in lv_codes:
-        lv_data = multiplier_z[lv_code]
+    for gene_corr_filename, gene_corrs in gene_corrs_dict.items():
+        output_dir = get_output_dir(gene_corr_filename)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Output dir: {str(output_dir)}", flush=True)
 
-        corr_mat_sub = GLSPhenoplier.get_sub_mat(gene_corrs, lv_data, LV_PERCENTILE)
-        store_df(corr_mat_sub.to_numpy(), f"{lv_code}_corr_mat")
+        # save LV chol inverse
+        for lv_code in lv_codes:
+            lv_data = multiplier_z[lv_code]
 
-        chol_mat = np.linalg.cholesky(corr_mat_sub)
-        chol_inv = np.linalg.inv(chol_mat)
+            corr_mat_sub = GLSPhenoplier.get_sub_mat(gene_corrs, lv_data, LV_PERCENTILE)
+            store_df(output_dir, corr_mat_sub.to_numpy(), f"{lv_code}_corr_mat")
 
-        store_df(chol_inv, lv_code)
+            chol_mat = np.linalg.cholesky(corr_mat_sub)
+            chol_inv = np.linalg.inv(chol_mat)
+
+            store_df(output_dir, chol_inv, lv_code)
+
+        # save metadata
+        if not exists_df("metadata"):
+            metadata = np.array([REFERENCE_PANEL, EQTL_MODEL])
+            store_df(output_dir, metadata, "metadata")
+        else:
+            display("Metadata file already exists")
+
+        # save gene names
+        if not exists_df("gene_names"):
+            gene_names = np.array(gene_corrs.index.tolist())
+            store_df(output_dir, gene_names, "gene_names")
+        else:
+            display("Gene names file already exists")
 
 
 # %% tags=[]
@@ -209,23 +245,7 @@ def compute_chol_inv(lv_codes):
 lvs_chunks = [[LV_CODE]]
 
 # %% tags=[]
-# metadata
-if not exists_df("metadata"):
-    metadata = np.array([REFERENCE_PANEL, EQTL_MODEL])
-    store_df(metadata, "metadata")
-else:
-    display("Metadata file already exists")
-
-# gene names
-if not exists_df("gene_names"):
-    gene_names = np.array(common_genes)
-    store_df(gene_names, "gene_names")
-else:
-    display("Gene names file already exists")
-
-# pbar = tqdm(total=multiplier_z.columns.shape[0])
-
-with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor, tqdm(
+with ProcessPoolExecutor(max_workers=N_JOBS) as executor, tqdm(
     total=len(lvs_chunks), ncols=100
 ) as pbar:
     tasks = [executor.submit(compute_chol_inv, chunk) for chunk in lvs_chunks]
@@ -238,7 +258,7 @@ with ProcessPoolExecutor(max_workers=conf.GENERAL["N_JOBS"]) as executor, tqdm(
 # ## Some checks
 
 # %% tags=[]
-def load_df(base_filename):
+def load_df(output_dir, base_filename):
     full_filepath = output_dir / (base_filename + ".npz")
 
     if base_filename in ("metadata", "gene_names"):
@@ -252,7 +272,7 @@ _genes = load_df("gene_names")
 
 # %% tags=[]
 display(len(_genes))
-assert len(_genes) == len(common_genes)
+assert len(_genes) == gene_corrs_dict[f.name].index.shape[0]
 
 # %% tags=[]
 _metadata = load_df("metadata")
@@ -263,26 +283,19 @@ assert _metadata[0] == REFERENCE_PANEL
 assert _metadata[1] == EQTL_MODEL
 
 # %% tags=[]
-# lv1_inv = load_df("LV1")
+all_lvs_inv = {}
+lv_prev = None
 
-# %% tags=[]
-# lv2_inv = load_df("LV2")
+for gene_corr_filename, _ in gene_corrs_dict.items():
+    output_dir = get_output_dir(gene_corr_filename)
 
-# %% tags=[]
-# lv_last_inv = load_df("LV987")
-lv_last_inv = load_df(LV_CODE)
-display(lv_last_inv)
+    lv_data = load_df(output_dir, LV_CODE)
+    display(lv_data)
 
-# %% tags=[]
-# assert lv1_inv.shape == lv2_inv.shape
+    if lv_prev is not None:
+        assert lv_data.shape == lv_prev.shape
+        assert not np.allclose(lv_data, lv_prev)
 
-# %% tags=[]
-# assert not np.allclose(lv1_inv, lv2_inv)
-
-# %% tags=[]
-# assert not np.allclose(lv1_inv, lv_last_inv)
-
-# %% tags=[]
-# assert not np.allclose(lv2_inv, lv_last_inv)
+    lv_prev = lv_data
 
 # %% tags=[]
