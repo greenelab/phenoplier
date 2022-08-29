@@ -116,7 +116,7 @@ gene_corrs.head()
 # ## Get gene objects
 
 # %%
-gene_objs = [Gene(name=gene_name) for gene_name in corr_data_symbols.index]
+gene_objs = [Gene(name=gene_name) for gene_name in gene_corrs.index]
 
 # %%
 display(len(gene_objs))
