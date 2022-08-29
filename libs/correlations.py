@@ -19,23 +19,27 @@ def check_pos_def(matrix: pd.DataFrame, debug_messages: bool = True):
         display(f"Number of negative eigenvalues: {len(neg_eigs)}")
         display(f"Negative eigenvalues:\n{neg_eigs}")
 
+    def _print(message):
+        if debug_messages:
+            print(message)
+
     # check what statsmodels.GLS expects
     try:
         # decomposition used by statsmodels.GLS
         np.linalg.cholesky(np.linalg.inv(matrix.to_numpy())).T
-        print("Works! (statsmodels.GLS)")
+        _print("Works! (statsmodels.GLS)")
     except Exception as e:
-        print(f"Cholesky decomposition failed (statsmodels.GLS): {str(e)}")
+        _print(f"Cholesky decomposition failed (statsmodels.GLS): {str(e)}")
 
     # check
     CHOL_DECOMPOSITION_WORKED = None
 
     try:
         np.linalg.inv(np.linalg.cholesky(matrix.to_numpy()))
-        print("Works!")
+        _print("Works!")
         CHOL_DECOMPOSITION_WORKED = True
     except Exception as e:
-        print(f"Cholesky decomposition failed: {str(e)}")
+        _print(f"Cholesky decomposition failed: {str(e)}")
         CHOL_DECOMPOSITION_WORKED = False
 
     return CHOL_DECOMPOSITION_WORKED
