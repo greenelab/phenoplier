@@ -40,7 +40,12 @@ import seaborn as sns
 
 import conf
 from entity import Gene
-from correlations import check_pos_def, compare_matrices, correct_corr_mat, adjust_non_pos_def
+from correlations import (
+    check_pos_def,
+    compare_matrices,
+    correct_corr_mat,
+    adjust_non_pos_def,
+)
 
 # %% [markdown] tags=[]
 # # Settings
