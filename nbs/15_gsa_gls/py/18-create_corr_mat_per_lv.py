@@ -206,14 +206,14 @@ def compute_chol_inv(lv_codes):
             store_df(output_dir, chol_inv, lv_code)
 
         # save metadata
-        if not exists_df("metadata"):
+        if not exists_df(output_dir, "metadata"):
             metadata = np.array([REFERENCE_PANEL, EQTL_MODEL])
             store_df(output_dir, metadata, "metadata")
         else:
             display("Metadata file already exists")
 
         # save gene names
-        if not exists_df("gene_names"):
+        if not exists_df(output_dir, "gene_names"):
             gene_names = np.array(gene_corrs.index.tolist())
             store_df(output_dir, gene_names, "gene_names")
         else:
