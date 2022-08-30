@@ -2,18 +2,26 @@
 
 This folder has the scripts to run GLS PhenoPLIER (associations between LVs/gene modules and traits on randomly generated phenotypes (`../15_spredixcan`).
 
+Before running these steps, **it is necessary** to generate a correlation matrix for predicted gene expression _specific_ for these random phenotypes (see `nbs/15_gsa_gls/README.md`).
 
-# Load Penn's LPC-specific paths and PhenoPLIER configuration
 
+## Setup
+
+### Penn's LPC cluster
+
+Load Penn's LPC-specific paths and PhenoPLIER configuration.
 Change paths accordingly.
 
 ```bash
 # load conda environment
 module load miniconda/3
-conda activate ~/software/conda_envs/phenoplier_light/
+conda activate ~/software/conda_envs/phenoplier/
 
 # load LPC-specific paths
 . ~/projects/phenoplier/scripts/pmacs_penn/env.sh
+
+# set the executor of commands to "bsub" (to submit the jobs)
+export PHENOPLIER_JOBS_EXECUTOR="bsub"
 
 # load in bash session all PhenoPLIER environmental variables
 eval `python ~/projects/phenoplier/libs/conf.py`
@@ -21,6 +29,19 @@ eval `python ~/projects/phenoplier/libs/conf.py`
 # make sure they were loaded correctly
 # should output something like /project/...
 echo $PHENOPLIER_ROOT_DIR
+```
+
+### Desktop computer
+
+Set the executor to bash:
+```bash
+export PHENOPLIER_JOBS_EXECUTOR="bash"
+```
+
+For this, it's convenient to use Docker by running the specified command between single quotes:
+
+```bash
+bash scripts/run_docker_dev.sh '[COMMAND]'
 ```
 
 
@@ -48,103 +69,100 @@ To run the jobs in order, you need to execute the command below.
 The `_tmp` folder stores logs and needs to be created.
 
 
-## OLS
+## Run LV-trait associations
 
-### Compute LV-trait associations
 
 ```bash
-mkdir -p _tmp/gls_phenoplier_ols
+run_job () {
+  cluster_job_file="$1"
+  export pheno_id="$2"
+  
+  mkdir -p _tmp/gls_phenoplier_ols
+  mkdir -p _tmp/gls_phenoplier
+  
+  cat $cluster_job_file | envsubst '${pheno_id}' | ${PHENOPLIER_JOBS_EXECUTOR}
+}
 
-for pheno_id in {0..999}; do
-    export pheno_id
-    cat cluster_jobs/01_gls-use_ols-template.sh | envsubst '${pheno_id}' | bsub
-done
+export -f run_job
+
+# (optional) export function definition so it's included in the Docker container
+export PHENOPLIER_BASH_FUNCTIONS_CODE="$(declare -f run_job)"
 ```
 
-The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
-* Check whether jobs finished successfully:
-```bash
-bash check_job.sh -i _tmp/gls_phenoplier_mean/ -p "INFO: Writing results to" -f '*.error'
-
-bash check_job.sh -i _tmp/gls_phenoplier_mean/ -p "INFO: Using a Ordinary Least Squares (OLS) model" -f '*.error'
-
-# A success output would look like this:
-Finished checking [NUMBER OF PHENOTYPES * $batch_n_splits] logs:
-  All jobs finished successfully
-```
-
-There should be 1000 files in the output directory.
-
-
-
-
-
-
-### GLS PhenoPLIER
-
-**FIXME:** needs to be updated
+### No covariates
 
 ```bash
-mkdir -p _tmp/gls_phenoplier
+# (optional) Run OLS model
+parallel -j10 run_job cluster_jobs/no_covars/01_gls-use_ols-template.sh {} ::: {0..999}
 
-# Iterate over all random phenotype ids, chromosomes and batch ids and submit a job for each combination.
-# IMPORTANT: These are a lot of tasks. You might want to split jobs by chaning the range in first for line:
-#   0..199
-#   200..399
-#   400..599
-#   600..799
-#   800..999
-
-for pheno_id in {0..999}; do
-    for ((batch_id=1; batch_id<=${batch_n_splits}; batch_id++)); do
-        export pheno_id batch_id
-        cat cluster_jobs/01_gls_phenoplier_mean_job-template.sh | envsubst '${pheno_id} ${batch_id} ${batch_n_splits}' | bsub
-    done
-done
+# GLS:
+# parallel -j10 run_job cluster_jobs/no_covars/10_gls_phenoplier-full_corr-template.sh {} ::: {0..999}
+parallel -j10 run_job cluster_jobs/no_covars/10_gls_phenoplier-sub_corr-template.sh {} ::: {0..999}
 ```
 
-The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
-* Check whether jobs finished successfully:
+Command for checking results:
+
 ```bash
-bash check_job.sh -i _tmp/gls_phenoplier_mean/ -p "INFO: Writing results to" -f '*.error'
+bash ${PHENOPLIER_CODE_DIR}/scripts/check_job.sh \
+    -i _tmp/ \
+    -f '*.error' \
+    -p "INFO: Writing results to"
 
-# A success output would look like this:
-Finished checking [NUMBER OF PHENOTYPES * $batch_n_splits] logs:
-  All jobs finished successfully
+bash ${PHENOPLIER_CODE_DIR}/scripts/check_job.sh \
+    -i _tmp/ \
+    -f '*.error' \
+    -n "INFO: Using covariates"
+
+# for OLS
+bash ${PHENOPLIER_CODE_DIR}/scripts/check_job.sh \
+    -i _tmp/gls_phenoplier_ols/ \
+    -f '*.error' \
+    -p "INFO: Using a Ordinary Least Squares (OLS) model"
+
+
+# for GLS
+bash ${PHENOPLIER_CODE_DIR}/scripts/check_job.sh \
+    -i _tmp/gls_phenoplier/ \
+    -f '*.error' \
+    -p "INFO: Correlation matrix is a directory"
 ```
 
-There should be 1000 files (100 random phenotypes and 10 batch splits) in the output directory.
+### With covariates
 
-If any job failed, check `../10_gwas_harmonization/README.md`, which has python code to get a list of unfinished jobs.
-It will need to be adapted for these tasks.
-
-
-### Combine batches
-
-Use this if you used batches above.
-
-```python
-import os
-import itertools
-from pathlib import Path
-
-import pandas as pd
-
-RESULTS_DIR = Path(os.environ["PHENOPLIER_RESULTS_GLS_NULL_SIMS"]) / "phenoplier" / "gls-gtex-mashr-mean_gene_expr"
-all_results_files = sorted(list(f.name for f in RESULTS_DIR.glob("*.tsv.gz")))
-
-all_dfs = []
-for key, group in itertools.groupby(all_results_files, lambda x: x.split("-")[0]):
-    all_dfs = [pd.read_csv(RESULTS_DIR / gf, sep="\t", index_col="lv") for gf in group]
-    all_dfs = pd.concat(all_dfs, axis=0)
-    assert all_dfs.shape == (987, 2)
-    all_dfs = all_dfs.sort_index()
-    all_dfs.to_csv(RESULTS_DIR / f"{key}-combined-gls_phenoplier.tsv.gz", sep="\t")
-```
-
-And remove batch files:
 ```bash
-rm ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/gls-gtex-mashr-mean_gene_expr/random.pheno3-batch*-gls_phenoplier.tsv.gz
+# recommended
+rm -rf _tmp/
+
+# (optional) Run OLS model
+parallel -j10 run_job cluster_jobs/covars/01_gls-use_ols-template.sh {} ::: {0..999}
+
+# GLS:
+# parallel -j10 cluster_jobs/covars/10_gls_phenoplier-full_corr-template.sh {} ::: {0..999}
+parallel -j10 run_job cluster_jobs/covars/10_gls_phenoplier-sub_corr-template.sh {} ::: {0..999}
+```
+
+```bash
+bash ${PHENOPLIER_CODE_DIR}/scripts/check_job.sh \
+    -i _tmp/ \
+    -f '*.error' \
+    -p "INFO: Writing results to"
+
+bash ${PHENOPLIER_CODE_DIR}/scripts/check_job.sh \
+    -i _tmp/ \
+    -f '*.error' \
+    -p "INFO: Using covariates: \['gene_size', 'gene_size_log', 'gene_density', 'gene_density_log'\]"
+
+# for OLS
+bash ${PHENOPLIER_CODE_DIR}/scripts/check_job.sh \
+    -i _tmp/gls_phenoplier_ols/ \
+    -f '*.error' \
+    -p "INFO: Using a Ordinary Least Squares (OLS) model"
+
+# for GLS
+bash ${PHENOPLIER_CODE_DIR}/scripts/check_job.sh \
+    -i _tmp/gls_phenoplier/ \
+    -f '*.error' \
+    -p "INFO: Correlation matrix is a directory"
 ```
 
 
@@ -164,4 +182,3 @@ bjobs | grep RUN | cut -d ' ' -f1 | xargs -I {} bkill {}
 # QQ plots
 
 Notebook `05-twas-qqplot.ipynb` checks that the distribution of pvalues is as expected.
-
