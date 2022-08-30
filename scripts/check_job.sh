@@ -20,6 +20,11 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -n|--failure-pattern)
+      FAILURE_PATTERN="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -*|--*)
       echo "Unknown option $1"
       exit 1
@@ -47,8 +52,8 @@ if [ -z "${FILE_PATTERN}" ]; then
     exit 1
 fi
 
-if [ -z "${SUCCESS_PATTERN}" ]; then
-    >&2 echo "Error, --success-pattern <value> not provided"
+if [[ -z "${SUCCESS_PATTERN}" && -z "${FAILURE_PATTERN}" ]]; then
+    >&2 echo "Error, either --success-pattern <value> or --failure-pattern must be provided"
     exit 1
 fi
 
@@ -59,11 +64,20 @@ not_finished_jobs=0
 for logfile in $(find ${INPUT_DIR} -name "${FILE_PATTERN}"); do
     ((total_count++))
 
-    count=`grep -c "${SUCCESS_PATTERN}" ${logfile}`
-    if [ "${count}" -lt "1" ]; then
-        echo "WARNING, not finished yet: ${logfile}"
-        ((not_finished_jobs++))
-        continue
+    if [ ! -z "${SUCCESS_PATTERN}" ]; then
+        count=`grep -c "${SUCCESS_PATTERN}" ${logfile}`
+        if [ "${count}" -lt "1" ]; then
+    	    echo "WARNING, not finished yet: ${logfile}"
+	    ((not_finished_jobs++))
+	    continue
+        fi
+    else
+        count=`grep -c "${FAILURE_PATTERN}" ${logfile}`
+        if [ "${count}" -gt "0" ]; then
+    	    echo "ERROR, failure pattern found: ${logfile}"
+	    ((not_finished_jobs++))
+	    continue
+        fi
     fi
 done
 
