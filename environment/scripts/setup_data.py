@@ -52,6 +52,7 @@ MODES_ACTIONS = {
     "full": {},  # empty means all actions/methods
 }
 
+
 def download_phenomexcan_unified_pheno_info(**kwargs):
     output_file = conf.PHENOMEXCAN["UNIFIED_PHENO_INFO_FILE"]
     curl(
@@ -60,6 +61,7 @@ def download_phenomexcan_unified_pheno_info(**kwargs):
         "2fdce9042244e13cc2952ec0cb3fd6d6",
         logger=logger,
     )
+
 
 def download_phenomexcan_rapid_gwas_pheno_info(**kwargs):
     output_file = conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"]
