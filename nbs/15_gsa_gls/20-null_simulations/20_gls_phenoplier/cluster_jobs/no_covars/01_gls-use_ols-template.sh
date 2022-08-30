@@ -9,6 +9,7 @@
 # BSUB -R "rusage[mem=3GB]"
 # BSUB -M 3GB
 # BSUB -W 0:30
+# BSUB -R 'select[hname!=lambda25]'
 
 # IMPORTANT: this is not a ready-for-submission script, it's a template.
 #   see README.md to know how to generate the actual job scripts.
@@ -37,5 +38,5 @@ mkdir -p ${OUTPUT_DIR}
 bash ${CODE_DIR}/01_gls_phenoplier.sh \
   --input-file ${INPUT_SMULTIXCAN_DIR}/random.pheno${pheno_id}-gtex_v8-mashr-smultixcan.txt \
   --debug-use-ols 1 \
-  --cohort-name ${COHORT_NAME} \
   --output-file ${OUTPUT_DIR}/random.pheno${pheno_id}-gls_phenoplier.tsv.gz
+

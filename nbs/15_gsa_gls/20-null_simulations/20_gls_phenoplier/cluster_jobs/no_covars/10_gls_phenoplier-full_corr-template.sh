@@ -9,6 +9,7 @@
 # BSUB -R "rusage[mem=3GB]"
 # BSUB -M 3GB
 # BSUB -W 0:30
+# BSUB -R 'select[hname!=lambda25]'
 
 # IMPORTANT: this is not a ready-for-submission script, it's a template.
 #   see README.md to know how to generate the actual job scripts.
@@ -36,10 +37,12 @@ mkdir -p ${OUTPUT_DIR}
 
 # Gene correlation matrix
 GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/${REFERENCE_PANEL}/mashr/gene_corrs-symbols.pkl"
+#GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/${REFERENCE_PANEL}/mashr/gene_corrs-symbols-within_distance_10mb.pkl"
+#GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/${REFERENCE_PANEL}/mashr/gene_corrs-symbols-within_distance_5mb.pkl"
+#GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/${REFERENCE_PANEL}/mashr/gene_corrs-symbols-within_distance_2mb.pkl"
 
 bash ${CODE_DIR}/01_gls_phenoplier.sh \
   --input-file ${INPUT_SMULTIXCAN_DIR}/random.pheno${pheno_id}-gtex_v8-mashr-smultixcan.txt \
   --gene-corr-file ${GENE_CORR_FILE} \
-  --cohort-name ${COHORT_NAME} \
   --output-file ${OUTPUT_DIR}/random.pheno${pheno_id}-gls_phenoplier.tsv.gz
 
