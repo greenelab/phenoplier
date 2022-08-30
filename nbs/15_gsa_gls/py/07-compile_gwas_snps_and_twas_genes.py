@@ -194,7 +194,8 @@ gwas_data.shape
 gwas_data.head()
 
 # %%
-assert gwas_data["panel_variant_id"].is_unique
+# in eMERGE, some values here are repeated
+gwas_data["panel_variant_id"].is_unique
 
 # %%
 gwas_variants_ids_set = frozenset(gwas_data["panel_variant_id"])
