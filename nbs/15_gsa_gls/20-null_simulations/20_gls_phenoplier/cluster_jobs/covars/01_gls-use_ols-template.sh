@@ -35,10 +35,6 @@ INPUT_SMULTIXCAN_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan"
 OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/${COHORT_NAME}/${USING_COVARS}/gls-debug_use_ols"
 mkdir -p ${OUTPUT_DIR}
 
-# --covars "all"
-# --covars "gene_size gene_size_log gene_density gene_density_log"
-# --covars "gene_n_snps_used gene_n_snps_used_log gene_n_snps_used_density gene_n_snps_used_density_log"
-
 bash ${CODE_DIR}/01_gls_phenoplier.sh \
   --input-file ${INPUT_SMULTIXCAN_DIR}/random.pheno${pheno_id}-gtex_v8-mashr-smultixcan.txt \
   --debug-use-ols 1 \
