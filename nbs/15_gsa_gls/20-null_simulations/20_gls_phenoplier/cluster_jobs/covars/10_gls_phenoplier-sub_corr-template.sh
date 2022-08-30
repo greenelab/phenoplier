@@ -36,14 +36,10 @@ OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/${COHORT_NAME}/${USIN
 mkdir -p ${OUTPUT_DIR}
 
 # Gene correlation matrix
-GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/${REFERENCE_PANEL}/mashr/gene_corrs-symbols.per_lv/"
+#GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/${REFERENCE_PANEL}/mashr/gene_corrs-symbols.per_lv/"
 #GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/${REFERENCE_PANEL}/mashr/gene_corrs-symbols-within_distance_10mb.per_lv/"
-#GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/${REFERENCE_PANEL}/mashr/gene_corrs-symbols-within_distance_5mb.per_lv/"
+GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/${REFERENCE_PANEL}/mashr/gene_corrs-symbols-within_distance_5mb.per_lv/"
 #GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/${REFERENCE_PANEL}/mashr/gene_corrs-symbols-within_distance_2mb.per_lv/"
-
-# --covars "all"
-# --covars "gene_size gene_size_log gene_density gene_density_log"
-# --covars "gene_n_snps_used gene_n_snps_used_log gene_n_snps_used_density gene_n_snps_used_density_log"
 
 bash ${CODE_DIR}/01_gls_phenoplier.sh \
   --input-file ${INPUT_SMULTIXCAN_DIR}/random.pheno${pheno_id}-gtex_v8-mashr-smultixcan.txt \
