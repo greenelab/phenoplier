@@ -364,6 +364,18 @@ EMERGE["DESC_FILE_WITH_SAMPLE_SIZE"] = Path(
     EMERGE["BASE_DIR"],
     "eMERGE_III_PMBB_GSA_v2_2020_phecode_AFR_EUR_cc50_counts_w_dictionary.txt",
 ).resolve()
+EMERGE["GWAS_DIR"] = Path(
+    EMERGE["BASE_DIR"],
+    "gwas",
+).resolve()
+EMERGE["SPREDIXCAN_DIR"] = Path(
+    EMERGE["BASE_DIR"],
+    "spredixcan",
+).resolve()
+EMERGE["SMULTIXCAN_DIR"] = Path(
+    EMERGE["BASE_DIR"],
+    "smultixcan",
+).resolve()
 EMERGE["GENE_ASSOC_DIR"] = Path(EMERGE["BASE_DIR"], "gene_assoc").resolve()
 EMERGE["SMULTIXCAN_MASHR_ZSCORES_FILE"] = Path(
     EMERGE["GENE_ASSOC_DIR"], "emerge-smultixcan-mashr-zscores.pkl"
