@@ -122,7 +122,8 @@ fi
 
 COHORT_ARGS=""
 if [ ! -z "${COHORT_NAME}" ]; then
-  COHORT_METADATA_DIR="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/"
+  # FIXME: hardcoded
+  COHORT_METADATA_DIR="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/gtex_v8/mashr/"
   COHORT_ARGS="--cohort-metadata-dir ${COHORT_METADATA_DIR}"
 fi
 
