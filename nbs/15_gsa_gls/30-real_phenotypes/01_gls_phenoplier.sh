@@ -47,6 +47,16 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    --covars)
+      USE_COVARS="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    --cohort-name)
+      COHORT_NAME="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -*|--*)
       echo "Unknown option $1"
       exit 1
@@ -105,6 +115,18 @@ else
   exit 1
 fi
 
+COVARS_ARGS=""
+if [ ! -z "${USE_COVARS}" ]; then
+  COVARS_ARGS="--covars ${USE_COVARS}"
+fi
+
+COHORT_ARGS=""
+if [ ! -z "${COHORT_NAME}" ]; then
+  # FIXME: hardcoded
+  COHORT_METADATA_DIR="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/gtex_v8/mashr/"
+  COHORT_ARGS="--cohort-metadata-dir ${COHORT_METADATA_DIR}"
+fi
+
 if [ ! -z "${DEBUG_USE_SUB_CORR}" ]; then
   GENE_CORRS_ARGS="${GENE_CORRS_ARGS} --debug-use-sub-gene-corr"
 fi
@@ -126,5 +148,5 @@ python ${PHENOPLIER_CODE_DIR}/libs/gls_cli.py \
     -i ${INPUT_FILE} \
     --duplicated-genes-action keep-first \
     ${GENE_CORRS_ARGS} \
-    -o ${OUTPUT_FILE} ${BATCH_ARGS} ${LV_LIST_ARGS}
+    -o ${OUTPUT_FILE} ${BATCH_ARGS} ${LV_LIST_ARGS} ${COVARS_ARGS} ${COHORT_ARGS}
 
