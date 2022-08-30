@@ -26,11 +26,11 @@ export OMP_NUM_THREADS=${n_jobs}
 # Settings
 COHORT_NAME="1000g_eur"
 REFERENCE_PANEL="gtex_v8"
-USING_COVARS="multixcan/no_covars"
+USING_COVARS="multixcan_gtex_v8/covars"
 
 # Paths
 CODE_DIR=${PHENOPLIER_CODE_DIR}/nbs/15_gsa_gls/20-null_simulations/20_gls_phenoplier
-INPUT_SMULTIXCAN_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/multixcan"
+INPUT_SMULTIXCAN_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/multixcan_gtex_v8"
 
 OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/${COHORT_NAME}/${USING_COVARS}/gls-${REFERENCE_PANEL}_mashr-full_corr"
 mkdir -p ${OUTPUT_DIR}
@@ -41,6 +41,5 @@ GENE_CORR_FILE="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/${RE
 bash ${CODE_DIR}/01_gls_phenoplier.sh \
   --input-file ${INPUT_SMULTIXCAN_DIR}/random.pheno${pheno_id}-gtex_v8-mashr-multixcan.txt \
   --gene-corr-file ${GENE_CORR_FILE} \
-  --cohort-name ${COHORT_NAME} \
   --output-file ${OUTPUT_DIR}/random.pheno${pheno_id}-gls_phenoplier.tsv.gz
 

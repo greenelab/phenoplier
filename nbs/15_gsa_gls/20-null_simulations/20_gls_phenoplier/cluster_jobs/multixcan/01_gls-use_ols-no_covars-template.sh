@@ -26,11 +26,11 @@ export OMP_NUM_THREADS=${n_jobs}
 # Settings
 COHORT_NAME="1000g_eur"
 # REFERENCE_PANEL="1000g"
-USING_COVARS="multixcan/no_covars"
+USING_COVARS="multixcan_gtex_v8/covars"
 
 # Paths
 CODE_DIR=${PHENOPLIER_CODE_DIR}/nbs/15_gsa_gls/20-null_simulations/20_gls_phenoplier
-INPUT_SMULTIXCAN_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/multixcan"
+INPUT_SMULTIXCAN_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/multixcan_gtex_v8"
 
 OUTPUT_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/phenoplier/${COHORT_NAME}/${USING_COVARS}/gls-debug_use_ols"
 mkdir -p ${OUTPUT_DIR}
@@ -38,5 +38,4 @@ mkdir -p ${OUTPUT_DIR}
 bash ${CODE_DIR}/01_gls_phenoplier.sh \
   --input-file ${INPUT_SMULTIXCAN_DIR}/random.pheno${pheno_id}-gtex_v8-mashr-multixcan.txt \
   --debug-use-ols 1 \
-  --cohort-name ${COHORT_NAME} \
   --output-file ${OUTPUT_DIR}/random.pheno${pheno_id}-gls_phenoplier.tsv.gz
