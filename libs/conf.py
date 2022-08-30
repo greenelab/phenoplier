@@ -265,6 +265,9 @@ PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"] = Path(
 PHENOMEXCAN["GTEX_GWAS_PHENO_INFO_FILE"] = Path(
     PHENOMEXCAN["BASE_DIR"], "gtex_gwas_phenotypes_metadata.tsv"
 ).resolve()
+PHENOMEXCAN["UNIFIED_PHENO_INFO_FILE"] = Path(
+    PHENOMEXCAN["BASE_DIR"], "phenotypes_info.tsv.gz"
+).resolve()
 
 # ld blocks
 PHENOMEXCAN["LD_BLOCKS"] = {}
