@@ -8,7 +8,7 @@
 # BSUB -n 1
 # BSUB -R "rusage[mem=7GB]"
 # BSUB -M 10GB
-# BSUB -W 10:00
+# BSUB -W 5:00
 
 # IMPORTANT: this is not a ready-for-submission script, it's a template.
 #   see README.md to know how to generate the actual job scripts.
