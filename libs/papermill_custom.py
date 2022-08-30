@@ -34,6 +34,12 @@ def get_parameters(parameters):
         param_pair = param_pair.strip()
         param_pair = " ".join(param_pair.split())
         param_name, param_value = param_pair.split(" ")
+
+        try:
+            param_value = int(param_value)
+        except ValueError:
+            pass
+
         result[param_name] = param_value
 
     return result
