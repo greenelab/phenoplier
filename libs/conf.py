@@ -145,8 +145,6 @@ RESULTS["CRISPR_ANALYSES"]["BASE_DIR"] = Path(
 
 RESULTS["GLS"] = Path(RESULTS["BASE_DIR"], "gls").resolve()
 RESULTS["GLS_NULL_SIMS"] = Path(RESULTS["GLS"], "null_sims").resolve()
-RESULTS["GLS_PHENOMEXCAN"] = Path(RESULTS["GLS"], "phenomexcan").resolve()
-RESULTS["GLS_EMERGE"] = Path(RESULTS["GLS"], "emerge").resolve()
 
 
 #
@@ -255,10 +253,6 @@ PHENOMEXCAN["FASTENLOC_TORUS_RCP_FILE"] = Path(
 ).resolve()
 PHENOMEXCAN["FASTENLOC_EFO_PARTIAL_TORUS_RCP_FILE"] = Path(
     PHENOMEXCAN["GENE_ASSOC_DIR"], "fastenloc-efo_partial-torus-rcp.pkl"
-).resolve()
-# raw results
-PHENOMEXCAN["SMULTIXCAN_MASHR_RESULTS_DIR"] = Path(
-    PHENOMEXCAN["GENE_ASSOC_DIR"], "smultixcan"
 ).resolve()
 
 # GWAS info
