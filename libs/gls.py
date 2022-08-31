@@ -403,9 +403,41 @@ class GLSPhenoplier(object):
                     gene_names = GLSPhenoplier.load_chol_inv_data(
                         self.gene_corrs_file_path, "gene_names"
                     )
-                    cov_inv = GLSPhenoplier.load_chol_inv_data(
-                        self.gene_corrs_file_path, lv_code
-                    )
+
+                    # check if data is compatible with gene_names
+                    common_genes = data.index.intersection(gene_names)
+
+                    if common_genes.shape[0] == gene_names.shape[0]:
+                        self.log_info(
+                            "Data has all genes in LV-specific correlation matrix"
+                        )
+                        cov_inv = GLSPhenoplier.load_chol_inv_data(
+                            self.gene_corrs_file_path, lv_code
+                        )
+                    else:
+                        # data has less genes than in correlation matrix
+                        # we need to compute the inverse again
+                        # TODO: an optimization here is to compute a rank-1 update of the
+                        #  the Cholesky decomposition instead of computing all again:
+                        #   https://en.wikipedia.org/wiki/Cholesky_decomposition#Updating_the_decomposition
+                        #   https://stackoverflow.com/questions/8636518/dense-cholesky-update-in-python
+                        #   https://github.com/modusdatascience/choldate
+                        self.log_warning(
+                            "Data has less genes than in LV-specific correlation matrix. "
+                            "Computing Cholesky decomposition again on original correlation matrix."
+                        )
+
+                        gene_corrs = GLSPhenoplier.load_chol_inv_data(
+                            self.gene_corrs_file_path, f"{lv_code}_corr_mat"
+                        )
+                        gene_corrs = pd.DataFrame(
+                            gene_corrs, index=gene_names, columns=gene_names
+                        )
+                        gene_corrs = gene_corrs.loc[common_genes, common_genes]
+                        gene_names = gene_corrs.index
+
+                        chol_mat = np.linalg.cholesky(gene_corrs)
+                        cov_inv = np.linalg.inv(chol_mat)
 
                     # align data to gene names in cov_inv
                     data = data.loc[gene_names]
