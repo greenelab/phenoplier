@@ -45,40 +45,34 @@ from entity import Gene
 # # Settings
 
 # %% tags=["parameters"]
-# reference panel
-REFERENCE_PANEL = "GTEX_V8"
-# REFERENCE_PANEL = "1000G"
+# reference panel such as 1000G or GTEX_V8
+REFERENCE_PANEL = None
 
-# prediction models
-## mashr
-EQTL_MODEL = "MASHR"
-EQTL_MODEL_FILES_PREFIX = "mashr_"
-
-# ## elastic net
-# EQTL_MODEL = "ELASTIC_NET"
-# EQTL_MODEL_FILES_PREFIX = "en_"
-
-# make it read the prefix from conf.py
-EQTL_MODEL_FILES_PREFIX = None
+# predictions models such as MASHR or ELASTIC_NET
+EQTL_MODEL = None
 
 # the numpy dtype used for the covariance matrix
 #  either float64 or float32 (for huge matrices)
 COVARIANCE_MATRIX_DTYPE = None
 
 # %%
-if EQTL_MODEL_FILES_PREFIX is None:
-    EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][
-        f"{EQTL_MODEL}_PREFIX"
-    ]
+assert (
+    REFERENCE_PANEL is not None and len(REFERENCE_PANEL) > 0
+), "A reference panel must be given"
+display(f"Reference panel: {REFERENCE_PANEL}")
 
-# %%
-display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
-
-# %%
 REFERENCE_PANEL_DIR = conf.PHENOMEXCAN["LD_BLOCKS"][f"{REFERENCE_PANEL}_GENOTYPE_DIR"]
+display(f"Using reference panel folder: {str(REFERENCE_PANEL_DIR)}")
+assert REFERENCE_PANEL_DIR.exists(), "Reference panel folder does not exist"
 
 # %%
-display(f"Using reference panel folder: {str(REFERENCE_PANEL_DIR)}")
+assert (
+    EQTL_MODEL is not None and len(EQTL_MODEL) > 0
+), "A prediction/eQTL model must be given"
+
+EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
+
+display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
 
 # %%
 OUTPUT_DIR_BASE = (
@@ -98,6 +92,9 @@ cov_dtype_dict = {
     "float32": np.float32,
     "float64": np.float64,
 }
+
+if COVARIANCE_MATRIX_DTYPE is None:
+    COVARIANCE_MATRIX_DTYPE = "float64"
 
 if COVARIANCE_MATRIX_DTYPE in cov_dtype_dict:
     COV_DTYPE = cov_dtype_dict[COVARIANCE_MATRIX_DTYPE]
