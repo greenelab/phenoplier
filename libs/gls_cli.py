@@ -339,6 +339,10 @@ def run():
 
     # convert p-values
     # final_data["y"] = np.abs(stats.norm.ppf(final_data["y"] / 2))
+    logger.info("Replacing zero p-values by minimum / 10")
+    min_nonzero_pvalue = final_data[final_data["y"] > 0]["y"].min() / 10.0
+    final_data["y"] = final_data["y"].replace(0, min_nonzero_pvalue)
+
     logger.info("Using -log10(pvalue)")
     final_data["y"] = -np.log10(final_data["y"])
 
