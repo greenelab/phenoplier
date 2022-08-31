@@ -159,10 +159,18 @@ multiplier_z_genes[:5]
 
 # %%
 gwas_file_columns = pd.read_csv(GWAS_FILE, sep="\t", nrows=2).columns
+
 assert (
     "panel_variant_id" in gwas_file_columns
-), "GWAS file must be final imputed one with column 'panel_variant_id'"
-# FIXME: add other needed columns here
+), "GWAS file must be the final imputed one with column 'panel_variant_id'"
+
+assert (
+    "pvalue" in gwas_file_columns
+), "GWAS file must be the final imputed one with column 'pvalue'"
+
+assert (
+    "zscore" in gwas_file_columns
+), "GWAS file must be the final imputed one with column 'zscore'"
 
 # %%
 gwas_data = pd.read_csv(
