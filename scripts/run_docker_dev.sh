@@ -105,6 +105,7 @@ docker run --rm ${PORT_ARG} ${DOCKER_ARGS} \
   -e NUMEXPR_NUM_THREADS=${N_JOBS} \
   -e OMP_NUM_THREADS=${N_JOBS} \
   -e PHENOPLIER_BASH_FUNCTIONS_CODE="${PHENOPLIER_BASH_FUNCTIONS_CODE}" \
+  -e PHENOPLIER_JOBS_EXECUTOR="${PHENOPLIER_JOBS_EXECUTOR}" \
   -v "${CODE_DIR}:/opt/code" \
   -v "${ROOT_DIR}:/opt/data" \
   -v "${MANUSCRIPT_DIR}:/opt/manuscript" \
