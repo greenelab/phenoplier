@@ -1,9 +1,5 @@
 # Generalized Least Squares model (LV-trait associations)
 
-TODO: complete
-- first, we need to compute gene expression correlations
-- then run gls_cli on PhenomeXcan traits
-
 ## Overview of gene expression correlations
 Three notebooks need to be run to compute correlations of gene predicted expression:
 1. `05-snps_into_chr_cov.ipynb`
@@ -93,6 +89,9 @@ compute_snps_cov GTEX_V8 ELASTIC_NET
 
 Collects informations about GWAS variants and TWAS results for a particular cohort (group of GWAS with the same number of variants).
 
+For advanced users: it's not necessary to wait until the script finish to kick off the next step (gene correlations), since this
+script computes potential covariates for GLS and that's not necessary for the next steps.
+
 ```bash
 run_job () {
   cluster_job_file="$1"
@@ -131,7 +130,7 @@ run_job \
     MASHR
 
 #
-# For real phenotypes
+# For PhenomeXcan
 #
 
 # (PhenomeXcan) GTEx v8 models and Rapid GWAS (one phenotype from the group is selected)
@@ -139,9 +138,9 @@ run_job \
     nbs/15_gsa_gls/cluster_jobs/07_gls-compile_gwas_snps_and_twas_genes-template.sh \
     phenomexcan_rapid_gwas \
     ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/gwas_parsing/full/22617_7112.txt.gz \
-    ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/spredixcan/rapid_gwas_project/22617_7112/ \
+    ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/gene_assoc/spredixcan/rapid_gwas_project/22617_7112/ \
     22617_7112-gtex_v8-{tissue}-2018_10.csv \
-    ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/smultixcan/rapid_gwas_project/smultixcan_22617_7112_ccn30.tsv.gz \
+    ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/gene_assoc/smultixcan/rapid_gwas_project/smultixcan_22617_7112_ccn30.tsv.gz \
     GTEX_V8 \
     MASHR
 
@@ -150,9 +149,9 @@ run_job \
     nbs/15_gsa_gls/cluster_jobs/07_gls-compile_gwas_snps_and_twas_genes-template.sh \
     phenomexcan_astle \
     ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/gwas_parsing/full/Astle_et_al_2016_Eosinophil_counts.txt.gz \
-    ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/spredixcan/gtex_gwas/Astle_et_al_2016_Eosinophil_counts/ \
+    ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/gene_assoc/spredixcan/gtex_gwas/Astle_et_al_2016_Eosinophil_counts/ \
     spredixcan_igwas_gtexmashrv8_Astle_et_al_2016_Eosinophil_counts__PM__{tissue}.csv \
-    ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/smultixcan/gtex_gwas/Astle_et_al_2016_Eosinophil_counts_smultixcan_imputed_gwas_gtexv8mashr_ccn30.txt.gz \
+    ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/gene_assoc/smultixcan/gtex_gwas/Astle_et_al_2016_Eosinophil_counts_smultixcan_imputed_gwas_gtexv8mashr_ccn30.txt.gz \
     GTEX_V8 \
     MASHR
 
@@ -161,9 +160,56 @@ run_job \
     nbs/15_gsa_gls/cluster_jobs/07_gls-compile_gwas_snps_and_twas_genes-template.sh \
     phenomexcan_other \
     ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/gwas_parsing/full/MAGNETIC_IDL.TG.txt.gz \
-    ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/spredixcan/gtex_gwas/MAGNETIC_IDL.TG/ \
+    ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/gene_assoc/spredixcan/gtex_gwas/MAGNETIC_IDL.TG/ \
     spredixcan_igwas_gtexmashrv8_MAGNETIC_IDL.TG__PM__{tissue}.csv \
-    ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/smultixcan/gtex_gwas/MAGNETIC_IDL.TG_smultixcan_imputed_gwas_gtexv8mashr_ccn30.txt.gz \
+    ${PHENOPLIER_PHENOMEXCAN_BASE_DIR}/gene_assoc/smultixcan/gtex_gwas/MAGNETIC_IDL.TG_smultixcan_imputed_gwas_gtexv8mashr_ccn30.txt.gz \
+    GTEX_V8 \
+    MASHR
+
+#
+# For eMERGE
+#
+
+#
+# NOTE: GWAS files are saved in:
+#    /project/ritchie05/binglan_temp2/emerge_III/gwas_post_imputation/EUR/
+#  in the LPC cluster, and are separated by chromosome. It's necessary to merge them before running the
+#  script below. For example, with something like this: https://stackoverflow.com/a/21232849/3120414
+#  Then, the merged file is saved to conf.EMERGE["GWAS_DIR"]
+#  An example is shown below:
+#
+# import pandas as pd
+# import glob
+# import os
+# import conf
+# 
+# path = "/project/ritchie05/binglan_temp2/emerge_III/gwas_post_imputation/EUR/"
+# all_files = glob.glob(os.path.join(path , "EUR_411.3_chr*.txt.gz"))
+# assert len(all_files) == 22
+# 
+# li = []
+# 
+# for filename in all_files:
+#     df = pd.read_csv(filename, sep="\t", dtype=str)
+#     li.append(df)
+# 
+# frame = pd.concat(li, axis=0, ignore_index=True)
+# # here I remove duplicated panel_variant_id and keep only the original values
+# frame = frame.drop_duplicates(subset=["panel_variant_id"], keep="first")
+# 
+# conf.EMERGE["GWAS_DIR"].mkdir(exist_ok=True, parents=True)
+# output_filepath = conf.EMERGE["GWAS_DIR"] / "EUR_411.3_imputed.txt.gz"
+# frame.to_csv(output_filepath, sep="\t")
+#
+
+# (eMERGE) GTEx v8 models
+run_job \
+    nbs/15_gsa_gls/cluster_jobs/07_gls-compile_gwas_snps_and_twas_genes-template.sh \
+    emerge \
+    ${PHENOPLIER_EMERGE_GWAS_DIR}/EUR_411.3_imputed.txt.gz \
+    ${PHENOPLIER_EMERGE_SPREDIXCAN_DIR}/EUR_411.3/ \
+    eMERGE_III_spredixcan_mashr_eqtl_EUR_411.3_{tissue}.csv \
+    ${PHENOPLIER_EMERGE_SMULTIXCAN_DIR}/eMERGE_III_smultixcan_mashr_eqtl_EUR_411.3.txt \
     GTEX_V8 \
     MASHR
 ```
@@ -220,7 +266,7 @@ parallel -j10 \
     '{}' ::: {1..22}
 
 #
-# For real phenotypes
+# For PhenomeXcan
 #
 
 # (PhenomeXcan) GTEx v8 models and Rapid GWAS
@@ -246,6 +292,19 @@ parallel -j10 \
     run_job \
     nbs/15_gsa_gls/cluster_jobs/10_gls-gene_corrs-template.sh \
     phenomexcan_other \
+    GTEX_V8 \
+    MASHR \
+    '{}' ::: {1..22}
+
+#
+# For eMERGE
+#
+
+# (eMERGE) GTEx v8 models
+parallel -j10 \
+    run_job \
+    nbs/15_gsa_gls/cluster_jobs/10_gls-gene_corrs-template.sh \
+    emerge \
     GTEX_V8 \
     MASHR \
     '{}' ::: {1..22}
@@ -292,7 +351,7 @@ run_job \
     MASHR
 
 #
-# For real phenotypes
+# For PhenomeXcan
 #
 
 # (PhenomeXcan) GTEx v8 models and Rapid GWAS
@@ -313,6 +372,17 @@ run_job \
 run_job \
     nbs/15_gsa_gls/cluster_jobs/15-postprocess_gene_corrs.sh \
     phenomexcan_other \
+    GTEX_V8 \
+    MASHR
+
+#
+# For eMERGE
+#
+
+# (eMERGE) GTEx v8 models
+run_job \
+    nbs/15_gsa_gls/cluster_jobs/15-postprocess_gene_corrs.sh \
+    emerge \
     GTEX_V8 \
     MASHR
 ```
@@ -358,7 +428,7 @@ run_job \
     MASHR
 
 #
-# For real phenotypes
+# For PhenomeXcan
 #
 
 # (PhenomeXcan) GTEx v8 models and Rapid GWAS
@@ -379,6 +449,18 @@ run_job \
 run_job \
     nbs/15_gsa_gls/cluster_jobs/16-create_within_distances.sh \
     phenomexcan_other \
+    GTEX_V8 \
+    MASHR
+
+
+#
+# For eMERGE
+#
+
+# (eMERGE) GTEx v8 models
+run_job \
+    nbs/15_gsa_gls/cluster_jobs/16-create_within_distances.sh \
+    emerge \
     GTEX_V8 \
     MASHR
 ```
@@ -435,7 +517,7 @@ parallel -k --lb --halt 2 -j10 \
     0.01 ::: {1..987}
 
 #
-# For real phenotypes
+# For PhenomeXcan
 #
 
 # (PhenomeXcan) GTEx v8 models and Rapid GWAS
@@ -463,6 +545,20 @@ parallel -k --lb --halt 2 -j10 \
     run_job \
     nbs/15_gsa_gls/cluster_jobs/18-create_corr_mat_per_lv.sh \
     phenomexcan_other \
+    GTEX_V8 \
+    MASHR \
+    LV{} \
+    0.01 ::: {1..987}
+
+#
+# For eMERGE
+#
+
+# (eMERGE) GTEx v8 models
+parallel -k --lb --halt 2 -j10 \
+    run_job \
+    nbs/15_gsa_gls/cluster_jobs/18-create_corr_mat_per_lv.sh \
+    emerge \
     GTEX_V8 \
     MASHR \
     LV{} \
