@@ -187,6 +187,74 @@ def download_smultixcan_mashr_raw_results(**kwargs):
         # (output_folder.parent / "eqtl").rmdir()
 
 
+def download_spredixcan_mashr_raw_results(**kwargs):
+    output_folder = conf.PHENOMEXCAN["GENE_ASSOC_DIR"] / "spredixcan"
+    # if output_folder.exists():
+    #    logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
+    #    return
+
+    output_folder.parent.mkdir(exist_ok=True, parents=True)
+
+    output_tar_file = output_folder.parent / "phenomexcan-spredixcan-partial.tar"
+    output_tar_file_md5 = "cf5aa2704fdfb6727b97dd87023da7a3"
+
+    if not Path(output_tar_file).exists() or not md5_matches(
+        output_tar_file_md5, output_tar_file
+    ):
+        # download
+        curl(
+            "https://upenn.box.com/shared/static/9dti6295bdoday4iv7kuri7v2f4w231x.tar",
+            output_tar_file,
+            output_tar_file_md5,
+            logger=logger,
+        )
+
+    # uncompress file
+    import tarfile
+
+    logger.info(f"Extracting {output_tar_file}")
+    with tarfile.open(output_tar_file, "r") as f:
+        f.extractall(output_folder.parent)
+
+        # NO RENAME SHOULD BE NEEDED HERE
+        # (output_folder.parent / "eqtl" / "mashr").rename(output_folder)
+        # (output_folder.parent / "eqtl").rmdir()
+
+
+def download_gwas_parsing_raw_results(**kwargs):
+    output_folder = conf.PHENOMEXCAN["BASE_DIR"] / "gwas_parsing"
+    # if output_folder.exists():
+    #    logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
+    #    return
+
+    output_folder.parent.mkdir(exist_ok=True, parents=True)
+
+    output_tar_file = output_folder.parent / "phenomexcan-gwas_parsing-partial.tar"
+    output_tar_file_md5 = "b00ebbf8ac0330df2f04d1eb486bcd4a"
+
+    if not Path(output_tar_file).exists() or not md5_matches(
+        output_tar_file_md5, output_tar_file
+    ):
+        # download
+        curl(
+            "https://upenn.box.com/shared/static/fkj1yuzw6ayoovy7s89z7y5clal72awy.tar",
+            output_tar_file,
+            output_tar_file_md5,
+            logger=logger,
+        )
+
+    # uncompress file
+    import tarfile
+
+    logger.info(f"Extracting {output_tar_file}")
+    with tarfile.open(output_tar_file, "r") as f:
+        f.extractall(output_folder.parent)
+
+        # NO RENAME SHOULD BE NEEDED HERE
+        # (output_folder.parent / "eqtl" / "mashr").rename(output_folder)
+        # (output_folder.parent / "eqtl").rmdir()
+
+
 def download_phenomexcan_smultixcan_mashr_pvalues(**kwargs):
     output_file = conf.PHENOMEXCAN["SMULTIXCAN_MASHR_PVALUES_FILE"]
     curl(
