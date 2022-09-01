@@ -37,6 +37,7 @@ import seaborn as sns
 
 import conf
 from data.recount2 import LVAnalysis
+from phenoplier_plots import qqplot
 
 # %% [markdown] tags=[]
 # # Settings
@@ -130,48 +131,6 @@ assert get_prop(pd.Series(np.array([0.20, 0.50, 0.75, 0.10, 0.04])), 0.05) == 0.
 
 
 # %%
-def qqplot_unif(results, check_n_lvs=True, other_results=None):
-    data = results[PVALUE_COLUMN].to_numpy()
-    n = data.shape[0]
-    observed_data = -np.log10(data)
-
-    observed_lvs = results["lv"].unique()
-    n_observed_lvs = len(observed_lvs)
-    if check_n_lvs:
-        assert n_observed_lvs == 1
-        observed_lv = observed_lvs[0]
-    else:
-        observed_lv = f"All LVs ({n_observed_lvs})"
-
-    other_lv = ""
-    if other_results is not None:
-        other_data = other_results[PVALUE_COLUMN].to_numpy()
-        expected_data = -np.log10(other_data)
-
-        other_lv = other_results["lv"].unique()
-        assert len(other_lv) == 1
-        other_lv = other_lv[0]
-    else:
-        uniform_data = np.array([i / (n + 1) for i in range(1, n + 1)])
-        expected_data = -np.log10(uniform_data)
-
-    with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
-        {"lines.markersize": 3}
-    ):
-        fig, ax = plt.subplots(figsize=(8, 8))
-
-        fig = qqplot_2samples(expected_data, observed_data, line="45", ax=ax)
-
-        ax.set_xlim(expected_data.min() - 0.05, expected_data.max() + 0.05)
-
-        ax.set_xlabel("$-\log_{10}$" + f"(expected pvalue) - {other_lv}")
-        ax.set_ylabel("$-\log_{10}$" + f"(observed pvalue) - {observed_lv}")
-
-        # ax.set_title("OLS (baseline)\nMean type I error: 5.5%")
-        ax.set_title("OLS (baseline)")
-
-
-# %%
 def get_lv_genes(lv_code):
     lv_genes = multiplier_z[lv_code].sort_values(ascending=False)
     lv_obj = LVAnalysis(lv_code)
@@ -216,13 +175,20 @@ assert _tmp[0] == N_LVS
 # # Mean type I error
 
 # %%
-show_prop(dfs)
+_mt1e = show_prop(dfs)
+display(_mt1e)
 
 # %% [markdown]
 # # QQ-plot
 
 # %%
-qqplot_unif(dfs, check_n_lvs=False)
+with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
+    {"lines.markersize": 3}
+):
+    fig, ax = qqplot(dfs[PVALUE_COLUMN])
+    ax.set_title(
+        f"OLS (baseline method) - All LVs\nMean type I error: {_mt1e:.3f}\n{N_PHENOTYPES} random phenotypes"
+    )
 
 # %% [markdown]
 # # Summary of mean type I error per LV
@@ -303,7 +269,8 @@ results.head()
 show_prop(results, 0.01)
 
 # %%
-show_prop(results, 0.05)
+_mt1e = show_prop(results, 0.05)
+display(_mt1e)
 
 # %%
 show_prop(results, 0.10)
@@ -318,7 +285,13 @@ show_prop(results, 0.20)
 # ### QQplot
 
 # %%
-qqplot_unif(results)
+with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
+    {"lines.markersize": 3}
+):
+    fig, ax = qqplot(results[PVALUE_COLUMN])
+    ax.set_title(
+        f"OLS model - {lv_code}\nMean type I error: {_mt1e:.3f}\n{results.shape[0]} random phenotypes"
+    )
 
 # %% [markdown]
 # ### Top genes in LV
@@ -376,7 +349,8 @@ results.head()
 show_prop(results, 0.01)
 
 # %%
-show_prop(results, 0.05)
+_mt1e = show_prop(results, 0.05)
+display(_mt1e)
 
 # %%
 show_prop(results, 0.10)
@@ -391,7 +365,13 @@ show_prop(results, 0.20)
 # ### QQplot
 
 # %%
-qqplot_unif(results)
+with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
+    {"lines.markersize": 3}
+):
+    fig, ax = qqplot(results[PVALUE_COLUMN])
+    ax.set_title(
+        f"OLS model - {lv_code}\nMean type I error: {_mt1e:.3f}\n{results.shape[0]} random phenotypes"
+    )
 
 # %% [markdown]
 # ### Top genes in LV
@@ -449,7 +429,8 @@ results.head()
 show_prop(results, 0.01)
 
 # %%
-show_prop(results, 0.05)
+_mt1e = show_prop(results, 0.05)
+display(_mt1e)
 
 # %%
 show_prop(results, 0.10)
@@ -464,7 +445,13 @@ show_prop(results, 0.20)
 # ### QQplot
 
 # %%
-qqplot_unif(results)
+with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
+    {"lines.markersize": 3}
+):
+    fig, ax = qqplot(results[PVALUE_COLUMN])
+    ax.set_title(
+        f"OLS model - {lv_code}\nMean type I error: {_mt1e:.3f}\n{results.shape[0]} random phenotypes"
+    )
 
 # %% [markdown]
 # ### Top genes in LV
@@ -522,7 +509,8 @@ results.head()
 show_prop(results, 0.01)
 
 # %%
-show_prop(results, 0.05)
+_mt1e = show_prop(results, 0.05)
+display(_mt1e)
 
 # %%
 show_prop(results, 0.10)
@@ -537,7 +525,13 @@ show_prop(results, 0.20)
 # ### QQplot
 
 # %%
-qqplot_unif(results)
+with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
+    {"lines.markersize": 3}
+):
+    fig, ax = qqplot(results[PVALUE_COLUMN])
+    ax.set_title(
+        f"OLS model - {lv_code}\nMean type I error: {_mt1e:.3f}\n{results.shape[0]} random phenotypes"
+    )
 
 # %% [markdown]
 # ### Top genes in LV
@@ -598,7 +592,8 @@ results.head()
 show_prop(results, 0.01)
 
 # %%
-show_prop(results, 0.05)
+_mt1e = show_prop(results, 0.05)
+display(_mt1e)
 
 # %%
 show_prop(results, 0.10)
@@ -613,7 +608,13 @@ show_prop(results, 0.20)
 # ### QQplot
 
 # %%
-qqplot_unif(results)
+with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
+    {"lines.markersize": 3}
+):
+    fig, ax = qqplot(results[PVALUE_COLUMN])
+    ax.set_title(
+        f"OLS model - {lv_code}\nMean type I error: {_mt1e:.3f}\n{results.shape[0]} random phenotypes"
+    )
 
 # %% [markdown]
 # ### Top genes in LV
@@ -671,7 +672,8 @@ results.head()
 show_prop(results, 0.01)
 
 # %%
-show_prop(results, 0.05)
+_mt1e = show_prop(results, 0.05)
+display(_mt1e)
 
 # %%
 show_prop(results, 0.10)
@@ -686,7 +688,13 @@ show_prop(results, 0.20)
 # ### QQplot
 
 # %%
-qqplot_unif(results)
+with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
+    {"lines.markersize": 3}
+):
+    fig, ax = qqplot(results[PVALUE_COLUMN])
+    ax.set_title(
+        f"OLS model - {lv_code}\nMean type I error: {_mt1e:.3f}\n{results.shape[0]} random phenotypes"
+    )
 
 # %% [markdown]
 # ### Top genes in LV
@@ -750,7 +758,8 @@ results.head()
 show_prop(results, 0.01)
 
 # %%
-show_prop(results, 0.05)
+_mt1e = show_prop(results, 0.05)
+display(_mt1e)
 
 # %%
 show_prop(results, 0.10)
@@ -765,7 +774,13 @@ show_prop(results, 0.20)
 # ### QQplot
 
 # %%
-qqplot_unif(results)
+with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
+    {"lines.markersize": 3}
+):
+    fig, ax = qqplot(results[PVALUE_COLUMN])
+    ax.set_title(
+        f"OLS model - {lv_code}\nMean type I error: {_mt1e:.3f}\n{results.shape[0]} random phenotypes"
+    )
 
 # %% [markdown]
 # Hm, well calibrated in general, but with one small pvalue.
@@ -826,7 +841,8 @@ results.head()
 show_prop(results, 0.01)
 
 # %%
-show_prop(results, 0.05)
+_mt1e = show_prop(results, 0.05)
+display(_mt1e)
 
 # %%
 show_prop(results, 0.10)
@@ -841,7 +857,13 @@ show_prop(results, 0.20)
 # ### QQplot
 
 # %%
-qqplot_unif(results)
+with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
+    {"lines.markersize": 3}
+):
+    fig, ax = qqplot(results[PVALUE_COLUMN])
+    ax.set_title(
+        f"OLS model - {lv_code}\nMean type I error: {_mt1e:.3f}\n{results.shape[0]} random phenotypes"
+    )
 
 # %% [markdown]
 # Same as before, well calibrated, with one very small pvalue.
@@ -905,7 +927,8 @@ results.head()
 show_prop(results, 0.01)
 
 # %%
-show_prop(results, 0.05)
+_mt1e = show_prop(results, 0.05)
+display(_mt1e)
 
 # %%
 show_prop(results, 0.10)
@@ -920,7 +943,13 @@ show_prop(results, 0.20)
 # ### QQplot
 
 # %%
-qqplot_unif(results)
+with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
+    {"lines.markersize": 3}
+):
+    fig, ax = qqplot(results[PVALUE_COLUMN])
+    ax.set_title(
+        f"OLS model - {lv_code}\nMean type I error: {_mt1e:.3f}\n{results.shape[0]} random phenotypes"
+    )
 
 # %% [markdown]
 # ### Top genes in LV
