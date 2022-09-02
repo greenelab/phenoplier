@@ -620,9 +620,9 @@ class Gene(object):
 
     def within_distance(self, other_gene, distance_bp=None):
         """
-        TODO: complete
-
-        IMPORTANT: this function assumes that the two genes are in the same chromosome
+        This function returns True if this genes is within a certain distance
+        from other gene. It assumes that the two genes are in the same
+        chromosome (it will give misleading results if this is not true).
         """
         if distance_bp is None:
             distance_bp = Gene.DEFAULT_WITHIN_DISTANCE
@@ -695,11 +695,14 @@ class Gene(object):
             tissue:
                 The tissue name.
             model_type:
-                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see
+                conf.py).
             snps_subset:
-                This is a subset of SNPs IDs (such as "chr1_33071920_A_C_b38") that
-                will be considered to compute the correlation. All snps that are not
-                present in this subset will be ignored.
+                This is a subset of SNPs IDs (such as "chr1_33071920_A_C_b38")
+                that will be considered to compute the correlation. All snps
+                that are not present in this subset will be ignored. This is
+                used to make more accurate predictions given the SNPs in a GWAS,
+                for example.
 
         Returns:
             A pandas DataFrame with the variants' weight for the prediction of
@@ -716,10 +719,7 @@ class Gene(object):
                 where gene like '{self.ensembl_id}.%'
             """
 
-            df = pd.read_sql(
-                query,
-                sqlite_conn,
-            )
+            df = pd.read_sql(query, sqlite_conn)
 
             if df.shape[0] == 0 or df["weight"].abs().sum() == 0.0:
                 return None
@@ -741,23 +741,27 @@ class Gene(object):
     def _read_snps_cov(snps_chr, reference_panel: str, model_type: str):
         """
         Returns the covariance matrix for all SNPs (in the predictions models)
-        in a chromosome. lru_cache / maxsize is 1 because the idea is call
-        always on the same chromosome in sequence to speed up.
+        in a chromosome. The structure returned (a tuple with three elements,
+        see below) is thought to speed up processing in other parts of the code.
+
+        For this function, lru_cache/maxsize is 1 because the idea is to call
+        always on the same chromosome in sequence to speed up but avoid high
+        memory consumption.
 
         Args:
             snps_chr:
                 A string specifying the chromosome in format "chr{num}".
             reference_panel:
-                The reference panel used to compute the SNP covariance matrix. either GTEX_V8
-                or 1000G.
+                Reference panel used to compute SNP covariance matrix. Either
+                GTEX_V8 or 1000G.
             model_type:
-                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see
+                conf.py).
         Returns:
-            A square pandas dataframe with SNPs covariances.
-            FIXME: update, now I return a set with the variants IDs
-             - and it also returns a dictionary with snps ids in keys and position in values
-
-            TODO: the index of the dataframe is sorted with sort_index
+            A tuple with three elements:
+                1. A square numpy array with SNPs covariances.
+                2. A set with SNPs ids
+                3. A dictionary with SNPs ids in keys and positions as values.
         """
         input_dir = (
             conf.RESULTS["GLS"]
@@ -783,8 +787,8 @@ class Gene(object):
     @lru_cache(maxsize=None)
     def get_snps_variance(tissue: str, snps_list: tuple, model_type: str):
         """
-        TODO: complete
-        returns the variance for all snps
+        Returns the variance of a set of SNPs (snps_list) precomputed from one
+        prediction model of PrediXcan (model_type) in a given tissue.
         """
         # check that the file for the tissue exists
         model_prefix = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{model_type}_PREFIX"]
@@ -807,8 +811,6 @@ class Gene(object):
                 (snps_var_data["RSID1"] == snp_id) & (snps_var_data["RSID2"] == snp_id)
             ]
             data = data.iloc[0]
-            # data = data.drop_duplicates(subset=["VALUE"])
-            # assert data.shape[0] == 1, (tissue, snp_id)
             snp_vars[snp_id] = data["VALUE"]
 
         return pd.Series(snp_vars)
@@ -822,27 +824,37 @@ class Gene(object):
         model_type="MASHR",
     ):
         """
-        Given one or (optionally) two lists of SNPs IDs, it returns the
-        covariance matrix for
+        Given one or (optionally) two lists of SNPs IDs, it returns their
+        covariance matrix. The structure returned is a uptle with three elements
+        thought for convenience and performance.
+
         Args:
             snps_ids_list1:
                 A list of SNPs IDs. When only this parameter is used, generally
-                one wants to compute its predicted expression covariance.
+                one wants to compute a gene's predicted expression variance.
             snps_ids_list2:
                 (Optional) A second list of SNPs IDs. When this is used, it is
-                generally the SNPs from a second gene.
+                generally the SNPs from a second gene, and to compute the
+                correlations between genes.
             check:
                 If should be checked that all SNPs are from the same chromosome.
             reference_panel:
-                Reference panel used to compute SNP covariance matrix. Either GTEX_V8
-                or 1000G.
+                Reference panel used to compute SNP covariance matrix. Either
+                GTEX_V8 or 1000G.
             model_type:
-                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see
+                conf.py).
 
         Returns:
             Return a pandas dataframe with the SNPs specified in the arguments
             for which we have genotype data (otherwise we don't have its
             covariance).
+
+            A tuple with three elements:
+                1. A numpy array with SNP covariance matrix.
+                2. A tuple with two elements: the SNPs IDs and positions (in the
+                  matrix) for the first list of SNPs given.
+                3. Same as before, for the second list of SNPs given.
         """
         snps_ids_list1 = list(snps_ids_list1)
 
@@ -912,14 +924,25 @@ class Gene(object):
         snps_subset: frozenset = None,
     ):
         """
-        Given a tissue, it computes the covariance of the predicted gene
+        Given a tissue, it computes the variance of the predicted gene
         expression.
 
         Args:
             tissue:
                 The tissue name.
+            reference_panel:
+                Reference panel used to compute SNP covariance matrix. Either
+                GTEX_V8 or 1000G.
             model_type:
-                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see
+                conf.py).
+            snps_subset:
+                This is a subset of SNPs IDs (such as "chr1_33071920_A_C_b38")
+                that will be considered to compute the correlation. All snps
+                that are not present in this subset will be ignored. This is
+                used to make more accurate predictions given the SNPs in a GWAS,
+                for example.
+
         Returns:
             A float with the covariance of the gene predicted expression.
         """
@@ -951,36 +974,43 @@ class Gene(object):
         other_tissue: str = None,
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
-        use_within_distance=True,
+        use_within_distance: bool = True,
         snps_subset: frozenset = None,
     ):
         """
-        Given another Gene object and a tissue, it computes the correlation
-        between their predicted expression.
+        It computes the correlation of predicted gene expression between two
+        genes and their respective tissues.
 
         Args:
             other_gene:
                 Another Gene object.
             tissue:
-                The tissue name that will be used for both genes, or this gene
-                (self) if 'other_gene' is provided.
+                The tissue name that will be used for both genes, or only this
+                gene (self) if 'other_tissue' is provided.
             other_tissue:
                 The tissue name that will be used for 'other_gene'. In that
                 case, 'tissue' is for this gene (self).
             reference_panel:
-                A reference panel for the SNP covariance matrix. Either GTEX_V8 or 1000G.
+                Reference panel used to compute SNP covariance matrix. Either
+                GTEX_V8 or 1000G.
             model_type:
-                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see conf.py).
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see
+                conf.py).
+            use_within_distance:
+                If True, it will use the function within_distance to determine
+                if the correlation between a pair of genes will be computed or
+                not.
             snps_subset:
-                This is a subset of SNPs IDs (such as "chr1_33071920_A_C_b38") that
-                will be considered to compute the correlation. All snps that are not
-                present in this subset will be ignored.
+                This is a subset of SNPs IDs (such as "chr1_33071920_A_C_b38")
+                that will be considered to compute the correlation. All snps
+                that are not present in this subset will be ignored. This is
+                used to make more accurate predictions given the SNPs in a GWAS,
+                for example.
 
         Returns:
-            A float with the correlation of the two genes' predicted expression.
-            None if:
-              * One if any of the genes have no predictors (SNPs) in the tissue.
-              * TODO: what else?
+            A float with the correlation between the two genes' predicted
+            expression in the given tissues. None if any of the genes have no
+            predictors (SNPs) in the tissue.
         """
         if self.chromosome != other_gene.chromosome:
             return 0.0
@@ -1034,6 +1064,14 @@ class Gene(object):
 
     @staticmethod
     def _get_tissues(tissues: tuple, model_type: str):
+        """
+        A convenience function that returns the tissues argument given or, if
+        this is None and not empty, all the tissues for a given prediction
+        model.
+
+        Returns:
+            A tuple with tissue names sorted.
+        """
         if tissues is not None and len(tissues) > 0:
             return tissues
 
@@ -1052,23 +1090,44 @@ class Gene(object):
         snps_subset: frozenset = None,
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
-        use_within_distance=True,
+        use_within_distance: bool = True,
         return_covariance: bool = False,
     ):
         """
         It computes the correlation matrix for two genes across all tissues.
 
         Args:
-            tissues: TODO
-                this are tissues for gene self (this gene)
+            other_gene:
+                Another Gene object.
+            tissues:
+                A tuple with the tissue names that will be used for this gene
+                (self). If None, all tissues in the given prediction model will
+                be used.
+            other_tissues:
+                Same as 'tissues' but for 'other_gene.
+            snps_subset:
+                This is a subset of SNPs IDs (such as "chr1_33071920_A_C_b38")
+                that will be considered to compute the correlation. All snps
+                that are not present in this subset will be ignored. This is
+                used to make more accurate predictions given the SNPs in a GWAS,
+                for example.
+            reference_panel:
+                Reference panel used to compute SNP covariance matrix. Either
+                GTEX_V8 or 1000G.
+            model_type:
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see
+                conf.py).
+            use_within_distance:
+                If True, it will use the function within_distance to determine
+                if the correlation between a pair of genes will be computed or
+                not.
+            return_covariance:
+                Return covariances instead of correlations.
 
-                FIXME: add note saying that tissues has to be tuple, otherwise
-                the lru_cache will fail if it is a list for example
-            other_tissues: TODO
-                this is the same as tissues, but for other_gene
-            TODO: add other arguments
         Returns:
-            - tissue names are sorted using the `sorted` method
+            A dataframe with len(tissues) in rows and len(other_tissues) in
+            columns, sorted. Tissues that have no SNPs predictors are removed.
+            None if final dataframe is empty.
         """
         tissues = Gene._get_tissues(tissues, model_type)
         other_tissues = Gene._get_tissues(other_tissues, model_type)
@@ -1129,8 +1188,37 @@ class Gene(object):
         use_covariance_matrix: bool = False,
     ):
         """
-        FIXME: add documentation
-        this computes the SVD of the tissues correlations for a single gene
+        Returns the SVD of the tissues correlations for a single gene.
+        Top eigenvalues and eigenvectors are selected according to the
+        condition_number given (default is S-MultiXcan default).
+
+        Args:
+            tissues:
+                A tuple with the tissue names that will be used for this gene
+                (self).
+            snps_subset:
+                This is a subset of SNPs IDs (such as "chr1_33071920_A_C_b38")
+                that will be considered to compute the correlation. All snps
+                that are not present in this subset will be ignored. This is
+                used to make more accurate predictions given the SNPs in a GWAS,
+                for example.
+            reference_panel:
+                Reference panel used to compute SNP covariance matrix. Either
+                GTEX_V8 or 1000G.
+            model_type:
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see
+                conf.py).
+            condition_number:
+                The condition number used to select the top eigenvalues from the
+                SVD decomposition, such that (max(s) / s[i]) < condition_number,
+                where s is the array of eigenvalues. This is the procedure used
+                in MultiXcan.
+            use_covariance_matrix:
+                Use covariance matrix instead of correlation matrix.
+
+        Returns:
+            A tuple with the three numpy arrays returned by numpy.linalg.svd,
+            where only the top eigenvalues/eigenvectors are selected.
         """
 
         def _filter_eigen_values_from_max(s, ratio):
@@ -1158,7 +1246,6 @@ class Gene(object):
 
         return u_i, s_i, V_i
 
-    # @lru_cache(maxsize=None)
     def get_ssm_correlation(
         self,
         other_gene,
@@ -1168,30 +1255,62 @@ class Gene(object):
         reference_panel: str = "GTEX_V8",
         model_type: str = "MASHR",
         condition_number: float = 30,
-        use_within_distance=True,
+        use_within_distance: bool = True,
     ):
         """
-        Computes the correlation of the model sum of squares (SSM) for a couple
-        of genes. For that, is uses the same predictors used by the MultiXcan
-        approach, that is, the principal components of the expression matrix for
-        one gene across tissues.
+        Computes the correlation of the model sum of squares (SSM) for a pair of
+        genes assuming a null hypothesis of no association. For that, is uses
+        the same predictors used by the MultiXcan approach, that is, the
+        principal components of the expression matrix for one gene across
+        tissues.
+
+        The method is an adaptation of MAGMA's gene-set analysis
+        (https://doi.org/10.1371/journal.pcbi.1004219) for TWAS.
 
         Args:
-            TODO
+            other_gene:
+                Another Gene object.
+            tissues:
+                A tuple with the tissue names that will be used for this gene
+                (self). If None, all tissues in the given prediction model will
+                be used.
+            other_tissues:
+                Same as 'tissues' but for 'other_gene.
+            snps_subset:
+                This is a subset of SNPs IDs (such as "chr1_33071920_A_C_b38")
+                that will be considered to compute the correlation. All snps
+                that are not present in this subset will be ignored. This is
+                used to make more accurate predictions given the SNPs in a GWAS,
+                for example.
+            reference_panel:
+                Reference panel used to compute SNP covariance matrix. Either
+                GTEX_V8 or 1000G.
+            model_type:
+                The prediction model type, such as "MASHR" or "ELASTIC_NET" (see
+                conf.py).
+            condition_number:
+                The condition number used to select the top eigenvalues from the
+                SVD decomposition, such that (max(s) / s[i]) < condition_number,
+                where s is the array of eigenvalues. This is the procedure used
+                in MultiXcan.
+            use_within_distance:
+                If True, it will use the function within_distance to determine
+                if the correlation between a pair of genes will be computed or
+                not.
+
         Returns:
             TODO
         """
 
+        # Correlation between genes from different chromosomes is set to zero
         if self.chromosome != other_gene.chromosome:
-            # Correlation between genes from different chromosomes is assumed
-            # to be zero
             return 0.0
 
-        # do not compute correlation if outside default distance
+        # do not compute correlation if not within distance
         if use_within_distance and not self.within_distance(other_gene):
             return 0.0
 
-        # this gene
+        # SVD for this gene
         gene0_svd = self.get_tissues_correlations_svd(
             tissues=tissues,
             snps_subset=snps_subset,
@@ -1203,7 +1322,7 @@ class Gene(object):
             return None
         u_i, s_i, V_i = gene0_svd
 
-        # other gene
+        # SVD for other gene
         gene1_svd = other_gene.get_tissues_correlations_svd(
             tissues=other_tissues,
             snps_subset=snps_subset,
@@ -1215,7 +1334,7 @@ class Gene(object):
             return None
         u_j, s_j, V_j = gene1_svd
 
-        # between genes
+        # Compute correlations between genes
         gene0_gene1_corrs = self.get_tissues_correlations(
             other_gene=other_gene,
             tissues=tissues,
@@ -1226,10 +1345,7 @@ class Gene(object):
             use_within_distance=use_within_distance,
         )
 
-        # TODO: it might be safe to force alignment of tissue names in all
-        #  *_corrs matrices. This should not be a problem, since
-        #  get_tissues_correlations returns sorted tissue names
-
+        # compute covariance between SSMs of the two genes
         t0_t1_cov = (
             np.diag(s_i ** (-1 / 2))
             @ V_i
@@ -1239,16 +1355,12 @@ class Gene(object):
         )
 
         cov_ssm = 2 * np.trace(t0_t1_cov @ t0_t1_cov.T)
+
+        # compute standard deviation for each gene
         t0_ssm_sd = np.sqrt(2 * V_i.shape[0])
         t1_ssm_sd = np.sqrt(2 * V_j.shape[0])
 
+        # compute correlation between genes
         r = cov_ssm / (t0_ssm_sd * t1_ssm_sd)
-
-        # return 1.0 in cases where the correlation is very close to 1.0 this
-        # happens for some genes where r is slightly larger than 1.0 (which is
-        # the most important issue) or very close to 1.0 (like
-        # 0.9999999999999996)
-        # if np.isclose(r, 1.0):
-        #    return 1.0
 
         return r
