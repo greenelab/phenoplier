@@ -157,3 +157,19 @@ def get_git_repository_path():
         import tempfile
 
         return Path(tempfile.gettempdir())
+
+
+def remove_all_file_extensions(filepath: Path, extensions: list = None):
+    """
+    Removes all the extensions/suffices from a Path object (file).
+    """
+
+    def _remove_next_suffix(f):
+        if extensions is not None and len(extensions) > 0:
+            return f.suffix in extensions
+        return len(f.suffix) > 0
+
+    while _remove_next_suffix(filepath):
+        filepath = filepath.with_suffix("")
+
+    return filepath
