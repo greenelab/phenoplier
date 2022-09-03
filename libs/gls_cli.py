@@ -1,5 +1,5 @@
 """
-TODO
+Implementation of a command line tool to run the GLS on S-MultiXcan results.
 """
 from pathlib import Path
 import sys
@@ -8,7 +8,6 @@ import logging
 
 import numpy as np
 import pandas as pd
-from scipy import stats
 
 from gls import GLSPhenoplier
 
@@ -16,7 +15,7 @@ LOG_FORMAT = "[%(asctime)s] %(levelname)s: %(message)s"
 logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
 logger = logging.getLogger("root")
 
-
+# List of all supported covariates
 COVAR_OPTIONS = [
     "all",
     "gene_size",
@@ -29,6 +28,7 @@ COVAR_OPTIONS = [
     "gene_n_snps_used_density_log",
 ]
 
+# Subset of covariates taht need SNP-level information
 SNPLEVEL_COVAR_OPTIONS_PREFIXES = [
     "gene_n_snps_used",
     "gene_n_snps_used_density",
@@ -38,7 +38,8 @@ SNPLEVEL_COVAR_OPTIONS_PREFIXES = [
 def run():
     parser = argparse.ArgumentParser(
         description="""
-    PhenoPLIER command line tool to compute gene module-trait associations.
+    PhenoPLIER command line tool to compute gene module-trait associations 
+    using a GLS model.
     """.strip()
     )
 
@@ -47,7 +48,8 @@ def run():
         "--input-file",
         required=True,
         type=str,
-        help="File path to S-MultiXcan result file (tab-separated and with at least columns 'gene' and 'pvalue'",
+        help="File path to S-MultiXcan result file (tab-separated and with at "
+        "least columns 'gene' and 'pvalue'",
     )
     parser.add_argument(
         "-o",
@@ -61,27 +63,27 @@ def run():
         "--lv-model-file",
         required=False,
         type=str,
-        help="A file containing the LV model. It has to be in pickle format, with gene symbols in rows and LVs in columns.",
+        help="A file containing the LV model. It has to be in pickle format, "
+        "with gene symbols in rows and LVs in columns.",
     )
     parser.add_argument(
         "-g",
         "--gene-corr-file",
         required=False,
-        help="TODO; if not specified, it lets GLSPhenoplier to specify a default gene corrs file",
+        help="Path to a gene correlations file or folder. It's is mandatory if "
+        "running a GLS model, and not necessary for OLS.",
     )
     parser.add_argument(
-        # "-g",
         "--debug-use-ols",
         required=False,
         action="store_true",
-        help="It uses a standard OLS model instead of GLS. For debugging purposes.",
+        help="It uses a standard OLS model instead of GLS. For debugging " "purposes.",
     )
     parser.add_argument(
-        # "-g",
         "--debug-use-sub-gene-corr",
         required=False,
         action="store_true",
-        help="TODO.",
+        help="It uses an LV-specific submatrix of the gene correlation matrix.",
     )
     parser.add_argument(
         "-l",
@@ -89,14 +91,14 @@ def run():
         required=False,
         nargs="+",
         default=[],
-        help="List of LV (gene modules) identifiers on which an association will be computed.",
+        help="List of LV (gene modules) identifiers on which an association "
+        "will be computed. All the rest not in the list are ignored.",
     )
     parser.add_argument(
         "--covars",
         required=False,
         nargs="+",
         choices=COVAR_OPTIONS,
-        # default="keep-first",
         help="List of covariates to use.",
     )
     parser.add_argument(
@@ -109,27 +111,22 @@ def run():
         "--batch-id",
         required=False,
         type=int,
-        help="TODO",
+        help="With --batch-n-splits, it allows to distribute computation of "
+        "each LV-trait pair across a set of batches",
     )
     parser.add_argument(
         "--batch-n-splits",
         required=False,
         type=int,
-        help="TODO",
+        help="With --batch-id, it allows to distribute computation of "
+        "each LV-trait pair across a set of batches",
     )
     parser.add_argument(
         "--duplicated-genes-action",
         required=False,
         choices=["keep-first", "keep-last", "remove-all"],
-        # default="keep-first",
-        help="TODO",
+        help="Mandatory if gene identifies are duplicated.",
     )
-    # FIXME: add debug level
-    # FIXME: add z-score or -log10(p) transformations
-
-    # FIXME: when building the files related to a prediction model (mashr, etc), cnosider this:
-    #  - a file with lv weights (independent of predixcan prediction model type)
-    #  - gene corrs (dependent on prediction model type, because it uses weights)
 
     args = parser.parse_args()
 
@@ -193,7 +190,7 @@ def run():
         logger.error("Mandatory columns not present in data 'pvalue'")
         sys.exit(1)
 
-    data = data.set_index("gene_name")  # [["gene_name", "pvalue"]]
+    data = data.set_index("gene_name")
 
     # remove duplicated gene entries
     if args.duplicated_genes_action is not None:
@@ -207,17 +204,19 @@ def run():
         data = data.loc[~data.index.duplicated(keep=keep_action)]
 
         logger.info(
-            f"Removed duplicated genes symbols using '{args.duplicated_genes_action}'. Data now has {data.shape[0]} genes"
+            f"Removed duplicated genes symbols using '{args.duplicated_genes_action}'. "
+            f"Data now has {data.shape[0]} genes"
         )
 
     # unique index (gene names)
     if not data.index.is_unique:
         logger.error(
-            "Duplicated genes in input data. Use option --duplicated-genes-action if you want to skip them."
+            "Duplicated genes in input data. Use option --duplicated-genes-action "
+            "if you want to skip them."
         )
         sys.exit(1)
 
-    # pvalues stats
+    # pvalues statistics
     _data_pvalues = data["pvalue"]
     n_missing = _data_pvalues.isna().sum()
     n = _data_pvalues.shape[0]
@@ -241,6 +240,7 @@ def run():
         }
     )
 
+    # add covariates (if specified)
     if args.covars is not None and len(args.covars) > 0:
         covars_selected = args.covars
 
@@ -273,7 +273,8 @@ def run():
             # first load the cohort metadata gene tissues file
             if args.cohort_metadata_dir is None:
                 logger.error(
-                    "To use SNP-level covariates, a cohort metadata folder must be provided (--cohort-metadata-dir)"
+                    "To use SNP-level covariates, a cohort metadata folder must "
+                    "be provided (--cohort-metadata-dir)"
                 )
                 sys.exit(1)
 
@@ -283,9 +284,10 @@ def run():
                 cohort_gene_tissues_filepath = cohort_gene_tissues_filepath.with_suffix(
                     ".pkl.gz"
                 )
-                assert (
-                    cohort_gene_tissues_filepath.exists()
-                ), f"No gene_tissues.pkl[.gz] exists in cohort metadata folder: {cohort_metadata_dir}"
+                assert cohort_gene_tissues_filepath.exists(), (
+                    f"No gene_tissues.pkl[.gz] exists in cohort metadata folder: "
+                    f"{cohort_metadata_dir}"
+                )
 
             logger.info(f"Loading cohort metadata: {str(cohort_gene_tissues_filepath)}")
             cohort_gene_tissues = pd.read_pickle(
@@ -320,14 +322,15 @@ def run():
                     )
                 )
 
-        # add log columns
+        # add log versions of covariates (if specified)
         for c in covars_selected:
             if c.endswith("_log"):
                 c_prefix = c.split("_log")[0]
 
                 if c_prefix not in covars.columns:
                     logger.error(
-                        f"If log version of covar is selected, covar has to be selected as well ({c_prefix} not present)"
+                        f"If log version of covar is selected, covar has to be "
+                        f"selected as well ({c_prefix} not present)"
                     )
                     sys.exit(1)
 
@@ -338,8 +341,7 @@ def run():
         final_data = pd.concat([final_data, covars[covars_selected]], axis=1)
 
     # convert p-values
-    # final_data["y"] = np.abs(stats.norm.ppf(final_data["y"] / 2))
-    logger.info("Replacing zero p-values by minimum / 10")
+    logger.info("Replacing zero p-values by nonzero minimum divided by 10")
     min_nonzero_pvalue = final_data[final_data["y"] > 0]["y"].min() / 10.0
     final_data["y"] = final_data["y"].replace(0, min_nonzero_pvalue)
 
@@ -351,21 +353,16 @@ def run():
 
     if args.debug_use_ols and args.gene_corr_file is not None:
         logger.error(
-            "Incompatible arguments: you cannot specify both --gene-corr-file and --debug-use-ols"
+            "Incompatible arguments: you cannot specify both "
+            "--gene-corr-file and --debug-use-ols"
         )
         sys.exit(1)
 
     if args.gene_corr_file is not None:
         logger.info(f"Using gene correlation file: {args.gene_corr_file}")
-    else:
-        if not args.debug_use_ols:
-            logger.warning(
-                "No gene correlations file specified. The default will be used"
-            )
 
     if args.lv_model_file is not None:
         lv_model_file = Path(args.lv_model_file)
-        # FIXME: check that file exists
         logger.info(f"Reading LV model file: {str(lv_model_file)}")
         full_lvs_list = GLSPhenoplier._get_lv_weights(lv_model_file).columns.tolist()
     else:
@@ -373,7 +370,8 @@ def run():
 
     if args.batch_n_splits is not None and args.batch_n_splits > len(full_lvs_list):
         logger.error(
-            f"--batch-n-splits cannot be greater than LVs in the model ({len(full_lvs_list)} LVs)"
+            f"--batch-n-splits cannot be greater than LVs in the model "
+            f"({len(full_lvs_list)} LVs)"
         )
         sys.exit(2)
 
@@ -383,7 +381,8 @@ def run():
     if len(args.lv_list) > 0:
         selected_lvs = [lv for lv in args.lv_list if lv in full_lvs_set]
         logger.info(
-            f"A list of {len(args.lv_list)} LVs was provided, and {len(selected_lvs)} are present in LV models"
+            f"A list of {len(args.lv_list)} LVs was provided, and {len(selected_lvs)} "
+            f"are present in LV models"
         )
     else:
         selected_lvs = full_lvs_list
@@ -402,6 +401,7 @@ def run():
         logger.error("No LVs were selected")
         sys.exit(1)
 
+    # create model object
     model = GLSPhenoplier(
         gene_corrs_file_path=args.gene_corr_file,
         debug_use_ols=args.debug_use_ols,
@@ -412,15 +412,14 @@ def run():
 
     results = []
 
-    # TODO: add tqdm?
-
+    # compute an association between each LV and the gene-trait associations
     for lv_idx, lv_code in enumerate(selected_lvs):
         logger.info(f"Computing for {lv_code}")
 
         # show warnings or logs only in the first run
         if lv_idx == 0:
             model.set_logger(logger)
-        else:
+        elif lv_idx == 1:
             model.set_logger(None)
 
         model.fit_named(lv_code, final_data)
@@ -430,18 +429,15 @@ def run():
         results.append(
             {
                 "lv": lv_code,
-                # FIXME: lv_with_pathways is very cool!
-                # "lv_with_pathway": lv_code in well_aligned_lv_codes,
                 "beta": res.params.loc["lv"],
                 "beta_se": res.bse.loc["lv"],
                 "t": res.tvalues.loc["lv"],
                 "pvalue_twosided": res.pvalues.loc["lv"],
                 "pvalue_onesided": res.pvalues_onesided.loc["lv"],
-                # "pvalue_twosided": res.pvalues.loc["lv"],
-                # "summary": gls_model.results_summary,
             }
         )
 
+    # create final dataframe and save
     results = pd.DataFrame(results).set_index("lv").sort_values("pvalue_onesided")
     logger.info(f"Writing results to {str(output_file)}")
     results.to_csv(output_file, sep="\t", na_rep="NA")
