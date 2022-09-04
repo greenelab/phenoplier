@@ -1,3 +1,8 @@
+"""
+Implementation of a custom Kernel Manager for Papermill to avoid issues
+when running notebooks in a cluster. Taken and adapted from:
+https://github.com/nteract/papermill/issues/511
+"""
 import sys
 import os
 import logging
