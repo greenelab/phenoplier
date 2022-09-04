@@ -1,3 +1,6 @@
+"""
+Functions for MultiXcan copied from https://github.com/hakyimlab/MetaXcan/
+"""
 import numpy
 from numpy.core import product, asarray, dot, transpose, multiply, newaxis, maximum
 

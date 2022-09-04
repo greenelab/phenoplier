@@ -1,5 +1,6 @@
 """
-This file contains function to predict gene expression from genotype.
+This file contains functions to predict gene expression from genotype.
+It is used mainly to generate unit tests.
 """
 import sqlite3
 from functools import lru_cache
