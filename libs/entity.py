@@ -560,7 +560,10 @@ class GTEXGWASTrait(Trait):
 
 
 class Gene(object):
-    """TODO complete docstring"""
+    """
+    It represents a Gene with certain attributes (symbol, id, etc) and functions
+    (correlations of predicted expression, etc).
+    """
 
     GENE_ID_TO_NAME_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"])
     GENE_NAME_TO_ID_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"])
@@ -1256,7 +1259,7 @@ class Gene(object):
         model_type: str = "MASHR",
         condition_number: float = 30,
         use_within_distance: bool = True,
-    ):
+    ) -> float:
         """
         Computes the correlation of the model sum of squares (SSM) for a pair of
         genes assuming a null hypothesis of no association. For that, is uses
@@ -1299,7 +1302,7 @@ class Gene(object):
                 not.
 
         Returns:
-            TODO
+            It returns the correlation of the SSMs between two genes.
         """
 
         # Correlation between genes from different chromosomes is set to zero
