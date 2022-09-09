@@ -1,10 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 from statsmodels.graphics.gofplots import qqplot_2samples
 
 
-def qqplot(observed_pvalues, expected_pvalues=None, font_scale=1.8, lines_markersize=3):
+def qqplot(observed_pvalues, expected_pvalues=None):
+    """
+    A QQ plot given an array of observed pvalues and expected pvalues.
+    If expected pvalues are not given, then a uniform distribution of -log10
+    pvalues are generated instead.
+    """
     obs_data = observed_pvalues
     if hasattr(observed_pvalues, "to_numpy"):
         obs_data = observed_pvalues.to_numpy()
