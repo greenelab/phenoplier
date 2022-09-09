@@ -71,18 +71,6 @@ def _pca_data(e_, model_keys, unit_var=True):
 
     return (pca_data, pca_keys, selected, u, s, vt)
 
-    # original return:
-    # return (
-    #     pca_data,
-    #     pca_keys,
-    #     original_keys,
-    #     np.max(s),
-    #     np.min(s),
-    #     np.min(s[selected]),
-    #     vt_projection,
-    #     variance,
-    # )
-
 
 def run_multixcan(y, gene_pred_expr, unit_var=True):
     model_keys = gene_pred_expr.columns.tolist()
