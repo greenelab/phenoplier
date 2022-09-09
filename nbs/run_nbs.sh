@@ -44,12 +44,10 @@ else
 fi
 
 # run papermill
-papermill \
-  --log-output \
-  --request-save-on-cell-execute \
-  $@ \
-  $input_notebook \
-  $output_notebook
+>&2 python << END
+from papermill_custom import run_papermill
+run_papermill("${input_notebook}", "${output_notebook}", "$@")
+END
 
 # Convert to notebook
 #
