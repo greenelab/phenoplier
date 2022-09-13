@@ -187,7 +187,7 @@ with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
 ):
     fig, ax = qqplot(dfs[PVALUE_COLUMN])
     ax.set_title(
-        f"OLS (baseline method) - All LVs\nMean type I error: {_mt1e:.3f}\n{N_PHENOTYPES} random phenotypes"
+        f"OLS (baseline)\nMean type I error: {_mt1e:.3f}\n{N_LVS} LVs - {N_PHENOTYPES} random phenotypes"
     )
 
 # %% [markdown]

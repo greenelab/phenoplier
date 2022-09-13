@@ -186,7 +186,7 @@ with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
 ):
     fig, ax = qqplot(dfs[PVALUE_COLUMN])
     ax.set_title(
-        f"GLS (PhenoPLIER's method)\nMean type I error: {_mt1e:.3f}\n{N_PHENOTYPES} random phenotypes"
+        f"GLS (PhenoPLIER)\nMean type I error: {_mt1e:.3f}\n{N_LVS} LVs - {N_PHENOTYPES} random phenotypes"
     )
 
 # %% [markdown]
@@ -401,6 +401,17 @@ with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
     )
 
 # %% [markdown]
+# #### Top genes in LV
+
+# %%
+lv_genes = get_lv_genes(lv_code)
+display(lv_genes.head(25))
+
+# %%
+# see bands of top genes
+lv_genes.head(68)["gene_band"].value_counts().head(10)
+
+# %% [markdown]
 # ### LV45
 
 # %%
@@ -447,6 +458,17 @@ with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
     )
 
 # %% [markdown]
+# #### Top genes in LV
+
+# %%
+lv_genes = get_lv_genes(lv_code)
+display(lv_genes.head(25))
+
+# %%
+# see bands of top genes
+lv_genes.head(68)["gene_band"].value_counts().head(10)
+
+# %% [markdown]
 # ### LV800
 
 # %%
@@ -491,6 +513,17 @@ with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
     ax.set_title(
         f"GLS model (PhenoPLIER) - {lv_code}\nMean type I error: {_mt1e:.3f}\n{results.shape[0]} random phenotypes"
     )
+
+# %% [markdown]
+# #### Top genes in LV
+
+# %%
+lv_genes = get_lv_genes(lv_code)
+display(lv_genes.head(25))
+
+# %%
+# see bands of top genes
+lv_genes.head(68)["gene_band"].value_counts().head(10)
 
 # %% [markdown]
 # ### LV914
@@ -543,6 +576,17 @@ with sns.plotting_context("paper", font_scale=1.8), mpl.rc_context(
     ax.set_title(
         f"GLS model (PhenoPLIER) - {lv_code}\nMean type I error: {_mt1e:.3f}\n{results.shape[0]} random phenotypes"
     )
+
+# %% [markdown]
+# #### Top genes in LV
+
+# %%
+lv_genes = get_lv_genes(lv_code)
+display(lv_genes.head(25))
+
+# %%
+# see bands of top genes
+lv_genes.head(68)["gene_band"].value_counts().head(10)
 
 # %% [markdown]
 # ## LVs with expected mean type I error
