@@ -58,6 +58,10 @@ display(INPUT_DIR)
 assert INPUT_DIR.exists()
 
 # %%
+OUTPUT_DIR = conf.RESULTS["GLS_NULL_SIMS"]
+display(OUTPUT_DIR)
+
+# %%
 PVALUE_COLUMN = "pvalue_onesided"
 
 # %% [markdown]
@@ -235,6 +239,15 @@ lvs_high_error = summary_df[summary_df["5"] > 0.06]
 display(lvs_high_error.shape)
 # display(lvs_high_error.sort_values("5").head(20))
 display(lvs_high_error.sort_values("5").tail(20))
+
+# %% [markdown]
+# ## Save
+
+# %%
+summary_df[summary_df["5"] > 0.07]
+
+# %%
+summary_df.to_pickle(OUTPUT_DIR / "lvs-null_sims-1000g_eur-prop_type_I_errors.pkl")
 
 # %% [markdown]
 # # Query specific LVs
