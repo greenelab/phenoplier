@@ -14,6 +14,9 @@
 #     name: python3
 # ---
 
+# %% [markdown] tags=["papermill-error-cell-tag"]
+# <span style="color:red; font-family:Helvetica Neue, Helvetica, Arial, sans-serif; font-size:2em;">An Exception was encountered at '<a href="#papermill-error-cell">In [30]</a>'.</span>
+
 # %% [markdown] tags=[]
 # # Description
 
@@ -186,6 +189,10 @@ display(next(_iter))
 clustering_method_name = method_name
 display(clustering_method_name)
 
+# %% tags=[]
+# FIXME: remove
+CLUSTERERS = {k: CLUSTERERS[k] for ki, k in enumerate(CLUSTERERS.keys()) if ki < 5}
+
 # %% [markdown] tags=[]
 # ### Generate ensemble
 
@@ -217,6 +224,14 @@ ensemble["n_clusters"].value_counts().head()
 # %% tags=[]
 ensemble_stats = ensemble["n_clusters"].describe()
 display(ensemble_stats)
+
+# %% [markdown] tags=["papermill-error-cell-tag"]
+# <span id="papermill-error-cell" style="color:red; font-family:Helvetica Neue, Helvetica, Arial, sans-serif; font-size:2em;">Execution using papermill encountered an exception here and stopped:</span>
+
+# %% tags=[]
+assert (
+    ensemble.shape[0] > 0
+), "Ensemble is empty, stopping here (this is not actually an error if running null simulations)"
 
 # %% [markdown] tags=[]
 # ### Testing

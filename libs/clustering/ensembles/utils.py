@@ -89,6 +89,12 @@ def generate_ensemble(data, clusterers: dict, attributes: list, affinity_matrix=
         # this context
         reset_estimator(clus_obj)
 
+    if len(ensemble) == 0:
+        return pd.DataFrame(
+            data=[],
+            columns=["clusterer_id", "n_clusters", "clusterer_params", "partition"],
+        )
+
     return pd.DataFrame(ensemble).set_index("clusterer_id")
 
 

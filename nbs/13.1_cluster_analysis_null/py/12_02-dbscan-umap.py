@@ -229,6 +229,11 @@ ensemble["n_clusters"].value_counts().head()
 ensemble_stats = ensemble["n_clusters"].describe()
 display(ensemble_stats)
 
+# %% tags=[]
+assert (
+    ensemble.shape[0] > 0
+), "Ensemble is empty, stopping here (this is not actually an error if running null simulations)"
+
 # %% [markdown] tags=[]
 # ### Testing
 

@@ -19,6 +19,7 @@
 
 # %% [markdown] tags=[]
 # **UPDATED for nulls**:
+# * TODO: what if I shuffle S-MultiXcan results, and then I project those???
 # * Shuffle the projection of S-MultiXcan into LVs
 # * Then run z-scores, PCA and UMAP on this.
 # * And then continue all the clustering pipeline from base clusterings to consensus clustering
