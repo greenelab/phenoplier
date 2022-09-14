@@ -15,7 +15,7 @@
 # ---
 
 # %% [markdown] tags=["papermill-error-cell-tag"]
-# <span style="color:red; font-family:Helvetica Neue, Helvetica, Arial, sans-serif; font-size:2em;">An Exception was encountered at '<a href="#papermill-error-cell">In [30]</a>'.</span>
+# <span style="color:red; font-family:Helvetica Neue, Helvetica, Arial, sans-serif; font-size:2em;">An Exception was encountered at '<a href="#papermill-error-cell">In [29]</a>'.</span>
 
 # %% [markdown] tags=[]
 # # Description
@@ -188,10 +188,6 @@ display(next(_iter))
 # %% tags=[]
 clustering_method_name = method_name
 display(clustering_method_name)
-
-# %% tags=[]
-# FIXME: remove
-CLUSTERERS = {k: CLUSTERERS[k] for ki, k in enumerate(CLUSTERERS.keys()) if ki < 5}
 
 # %% [markdown] tags=[]
 # ### Generate ensemble

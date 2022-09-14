@@ -49,6 +49,8 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 from utils import generate_result_set_name
 
@@ -216,7 +218,7 @@ ensemble_stats = ensemble["n_clusters"].describe()
 display(ensemble_stats)
 
 # %% [markdown] tags=[]
-# ### Testing
+# ## Testing
 
 # %% tags=[]
 assert ensemble_stats["min"] > 1
@@ -238,15 +240,30 @@ assert np.all(
 assert not np.any([(part["partition"] < 0).any() for idx, part in ensemble.iterrows()])
 
 # %% [markdown] tags=[]
+# ## Add clustering quality measures
+
+# %% tags=[]
+from sklearn.metrics import calinski_harabasz_score
+
+# %% tags=[]
+ensemble = ensemble.assign(
+    ch_score=ensemble["partition"].apply(lambda x: calinski_harabasz_score(data, x))
+)
+
+# %% tags=[]
+ensemble.shape
+
+# %% tags=[]
+ensemble.head()
+
+# %% [markdown] tags=[]
 # ## Save
 
 # %% tags=[]
-del CLUSTERING_OPTIONS["LINKAGE"]
-
 output_filename = Path(
     RESULTS_DIR,
     generate_result_set_name(
-        CLUSTERING_OPTIONS,
+        {k: v for k, v in CLUSTERING_OPTIONS.items() if k != "LINKAGE"},
         prefix=f"{clustering_method_name}-",
         suffix=".pkl",
     ),
@@ -255,5 +272,131 @@ display(output_filename)
 
 # %% tags=[]
 ensemble.to_pickle(output_filename)
+
+# %% [markdown] tags=[]
+# # Cluster quality
+
+# %% tags=[]
+with pd.option_context("display.max_rows", None, "display.max_columns", None):
+    _df = ensemble.groupby(["n_clusters"]).mean()
+    display(_df)
+
+# %% tags=[]
+with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
+    "whitegrid", {"grid.linestyle": "--"}
+):
+    fig = plt.figure(figsize=(14, 6))
+    ax = sns.pointplot(data=ensemble, x="n_clusters", y="ch_score")
+    ax.set_ylabel("Calinski-Harabasz index")
+    ax.set_xlabel("Number of clusters ($k$)")
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+    plt.grid(True)
+    plt.tight_layout()
+
+# %% [markdown] tags=[]
+# # Stability
+
+# %% [markdown] tags=[]
+# ## Group ensemble by n_clusters
+
+# %% tags=[]
+parts = ensemble.groupby("n_clusters").apply(
+    lambda x: np.concatenate(x["partition"].apply(lambda x: x.reshape(1, -1)), axis=0)
+)
+
+# %% tags=[]
+parts.head()
+
+# %% tags=[]
+assert np.all(
+    [
+        parts.loc[k].shape == (len(CLUSTERING_OPTIONS["LINKAGE"]), data.shape[0])
+        for k in parts.index
+    ]
+)
+
+# %% [markdown] tags=[]
+# ## Compute stability
+
+# %% tags=[]
+from sklearn.metrics import adjusted_rand_score as ari
+from scipy.spatial.distance import pdist
+
+# %% tags=[]
+parts_ari = pd.Series(
+    {k: pdist(parts.loc[k], metric=ari) for k in parts.index}, name="k"
+)
+
+# %% tags=[]
+parts_ari_stability = parts_ari.apply(lambda x: x.mean())
+display(parts_ari_stability.sort_values(ascending=False).head(15))
+
+# %% tags=[]
+parts_ari_df = pd.DataFrame.from_records(parts_ari.tolist()).set_index(
+    parts_ari.index.copy()
+)
+
+# %% tags=[]
+parts_ari_df.shape
+
+# %% tags=[]
+assert (
+    int(
+        (len(CLUSTERING_OPTIONS["LINKAGE"]) * (len(CLUSTERING_OPTIONS["LINKAGE"]) - 1))
+        / 2
+    )
+    == parts_ari_df.shape[1]
+)
+
+# %% tags=[]
+parts_ari_df.head()
+
+# %% [markdown] tags=[]
+# ## Save
+
+# %% tags=[]
+output_filename = Path(
+    RESULTS_DIR,
+    generate_result_set_name(
+        CLUSTERING_OPTIONS,
+        prefix=f"{clustering_method_name}-stability-",
+        suffix=".pkl",
+    ),
+).resolve()
+display(output_filename)
+
+# %% tags=[]
+parts_ari_df.to_pickle(output_filename)
+
+# %% [markdown] tags=[]
+# ## Stability plot
+
+# %% tags=[]
+parts_ari_df_plot = (
+    parts_ari_df.stack()
+    .reset_index()
+    .rename(columns={"level_0": "k", "level_1": "idx", 0: "ari"})
+)
+
+# %% tags=[]
+parts_ari_df_plot.dtypes
+
+# %% tags=[]
+parts_ari_df_plot.head()
+
+# %% tags=[]
+# with sns.axes_style('whitegrid', {'grid.linestyle': '--'}):
+with sns.plotting_context("talk", font_scale=0.75), sns.axes_style(
+    "whitegrid", {"grid.linestyle": "--"}
+):
+    fig = plt.figure(figsize=(14, 6))
+    ax = sns.pointplot(data=parts_ari_df_plot, x="k", y="ari")
+    ax.set_ylabel("Averange ARI")
+    ax.set_xlabel("Number of clusters ($k$)")
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+    #     ax.set_ylim(0.0, 1.0)
+    #     ax.set_xlim(CLUSTERING_OPTIONS['K_MIN'], CLUSTERING_OPTIONS['K_MAX'])
+    plt.grid(True)
+    plt.tight_layout()
 
 # %% tags=[]
