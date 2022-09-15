@@ -1,16 +1,21 @@
 # Generalized Least Squares model (LV-trait associations)
 
 ## Overview of gene expression correlations
+
 Three notebooks need to be run to compute correlations of gene predicted expression:
+
 1. `05-snps_into_chr_cov.ipynb`
 1. `07-compile_gwas_snps_and_twas_genes.ipynb`
 1. `10-gene_expr_correlations.ipynb`
-1. `15-preprocess_gene_expr_correlations.ipynb`
+1. `15-postprocess_gene_expr_correlations.ipynb`
 1. `16-create_within_distance_matrices.ipynb`
+1. `18-create_corr_mat_per_lv.ipynb`
 
-For all of them, it's necessary to specify the prediction models of gene expression (see the referenced notebook above to see the accepted values for parameter `EQTL_MODEL`). For `05-snps_into_chr_cov.ipynb`, it is necessary to specify a reference panel (like 1000G or GTEx) to compute the SNP covariance matrix.
+For most of these it is necessary to specify a cohort, the prediction models of gene expression and a reference panel (see the `Settings` section of the referenced notebook above).
 
 ## Setup
+
+Use instructions below according to whether you want to run these steps in a cluster or a desktop computer.
 
 ### Penn's LPC cluster
 
@@ -38,8 +43,8 @@ echo $PHENOPLIER_ROOT_DIR
 
 ### Desktop computer
 
-Set the executor to bash:
 ```bash
+# set the executor of commands to "bash" (so commands are run in the terminal)
 export PHENOPLIER_JOBS_EXECUTOR="bash"
 ```
 
@@ -52,10 +57,7 @@ bash scripts/run_docker_dev.sh '[COMMAND]'
 
 ## `05-snps_into_chr_cov.ipynb`
 
-TODO: update to new commands
-is maybe convenient to run this one on the desktop?
-
-Given a reference panel (in this example it's GTEx v8), this notebook computes the covariance for each chromosome of all variants present in prediction models.
+This notebook computes the covariance for each chromosome of all variants present in prediction models. It's convenient to run this step in the desktop computer:
 
 ```bash
 compute_snps_cov () {
@@ -87,7 +89,7 @@ compute_snps_cov GTEX_V8 ELASTIC_NET
 
 ## `07-compile_gwas_snps_and_twas_genes.ipynb`
 
-Collects informations about GWAS variants and TWAS results for a particular cohort (group of GWAS with the same number of variants).
+This notebook compiles information about the GWAS and TWAS for a particular cohort. For example, the set of GWAS variants, variance of predicted expression of genes, etc.
 
 For advanced users: it's not necessary to wait until the script finish to kick off the next step (gene correlations), since this
 script computes potential covariates for GLS and that's not necessary for the next steps.
@@ -230,7 +232,8 @@ Computes correlations among predicted gene expression.
 
 These commands allow to run this notebook per chromosome in parallel (in a single desktop computer) or in several nodes (in a cluster).
 Adjust the parameter `-jX` with X as the number of cores to use.
-If you find a memory error, then try to lower the number of cores used to avoid allocating too much memory in parallel; this is specially true for elastic net models, which have many variants per chromosome.
+
+For desktop computer: if you find a memory error, then try to lower the number of cores used to avoid allocating too much memory in parallel; this is specially true for elastic net models, which have many variants per chromosome.
 
 
 ```bash
@@ -322,6 +325,8 @@ bash scripts/check_job.sh \
 
 ## `15-postprocess_gene_expr_correlations.ipynb`
 
+This notebook reads all gene correlations across all chromosomes and computes a single correlation matrix by assembling a big correlation matrix with all genes.
+
 ```bash
 run_job () {
   cluster_job_file="$1"
@@ -398,6 +403,8 @@ bash scripts/check_job.sh \
 
 
 ## `16-create_within_distance_matrices.ipynb`
+
+This notebook reads the correlation matrix generated and creates new matrices with different "within distances" across genes. For example, it generates a new correlation matrix with only genes within a distance of 10mb.
 
 ```bash
 run_job () {
@@ -477,6 +484,8 @@ bash scripts/check_job.sh \
 
 
 ## `18-create_corr_mat_per_lv.ipynb`
+
+It computes an LV-specific correlation matrix by using the top genes in that LV only.
 
 ```bash
 run_job () {
