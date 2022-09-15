@@ -162,15 +162,15 @@ gwas_file_columns = pd.read_csv(GWAS_FILE, sep="\t", nrows=2).columns
 
 assert (
     "panel_variant_id" in gwas_file_columns
-), "GWAS file must be the final imputed one with column 'panel_variant_id'"
+), "The GWAS file must be the final imputed one using the TWAS imputation tools with column 'panel_variant_id'"
 
 assert (
     "pvalue" in gwas_file_columns
-), "GWAS file must be the final imputed one with column 'pvalue'"
+), "The GWAS file must be the final imputed one using the TWAS imputation tools with column 'pvalue'"
 
 assert (
     "zscore" in gwas_file_columns
-), "GWAS file must be the final imputed one with column 'zscore'"
+), "The GWAS file must be the final imputed one using the TWAS imputation tools with column 'zscore'"
 
 # %%
 gwas_data = pd.read_csv(
@@ -202,7 +202,7 @@ gwas_data.shape
 gwas_data.head()
 
 # %%
-# in eMERGE, some values here are repeated
+# in eMERGE's results, some values here are repeated (will be removed later by taking the unique set of variant IDs).
 gwas_data["panel_variant_id"].is_unique
 
 # %%
@@ -469,7 +469,7 @@ assert (spredixcan_genes_models.apply(len) <= len(prediction_model_tissues)).all
 spredixcan_genes_models.apply(len).describe()
 
 # %%
-# testing
+# testing that I obtained the right number of tissues
 assert (
     spredixcan_genes_models.loc[spredixcan_genes_n_models.index]
     .apply(len)
@@ -646,14 +646,6 @@ spredixcan_genes_tissues_variance
 # %%
 # testing
 spredixcan_genes_tissues_variance.loc["ENSG00000000419"]
-
-# %%
-# FIXME: maybe add more tests, these differt from GTEX V8
-# # testing
-# # here values were obtained from S-PrediXcan results, where the reference panel is GTEX V8, not 1000G, so just approximations)
-# _gene_id = "ENSG00000000419"
-# assert spredixcan_genes_tissues_variance.loc[_gene_id]["Brain_Substantia_nigra"] == pytest.approx(0.0004266255268163448)
-# assert spredixcan_genes_tissues_variance.loc[_gene_id]["Brain_Hypothalamus"] == pytest.approx(0.011235877515236132)
 
 # %%
 # add to spredixcan_genes_models

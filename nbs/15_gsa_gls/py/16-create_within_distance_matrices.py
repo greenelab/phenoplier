@@ -22,6 +22,10 @@
 #
 # This notebook reads the correlation matrix generated and creates new matrices with different "within distances" across genes.
 # For example, it generates a new correlation matrix with only genes within a distance of 10mb.
+#
+# It has specicfic parameters for papermill (see under `Settings` below).
+#
+# This notebook is not directly run. See README.md.
 
 # %% [markdown] tags=[]
 # # Modules
