@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# It summarizes the GLS results on PhenomeXcan, adjusting pvalues using FDR, and saving the final results to a pickle file for later use.
+# It summarizes the GLS (Generalized Least Squares) results on PhenomeXcan, adjusting pvalues using FDR, and saving the final results to a pickle file for later use.
 
 # %% [markdown] tags=[]
 # # Modules
