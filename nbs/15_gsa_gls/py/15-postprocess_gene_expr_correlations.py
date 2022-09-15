@@ -21,6 +21,10 @@
 # (Please, take a look at the README.md file in this directory for instructions on how to run this notebook)
 #
 # This notebook reads all gene correlations across all chromosomes and computes a single correlation matrix by assembling a big correlation matrix with all genes.
+#
+# It has specicfic parameters for papermill (see under `Settings` below).
+#
+# This notebook is not directly run. See README.md.
 
 # %% [markdown] tags=[]
 # # Modules
