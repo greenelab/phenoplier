@@ -7,9 +7,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.13.8
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -91,6 +91,26 @@ predictions_avg.shape
 predictions_avg.head()
 
 # %% [markdown] tags=[]
+# # Rename methods
+
+# %%
+predictions["method"].unique()
+
+# %%
+predictions_avg["method"].unique()
+
+# %%
+_method_rename = {
+    "Module-based": "LV-based",
+}
+
+# %%
+predictions = predictions.replace({"method": _method_rename})
+
+# %%
+predictions_avg = predictions_avg.replace({"method": _method_rename})
+
+# %% [markdown] tags=[]
 # # ROC
 
 # %% tags=[]
@@ -144,6 +164,7 @@ def plot_roc_for_methods(selected_methods, fig, ax):
     ax.set_xlim([0.0, 1.01])
     ax.set_ylim([0.0, 1.01])
     ax.set_aspect("equal")
+    ax.legend(loc="lower right")
 
 
 # %% [markdown] tags=[]
@@ -241,6 +262,7 @@ def plot_pr_for_methods(selected_methods, fig, ax):
     ax.set_ylabel("Precision")
     ax.set_xlim([0.0, 1.01])
     ax.set_ylim([0.60, 1.02])
+    ax.legend(loc="lower right")
 
 
 # %% [markdown] tags=[]
