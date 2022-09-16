@@ -7,9 +7,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.13.8
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -74,7 +74,7 @@ RESULT_SET_NAMES = {
 # ## PhenomeXcan LV-trait associations
 
 # %%
-input_filepath = Path(conf.RESULTS["GLS"] / "gls_phenotypes-combined-phenomexcan.pkl")
+input_filepath = Path(conf.RESULTS["GLS"] / "gls-summary-phenomexcan.pkl.gz")
 display(input_filepath)
 
 # %%
@@ -90,7 +90,7 @@ phenomexcan_lv_trait_assocs.head()
 # ## eMERGE LV-trait associations
 
 # %%
-input_filepath = Path(conf.RESULTS["GLS"] / "gls_phenotypes-combined-emerge.pkl")
+input_filepath = Path(conf.RESULTS["GLS"] / "gls-summary-emerge.pkl.gz")
 display(input_filepath)
 
 # %%
@@ -124,7 +124,12 @@ emerge_traits_info = pd.read_csv(
 )
 
 # %%
-emerge_traits_info = emerge_traits_info.set_index("phecode")
+emerge_traits_info["phecode"] = emerge_traits_info["phecode"].apply(
+    lambda x: f"EUR_{x}"
+)
+
+# %%
+emerge_traits_info = emerge_traits_info.set_index("phecode").sort_index()
 
 # %%
 emerge_traits_info = emerge_traits_info.rename(
@@ -161,7 +166,7 @@ def get_trait_objs(phenotype_full_code):
     if Trait.is_efo_label(phenotype_full_code):
         traits = Trait.get_traits_from_efo(phenotype_full_code)
     else:
-        traits = [Trait.get_trait(full_code=phenotype_full_code)]
+        traits = [Trait.get_trait(code=phenotype_full_code)]
 
     # sort by sample size
     return sorted(traits, key=lambda x: x.n_cases / x.n, reverse=True)
@@ -224,7 +229,7 @@ lv_assocs = lv_assocs.assign(n=lv_assocs["phenotype"].apply(get_trait_n))
 lv_assocs = lv_assocs.assign(n_cases=lv_assocs["phenotype"].apply(get_trait_n_cases))
 
 # %%
-lv_assocs = lv_assocs.assign(coef=lv_assocs["coef"].apply(lambda x: f"{x:.3f}"))
+# lv_assocs = lv_assocs.assign(coef=lv_assocs["coef"].apply(lambda x: f"{x:.3f}"))
 
 # %%
 lv_assocs = lv_assocs.assign(
@@ -238,7 +243,7 @@ lv_assocs = lv_assocs.assign(n=lv_assocs["n"].apply(num_to_int_str))
 lv_assocs = lv_assocs.assign(n_cases=lv_assocs["n_cases"].apply(num_to_int_str))
 
 # %%
-lv_assocs = lv_assocs.assign(part_clust=lv_assocs.apply(get_part_clust, axis=1))
+# lv_assocs = lv_assocs.assign(part_clust="")  # lv_assocs.apply(get_part_clust, axis=1))
 
 # %%
 lv_assocs = lv_assocs.drop(columns=["phenotype"])
@@ -247,7 +252,7 @@ lv_assocs = lv_assocs.drop(columns=["phenotype"])
 lv_assocs.shape
 
 # %%
-lv_assocs = lv_assocs[["phenotype_desc", "n", "n_cases", "part_clust", "fdr"]]
+lv_assocs = lv_assocs[["phenotype_desc", "n", "n_cases", "fdr"]]
 
 # %%
 lv_assocs = lv_assocs.rename(
@@ -337,13 +342,8 @@ with open(OUTPUT_FILE_PATH, "w", encoding="utf8") as f:
 result_set = "emerge"
 
 # %%
-TABLE_CAPTION = (
-    "Table: Trait associations of {lv_name} in {result_set_name}. {table_id}"
-)
-
-# %%
 lv_assocs = emerge_lv_trait_assocs[
-    (emerge_lv_trait_assocs["lv"] == LV_NAME) & (emerge_lv_trait_assocs["fdr"] < 0.10)
+    (emerge_lv_trait_assocs["lv"] == LV_NAME) & (emerge_lv_trait_assocs["fdr"] < 0.05)
 ].sort_values("fdr")
 
 # %%
@@ -374,7 +374,10 @@ lv_assocs = lv_assocs.assign(
 )
 
 # %%
-lv_assocs = lv_assocs.assign(coef=lv_assocs["coef"].apply(lambda x: f"{x:.3f}"))
+lv_assocs["phenotype"] = lv_assocs["phenotype"].apply(lambda x: x.split("EUR_")[1])
+
+# %%
+# lv_assocs = lv_assocs.assign(coef=lv_assocs["coef"].apply(lambda x: f"{x:.3f}"))
 
 # %%
 lv_assocs = lv_assocs.assign(
@@ -420,8 +423,11 @@ with pd.option_context(
 
 # %%
 if lv_assocs.shape[0] == 0:
+    lv_assocs = pd.DataFrame(columns=lv_assocs.columns.copy()).astype(str)
     lv_assocs.loc[0, "Phecode"] = "No significant associations"
     lv_assocs = lv_assocs.fillna("")
+
+    display(lv_assocs)
 
 # %% [markdown]
 # ### Save
