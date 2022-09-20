@@ -569,8 +569,6 @@ class Gene(object):
     GENE_NAME_TO_ID_MAP = read_data(conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"])
     BIOMART_GENES = read_data(conf.GENERAL["BIOMART_GENES_INFO_FILE"])
 
-    DEFAULT_WITHIN_DISTANCE = 2.5e6
-
     def __init__(self, ensembl_id=None, name=None):
         if ensembl_id is not None:
             if ensembl_id not in self.GENE_ID_TO_NAME_MAP:
@@ -621,14 +619,12 @@ class Gene(object):
 
         return attr
 
-    def within_distance(self, other_gene, distance_bp=None):
+    def within_distance(self, other_gene, distance_bp=2.5e6):
         """
         This function returns True if this genes is within a certain distance
         from other gene. It assumes that the two genes are in the same
         chromosome (it will give misleading results if this is not true).
         """
-        if distance_bp is None:
-            distance_bp = Gene.DEFAULT_WITHIN_DISTANCE
 
         this_start = self.get_attribute("start_position")
         this_end = self.get_attribute("end_position")
