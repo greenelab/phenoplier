@@ -270,6 +270,12 @@ data_signif = phenomexcan_lv_trait_assocs[
 # %%
 data_signif.shape
 
+# %%
+data_signif["phenotype"].unique()
+
+# %%
+data_signif["lv"].unique()
+
 # %% [markdown]
 # ## eMERGE
 
@@ -283,26 +289,10 @@ data_emerge_signif = emerge_lv_trait_assocs[
 data_emerge_signif.shape
 
 # %%
-# with pd.option_context(
-#     "display.max_rows", None, "display.max_columns", None, "display.max_colwidth", None
-# ):
-#     lv = "LV66"
-#     _tmp = data_signif[data_signif["lv"] == lv]
-#     display(_tmp)
-
-#     _tmp = data_emerge_signif[data_emerge_signif["lv"] == lv]
-#     display(_tmp)
+data_emerge_signif["phenotype"].unique()
 
 # %%
-with pd.option_context(
-    "display.max_rows", None, "display.max_columns", None, "display.max_colwidth", None
-):
-    trait = "schizophrenia"
-    _tmp = data_signif[data_signif["phenotype_desc"].str.lower().str.contains(trait)]
-    display(_tmp)
-
-    _tmp = data_emerge_signif[data_emerge_signif["lv"] == lv]
-    display(_tmp)
+data_emerge_signif["lv"].unique()
 
 # %% [markdown]
 # # Autoimmune clusters
