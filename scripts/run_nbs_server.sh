@@ -23,5 +23,5 @@ elif [ ! -z "$1" ]; then
 	TOKEN="${1}"
 fi
 
-exec jupyter lab --ip="${IP}" --port="${PORT}" --no-browser --NotebookApp.token="${TOKEN}" ${EXTRA_ARGS}
+exec jupyter lab --ip="${IP}" --port="${PORT}" --ContentsManager.allow_hidden=True --no-browser --NotebookApp.token="${TOKEN}" ${EXTRA_ARGS}
 

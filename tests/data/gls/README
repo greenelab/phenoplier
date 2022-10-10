@@ -1,0 +1,69 @@
+# to generate custom data from the full file
+data = pd.read_csv("random.pheno0-smultixcan-full.txt", sep="\t", dtype=str)
+
+# remove one column
+data.drop(columns=["gene_name"]).to_csv("random.pheno0-smultixcan-no_gene_name_column.txt", sep="\t", na_rep="NA", index=False)
+
+data.drop(columns=["pvalue"]).to_csv("random.pheno0-smultixcan-no_pvalue_column.txt", sep="\t", na_rep="NA", index=False)
+
+
+# to generate a sample of the LV model
+z = pd.read_pickle("base/data/multiplier/multiplier_model_z.pkl")
+z.iloc[:, :5].astype("float32").to_pickle("tests/data/gls/sample-lv-model.pkl")
+
+z.iloc[:, :9].astype("float32").to_pickle("tests/data/gls/sample-lv-model-n9.pkl")
+
+
+# to generate a sample of the gene correlations matrix
+import conf
+
+# load gene corrs computed with gtex v8 and mashr
+input_dir = (
+    conf.RESULTS["GLS"]
+    / "gene_corrs"
+    / "cohorts"
+    / "1000g_eur"
+    / "1000g"
+    / "mashr"
+)
+input_filepath = input_dir / "gene_corrs-symbols.pkl"
+gene_corrs = pd.read_pickle(input_filepath)
+
+gene_names = list(set(data["gene_name"].tolist()).intersection(set(gene_corrs.index)))
+gene_corrs.loc[gene_names, gene_names].to_pickle("sample-gene_corrs-1000g-mashr.pkl")
+
+
+# save full gene correlation matrix
+import numpy as np
+from scipy import sparse
+from utils import get_git_repository_path
+
+sparse.save_npz(
+    get_git_repository_path() / "tests" / "data" / "gls" / "gene_corrs.npz",
+    sparse.csc_matrix(gene_corrs.to_numpy()),
+    compressed=True,
+)
+
+np.savez_compressed(
+    get_git_repository_path() / "tests" / "data" / "gls" / "gene_corrs-gene_names.npz",
+    gene_names=np.array(gene_corrs.index.tolist())
+)
+
+
+
+# load gene corrs computed with 1000 genomes and elastic net
+input_dir_base = (
+    conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_CORRS_DIR"]
+    / "1000g"
+    / "en"
+)
+input_filename = conf.PHENOMEXCAN["LD_BLOCKS"][
+    "GENE_CORRS_FILE_NAME_TEMPLATES"
+]["GENE_CORR_AVG"].format(
+    prefix="",
+    suffix=f"-mean-gene_symbols",
+)
+gene_corrs = pd.read_pickle(input_dir_base / input_filename)
+
+gene_names = list(set(data["gene_name"].tolist()).intersection(set(gene_corrs.index)))
+gene_corrs.loc[gene_names, gene_names].to_pickle("sample-gene_corrs-1000g-en.pkl")

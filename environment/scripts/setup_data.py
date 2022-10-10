@@ -53,6 +53,16 @@ MODES_ACTIONS = {
 }
 
 
+def download_phenomexcan_unified_pheno_info(**kwargs):
+    output_file = conf.PHENOMEXCAN["UNIFIED_PHENO_INFO_FILE"]
+    curl(
+        "https://upenn.box.com/shared/static/dnce4hhp37mubhxbn7d0u8wp9u280c9n.gz",
+        output_file,
+        "2fdce9042244e13cc2952ec0cb3fd6d6",
+        logger=logger,
+    )
+
+
 def download_phenomexcan_rapid_gwas_pheno_info(**kwargs):
     output_file = conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"]
     curl(
@@ -141,6 +151,108 @@ def download_phenomexcan_smultixcan_mashr_zscores(**kwargs):
         "83ded01d34c906092d64c1f5cc382fb0",
         logger=logger,
     )
+
+
+def download_smultixcan_mashr_raw_results(**kwargs):
+    output_folder = conf.PHENOMEXCAN["GENE_ASSOC_DIR"] / "smultixcan"
+    if output_folder.exists():
+        logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
+        return
+
+    output_folder.parent.mkdir(exist_ok=True, parents=True)
+
+    output_tar_file = output_folder.parent / "phenomexcan-smultixcan.tar"
+    output_tar_file_md5 = "da6beb02e927c0b586610a9138370a6b"
+
+    if not Path(output_tar_file).exists() or not md5_matches(
+        output_tar_file_md5, output_tar_file
+    ):
+        # download
+        curl(
+            "https://upenn.box.com/shared/static/7wa17vd7c2vax7g13g993s2gl2uviela.tar",
+            output_tar_file,
+            output_tar_file_md5,
+            logger=logger,
+        )
+
+    # uncompress file
+    import tarfile
+
+    logger.info(f"Extracting {output_tar_file}")
+    with tarfile.open(output_tar_file, "r") as f:
+        f.extractall(output_folder.parent)
+
+        # NO RENAME SHOULD BE NEEDED HERE
+        # (output_folder.parent / "eqtl" / "mashr").rename(output_folder)
+        # (output_folder.parent / "eqtl").rmdir()
+
+
+def download_spredixcan_mashr_raw_results(**kwargs):
+    output_folder = conf.PHENOMEXCAN["GENE_ASSOC_DIR"] / "spredixcan"
+    # if output_folder.exists():
+    #    logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
+    #    return
+
+    output_folder.parent.mkdir(exist_ok=True, parents=True)
+
+    output_tar_file = output_folder.parent / "phenomexcan-spredixcan-partial.tar"
+    output_tar_file_md5 = "cf5aa2704fdfb6727b97dd87023da7a3"
+
+    if not Path(output_tar_file).exists() or not md5_matches(
+        output_tar_file_md5, output_tar_file
+    ):
+        # download
+        curl(
+            "https://upenn.box.com/shared/static/9dti6295bdoday4iv7kuri7v2f4w231x.tar",
+            output_tar_file,
+            output_tar_file_md5,
+            logger=logger,
+        )
+
+    # uncompress file
+    import tarfile
+
+    logger.info(f"Extracting {output_tar_file}")
+    with tarfile.open(output_tar_file, "r") as f:
+        f.extractall(output_folder.parent)
+
+        # NO RENAME SHOULD BE NEEDED HERE
+        # (output_folder.parent / "eqtl" / "mashr").rename(output_folder)
+        # (output_folder.parent / "eqtl").rmdir()
+
+
+def download_gwas_parsing_raw_results(**kwargs):
+    output_folder = conf.PHENOMEXCAN["BASE_DIR"] / "gwas_parsing"
+    # if output_folder.exists():
+    #    logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
+    #    return
+
+    output_folder.parent.mkdir(exist_ok=True, parents=True)
+
+    output_tar_file = output_folder.parent / "phenomexcan-gwas_parsing-partial.tar"
+    output_tar_file_md5 = "b00ebbf8ac0330df2f04d1eb486bcd4a"
+
+    if not Path(output_tar_file).exists() or not md5_matches(
+        output_tar_file_md5, output_tar_file
+    ):
+        # download
+        curl(
+            "https://upenn.box.com/shared/static/fkj1yuzw6ayoovy7s89z7y5clal72awy.tar",
+            output_tar_file,
+            output_tar_file_md5,
+            logger=logger,
+        )
+
+    # uncompress file
+    import tarfile
+
+    logger.info(f"Extracting {output_tar_file}")
+    with tarfile.open(output_tar_file, "r") as f:
+        f.extractall(output_folder.parent)
+
+        # NO RENAME SHOULD BE NEEDED HERE
+        # (output_folder.parent / "eqtl" / "mashr").rename(output_folder)
+        # (output_folder.parent / "eqtl").rmdir()
 
 
 def download_phenomexcan_smultixcan_mashr_pvalues(**kwargs):
@@ -278,17 +390,17 @@ def download_lincs_consensus_signatures(**kwargs):
 
 
 def download_precomputed_gene_correlations(**kwargs):
-    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["GENE_NAMES_CORR_AVG"]
+    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["GENE_NAMES_CORR_AVG"]
     curl(
-        "https://upenn.box.com/shared/static/xopvxtlj44t4tswz3zzz8uxr6z7dzk0w.pkl",
+        "https://upenn.box.com/shared/static/g5chmoodx7fet50o1uqnxclugzpu2cdm.pkl",
         output_file,
-        "cb2f7cabc1aa399a80699076b162a261",
+        "4ed7c44c897a330799d62a1c2f676168",
         logger=logger,
     )
 
 
 def download_snps_covariance(**kwargs):
-    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["SNPS_COVARIANCE_FILE"]
+    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["SNPS_COVARIANCE_FILE"]
     curl(
         "https://upenn.box.com/shared/static/cm9my5bo8jw6nawsxy5y6z0ceh9wnecv.h5",
         output_file,

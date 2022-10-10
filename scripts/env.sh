@@ -10,7 +10,7 @@
 
 # BASE_DIR is the parent directory where the code and manuscript repos are
 # located.
-BASE_DIR=/home/miltondp/projects/labs/greenelab/
+BASE_DIR=/home/miltondp/projects/phenoplier
 
 # Project name
 PROJECT_NAME=phenoplier
