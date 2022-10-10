@@ -1,7 +1,11 @@
 #!/bin/bash
 set -e
 
-GIT_ROOT_DIR=$(git rev-parse --show-toplevel)
+GIT_ROOT_DIR=${PHENOPLIER_CODE_DIR}
+if [ ! -d "$GIT_ROOT_DIR" ]; then
+  echo "$GIT_ROOT_DIR does not exist. Make sure PhenoPLIER configuration is loaded."
+  exit 1
+fi
 
 # This script runs a Jupyter notebook (.ipynb) from the command line using
 # papermill.
@@ -40,12 +44,10 @@ else
 fi
 
 # run papermill
-papermill \
-  --log-output \
-  --request-save-on-cell-execute \
-  $@ \
-  $input_notebook \
-  $output_notebook
+>&2 python << END
+from papermill_custom import run_papermill
+run_papermill("${input_notebook}", "${output_notebook}", "$@")
+END
 
 # Convert to notebook
 #
