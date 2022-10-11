@@ -7,9 +7,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.13.8
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -18,7 +18,13 @@
 # # Description
 
 # %% [markdown] tags=[]
-# This notebook computes the covariance of SNPs for each chr.
+# (Please, take a look at the README.md file in this directory for instructions on how to run this notebook)
+#
+# This notebook computes the covariance for each chromosome of all variants present in prediction models.
+#
+# It has specicfic parameters for papermill (see under `Settings` below).
+#
+# This notebook is not directly run. See README.md.
 
 # %% [markdown] tags=[]
 # # Modules
@@ -28,7 +34,9 @@
 # %autoreload 2
 
 # %% tags=[]
+import gc
 import sqlite3
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -37,15 +45,130 @@ from tqdm import tqdm
 import conf
 from entity import Gene
 
+# %% [markdown]
+# # Settings
+
+# %% tags=["parameters"]
+# reference panel such as 1000G or GTEX_V8
+REFERENCE_PANEL = None
+
+# predictions models such as MASHR or ELASTIC_NET
+EQTL_MODEL = None
+
+# the numpy dtype used for the covariance matrix
+#  either float64 or float32 (for huge matrices)
+COVARIANCE_MATRIX_DTYPE = None
+
+# %%
+assert (
+    REFERENCE_PANEL is not None and len(REFERENCE_PANEL) > 0
+), "A reference panel must be given"
+display(f"Reference panel: {REFERENCE_PANEL}")
+
+REFERENCE_PANEL_DIR = conf.PHENOMEXCAN["LD_BLOCKS"][f"{REFERENCE_PANEL}_GENOTYPE_DIR"]
+display(f"Using reference panel folder: {str(REFERENCE_PANEL_DIR)}")
+assert REFERENCE_PANEL_DIR.exists(), "Reference panel folder does not exist"
+
+# %%
+assert (
+    EQTL_MODEL is not None and len(EQTL_MODEL) > 0
+), "A prediction/eQTL model must be given"
+
+EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
+
+display(f"Using eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
+
+# %%
+OUTPUT_DIR_BASE = (
+    conf.RESULTS["GLS"]
+    / "gene_corrs"
+    / "reference_panels"
+    / REFERENCE_PANEL.lower()
+    / EQTL_MODEL.lower()
+)
+OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
+
+# %%
+display(f"Using output dir base: {OUTPUT_DIR_BASE}")
+
+# %%
+cov_dtype_dict = {
+    "float32": np.float32,
+    "float64": np.float64,
+}
+
+if COVARIANCE_MATRIX_DTYPE is None:
+    COVARIANCE_MATRIX_DTYPE = "float64"
+
+if COVARIANCE_MATRIX_DTYPE in cov_dtype_dict:
+    COV_DTYPE = cov_dtype_dict[COVARIANCE_MATRIX_DTYPE]
+else:
+    COV_DTYPE = np.float64
+
+display(f"Covariance matrix dtype used: {str(COV_DTYPE)}")
+
+
 # %% [markdown] tags=[]
 # # Load data
+
+# %% [markdown] tags=[]
+# ## Functions
+
+# %%
+def get_reference_panel_file(directory: Path, file_pattern: str) -> Path:
+    files = list(directory.glob(f"*{file_pattern}*.parquet"))
+    assert len(files) == 1, f"More than one file was found: {files}"
+    return files[0]
+
+
+# %%
+# testing
+_tmp = get_reference_panel_file(
+    conf.PHENOMEXCAN["LD_BLOCKS"]["GTEX_V8_GENOTYPE_DIR"], "chr1.variants"
+)
+assert _tmp is not None
+assert (
+    _tmp.name
+    == "gtex_v8_eur_filtered_maf0.01_monoallelic_variants.chr1.variants.parquet"
+)
+
+_tmp = get_reference_panel_file(
+    conf.PHENOMEXCAN["LD_BLOCKS"]["GTEX_V8_GENOTYPE_DIR"], "_metadata"
+)
+assert _tmp is not None
+assert (
+    _tmp.name
+    == "gtex_v8_eur_filtered_maf0.01_monoallelic_variants.variants_metadata.parquet"
+)
+
+# 1000G
+_tmp = get_reference_panel_file(
+    conf.PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"], "chr1.variants"
+)
+assert _tmp is not None
+assert _tmp.name == "chr1.variants.parquet"
+
+_tmp = get_reference_panel_file(
+    conf.PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"], "_metadata"
+)
+assert _tmp is not None
+assert _tmp.name == "variant_metadata.parquet"
+
+# pattern matches more than one file
+try:
+    get_reference_panel_file(
+        conf.PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"], "chr1"
+    )
+    raise AssertionError("Exception was not raised")
+except AssertionError as e:
+    assert "More than one file was found" in str(e)
 
 # %% [markdown] tags=[]
 # ## SNPs in predictions models
 
 # %% tags=[]
 mashr_models_db_files = list(
-    conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"].glob("*.db")
+    conf.PHENOMEXCAN["PREDICTION_MODELS"][EQTL_MODEL].glob("*.db")
 )
 
 # %% tags=[]
@@ -56,7 +179,7 @@ all_variants_ids = []
 
 for m in mashr_models_db_files:
     print(f"Processing {m.name}")
-    tissue = m.name.split("mashr_")[1].split(".db")[0]
+    tissue = m.name.split(EQTL_MODEL_FILES_PREFIX)[1].split(".db")[0]
 
     with sqlite3.connect(m) as conn:
         df = pd.read_sql("select gene, varID from weights", conn)
@@ -90,12 +213,10 @@ multiplier_z.shape
 multiplier_z.head()
 
 # %% [markdown] tags=[]
-# ## 1000G variants metadata
+# ## Reference panel variants metadata
 
 # %% tags=[]
-input_file = (
-    conf.PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"] / "variant_metadata.parquet"
-)
+input_file = get_reference_panel_file(REFERENCE_PANEL_DIR, "_metadata")
 display(input_file)
 
 # %% tags=[]
@@ -120,18 +241,18 @@ list(variants_ids_with_genotype)[:10]
 del variants_metadata
 
 # %% [markdown] tags=[]
-# # How many variants in predictions models are present in 1000G?
+# # How many variants in predictions models are present in the reference panel?
 
 # %% tags=[]
 n_snps_in_models = len(all_snps_in_models)
 display(n_snps_in_models)
 
 # %% tags=[]
-n_snps_in_1000g = len(all_snps_in_models.intersection(variants_ids_with_genotype))
-display(n_snps_in_1000g)
+n_snps_in_ref_panel = len(all_snps_in_models.intersection(variants_ids_with_genotype))
+display(n_snps_in_ref_panel)
 
 # %% tags=[]
-n_snps_in_1000g / n_snps_in_models
+n_snps_in_ref_panel / n_snps_in_models
 
 # %% [markdown] tags=[]
 # # Get final list of genes in MultiPLIER
@@ -164,7 +285,7 @@ all_gene_snps = all_gene_snps[all_gene_snps["gene"].isin(genes_in_z)]
 display(all_gene_snps.shape)
 
 # %% [markdown] tags=[]
-# # (For MultiPLIER genes): How many variants in predictions models are present in 1000G?
+# # (For MultiPLIER genes): How many variants in predictions models are present in the reference panel?
 
 # %% tags=[]
 all_snps_in_models_multiplier = set(all_gene_snps["varID"])
@@ -173,13 +294,13 @@ n_snps_in_models = len(all_snps_in_models_multiplier)
 display(n_snps_in_models)
 
 # %% tags=[]
-n_snps_in_1000g = len(
+n_snps_in_ref_panel = len(
     all_snps_in_models_multiplier.intersection(variants_ids_with_genotype)
 )
-display(n_snps_in_1000g)
+display(n_snps_in_ref_panel)
 
 # %% tags=[]
-n_snps_in_1000g / n_snps_in_models
+n_snps_in_ref_panel / n_snps_in_models
 
 # %% [markdown] tags=[]
 # ## Preprocess SNPs data
@@ -243,21 +364,54 @@ variants_ld_block_df.dtypes
 # %% [markdown] tags=[]
 # ## Functions
 
+# %%
+def covariance(df, dtype):
+    n = df.shape[0]
+    df = df.sub(df.mean(), axis=1).astype(dtype)
+    return df.T.dot(df) / (n - 1)
+
+
+# %%
+# testing
+rs = np.random.RandomState(0)
+
+_test_data = pd.DataFrame(rs.normal(size=(50, 5)), columns=[f"c{i}" for i in range(5)])
+
+# float64
+pd.testing.assert_frame_equal(
+    covariance(_test_data, np.float64),
+    _test_data.cov(),
+    rtol=1e-10,
+    atol=1e-10,
+    check_dtype=True,
+)
+
+# float32
+pd.testing.assert_frame_equal(
+    covariance(_test_data, np.float32),
+    _test_data.cov(),
+    rtol=1e-5,
+    atol=1e-8,
+    check_dtype=False,
+)
+
+del _test_data
+
+
 # %% tags=[]
 def compute_snps_cov(snps_df):
-    assert snps_df["chr"].unique().shape[0]
+    assert snps_df["chr"].unique().shape[0] == 1
     chromosome = snps_df["chr"].unique()[0]
 
     # keep variants only present in genotype
     snps_ids = list(set(snps_df["varID"]).intersection(variants_ids_with_genotype))
 
-    chromosome_file = (
-        conf.PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"]
-        / f"chr{chromosome}.variants.parquet"
+    chromosome_file = get_reference_panel_file(
+        REFERENCE_PANEL_DIR, f"chr{chromosome}.variants"
     )
     snps_genotypes = pd.read_parquet(chromosome_file, columns=snps_ids)
 
-    return snps_genotypes.cov()
+    return covariance(snps_genotypes, COV_DTYPE)
 
 
 # %% tags=[]
@@ -279,11 +433,21 @@ _tmp = compute_snps_cov(_tmp_snps)
 assert _tmp.shape == (n_expected, n_expected)
 assert not _tmp.isna().any().any()
 
+# %%
+del _tmp_snps, _tmp
+
 # %% [markdown] tags=[]
 # ## Compute covariance and save
 
 # %% tags=[]
-output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["SNPS_COVARIANCE_FILE"]
+output_file_name_template = conf.PHENOMEXCAN["LD_BLOCKS"][
+    "GENE_CORRS_FILE_NAME_TEMPLATES"
+]["SNPS_COVARIANCE"]
+
+output_file = OUTPUT_DIR_BASE / output_file_name_template.format(
+    prefix="",
+    suffix="",
+)
 display(output_file)
 
 # %% tags=[]
@@ -298,9 +462,14 @@ with pd.HDFStore(output_file, mode="w", complevel=4) as store:
 
     for grp_name, grp_data in pbar:
         pbar.set_description(f"{grp_name} {grp_data.shape}")
-        snps_cov = compute_snps_cov(grp_data).astype(np.float32)
+        snps_cov = compute_snps_cov(grp_data)  # .astype(COV_DTYPE)
         assert not snps_cov.isna().any().any()
         store[f"chr{grp_name}"] = snps_cov
+
+        del snps_cov
+        store.flush()
+
+        gc.collect()
 
 # %% [markdown] tags=[]
 # # Testing

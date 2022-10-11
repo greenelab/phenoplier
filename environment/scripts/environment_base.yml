@@ -32,6 +32,7 @@ dependencies:
   - scikit-learn
   - scipy
   - seaborn
+  - statsmodels
   - tabulate
   - tqdm
   - umap-learn

@@ -7,9 +7,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.13.8
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -18,11 +18,14 @@
 # # Description
 
 # %% [markdown] tags=[]
+# (Please, take a look at the README.md file in this directory for instructions on how to run this notebook)
+#
 # This notebook computes predicted expression correlations between all genes in the MultiPLIER models.
 #
-# It also has a parameter set for papermill to run on a single chromosome to run in parallel (see under `Settings` below).
+# It has specicfic parameters for papermill (see under `Settings` below).
+# It can be configured to run on a single chromosome to run in parallel.
 #
-# This notebook does not have an output because it is not directly run. If you want to see outputs for each chromosome, check out the `gene_corrs` folder, which contains a copy of this notebook for each chromosome.
+# This notebook is not directly run. See README.md.
 
 # %% [markdown] tags=[]
 # # Modules
@@ -32,10 +35,18 @@
 # %autoreload 2
 
 # %% tags=[]
+from random import sample, seed
+import warnings
+from pathlib import Path
+import pickle
+import traceback
+
 import numpy as np
 from scipy.spatial.distance import squareform
 import pandas as pd
 from tqdm import tqdm
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 import conf
 from entity import Gene
@@ -44,217 +55,350 @@ from entity import Gene
 # # Settings
 
 # %% tags=["parameters"]
+# a cohort name (it could be something like UK_BIOBANK, etc)
+COHORT_NAME = None
+
+# reference panel such as 1000G or GTEX_V8
+REFERENCE_PANEL = None
+
+# predictions models such as MASHR or ELASTIC_NET
+EQTL_MODEL = None
+
+# this is the default value used in S-MultiXcan to select the
+# top principal components of the expression correlation matrix
+SMULTIXCAN_CONDITION_NUMBER = 30
+
 # specifies a single chromosome value
-# by default, run on all chromosomes
-chromosome = "all"
+CHROMOSOME = None
+
+# If True, computes the correlation between closeby genes only;
+# otherwise, it computes correlations for all genes in a chromosome
+COMPUTE_CORRELATIONS_WITHIN_DISTANCE = False
+
+# if True, then it will continue if a gene pair correlation fails,
+# printing the warning/error for debugging. If False, any warning/error
+# will be thrown
+DEBUG_MODE = False
 
 # %%
-if chromosome == "all":
-    from time import sleep
+assert COHORT_NAME is not None and len(COHORT_NAME) > 0, "A cohort name must be given"
 
-    message = """
-    WARNING: you are going to compute correlations of gene predicted expression across all chromosomes without parallelism.
-    It is recommended that you look at the README.md file in this subfolder (nbs/08_gsa_gls/README.md) to know how to do that.
-    
-    It will continue in 20 seconds.
-    """
-    print(message)
-    sleep(20)
+COHORT_NAME = COHORT_NAME.lower()
+display(f"Cohort name: {COHORT_NAME}")
+
+# %%
+assert (
+    REFERENCE_PANEL is not None and len(REFERENCE_PANEL) > 0
+), "A reference panel must be given"
+
+display(f"Reference panel: {REFERENCE_PANEL}")
+
+# %%
+assert (
+    EQTL_MODEL is not None and len(EQTL_MODEL) > 0
+), "A prediction/eQTL model must be given"
+
+EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
+display(f"eQTL model: {EQTL_MODEL}) / {EQTL_MODEL_FILES_PREFIX}")
+
+# %%
+assert (
+    SMULTIXCAN_CONDITION_NUMBER is not None and SMULTIXCAN_CONDITION_NUMBER > 0
+), "The S-MultiXcan condition number (positive integer) must be given"
+
+display(f"S-MultiXcan condition number: {SMULTIXCAN_CONDITION_NUMBER}")
+
+# %%
+assert CHROMOSOME is not None and (
+    1 <= CHROMOSOME <= 22
+), "You have to select one chromosome (format: number between 1 and 22)"
+
+# CHROMOSOME = str(CHROMOSOME)
+display(f"Working on chromosome {CHROMOSOME}")
+
+# %%
+display(f"Compute correlation within distance {COMPUTE_CORRELATIONS_WITHIN_DISTANCE}")
+
+# %%
+OUTPUT_DIR_BASE = (
+    conf.RESULTS["GLS"]
+    / "gene_corrs"
+    / "cohorts"
+    / COHORT_NAME
+    / REFERENCE_PANEL.lower()
+    / EQTL_MODEL.lower()
+)
+OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
+
+display(f"Using output dir base: {OUTPUT_DIR_BASE}")
 
 # %% [markdown] tags=[]
 # # Load data
 
 # %% [markdown] tags=[]
-# ## MultiPLIER Z
+# ## GWAS variants
 
-# %% tags=[]
-multiplier_z_genes = pd.read_pickle(
-    conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]
-).index.tolist()
+# %%
+with open(OUTPUT_DIR_BASE / "gwas_variant_ids.pkl", "rb") as handle:
+    gwas_variants_ids_set = pickle.load(handle)
 
-# %% tags=[]
-len(multiplier_z_genes)
+# %%
+len(gwas_variants_ids_set)
 
-# %% tags=[]
-multiplier_z_genes[:10]
+# %%
+list(gwas_variants_ids_set)[:5]
 
 # %% [markdown] tags=[]
-# ## Get gene objects
+# ## S-PrediXcan tissue models
 
-# %% tags=[]
-multiplier_gene_obj = {
-    gene_name: Gene(name=gene_name)
-    for gene_name in multiplier_z_genes
-    if gene_name in Gene.GENE_NAME_TO_ID_MAP
-}
+# %%
+spredixcan_genes_models = pd.read_pickle(OUTPUT_DIR_BASE / "gene_tissues.pkl")
 
-# %% tags=[]
-len(multiplier_gene_obj)
+# %%
+spredixcan_genes_models.shape
 
-# %% tags=[]
-multiplier_gene_obj["GAS6"].ensembl_id
+# %%
+spredixcan_genes_models.head()
 
-# %% tags=[]
-_gene_obj = list(multiplier_gene_obj.values())
+# %%
+assert spredixcan_genes_models.index.is_unique
 
-genes_info = pd.DataFrame(
-    {
-        "name": [g.name for g in _gene_obj],
-        "id": [g.ensembl_id for g in _gene_obj],
-        "chr": [g.chromosome for g in _gene_obj],
-    }
-)
+# %% [markdown] tags=[]
+# ## Gene info
 
-# %% tags=[]
+# %%
+genes_info = pd.read_pickle(OUTPUT_DIR_BASE / "genes_info.pkl")
+
+# %%
 genes_info.shape
 
-# %% tags=[]
+# %%
 genes_info.head()
 
 # %% [markdown] tags=[]
-# ## Get tissues names
-
-# %% tags=[]
-db_files = list(conf.PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"].glob("*.db"))
-
-# %% tags=[]
-assert len(db_files) == 49
-
-# %% tags=[]
-tissues = [str(f).split("mashr_")[1].split(".db")[0] for f in db_files]
-
-# %% tags=[]
-tissues[:5]
-
-# %% [markdown] tags=[]
-# # Test
+# # Compute correlations
 
 # %%
-genes_info[genes_info["chr"] == "13"]
+output_dir = OUTPUT_DIR_BASE / "by_chr"
+output_dir.mkdir(exist_ok=True, parents=True)
+output_file = output_dir / f"gene_corrs-chr{CHROMOSOME}.pkl"
+display(output_file)
 
 # %%
-_gene_list = [
-    Gene("ENSG00000134871"),
-    Gene("ENSG00000187498"),
-    Gene("ENSG00000183087"),
-    Gene("ENSG00000073910"),
-    Gene("ENSG00000133101"),
-    Gene("ENSG00000122025"),
-    Gene("ENSG00000120659"),
-    Gene("ENSG00000133116"),
-]
-
-tissue = "Whole_Blood"
+warnings.filterwarnings("error")
 
 # %%
-# %%timeit
-for gene_idx1 in range(0, len(_gene_list) - 1):
-    gene_obj1 = _gene_list[gene_idx1]
-
-    for gene_idx2 in range(gene_idx1 + 1, len(_gene_list)):
-        gene_obj2 = _gene_list[gene_idx2]
-
-        gene_obj1.get_expression_correlation(
-            gene_obj2,
-            tissue,
-        )
-
-# %% [markdown] tags=[]
-# # Compute correlation per chromosome
-
-# %%
+# standard checks
 all_chrs = genes_info["chr"].dropna().unique()
 assert all_chrs.shape[0] == 22
 
-if chromosome != "all":
-    chromosome = str(chromosome)
-    assert chromosome in all_chrs
+# select chromosome given by the user
+assert CHROMOSOME in all_chrs
 
-    # run only on the chromosome specified
-    all_chrs = [chromosome]
+# %%
+# run only on the chromosome specified
+all_chrs = [CHROMOSOME]
+genes_chr = genes_info[genes_info["chr"] == CHROMOSOME]
 
-# # For testing purposes
-# all_chrs = ["13"]
-# tissues = ["Whole_Blood"]
-# genes_info = genes_info[genes_info["id"].isin(["ENSG00000134871", "ENSG00000187498", "ENSG00000183087", "ENSG00000073910"])]
+# For testing purposes
+# genes_chr = genes_chr.sample(n=20)
 
-for chr_num in all_chrs:
-    print(f"Chromosome {chr_num}", flush=True)
+print(f"Number of genes in chromosome: {genes_chr.shape[0]}", flush=True)
 
-    genes_chr = genes_info[genes_info["chr"] == chr_num]
-    print(f"Genes in chromosome{genes_chr.shape}", flush=True)
+# %%
+# sort genes by starting position to make visualizations better later
+genes_chr = genes_chr.sort_values("start_position")
 
-    gene_chr_objs = [Gene(ensembl_id=gene_id) for gene_id in genes_chr["id"]]
-    gene_chr_ids = [g.ensembl_id for g in gene_chr_objs]
+# %%
+gene_chr_objs = [Gene(ensembl_id=gene_id) for gene_id in genes_chr["id"]]
 
-    n = len(gene_chr_objs)
-    n_comb = int(n * (n - 1) / 2.0)
-    print(f"Number of gene combinations: {n_comb}", flush=True)
+# %%
+n = len(gene_chr_objs)
+# diagonal elements + upper triangular matrix
+n_comb = n + int(n * (n - 1) / 2.0)
+print(f"Number of gene combinations: {n_comb}", flush=True)
 
-    for tissue in tissues:
-        print(f"Tissue {tissue}", flush=True)
+# %% tags=[]
+gene_corrs = []
+gene_corrs_data = np.full(
+    (n, n),
+    np.nan,
+    dtype=np.float64,
+)
 
-        # check if results exist
-        output_dir = conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "gene_corrs" / tissue
-        output_file = output_dir / f"gene_corrs-{tissue}-chr{chr_num}.pkl"
+i = 0
+with tqdm(ncols=100, total=n_comb) as pbar:
+    for gene1_idx in range(0, len(gene_chr_objs)):
+        gene1_obj = gene_chr_objs[gene1_idx]
+        gene1_tissues = spredixcan_genes_models.loc[gene1_obj.ensembl_id, "tissue"]
 
-        if output_file.exists():
-            _tmp_data = pd.read_pickle(output_file)
+        for gene2_idx in range(gene1_idx, len(gene_chr_objs)):
+            gene2_obj = gene_chr_objs[gene2_idx]
+            gene2_tissues = spredixcan_genes_models.loc[gene2_obj.ensembl_id, "tissue"]
 
-            if _tmp_data.shape[0] > 0:
-                print("Already run, stopping.")
-                continue
+            pbar.set_description(f"{gene1_obj.ensembl_id} / {gene2_obj.ensembl_id}")
 
-        gene_corrs = []
-
-        pbar = tqdm(ncols=100, total=n_comb)
-        i = 0
-        for gene_idx1 in range(0, len(gene_chr_objs) - 1):
-            gene_obj1 = gene_chr_objs[gene_idx1]
-
-            for gene_idx2 in range(gene_idx1 + 1, len(gene_chr_objs)):
-                gene_obj2 = gene_chr_objs[gene_idx2]
-
-                gene_corrs.append(
-                    gene_obj1.get_expression_correlation(gene_obj2, tissue)
+            try:
+                r = gene1_obj.get_ssm_correlation(
+                    other_gene=gene2_obj,
+                    tissues=gene1_tissues,
+                    other_tissues=gene2_tissues,
+                    snps_subset=gwas_variants_ids_set,
+                    condition_number=SMULTIXCAN_CONDITION_NUMBER,
+                    reference_panel=REFERENCE_PANEL,
+                    model_type=EQTL_MODEL,
+                    use_within_distance=COMPUTE_CORRELATIONS_WITHIN_DISTANCE,
                 )
 
-                pbar.update(1)
+                if r is None:
+                    # if r is None, it's very likely because:
+                    #  * one of the genes has no prediction models
+                    #  * all the SNPs predictors for the gene are not present in the reference
+                    #    panel
 
-        pbar.close()
+                    r = 0.0
 
-        # testing
-        gene_corrs_flat = pd.Series(gene_corrs)
-        print(f"Min/max values: {gene_corrs_flat.min()} / {gene_corrs_flat.max()}")
-        assert gene_corrs_flat.min() >= -1.001
-        assert gene_corrs_flat.max() <= 1.001
+                gene_corrs.append(r)
 
-        # save
-        # FIXME: consider saving only the condenced matrix here. See here for
-        # more details: https://github.com/greenelab/phenoplier/pull/38#discussion_r634600813
-        gene_corrs_data = squareform(np.array(gene_corrs, dtype=np.float32))
-        np.fill_diagonal(gene_corrs_data, 1.0)
+                gene_corrs_data[gene1_idx, gene2_idx] = r
+                gene_corrs_data[gene2_idx, gene1_idx] = r
+            except Warning as e:
+                if not DEBUG_MODE:
+                    raise e
 
-        gene_corrs_df = pd.DataFrame(
-            data=gene_corrs_data,
-            index=gene_chr_ids,
-            columns=gene_chr_ids,
-        )
+                print(
+                    f"RuntimeWarning for genes {gene1_obj.ensembl_id} and {gene2_obj.ensembl_id}",
+                    flush=True,
+                )
+                print(traceback.format_exc(), flush=True)
 
-        output_dir.mkdir(exist_ok=True, parents=True)
-        display(output_file)
+                gene_corrs.append(np.nan)
+            except Exception as e:
+                if not DEBUG_MODE:
+                    raise e
 
-        gene_corrs_df.to_pickle(output_file)
+                print(
+                    f"Exception for genes {gene1_obj.ensembl_id} and {gene2_obj.ensembl_id}",
+                    flush=True,
+                )
+                print(traceback.format_exc(), flush=True)
+
+                gene_corrs.append(np.nan)
+
+            pbar.update(1)
+
+# create a pandas series
+gene_corrs_flat = pd.Series(gene_corrs)
+
+# save
+# FIXME: consider saving only the condenced matrix here. See here for
+# more details: https://github.com/greenelab/phenoplier/pull/38#discussion_r634600813
+# gene_corrs_data = squareform(np.array(gene_corrs, dtype=np.float64))
+# np.fill_diagonal(gene_corrs_data, 1.0)
+
+gene_chr_ids = [g.ensembl_id for g in gene_chr_objs]
+gene_corrs_df = pd.DataFrame(
+    data=gene_corrs_data,
+    index=gene_chr_ids,
+    columns=gene_chr_ids,
+)
+
+output_dir.mkdir(exist_ok=True, parents=True)
+display(output_file)
+
+gene_corrs_df.to_pickle(output_file)
 
 # %% [markdown]
 # # Testing
 
-# %% tags=[]
-# data = pd.read_pickle(
-#     conf.PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] / "gene_corrs" / "Whole_Blood" / "gene_corrs-Whole_Blood-chr13.pkl"
-# )
+# %%
+gene_corrs_df.shape
 
 # %%
-# assert data.loc["ENSG00000134871", "ENSG00000187498"] > 0.97
+gene_corrs_df.head()
+
+# %% [markdown]
+# ## Standard checks and stats
+
+# %%
+assert not gene_corrs_df.isna().any().any()
+
+# %%
+_min_val = gene_corrs_df.min().min()
+display(_min_val)
+assert _min_val >= -0.05
+
+# %%
+_max_val = gene_corrs_df.max().max()  # this captures the diagonal
+display(_max_val)
+assert _max_val <= 1.05
+
+# %%
+# check upper triangular values
+# assert len(gene_corrs) == int(genes_chr.shape[0] * (genes_chr.shape[0] - 1) / 2)
+
+# %%
+gene_corrs_flat.describe()
+
+# %%
+gene_corrs_quantiles = gene_corrs_flat.quantile(np.arange(0, 1, 0.05))
+display(gene_corrs_quantiles)
+
+# %% [markdown]
+# ## Positive definiteness
+
+# %%
+# print negative eigenvalues
+eigs = np.linalg.eigvals(gene_corrs_df.to_numpy())
+display(len(eigs[eigs < 0]))
+display(eigs[eigs < 0])
+
+# %%
+try:
+    chol_mat = np.linalg.cholesky(gene_corrs_df.to_numpy())
+    cov_inv = np.linalg.inv(chol_mat)
+    print("Works!")
+except Exception as e:
+    print(f"Cholesky decomposition failed: {str(e)}")
+
+# %%
+try:
+    # decomposition used by statsmodels.GLS
+    cholsigmainv = np.linalg.cholesky(np.linalg.inv(gene_corrs_df.to_numpy())).T
+    print("Works!")
+except Exception as e:
+    print(f"Cholesky decomposition failed (statsmodels.GLS): {str(e)}")
+
+# %% [markdown]
+# ## Plot: distribution
+
+# %%
+with sns.plotting_context("paper", font_scale=1.5):
+    g = sns.displot(gene_corrs_flat, kde=True, height=7)
+    g.ax.set_title(
+        f"Distribution of gene correlation values in chromosome {CHROMOSOME}"
+    )
+
+# %% [markdown]
+# ## Plot: heatmap
+
+# %%
+vmin_val = min(0.00, gene_corrs_quantiles[0.10])
+vmax_val = max(0.05, gene_corrs_quantiles[0.90])
+display(f"{vmin_val} / {vmax_val}")
+
+# %%
+f, ax = plt.subplots(figsize=(10, 10))
+sns.heatmap(
+    gene_corrs_df,
+    xticklabels=False,
+    yticklabels=False,
+    square=True,
+    vmin=vmin_val,
+    vmax=vmax_val,
+    cmap="rocket_r",
+    ax=ax,
+)
+ax.set_title(f"Gene correlations in chromosome {CHROMOSOME}")
 
 # %%

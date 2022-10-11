@@ -9,5 +9,13 @@ set -euo pipefail
 # load environment variables
 eval `python libs/conf.py`
 
+# make sure bash is used, not sh
+export SHELL=$(type -p bash)
+
+# if the environment variable is present, the following code will export
+# the bash functions defined in it
+set -a
+eval "${PHENOPLIER_BASH_FUNCTIONS_CODE}"
+
 exec "$@"
 

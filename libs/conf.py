@@ -265,6 +265,9 @@ PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"] = Path(
 PHENOMEXCAN["GTEX_GWAS_PHENO_INFO_FILE"] = Path(
     PHENOMEXCAN["BASE_DIR"], "gtex_gwas_phenotypes_metadata.tsv"
 ).resolve()
+PHENOMEXCAN["UNIFIED_PHENO_INFO_FILE"] = Path(
+    PHENOMEXCAN["BASE_DIR"], "phenotypes_info.tsv.gz"
+).resolve()
 
 # ld blocks
 PHENOMEXCAN["LD_BLOCKS"] = {}
@@ -274,17 +277,8 @@ PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"] = Path(
 PHENOMEXCAN["LD_BLOCKS"]["1000G_GENOTYPE_DIR"] = Path(
     PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "reference_panel_1000G"
 ).resolve()
-PHENOMEXCAN["LD_BLOCKS"]["SNPS_COVARIANCE_FILE"] = Path(
-    PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"],
-    "mashr_snps_chr_blocks_cov.h5",
-).resolve()
-PHENOMEXCAN["LD_BLOCKS"]["GENE_IDS_CORR_AVG"] = Path(
-    PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"],
-    "multiplier_genes-pred_expression_corr_avg.pkl",
-).resolve()
-PHENOMEXCAN["LD_BLOCKS"]["GENE_NAMES_CORR_AVG"] = Path(
-    PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"],
-    "multiplier_genes-pred_expression_corr_avg-gene_names.pkl",
+PHENOMEXCAN["LD_BLOCKS"]["GTEX_V8_GENOTYPE_DIR"] = Path(
+    PHENOMEXCAN["LD_BLOCKS"]["BASE_DIR"], "reference_panel_gtex_v8"
 ).resolve()
 
 # predictions models
@@ -292,6 +286,7 @@ PHENOMEXCAN["PREDICTION_MODELS"] = {}
 PHENOMEXCAN["PREDICTION_MODELS"]["BASE_DIR"] = Path(
     PHENOMEXCAN["BASE_DIR"], "prediction_models"
 ).resolve()
+## mashr models
 PHENOMEXCAN["PREDICTION_MODELS"]["MASHR"] = Path(
     PHENOMEXCAN["PREDICTION_MODELS"]["BASE_DIR"], "mashr"
 ).resolve()
@@ -306,6 +301,17 @@ PHENOMEXCAN["PREDICTION_MODELS"]["MASHR_SMULTIXCAN_COV_FILE"] = Path(
     PHENOMEXCAN["PREDICTION_MODELS"]["BASE_DIR"],
     "gtex_v8_expression_mashr_snp_covariance.txt.gz",
 ).resolve()
+## elastic net models
+PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET"] = Path(
+    PHENOMEXCAN["PREDICTION_MODELS"]["BASE_DIR"], "elastic_net_models"
+).resolve()
+PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET_PREFIX"] = "en_"
+PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET_TISSUES"] = " ".join(
+    tissue_file.name.split(PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET_PREFIX"])[
+        1
+    ].split(".db")[0]
+    for tissue_file in PHENOMEXCAN["PREDICTION_MODELS"]["ELASTIC_NET"].glob("*.db")
+)
 
 
 #
@@ -339,6 +345,18 @@ EMERGE["PHECODE_DESC_FILE"] = Path(
 EMERGE["DESC_FILE_WITH_SAMPLE_SIZE"] = Path(
     EMERGE["BASE_DIR"],
     "eMERGE_III_PMBB_GSA_v2_2020_phecode_AFR_EUR_cc50_counts_w_dictionary.txt",
+).resolve()
+EMERGE["GWAS_DIR"] = Path(
+    EMERGE["BASE_DIR"],
+    "gwas",
+).resolve()
+EMERGE["SPREDIXCAN_DIR"] = Path(
+    EMERGE["BASE_DIR"],
+    "spredixcan",
+).resolve()
+EMERGE["SMULTIXCAN_DIR"] = Path(
+    EMERGE["BASE_DIR"],
+    "smultixcan",
 ).resolve()
 EMERGE["GENE_ASSOC_DIR"] = Path(EMERGE["BASE_DIR"], "gene_assoc").resolve()
 EMERGE["SMULTIXCAN_MASHR_ZSCORES_FILE"] = Path(
@@ -383,6 +401,19 @@ A1000G["BASE_DIR"] = Path(DATA_DIR, "1000g").resolve()
 
 # genotypes
 A1000G["GENOTYPES_DIR"] = Path(A1000G["BASE_DIR"], "genotypes").resolve()
+
+
+#
+# External paths (outside ROOT_DIR)
+#
+EXTERNAL = {}
+
+# GTEx v8
+EXTERNAL["GTEX_V8_DIR"] = os.environ.get("PHENOPLIER_GTEX_V8_DIR")
+if EXTERNAL["GTEX_V8_DIR"] is None and hasattr(settings, "GTEX_V8_DIR"):
+    EXTERNAL["GTEX_V8_DIR"] = settings.GTEX_V8_DIR
+if EXTERNAL["GTEX_V8_DIR"] is not None:
+    EXTERNAL["GTEX_V8_DIR"] = Path(EXTERNAL["GTEX_V8_DIR"]).resolve()
 
 
 if __name__ == "__main__":
