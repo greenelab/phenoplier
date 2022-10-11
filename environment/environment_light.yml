@@ -9,6 +9,8 @@ dependencies:
   - parallel
   - python=3.8.*
   - pyyaml=5.3.*
+  - r-base=3.6.*
+  - r-essentials
   - statsmodels=0.13.*
   - scikit-learn=0.23.*
   - scipy=1.5.*

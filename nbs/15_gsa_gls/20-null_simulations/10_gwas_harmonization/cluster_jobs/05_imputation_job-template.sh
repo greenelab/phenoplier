@@ -14,7 +14,7 @@
 #   see README.md to know how to generate the actual job scripts.
 
 # make sure we use the number of CPUs specified
-export CM_N_JOBS=1
+export PHENOPLIER_N_JOBS=1
 export NUMBA_NUM_THREADS=1
 export MKL_NUM_THREADS=1
 export OPEN_BLAS_NUM_THREADS=1

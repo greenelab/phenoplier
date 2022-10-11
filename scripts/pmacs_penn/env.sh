@@ -31,3 +31,7 @@ PHENOPLIER_CODE_DIR=/home/miltondp/projects/phenoplier
 export PYTHONPATH=${PHENOPLIER_CODE_DIR}/libs/:${PYTHONPATH}
 echo "PYTHONPATH=${PYTHONPATH}"
 
+# GTEx v8
+export PHENOPLIER_GTEX_V8_DIR="/project/ritchie_scratch2/miltondp/gtex_v8/"
+echo "PHENOPLIER_GTEX_V8_DIR=${PHENOPLIER_GTEX_V8_DIR}"
+
