@@ -176,7 +176,7 @@ bash check_job.sh \
 
 For some reason, the postprocessing scripts previously run do not generate exactly the same set of final variants for imputed GWAS.
 Each final GWAS should have the same set of imputed variants, since they were all imputed using GWAS from the same cohort and exactly the same input variants.
-However, this is not the case, and for this null simulations we need all GWAS to have the same set of variants to efficiently compute gene correlations.
+However, this is not the case, and for this null simulation, we need all GWAS to have the same set of variants to efficiently compute gene correlations.
 
 So what we do is to read all final GWAS files, generate a set of common variants across all of them, and then align all final GWAS to that.
 
