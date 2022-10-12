@@ -48,9 +48,14 @@ Here we need to use some templating, because we run across random phenotypes and
 ```bash
 mkdir -p _tmp/spredixcan
 
-# iterate over all random phenotype ids and tissues
-# and submit a job for each combination
-for pheno_id in {0..99}; do
+# Iterate over all random phenotype ids, chromosomes and batch ids and submit a job for each combination.
+# IMPORTANT: These are a lot of tasks. You might want to split jobs by chaning the range in first for line:
+#   0..199
+#   200..399
+#   400..599
+#   600..799
+#   800..999
+for pheno_id in {0..999}; do
   for tissue in ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_TISSUES}; do
     export pheno_id tissue
     cat cluster_jobs/01_spredixcan_job-template.sh | envsubst '${pheno_id} ${tissue}' | bsub
@@ -66,14 +71,12 @@ bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/spredixcan -p "INF
 
 * Check that at least 90% of SNPs in models were used:
 ```bash
-bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/spredixcan -p "INFO - 90 % of model's snps"
+bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/spredixcan -p "INFO - 90 % of model's snps found"
 
 # success output:
-# Finished checking 4900 logs:
+# Finished checking [NUMBER_OF_PHENOTYPES * 49 tissues] logs:
 #  All jobs finished successfully
 ```
-
-There should be 4900 files (100 random phenotypes and 49 tissues) in the output directory.
 
 If any job failed, check `../10_gwas_harmonization/README.md`, which has python code to get a list of unfinished jobs.
 
@@ -86,9 +89,31 @@ cat cluster_jobs/05_smultixcan_job.sh | bsub
 ```
 
 The `check_jobs.sh` script could be used also to quickly assess which jobs failed (given theirs logs):
-`bash check_job.sh -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan -p "INFO - Ran multi tissue"`
+```bash
+bash check_job.sh \
+  -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan \
+  -p "INFO - Ran multi tissue"
+```
 
-There should be 100 files in the output directory: 100 random phenotypes.
+Another check is to count how many S-PrediXcan files were processed for each random phenotype.
+It should be one per tissue (49):
+```bash
+# S-PrediXcan files
+bash check_job.sh \
+  -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan \
+  -p "Level 9 - Loading metaxcan " \
+  -c 49
+
+# Tissues loaded
+bash check_job.sh \
+  -i ${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/twas/smultixcan \
+  -p "Level 9 - Processing " \
+  -c 49
+
+# which should output:
+# Finished checking [NUMBER_OF_PHENOTYPES] logs:
+#  All jobs finished successfully
+```
 
 
 ## Monitoring jobs
@@ -101,7 +126,17 @@ watch -n 2 bjobs
 
 Logs for `random_pheno0` are in `random_pheno1.*` (indexes are different because LPC arrays cannot start with zero).
 
+To kill running jobs:
+```bash
+bjobs | grep RUN | cut -d ' ' -f1 | xargs -I {} bkill {}
+```
+
 
 # QQ plots
 
 Notebook `15-twas-qqplot.ipynb` checks that the distribution of pvalues is as expected.
+
+
+
+
+REMEMBER TO RUN QQPLOTS NOTEBOOKS WHEN ALL IS DONE

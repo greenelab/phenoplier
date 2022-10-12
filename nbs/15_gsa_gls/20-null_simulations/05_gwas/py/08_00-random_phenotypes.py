@@ -32,7 +32,7 @@ import conf
 # # Settings
 
 # %%
-N_PHENOTYPES = 100
+N_PHENOTYPES = 1000
 
 # %% [markdown]
 # # Paths

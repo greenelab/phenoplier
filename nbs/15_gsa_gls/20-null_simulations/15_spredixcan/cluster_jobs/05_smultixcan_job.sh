@@ -1,5 +1,5 @@
 #!/bin/bash
-# BSUB -J random_pheno[1-100]
+# BSUB -J random_pheno[1-1000]
 # BSUB -cwd _tmp/smultixcan
 # BSUB -oo random_pheno%I.%J.out
 # BSUB -eo random_pheno%I.%J.error
@@ -11,12 +11,13 @@
 # BSUB -W 1:00
 
 # make sure we use the number of CPUs specified
-export PHENOPLIER_N_JOBS=1
-export NUMBA_NUM_THREADS=1
-export MKL_NUM_THREADS=1
-export OPEN_BLAS_NUM_THREADS=1
-export NUMEXPR_NUM_THREADS=1
-export OMP_NUM_THREADS=1
+export n_jobs=1
+export PHENOPLIER_N_JOBS=${n_jobs}
+export NUMBA_NUM_THREADS=${n_jobs}
+export MKL_NUM_THREADS=${n_jobs}
+export OPEN_BLAS_NUM_THREADS=${n_jobs}
+export NUMEXPR_NUM_THREADS=${n_jobs}
+export OMP_NUM_THREADS=${n_jobs}
 
 CODE_DIR=${PHENOPLIER_CODE_DIR}/nbs/15_gsa_gls/20-null_simulations/15_spredixcan
 FINAL_IMPUTED_GWAS_DIR="${PHENOPLIER_RESULTS_GLS_NULL_SIMS}/final_imputed_gwas"
