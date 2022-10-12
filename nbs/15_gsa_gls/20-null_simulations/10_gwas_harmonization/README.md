@@ -60,6 +60,7 @@ There should be [NUMBER OF PHENOTYPES] files in the output directory: 1000 rando
 ## Imputation
 
 Here we need to use some templating, because we impute across random phenotypes, chromosomes and batch ids.
+Batch ids are used to split jobs more and thus parallelize across more nodes.
 
 ```bash
 mkdir -p _tmp/imputation
@@ -71,7 +72,7 @@ mkdir -p _tmp/imputation
 #   400..599
 #   600..799
 #   800..999
-for pheno_id in {0..9}; do
+for pheno_id in {0..999}; do
   for chromosome in {1..22}; do
     for batch_id in {0..9}; do
       export pheno_id chromosome batch_id
@@ -96,7 +97,7 @@ import re
 from pathlib import Path
 
 # adjust accordingly
-N_PHENOTYPES = 200    # 1000
+N_PHENOTYPES = 1000   # 1000
 PHENO_ID_START = 0    # 0
 PHENO_ID_END = 999    # 999
 
@@ -157,7 +158,8 @@ bash check_job.sh -i _tmp/postprocessing
 ```
 
 Another check is to count how many parts were processed for each random phenotype.
-It should be 22 chromosomes times 10 batches (220):
+It should be 22 chromosomes times 10 batches (220), see code below.
+The `-p` parameter is the success pattern, a chunk of text that has to be found in the input files as certain number of times (`-c`).
 ```bash
 bash check_job.sh \
   -i _tmp/postprocessing/ \
