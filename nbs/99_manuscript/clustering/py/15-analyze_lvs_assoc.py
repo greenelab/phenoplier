@@ -18,7 +18,11 @@
 # # Description
 
 # %% [markdown] tags=[]
-# **TODO:** update
+# It analyzes which LVs are the most discriminative for different clusters of traits, and how this LVs are associated with traits using the LV-based regression framework. The steps are:
+# * Read clustering resutls for PhenomeXcan (discovery cohort).
+# * See which LVs are driving those trait clusters.
+# * Read LV-trait associations in PhenomeXcan and eMERGE (replication cohort).
+# * Perform analyses on different clusters of traits, such as autoimmune and cardiovascular clusters.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -38,31 +42,6 @@ import conf
 
 # %% [markdown] tags=[]
 # # Settings
-
-# %%
-# assert (
-#     conf.MANUSCRIPT["BASE_DIR"] is not None
-# ), "The manuscript directory was not configured"
-
-# OUTPUT_FILE_PATH = conf.MANUSCRIPT["CONTENT_DIR"] / "50.00.supplementary_material.md"
-# display(OUTPUT_FILE_PATH)
-# assert OUTPUT_FILE_PATH.exists()
-
-# %%
-# # result_set is either phenomexcan or emerge
-# LV_FILE_MARK_TEMPLATE = "<!-- {lv}:{result_set}_traits_assocs:{position} -->"
-
-# %%
-# TABLE_CAPTION = "Table: Significant trait associations of {lv_name} in {result_set_name}. {table_id}"
-
-# %%
-# TABLE_CAPTION_ID = "#tbl:sup:{result_set}_assocs:{lv_name_lower_case}"
-
-# %%
-# RESULT_SET_NAMES = {
-#     "phenomexcan": "PhenomeXcan",
-#     "emerge": "eMERGE",
-# }
 
 # %%
 CLUSTERING_K = 29
@@ -237,6 +216,10 @@ assert emerge_traits_info.index.is_unique
 # ## LVs errors
 
 
+# %% [markdown]
+# These results are used to avoid using LVs with high mean type I error in the null simulations.
+
+
 # %%
 lvs_typeIerr = pd.read_pickle(
     conf.RESULTS["GLS_NULL_SIMS"] / "lvs-null_sims-1000g_eur-prop_type_I_errors.pkl"
@@ -256,6 +239,10 @@ len(lvs_flagged)
 
 # %% [markdown]
 # # Load trait associations
+
+
+# %% [markdown]
+# Load trait associations for PhenomeXcan and eMERGE and show some statistics.
 
 
 # %% [markdown]
@@ -296,6 +283,10 @@ data_emerge_signif["lv"].unique()
 
 # %% [markdown]
 # # Autoimmune clusters
+
+# %% [markdown]
+# Analyze autoimmune clusters in PhenomeXcan and significant LV-trait associations here.
+# Then take a look if they replicated in eMERGE.
 
 # %% [markdown]
 # ## PhenomeXcan
