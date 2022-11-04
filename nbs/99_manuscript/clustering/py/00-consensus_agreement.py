@@ -18,7 +18,9 @@
 # # Description
 
 # %% [markdown] tags=[]
-# It generates a figure with the agreement of the final consensus partitions with the ensemble
+# It generates a figure with the agreement of the final consensus partitions with the ensemble using three scenarios:
+# * The real data (using PhenomeXcan TWAS results projected into the LV space).
+# * Two null scenarios where structure in data is destroyed to assess the significance of clustering results in the real data.
 
 # %% [markdown] tags=[]
 # # Modules loading
@@ -93,6 +95,11 @@ scenarios_results["Real data"] = (best_partitions, best_parts_stats, best_thresh
 # %% [markdown] tags=[]
 # ## Runs on simulated null scenario 1
 
+# %% [markdown] tags=[]
+# The input data for all cases are TWAS results: a matrix with genes x traits, and p-values/z-scores in cells. We call this matrix M.
+# For this Null #1 scenario, we shuffle genes in M, and then this shuffled matrix is projected into the LV space, where clustering is performed.
+# Here we read these results.
+
 # %%
 CONSENSUS_CLUSTERING_DIR = Path(
     conf.RESULTS["CLUSTERING_DIR"], "null_sims", "consensus_clustering"
@@ -131,6 +138,10 @@ scenarios_results["Null #1"] = (best_partitions, best_parts_stats, best_threshol
 
 # %% [markdown] tags=[]
 # ## Runs on simulated null scenario 2
+
+# %% [markdown] tags=[]
+# For this Null #2 scenario, we projected the original M matrix into the latent space, and then shuffle LVs in the projected matrix.
+# Here we read these results.
 
 # %%
 CONSENSUS_CLUSTERING_DIR = Path(
