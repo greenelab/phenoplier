@@ -44,6 +44,7 @@ import conf
 # # Settings
 
 # %%
+# this value selects the partition with k=29 from those fifteen preselected and shown in the clustering tree figure
 CLUSTERING_K = 29
 
 # %% [markdown] tags=[]
