@@ -30,7 +30,7 @@ MODES_ACTIONS = {
         "download_multiplier_model_z_pkl",
         "download_multiplier_model_metadata_pkl",
         "download_predixcan_mashr_prediction_models",
-        "download_precomputed_gene_correlations",
+        "download_gene_correlations_phenomexcan_rapid_gwas",
         "download_phenomexcan_smultixcan_mashr_zscores",
         "download_snps_covariance",
     },
@@ -47,7 +47,8 @@ MODES_ACTIONS = {
         "download_multiplier_model_b_pkl",
         "download_multiplier_model_summary_pkl",
         "download_phenomexcan_smultixcan_mashr_pvalues",
-        "download_precomputed_gene_correlations",
+        "download_gene_correlations_phenomexcan_rapid_gwas",
+        # TODO: add link of raw S-MultiXcan result file and add that to demo?
     },
     "full": {},  # empty means all actions/methods
 }
@@ -389,22 +390,74 @@ def download_lincs_consensus_signatures(**kwargs):
     )
 
 
-def download_precomputed_gene_correlations(**kwargs):
+def download_gene_correlations_phenomexcan_rapid_gwas(**kwargs):
+    # FIXME: update this output_file
     output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["GENE_NAMES_CORR_AVG"]
     curl(
-        "https://upenn.box.com/shared/static/g5chmoodx7fet50o1uqnxclugzpu2cdm.pkl",
+        # FIXME: this file needs to be uncompressed
+        "https://upenn.box.com/shared/static/5nj7j13yqi7wiqrspmat5f2fo6xaa9pp.tar",
         output_file,
-        "4ed7c44c897a330799d62a1c2f676168",
+        "fb96f18421f7e0f79e74f568b5ae6c08",
         logger=logger,
     )
 
 
-def download_snps_covariance(**kwargs):
+def download_gene_correlations_phenomexcan_astle(**kwargs):
+    # FIXME: update this output_file
+    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["GENE_NAMES_CORR_AVG"]
+    curl(
+        # FIXME: this file needs to be uncompressed
+        "https://upenn.box.com/shared/static/82iprzu05bessy2o64ckfii06l0djyhl.tar",
+        output_file,
+        "33abc9e199c6bc9ea95c56259b7d1ca3",
+        logger=logger,
+    )
+
+
+def download_gene_correlations_phenomexcan_other(**kwargs):
+    # FIXME: update this output_file
+    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["GENE_NAMES_CORR_AVG"]
+    curl(
+        # FIXME: this file needs to be uncompressed
+        "https://upenn.box.com/shared/static/1notars78xxhbkeklj7xh7jrej49o9sg.tar",
+        output_file,
+        "cad3ec7b1ae35510f9f653fea030b220",
+        logger=logger,
+    )
+
+
+def download_gene_correlations_emerge(**kwargs):
+    # FIXME: update this output_file
+    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["GENE_NAMES_CORR_AVG"]
+    curl(
+        # FIXME: this file needs to be uncompressed
+        "https://upenn.box.com/shared/static/bswgr2sn6g1y55ppt9j4e3rmohpvumn3.tar",
+        output_file,
+        "3791b8a338485d0b0490773f6f3df912",
+        logger=logger,
+    )
+
+
+def download_gene_correlations_1000g_eur(**kwargs):
+    # FIXME: update this output_file
+    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["GENE_NAMES_CORR_AVG"]
+    curl(
+        # FIXME: this file needs to be uncompressed
+        "https://upenn.box.com/shared/static/s3avu92x6wmumi6r7r4g7iglviixpxt5.tar",
+        output_file,
+        "ad8b9dfb4bfa550d4ac4b847265d64f0",
+        logger=logger,
+    )
+
+
+def download_snps_covariance_gtex_mashr(**kwargs):
+    # FIXME: update output_file path, and maybe what is in in conf.PHENOMEXCAN["LD_BLOCKS...
+    #  links and hash already updated!
     output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["SNPS_COVARIANCE_FILE"]
     curl(
-        "https://upenn.box.com/shared/static/cm9my5bo8jw6nawsxy5y6z0ceh9wnecv.h5",
+        "https://upenn.box.com/shared/static/oqddbztt3ymhqezxtjmtrfcasus7r26s.h5",
         output_file,
-        "bac23b32561f49f1683c421965a4d237",
+        "0d7895b07665d5d3afab1ba26d445901",
         logger=logger,
     )
 
