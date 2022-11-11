@@ -2,6 +2,7 @@
 It sets up the file/folder structure by downloading the necessary files.
 """
 import subprocess
+import tarfile
 from pathlib import Path
 
 import conf
@@ -177,8 +178,6 @@ def download_smultixcan_mashr_raw_results(**kwargs):
         )
 
     # uncompress file
-    import tarfile
-
     logger.info(f"Extracting {output_tar_file}")
     with tarfile.open(output_tar_file, "r") as f:
         f.extractall(output_folder.parent)
@@ -211,8 +210,6 @@ def download_spredixcan_mashr_raw_results(**kwargs):
         )
 
     # uncompress file
-    import tarfile
-
     logger.info(f"Extracting {output_tar_file}")
     with tarfile.open(output_tar_file, "r") as f:
         f.extractall(output_folder.parent)
@@ -245,8 +242,6 @@ def download_gwas_parsing_raw_results(**kwargs):
         )
 
     # uncompress file
-    import tarfile
-
     logger.info(f"Extracting {output_tar_file}")
     with tarfile.open(output_tar_file, "r") as f:
         f.extractall(output_folder.parent)
@@ -390,63 +385,88 @@ def download_lincs_consensus_signatures(**kwargs):
     )
 
 
+def _get_gene_correlations(cohort_name, file_url, file_md5):
+    """
+    Downloads the gene correlations given a cohort, file url and file md5.
+    Correlation files are downloaded to the default location.
+    """
+    ref_panel = "gtex_v8"
+    eqtl_panel = "mashr"
+
+    output_folder = (
+        conf.RESULTS["GLS"]
+        / "gene_corrs"
+        / "cohorts"
+        / cohort_name
+        / ref_panel.lower()
+        / eqtl_panel.lower()
+        / "gene_corrs-symbols-within_distance_5mb.per_lv"
+    )
+    if output_folder.exists():
+        logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
+        return
+
+    output_folder.parent.mkdir(parents=True, exist_ok=True)
+
+    output_tar_file = Path(
+        conf.RESULTS["GLS"] / "gene_corrs" / "cohorts" / f"{cohort_name}-gene_corrs.tar"
+    ).resolve()
+    output_tar_file_md5 = file_md5
+
+    if not Path(output_tar_file).exists() or not md5_matches(
+        output_tar_file_md5, output_tar_file
+    ):
+        # download
+        curl(
+            file_url,
+            output_tar_file,
+            output_tar_file_md5,
+            logger=logger,
+        )
+
+    # uncompress file
+    logger.info(f"Extracting {output_tar_file}")
+    with tarfile.open(output_tar_file, "r") as f:
+        f.extractall(output_folder.parent)
+
+
 def download_gene_correlations_phenomexcan_rapid_gwas(**kwargs):
-    # FIXME: update this output_file
-    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["GENE_NAMES_CORR_AVG"]
-    curl(
-        # FIXME: this file needs to be uncompressed
-        "https://upenn.box.com/shared/static/5nj7j13yqi7wiqrspmat5f2fo6xaa9pp.tar",
-        output_file,
-        "fb96f18421f7e0f79e74f568b5ae6c08",
-        logger=logger,
+    _get_gene_correlations(
+        cohort_name="phenomexcan_rapid_gwas",
+        file_url="https://upenn.box.com/shared/static/5nj7j13yqi7wiqrspmat5f2fo6xaa9pp.tar",
+        file_md5="fb96f18421f7e0f79e74f568b5ae6c08",
     )
 
 
 def download_gene_correlations_phenomexcan_astle(**kwargs):
-    # FIXME: update this output_file
-    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["GENE_NAMES_CORR_AVG"]
-    curl(
-        # FIXME: this file needs to be uncompressed
-        "https://upenn.box.com/shared/static/82iprzu05bessy2o64ckfii06l0djyhl.tar",
-        output_file,
-        "33abc9e199c6bc9ea95c56259b7d1ca3",
-        logger=logger,
+    _get_gene_correlations(
+        cohort_name="phenomexcan_astle",
+        file_url="https://upenn.box.com/shared/static/82iprzu05bessy2o64ckfii06l0djyhl.tar",
+        file_md5="33abc9e199c6bc9ea95c56259b7d1ca3",
     )
 
 
 def download_gene_correlations_phenomexcan_other(**kwargs):
-    # FIXME: update this output_file
-    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["GENE_NAMES_CORR_AVG"]
-    curl(
-        # FIXME: this file needs to be uncompressed
-        "https://upenn.box.com/shared/static/1notars78xxhbkeklj7xh7jrej49o9sg.tar",
-        output_file,
-        "cad3ec7b1ae35510f9f653fea030b220",
-        logger=logger,
+    _get_gene_correlations(
+        cohort_name="phenomexcan_other",
+        file_url="https://upenn.box.com/shared/static/1notars78xxhbkeklj7xh7jrej49o9sg.tar",
+        file_md5="cad3ec7b1ae35510f9f653fea030b220",
     )
 
 
 def download_gene_correlations_emerge(**kwargs):
-    # FIXME: update this output_file
-    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["GENE_NAMES_CORR_AVG"]
-    curl(
-        # FIXME: this file needs to be uncompressed
-        "https://upenn.box.com/shared/static/bswgr2sn6g1y55ppt9j4e3rmohpvumn3.tar",
-        output_file,
-        "3791b8a338485d0b0490773f6f3df912",
-        logger=logger,
+    _get_gene_correlations(
+        cohort_name="emerge",
+        file_url="https://upenn.box.com/shared/static/bswgr2sn6g1y55ppt9j4e3rmohpvumn3.tar",
+        file_md5="3791b8a338485d0b0490773f6f3df912",
     )
 
 
 def download_gene_correlations_1000g_eur(**kwargs):
-    # FIXME: update this output_file
-    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["GENE_NAMES_CORR_AVG"]
-    curl(
-        # FIXME: this file needs to be uncompressed
-        "https://upenn.box.com/shared/static/s3avu92x6wmumi6r7r4g7iglviixpxt5.tar",
-        output_file,
-        "ad8b9dfb4bfa550d4ac4b847265d64f0",
-        logger=logger,
+    _get_gene_correlations(
+        cohort_name="1000g_eur",
+        file_url="https://upenn.box.com/shared/static/s3avu92x6wmumi6r7r4g7iglviixpxt5.tar",
+        file_md5="ad8b9dfb4bfa550d4ac4b847265d64f0",
     )
 
 
@@ -487,8 +507,6 @@ def download_predixcan_mashr_prediction_models(**kwargs):
         )
 
     # uncompress file
-    import tarfile
-
     logger.info(f"Extracting {output_tar_file}")
     with tarfile.open(output_tar_file, "r") as f:
         f.extractall(output_folder.parent)
@@ -555,8 +573,6 @@ def download_spredixcan_hdf5_results(**kwargs):
         part1_filename.unlink()
 
     # uncompress file
-    import tarfile
-
     logger.info(f"Extracting {output_tar_file}")
     with tarfile.open(output_tar_file, "r") as f:
         tar_members = f.getmembers()
@@ -594,8 +610,6 @@ def download_1000g_genotype_data(**kwargs):
         )
 
     # uncompress file
-    import tarfile
-
     logger.info(f"Extracting {output_tar_file}")
     with tarfile.open(output_tar_file, "r") as f:
         selected_folder = [
