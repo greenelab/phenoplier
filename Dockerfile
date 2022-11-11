@@ -1,4 +1,5 @@
-FROM continuumio/miniconda3
+# syntax=docker/dockerfile:1
+FROM continuumio/miniconda3 AS base
 
 EXPOSE 8892/tcp
 
@@ -34,15 +35,30 @@ ENV PYTHONPATH=${CODE_DIR}/libs:${PYTHONPATH}
 RUN echo "Make sure packages can be loaded"
 RUN python -c "import papermill"
 
-COPY . ${CODE_DIR}
-WORKDIR ${CODE_DIR}
+#COPY . ${CODE_DIR}
+#WORKDIR ${CODE_DIR}
 
-RUN echo "Make sure modules can be loaded"
-RUN python -c "import conf; assert hasattr(conf, 'GENERAL')"
+#RUN echo "Make sure modules can be loaded"
+#RUN python -c "import conf; assert hasattr(conf, 'GENERAL')"
 
 # setup user home directory
 RUN mkdir ${PHENOPLIER_USER_HOME} && chmod -R 0777 ${PHENOPLIER_USER_HOME}
 ENV HOME=${PHENOPLIER_USER_HOME}
 
+#ENTRYPOINT ["/opt/code/entrypoint.sh"]
+#CMD ["scripts/run_nbs_server.sh", "--container-mode"]
+
+
+# this stage copies source code again into the image
+# FIXME: this has to be FROM base AS final
+FROM miltondp/phenoplier:latest AS final
+
+COPY . ${CODE_DIR}
+WORKDIR ${CODE_DIR}
+
+RUN echo "Make sure modules can be loaded"
+RUN conda activate phenoplier && python -c "import conf; assert hasattr(conf, 'GENERAL')"
+
 ENTRYPOINT ["/opt/code/entrypoint.sh"]
 CMD ["scripts/run_nbs_server.sh", "--container-mode"]
+
