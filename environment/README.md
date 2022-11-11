@@ -17,7 +17,7 @@ supported** now. If you want to run on Windows, use the Docker image instead.
     # Root directory where all data will be downloaded to
     export PHENOPLIER_ROOT_DIR=/tmp/phenoplier
 
-    # (optional, will default to half the number of cores)
+    # (optional, will default to 1 core)
     # Adjust the number of cores available for general tasks
     export PHENOPLIER_N_JOBS=2
 
