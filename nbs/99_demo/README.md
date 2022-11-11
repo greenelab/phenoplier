@@ -16,7 +16,7 @@ mkdir -p ${DATA_FOLDER}
 
 # download data to run the demo
 docker run --rm \
-  -v "${DATA_FOLDER}:/opt/data/data" \
+  -v "${DATA_FOLDER}:/opt/data" \
   --user "$(id -u):$(id -g)" \
   miltondp/phenoplier \
   /bin/bash -c "python environment/scripts/setup_data.py --mode demo"
@@ -24,7 +24,7 @@ docker run --rm \
 # run jupyter lab
 docker run --rm \
   -p 8888:8892 \
-  -v "${DATA_FOLDER}:/opt/data/data" \
+  -v "${DATA_FOLDER}:/opt/data" \
   --user "$(id -u):$(id -g)" \
   miltondp/phenoplier
 ```
