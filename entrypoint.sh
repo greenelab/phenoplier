@@ -4,7 +4,7 @@
 # enabling Conda.
 set +eu
 conda activate phenoplier
-set -euo pipefail
+set -eo pipefail
 
 # load environment variables
 eval `python libs/conf.py`
