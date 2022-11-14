@@ -46,8 +46,8 @@ cd
 
 docker run --rm \
   -p 8888:8892 \
-  -v "${DATA_FOLDER}:/opt/phenoplier_data" \
-  -v "${CODE_FOLDER}:/opt/phenoplier_code" \
+  -v "${DATA_FOLDER}:/opt/data" \
+  -v "${CODE_FOLDER}:/opt/code" \
   --user "$(id -u):$(id -g)" \
   miltondp/phenoplier
 ```
