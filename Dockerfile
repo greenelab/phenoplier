@@ -35,12 +35,6 @@ ENV PYTHONPATH=${CODE_DIR}/libs:${PYTHONPATH}
 RUN echo "Make sure packages can be loaded"
 RUN python -c "import papermill"
 
-#COPY . ${CODE_DIR}
-#WORKDIR ${CODE_DIR}
-
-#RUN echo "Make sure modules can be loaded"
-#RUN python -c "import conf; assert hasattr(conf, 'GENERAL')"
-
 # setup user home directory
 RUN mkdir ${PHENOPLIER_USER_HOME} && chmod -R 0777 ${PHENOPLIER_USER_HOME}
 ENV HOME=${PHENOPLIER_USER_HOME}
@@ -50,8 +44,7 @@ ENV HOME=${PHENOPLIER_USER_HOME}
 
 
 # this stage copies source code again into the image
-# FIXME: this has to be FROM base AS final
-FROM miltondp/phenoplier:latest AS final
+FROM base AS final
 
 COPY . ${CODE_DIR}
 WORKDIR ${CODE_DIR}
