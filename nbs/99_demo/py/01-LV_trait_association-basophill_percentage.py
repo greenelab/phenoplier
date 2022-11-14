@@ -173,9 +173,7 @@ display(lv603_top_genes.head(20))
 # Are these top genes associated with our trait of interest?
 
 # %%
-traits_df.loc[
-    lv603_top_genes.index
-].head(20)
+traits_df.loc[lv603_top_genes.index].head(20)
 
 # %% [markdown]
 # It seems so. But what about the rest of the genes? They might be also strongly associated.
@@ -194,7 +192,10 @@ lv603_top_genes
 
 # %%
 stats.pearsonr(
-    traits_df["pvalue"].apply(lambda x: -np.log10(x)).loc[lv603_top_genes.index].to_numpy(),
+    traits_df["pvalue"]
+    .apply(lambda x: -np.log10(x))
+    .loc[lv603_top_genes.index]
+    .to_numpy(),
     lv603_top_genes.to_numpy(),
 )
 
