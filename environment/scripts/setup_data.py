@@ -47,9 +47,7 @@ MODES_ACTIONS = {
         "download_multiplier_model_z_pkl",
         "download_multiplier_model_b_pkl",
         "download_multiplier_model_summary_pkl",
-        "download_phenomexcan_smultixcan_mashr_pvalues",
         "download_gene_correlations_phenomexcan_rapid_gwas",
-        # TODO: add link of raw S-MultiXcan result file and add that to demo?
     },
     "full": {},  # empty means all actions/methods
 }
