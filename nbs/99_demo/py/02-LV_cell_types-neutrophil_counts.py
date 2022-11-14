@@ -18,13 +18,13 @@
 # # Description
 
 # %% [markdown]
-# In the previous notebook, we found that LV603 gene weight's are predictive of gene associations for neutrophil counts.
-# In a real application, you would run the `GLSPhenoplier` for your trait of interest across all LVs in our models, and get the significant ones. Then you can see in which cell types the LVs' genes are expressed, and this is what we are going to do in this notebook for LV603.
+# In the previous notebook, we found that LV603 gene weight's are predictive of gene associations for basophill percentage.
+# In a real application, you would run the `gls_cli.py` tool for your trait of interest across all LVs in our models, and get the significant ones. Then you can see in which cell types the LVs' genes are expressed, and this is what we are going to do in this notebook for LV603.
 #
-# To find the cell types associated with an LV, we'll use matrix **B** (see the figure below and our [manuscript](https://greenelab.github.io/phenoplier_manuscript/#phenoplier-an-integration-framework-based-on-gene-co-expression-patterns)).
+# To find the cell types associated with an LV, we'll use matrix **B** (see the figure b) below and our [manuscript](https://greenelab.github.io/phenoplier_manuscript/#phenoplier-an-integration-framework-based-on-gene-co-expression-patterns)).
 # We can link RNA-seq samples in matrix B with gene expression metadata and explore which cell types are associated with the LV.
-# However, metadata in gene expression datasets is usually hard to read, process and interpret, and many times important attributes (such as `tissue` or `cell type` are missing).
-# We'll show here what we can do to try to overcome this.
+# However, metadata in gene expression datasets is usually hard to read, process and interpret, and many times important attributes (such as `tissue` or `cell type`) are missing.
+# We provide some tools to try to overcome this problem, and it is shown below.
 #
 # ![](https://greenelab.github.io/phenoplier_manuscript/images/entire_process/entire_process.svg)
 
@@ -310,7 +310,7 @@ final_plot_data = final_plot_data.sort_values(LV_NAME, ascending=False)
 #     final_plot_data[LV_NAME] > LV_AXIS_THRESHOLD, LV_NAME
 # ] = LV_AXIS_THRESHOLD
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Delete samples with no tissue/cell type information
 
 # %% [markdown]
