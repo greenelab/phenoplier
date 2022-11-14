@@ -39,9 +39,6 @@ RUN python -c "import papermill"
 RUN mkdir ${PHENOPLIER_USER_HOME} && chmod -R 0777 ${PHENOPLIER_USER_HOME}
 ENV HOME=${PHENOPLIER_USER_HOME}
 
-#ENTRYPOINT ["/opt/code/entrypoint.sh"]
-#CMD ["scripts/run_nbs_server.sh", "--container-mode"]
-
 
 # this stage copies source code again into the image
 FROM base AS final
