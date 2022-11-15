@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown]
-# In the previous notebook, we found that LV603 gene weight's are predictive of gene associations for basophill percentage.
+# In the previous notebook, we found that LV603 gene weight's are predictive of gene associations for basophil percentage.
 # In a real application, you would run the `gls_cli.py` tool for your trait of interest across all LVs in our models, and get the significant ones. Then you can see in which cell types the LVs' genes are expressed, and this is what we are going to do in this notebook for LV603.
 #
 # To find the cell types associated with an LV, we'll use matrix **B** (see the figure b) below and our [manuscript](https://greenelab.github.io/phenoplier_manuscript/#phenoplier-an-integration-framework-based-on-gene-co-expression-patterns)).
