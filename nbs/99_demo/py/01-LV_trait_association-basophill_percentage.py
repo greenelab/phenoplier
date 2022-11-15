@@ -252,7 +252,7 @@ lv_df
 # # Conclusions
 
 # %% [markdown]
-# Hopefully, now have a more clear idea of the main data matrixes involved in PhenoPLIER (matrix Z, PhenomeXcan gene-trait associations, etc).
+# Hopefully, now you have a more clear idea of the main data matrices involved in PhenoPLIER (matrix Z, PhenomeXcan gene-trait associations, etc).
 # We also see how to compute a p-value between an LV (group of genes or gene module) and a trait of interest.
 # To do this with your own data, you need to compute the S-MultiXcan TWAS results (gene-based) from your GWAS summary stats and generate your own gene correlation matrix.
 #
