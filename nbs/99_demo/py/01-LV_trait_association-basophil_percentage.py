@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown]
-# This notebook will show the structure of the main data matrices in PhenoPLIER, and will guide you in analyzing gene associations for a particular trait: basophill percentage, which is presented in the [manuscript](https://greenelab.github.io/phenoplier_manuscript/#phenoplier-an-integration-framework-based-on-gene-co-expression-patterns) in Figure 1c.
+# This notebook will show the structure of the main data matrices in PhenoPLIER, and will guide you in analyzing gene associations for a particular trait: basophil percentage, which is presented in the [manuscript](https://greenelab.github.io/phenoplier_manuscript/#phenoplier-an-integration-framework-based-on-gene-co-expression-patterns) in Figure 1c.
 
 # %% [markdown]
 # # Modules
@@ -79,13 +79,13 @@ lv_metadata.head()
 # PhenomeXcan provides TWAS results (using [Summary-MultiXcan](https://doi.org/10.1371/journal.pgen.1007889) and [Summary-PrediXcan](https://doi.org/10.1038/s41467-018-03621-1)) across ~4,000 traits.
 # If you are interested in PhenomeXcan you can also check out the [Github repo](https://github.com/hakyimlab/phenomexcan) to know how to download results.
 #
-# For this demo, we'll load a file that contains Summary-MultiXcan (or S-MultiXcan) results for basophill percentage.
-# This file contains a list of p-values for ~22k genes, where a significant p-value means that the gene's predicted expression (across different tissues) is associated with basophill percentage.
+# For this demo, we'll load a file that contains Summary-MultiXcan (or S-MultiXcan) results for basophil percentage.
+# This file contains a list of p-values for ~22k genes, where a significant p-value means that the gene's predicted expression (across different tissues) is associated with basophil percentage.
 # In the notebook I refer to these results generically as "TWAS results", meaning that we have gene-trait associations.
 # All these TWAS results were derived solely from GWAS summary stats, so you can also generate yours relatively easily by using [S-MultiXcan](https://doi.org/10.1371/journal.pgen.1007889).
 
 # %% language="bash"
-# # download S-MultiXcan results for basophill percentage
+# # download S-MultiXcan results for basophil percentage
 # wget https://uchicago.box.com/shared/static/g70nq1c6wjvado242t9yg05jrhvdykrv.gz -O /tmp/smultixcan_30220_raw_ccn30.tsv.gz
 
 # %%
@@ -98,7 +98,7 @@ df.shape
 df.head()
 
 # %% [markdown]
-# # Take a look at genes associated with basophill percentage
+# # Take a look at genes associated with basophil percentage
 
 # %% [markdown]
 # Show the sample size for this trait.
@@ -109,7 +109,7 @@ t = Trait.get_trait(full_code=trait_code)
 display(f"{trait_code} - sample size: {t.n}")
 
 # %% [markdown]
-# Below I list the top associated genes for basophill percentage.
+# Below I list the top associated genes for basophil percentage.
 
 # %%
 traits_df = df[["gene_name", "pvalue"]].dropna().set_index("gene_name")
@@ -185,7 +185,7 @@ traits_df.sample(n=20, random_state=0)
 # %% [markdown]
 # They do not seem as significant as those within the top genes in LV603.
 #
-# If we compute the correlation between LV603 gene weights (`lv603_top_genes`) and gene associations for basophill percentage (`traits_df`) we get this:
+# If we compute the correlation between LV603 gene weights (`lv603_top_genes`) and gene associations for basophil percentage (`traits_df`) we get this:
 
 # %%
 lv603_top_genes
@@ -245,7 +245,7 @@ lv_df = pd.read_csv("/tmp/gls_phenoplier-basophill_percentage.tsv.gz", sep="\t")
 lv_df
 
 # %% [markdown]
-# As you can see, LV603 is at the top of the LVs associations for basophill percentage.
+# As you can see, LV603 is at the top of the LVs associations for basophil percentage.
 # However, the onesided p-value here (`5.32e-15`) is larger than a simple correlation (`2.94e-27`), suggesting that we have correlated genes at the top of the LV.
 
 # %% [markdown]
