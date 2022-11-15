@@ -10,7 +10,7 @@ dependencies:
   - matplotlib
   - nodejs
   # fix for umap errors:
-  - numba=0.52.*
+  # - numba=0.52.*
   - numpy
   - pandas
   - papermill
@@ -19,11 +19,11 @@ dependencies:
   - openpyxl
   - pytables
   - pytest
-  - python=3.8.*
+  - python=3.11.*
   - python-snappy
   - pyyaml
   - requests
-  - r-base=3.6.*
+  - r-base=4.2.*
   - r-devtools
   - r-essentials
   - r-reticulate

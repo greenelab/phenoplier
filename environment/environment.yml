@@ -5,38 +5,38 @@ channels:
 dependencies:
   - ipython
   - ipywidgets
-  - jupyterlab=3.3.*
-  - jupytext=1.13.*
-  - matplotlib=3.3.*
+  - jupyterlab
+  - jupytext
+  - matplotlib
   - nodejs
   # fix for umap errors:
-  - numba=0.52.*
-  - numpy=1.19.*
-  - pandas=1.1.*
-  - papermill=2.3.*
+  # - numba=0.52.*
+  - numpy
+  - pandas
+  - papermill
   - pip
-  - fastparquet=0.5.*
-  - openpyxl=3.0.*
-  - pytables=3.6
-  - pytest=6.1.*
-  - python=3.8.*
-  - python-snappy=0.6.*
-  - pyyaml=5.3.*
-  - requests=2.*
-  - r-base=3.6.*
-  - r-devtools=2.*
+  - fastparquet
+  - openpyxl
+  - pytables
+  - pytest
+  - python=3.11.*
+  - python-snappy
+  - pyyaml
+  - requests
+  - r-base=4.2.*
+  - r-devtools
   - r-essentials
   - r-reticulate
   - r-svglite
-  - rpy2=3.3.*
-  - scikit-learn=0.23.*
-  - scipy=1.5.*
-  - seaborn=0.11.*
-  - statsmodels=0.13.*
-  - tabulate=0.8.*
-  - tqdm=4.64.*
-  - umap-learn=0.4.*
+  - rpy2
+  - scikit-learn
+  - scipy
+  - seaborn
+  - statsmodels
+  - tabulate
+  - tqdm
+  - umap-learn
   # obonet deps:
-  - networkx=2.5.*
+  - networkx
   - pip:
-    - obonet==0.2.*
+    - obonet
