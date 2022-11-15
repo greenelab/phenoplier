@@ -61,21 +61,36 @@ These steps are only for PhenoPLIER developers.
 All steps are run from the root directory (not within `environment/`).
 
 It is a good idea to try to build the environment locally first and, when all issues have been solved, then create the Docker image.
+A usual problem is to use a too recent Python version that produces several conflicts in conda.
+In that case, the previous Python version should be used instead.
 
-1. Modify `environment/scripts/environment_base.yml` accordingly (if needed). Usually, this involves updating to the latest Python and R versions.
+1. Modify `environment/scripts/environment_base.yml` accordingly (if needed).
+Usually, this involves updating to the latest Python and R versions.
 
 1. (if creating a local environment) Run:
  
     ```bash
-    bash scripts/create_env_from_scratch.sh
-    conda activate phenoplier
-    bash environment/scripts/install_other_packages.sh
+    conda config --set channel_priority strict
+    conda env create --name phenoplier --file environment/scripts/environment_base.yml
+    conda run -n phenoplier --no-capture-output bash environment/scripts/install_other_packages.sh
     ```
 
 1. (if creating a new Docker image) Run:
     ```bash
     cp environment/scripts/environment_base.yml environment/environment.yml
-    bash scripts/scripts/create_docker_image.sh
+    ```
+
+    Now open `scripts/create_docker_image.sh` and change settings according to instructions in the file.
+    Then run:
+
+    ```bash
+    # IMPORTANT: the script below will build two images: base and final.
+    #  The base image will only be rebuilt if the version in settings (see
+    #  the script) is change. If for some reason you want to force building the
+    #  the image (for example, you fix something in the Dockerfile), you have to
+    #  pass the following argument: -f
+
+    bash scripts/create_docker_image.sh
     ```
 
 1. Export conda environment:
@@ -89,4 +104,7 @@ It is a good idea to try to build the environment locally first and, when all is
     ```
 
 1. Modify `environment/environment.yml` and leave only manually installed packages (not their dependencies).
+
+1. (if creating a new Docker image) Push the new Docker images.
+See at the end of `scripts/create_docker_image.sh` for examples.
 

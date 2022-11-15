@@ -2,6 +2,7 @@
 
 #
 # base image: it contains the conda environment
+#  this image should labeled as miltondp/phenoplier:base-latest
 #
 FROM continuumio/miniconda3 as base
 
@@ -29,14 +30,15 @@ COPY environment/environment.yml environment/scripts/install_other_packages.sh e
 #RUN conda install mamba -n base -c conda-forge \
 RUN conda config --add channels conda-forge \
   && conda config --set channel_priority strict \
-  && conda env create --name ${CONDA_ENV_NAME} --file /tmp/environment.yml
-# FIXME: join with previous line after debugging
-RUN conda run -n ${CONDA_ENV_NAME} --no-capture-output /bin/bash /tmp/install_other_packages.sh \
+  && conda env create --name ${CONDA_ENV_NAME} --file /tmp/environment.yml \
+  && conda run -n ${CONDA_ENV_NAME} --no-capture-output /bin/bash /tmp/install_other_packages.sh \
   && conda clean --all --yes
 
 # activate the environment when starting bash
 RUN echo "conda activate ${CONDA_ENV_NAME}" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
+
+RUN chmod -R 0777 ${CONDA_PREFIX}
 
 ENV PYTHONPATH=${CODE_DIR}/libs:${PYTHONPATH}
 
@@ -44,7 +46,7 @@ RUN echo "Make sure packages can be loaded"
 RUN python -c "import papermill"
 
 # setup user home directory
-RUN mkdir ${PHENOPLIER_USER_HOME} && chmod -R 0777 ${PHENOPLIER_USER_HOME}
+RUN mkdir -p ${PHENOPLIER_USER_HOME} && chmod -R 0777 ${PHENOPLIER_USER_HOME}
 ENV HOME=${PHENOPLIER_USER_HOME}
 
 
@@ -53,7 +55,7 @@ ENV HOME=${PHENOPLIER_USER_HOME}
 #  the idea is to avoid rebuilding the conda environment each time the source
 #  code nees to be just copied/updated.
 #
-FROM base AS final
+FROM miltondp/phenoplier:base-latest AS final
 
 COPY . ${CODE_DIR}
 WORKDIR ${CODE_DIR}
