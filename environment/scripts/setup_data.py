@@ -383,13 +383,13 @@ def download_lincs_consensus_signatures(**kwargs):
     )
 
 
-def _get_gene_correlations(cohort_name, file_url, file_md5):
+def _get_gene_correlations(
+    cohort_name, file_url, file_md5, ref_panel="gtex_v8", eqtl_panel="mashr"
+):
     """
     Downloads the gene correlations given a cohort, file url and file md5.
     Correlation files are downloaded to the default location.
     """
-    ref_panel = "gtex_v8"
-    eqtl_panel = "mashr"
 
     output_folder = (
         conf.RESULTS["GLS"]
