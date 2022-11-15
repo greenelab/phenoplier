@@ -1,5 +1,9 @@
 # syntax=docker/dockerfile:1
-FROM continuumio/miniconda3 AS base
+
+#
+# base image: it contains the conda environment
+#
+FROM continuumio/miniconda3 as base
 
 EXPOSE 8892/tcp
 
@@ -22,8 +26,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 
 # setup phenoplier
 COPY environment/environment.yml environment/scripts/install_other_packages.sh environment/scripts/install_r_packages.r /tmp/
-RUN conda env create --name ${CONDA_ENV_NAME} --file /tmp/environment.yml \
-  && conda run -n ${CONDA_ENV_NAME} --no-capture-output /bin/bash /tmp/install_other_packages.sh \
+#RUN conda install mamba -n base -c conda-forge \
+RUN conda config --add channels conda-forge \
+  && conda config --set channel_priority strict \
+  && conda env create --name ${CONDA_ENV_NAME} --file /tmp/environment.yml
+# FIXME: join with previous line after debugging
+RUN conda run -n ${CONDA_ENV_NAME} --no-capture-output /bin/bash /tmp/install_other_packages.sh \
   && conda clean --all --yes
 
 # activate the environment when starting bash
@@ -40,14 +48,18 @@ RUN mkdir ${PHENOPLIER_USER_HOME} && chmod -R 0777 ${PHENOPLIER_USER_HOME}
 ENV HOME=${PHENOPLIER_USER_HOME}
 
 
-# this stage copies source code again into the image
+#
+# final image: this image copies the source code of the project into the image.
+#  the idea is to avoid rebuilding the conda environment each time the source
+#  code nees to be just copied/updated.
+#
 FROM base AS final
 
 COPY . ${CODE_DIR}
 WORKDIR ${CODE_DIR}
 
 RUN echo "Make sure modules can be loaded"
-RUN conda activate phenoplier && python -c "import conf; assert hasattr(conf, 'GENERAL')"
+RUN conda activate ${CONDA_ENV_NAME} && python -c "import conf; assert hasattr(conf, 'GENERAL')"
 
 ENTRYPOINT ["/opt/code/entrypoint.sh"]
 CMD ["scripts/run_nbs_server.sh", "--container-mode"]
