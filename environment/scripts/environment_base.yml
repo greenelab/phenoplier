@@ -19,7 +19,7 @@ dependencies:
   - openpyxl
   - pytables
   - pytest
-  - python=3.11.*
+  - python=3.10.*
   - python-snappy
   - pyyaml
   - requests
