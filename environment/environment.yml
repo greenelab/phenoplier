@@ -3,40 +3,38 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - fastparquet=0.8.*
   - ipython
   - ipywidgets
-  - jupyterlab
-  - jupytext
-  - matplotlib
+  - jupyterlab=3.5.*
+  - jupytext=1.14.*
+  - matplotlib=3.6.*
+  - networkx=2.8.*
   - nodejs
-  # fix for umap errors:
-  # - numba=0.52.*
-  - numpy
-  - pandas
-  - papermill
+  - numpy=1.23.*
+  - pandas=1.5.*
+  - papermill=2.3.*
   - pip
-  - fastparquet
-  - openpyxl
-  - pytables
-  - pytest
-  - python=3.11.*
-  - python-snappy
-  - pyyaml
-  - requests
+  - openpyxl=3.0.*
+  - pytables=3.7.*
+  - pytest=7.2.*
+  - python=3.10.*
+  - python-snappy=0.6.*
+  - pyyaml=6.0.*
   - r-base=4.2.*
-  - r-devtools
+  - r-devtools=2.*
   - r-essentials
   - r-reticulate
   - r-svglite
-  - rpy2
-  - scikit-learn
-  - scipy
-  - seaborn
-  - statsmodels
-  - tabulate
-  - tqdm
-  - umap-learn
-  # obonet deps:
-  - networkx
+  - requests=2.*
+  - rpy2=3.5.*
+  - scikit-learn=1.1.*
+  - scipy=1.9.*
+  - seaborn=0.12.*
+  - statsmodels=0.13.*
+  - tabulate=0.9.*
+  - tqdm=4.64.*
+  - umap-learn=0.5.*
   - pip:
-    - obonet
+    - obonet==0.3.*
+
