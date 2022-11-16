@@ -93,6 +93,12 @@ Usually, this involves updating to the latest Python and R versions.
     bash scripts/create_docker_image.sh
     ```
 
+    Make sure the image works (use the right image version):
+    ```bash
+    export VERSION="2.0.0"
+    docker run miltondp/phenoplier:${VERSION} python -c "import conf; assert hasattr(conf, 'GENERAL')"
+    ```
+
 1. Export conda environment:
 
     ```bash
@@ -100,7 +106,7 @@ Usually, this involves updating to the latest Python and R versions.
     conda env export --name phenoplier --file environment/environment.yml
 
     # if creating a new Docker image:
-    bash scripts/run_docker.sh conda env export --name phenoplier --file environment/environment.yml
+    bash scripts/run_docker_dev.sh conda env export --name phenoplier --file environment/environment.yml
     ```
 
 1. Modify `environment/environment.yml` and leave only manually installed packages (not their dependencies).
