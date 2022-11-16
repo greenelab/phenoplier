@@ -4,7 +4,7 @@
 # base image: it contains the conda environment
 #  this image should labeled as miltondp/phenoplier:base-latest
 #
-FROM continuumio/miniconda3 as base
+FROM continuumio/miniconda3 AS base
 
 EXPOSE 8892/tcp
 
@@ -27,7 +27,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 
 # setup phenoplier
 COPY environment/environment.yml environment/scripts/install_other_packages.sh environment/scripts/install_r_packages.r /tmp/
-#RUN conda install mamba -n base -c conda-forge \
 RUN conda config --add channels conda-forge \
   && conda config --set channel_priority strict \
   && conda env create --name ${CONDA_ENV_NAME} --file /tmp/environment.yml \
