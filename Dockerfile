@@ -21,7 +21,7 @@ VOLUME ${PHENOPLIER_MANUSCRIPT_DIR}
 
 # install gnu parallel
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-  && apt-get install -y --no-install-recommends parallel \
+  && apt-get install -y --no-install-recommends parallel build-essential \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
@@ -32,18 +32,14 @@ RUN conda config --add channels conda-forge \
   && conda config --set channel_priority strict \
   && conda env create --name ${CONDA_ENV_NAME} --file /tmp/environment.yml \
   && conda run -n ${CONDA_ENV_NAME} --no-capture-output /bin/bash /tmp/install_other_packages.sh \
-  && conda clean --all --yes
+  && conda clean --all --yes \
+  && chmod -R 0777 /opt/conda/envs/${CONDA_ENV_NAME} \
+  && echo "conda activate ${CONDA_ENV_NAME}" >> ~/.bashrc
 
-# activate the environment when starting bash
-RUN echo "conda activate ${CONDA_ENV_NAME}" >> ~/.bashrc
+# activate the environment
 SHELL ["/bin/bash", "--login", "-c"]
 
-RUN chmod -R 0777 ${CONDA_PREFIX}
-
 ENV PYTHONPATH=${CODE_DIR}/libs:${PYTHONPATH}
-
-RUN echo "Make sure packages can be loaded"
-RUN python -c "import papermill"
 
 # setup user home directory
 RUN mkdir -p ${PHENOPLIER_USER_HOME} && chmod -R 0777 ${PHENOPLIER_USER_HOME}
@@ -59,9 +55,6 @@ FROM miltondp/phenoplier:base-latest AS final
 
 COPY . ${CODE_DIR}
 WORKDIR ${CODE_DIR}
-
-RUN echo "Make sure modules can be loaded"
-RUN conda activate ${CONDA_ENV_NAME} && python -c "import conf; assert hasattr(conf, 'GENERAL')"
 
 ENTRYPOINT ["/opt/code/entrypoint.sh"]
 CMD ["scripts/run_nbs_server.sh", "--container-mode"]
