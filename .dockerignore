@@ -2,9 +2,10 @@
 data/
 images/
 base/
+tests/
 
 # git
-.git/lfs/
+.git/
 .gitignore
 .github/
 
@@ -13,6 +14,7 @@ base/
 .pytest_cache/
 **/__pycache__
 *.py[cod]
+**/.ipynb_checkpoints/
 
 # other
 *.swp
