@@ -47,7 +47,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 #
-# Build process, do not modify below.
+# Build process
 #
 
 export DOCKER_BUILDKIT=1

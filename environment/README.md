@@ -77,6 +77,7 @@ Usually, this involves updating to the latest Python and R versions.
 
 1. (if creating a new Docker image) Run:
     ```bash
+    # override environment.yml temporarily to install the latest packages
     cp environment/scripts/environment_base.yml environment/environment.yml
     ```
 
