@@ -1,6 +1,7 @@
 """
 It sets up the file/folder structure by downloading the necessary files.
 """
+import sys
 import subprocess
 import tarfile
 from pathlib import Path
@@ -991,8 +992,6 @@ if __name__ == "__main__":
     if args.actions is not None:
         for a in args.actions:
             if a not in AVAILABLE_ACTIONS["full"]:
-                import sys
-
                 logger.error(f"The action does not exist: {a}")
                 sys.exit(1)
 
