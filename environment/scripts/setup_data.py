@@ -818,7 +818,7 @@ def download_plink19(**kwargs):
         output_file=conf.PLINK["EXECUTABLE_VERSION_1_9"],
         platform_parameters={
             "Linux": {
-                "zip_file_url": "https://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20220402.zip",
+                "zip_file_url": "https://upenn.box.com/shared/static/6egljvof0gfug40rnr1q7ikdekly45ho.zip",
                 "zip_file_md5": "446600c3930997a031476b5961ed372f",
                 "output_file_md5": "f285ab12811ab3063952a2e20adf9860",
             },
@@ -838,7 +838,7 @@ def download_plink2(**kwargs):
         output_file=conf.PLINK["EXECUTABLE_VERSION_2"],
         platform_parameters={
             "Linux": {
-                "zip_file_url": "https://s3.amazonaws.com/plink2-assets/plink2_linux_x86_64_20220426.zip",
+                "zip_file_url": "https://upenn.box.com/shared/static/gr8b2qyg2hoo2lnlvhgcje77gc6un68h.zip",
                 "zip_file_md5": "2e8e5d134a583f9f869a94fb11477208",
                 "output_file_md5": "064529cc22083c44e4c6beeff33c206d",
             },
