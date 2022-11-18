@@ -189,8 +189,8 @@ def download_smultixcan_mashr_raw_results(**kwargs):
 def download_spredixcan_mashr_raw_results_partial(**kwargs):
     output_folder = conf.PHENOMEXCAN["GENE_ASSOC_DIR"] / "spredixcan"
     if output_folder.exists():
-       logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
-       return
+        logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
+        return
 
     output_folder.parent.mkdir(exist_ok=True, parents=True)
 
@@ -221,8 +221,8 @@ def download_spredixcan_mashr_raw_results_partial(**kwargs):
 def download_gwas_parsing_raw_results_partial(**kwargs):
     output_folder = conf.PHENOMEXCAN["BASE_DIR"] / "gwas_parsing"
     if output_folder.exists():
-       logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
-       return
+        logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
+        return
 
     output_folder.parent.mkdir(exist_ok=True, parents=True)
 
@@ -851,28 +851,36 @@ def download_plink2(**kwargs):
     )
 
 
-def _create_conda_environment(environment_folder: Path, environment_spec: Path):
+def _create_conda_environment(
+    environment_folder: Path, environment_spec: Path, channel_priority: str = "flexible"
+):
     """
     It runs the commands to create a conda environment, given an environment specification (YAML file) and folder.
 
     Args:
         environment_folder: the output folder where the conda environment will be created.
         environment_spec: YAML file with conda specification.
+        channel_priority: the conda channel priority for this environment.
     """
     # make sure parent folder exists
     environment_folder.parent.mkdir(parents=True, exist_ok=True)
 
+    if environment_folder.exists():
+        logger.warning(
+            f"Environment directory already exists ({str(environment_folder)}). Skipping."
+        )
+        return
+
     logger.info(
-        f"Creating conda environment in '{environment_folder}' using specification in '{environment_spec}'"
+        f"Creating conda environment in '{environment_folder}' using specification in '{environment_spec}' and channel priority '{channel_priority}'"
     )
 
+    # create empty environment
     cmd = subprocess.check_call(
         [
             "conda",
-            "env",
             "create",
-            "-f",
-            str(environment_spec),
+            "-y",
             "-p",
             str(environment_folder),
         ],
@@ -880,7 +888,44 @@ def _create_conda_environment(environment_folder: Path, environment_spec: Path):
         stderr=subprocess.STDOUT,
     )
 
-    # TODO: check if cmd.returncode is different than zero
+    # set channel priority
+    cmd = subprocess.check_call(
+        [
+            "conda",
+            "run",
+            "-p",
+            str(environment_folder),
+            "--no-capture-output",
+            "conda",
+            "config",
+            "--env",
+            "--set",
+            "channel_priority",
+            channel_priority,
+        ],
+        stdout=sys.stdout,
+        stderr=subprocess.STDOUT,
+    )
+
+    # install packages
+    cmd = subprocess.check_call(
+        [
+            "conda",
+            "run",
+            "-p",
+            str(environment_folder),
+            "--no-capture-output",
+            "conda",
+            "env",
+            "update",
+            "-p",
+            str(environment_folder),
+            "--file",
+            str(environment_spec),
+        ],
+        stdout=sys.stdout,
+        stderr=subprocess.STDOUT,
+    )
 
 
 def download_setup_summary_gwas_imputation(**kwargs):
@@ -890,14 +935,12 @@ def download_setup_summary_gwas_imputation(**kwargs):
         zip_file_md5="b2e9ea5587c7cf35d42e7e16411efeb5",
         zip_internal_filename="summary-gwas-imputation-206dac587824a6f207e137ce8c2d7b15d81d5869/",
         output_file=conf.GWAS_IMPUTATION["BASE_DIR"],
-        # output_file_md5="fc7446ff989d0bd0f1aae1851d192dc6",
     )
 
-    if not conf.GWAS_IMPUTATION["CONDA_ENV"].exists():
-        _create_conda_environment(
-            environment_folder=conf.GWAS_IMPUTATION["CONDA_ENV"],
-            environment_spec=conf.GWAS_IMPUTATION["BASE_DIR"] / "src/conda_env.yaml",
-        )
+    _create_conda_environment(
+        environment_folder=conf.GWAS_IMPUTATION["CONDA_ENV"],
+        environment_spec=conf.GWAS_IMPUTATION["BASE_DIR"] / "src/conda_env.yaml",
+    )
 
 
 def download_setup_metaxcan(**kwargs):
@@ -907,14 +950,12 @@ def download_setup_metaxcan(**kwargs):
         zip_file_md5="ba377831c279002ea8dbb260b0f20880",
         zip_internal_filename="MetaXcan-cfc9e369bbf5630e0c9488993cd877f231c5d02e/",
         output_file=conf.METAXCAN["BASE_DIR"],
-        # output_file_md5="fc7446ff989d0bd0f1aae1851d192dc6",
     )
 
-    if not conf.METAXCAN["CONDA_ENV"].exists():
-        _create_conda_environment(
-            environment_folder=conf.METAXCAN["CONDA_ENV"],
-            environment_spec=conf.METAXCAN["BASE_DIR"] / "software/conda_env.yaml",
-        )
+    _create_conda_environment(
+        environment_folder=conf.METAXCAN["CONDA_ENV"],
+        environment_spec=conf.METAXCAN["BASE_DIR"] / "software/conda_env.yaml",
+    )
 
 
 def download_liftover_hg19tohg38_chain(**kwargs):
