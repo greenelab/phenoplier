@@ -33,7 +33,7 @@ MODES_ACTIONS = {
         "download_predixcan_mashr_prediction_models",
         "download_gene_correlations_phenomexcan_rapid_gwas",
         "download_phenomexcan_smultixcan_mashr_zscores",
-        "download_snps_covariance",
+        "download_snps_covariance_gtex_mashr",
     },
     "demo": {
         "download_phenomexcan_rapid_gwas_pheno_info",
@@ -468,10 +468,16 @@ def download_gene_correlations_1000g_eur(**kwargs):
     )
 
 
-def download_snps_covariance_gtex_mashr(**kwargs):
-    # FIXME: update output_file path, and maybe what is in in conf.PHENOMEXCAN["LD_BLOCKS...
-    #  links and hash already updated!
-    output_file = conf.PHENOMEXCAN["LD_BLOCKS"]["MASHR"]["SNPS_COVARIANCE_FILE"]
+def download_snps_covariance_gtex_mashr(eqtl_panel="mashr", **kwargs):
+    output_file = (
+        conf.RESULTS["GLS"]
+        / "gene_corrs"
+        / "reference_panels"
+        / "gtex_v8"
+        / eqtl_panel.lower()
+        / "snps_chr_blocks_cov.h5"
+    )
+
     curl(
         "https://upenn.box.com/shared/static/oqddbztt3ymhqezxtjmtrfcasus7r26s.h5",
         output_file,
