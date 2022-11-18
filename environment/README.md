@@ -52,7 +52,7 @@ supported** now. If you want to run on Windows, use the Docker image instead.
    conda run -n phenoplier --no-capture-output python scripts/setup_data.py
    ```
 
-This will download ~70 GB of data needed to run the analyses.
+This will download ~130 GB of data and software needed to run the analyses.
 
 
 # Developer usage
