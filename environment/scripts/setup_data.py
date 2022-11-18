@@ -185,11 +185,11 @@ def download_smultixcan_mashr_raw_results(**kwargs):
         # (output_folder.parent / "eqtl").rmdir()
 
 
-def download_spredixcan_mashr_raw_results(**kwargs):
+def download_spredixcan_mashr_raw_results_partial(**kwargs):
     output_folder = conf.PHENOMEXCAN["GENE_ASSOC_DIR"] / "spredixcan"
-    # if output_folder.exists():
-    #    logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
-    #    return
+    if output_folder.exists():
+       logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
+       return
 
     output_folder.parent.mkdir(exist_ok=True, parents=True)
 
@@ -217,11 +217,11 @@ def download_spredixcan_mashr_raw_results(**kwargs):
         # (output_folder.parent / "eqtl").rmdir()
 
 
-def download_gwas_parsing_raw_results(**kwargs):
+def download_gwas_parsing_raw_results_partial(**kwargs):
     output_folder = conf.PHENOMEXCAN["BASE_DIR"] / "gwas_parsing"
-    # if output_folder.exists():
-    #    logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
-    #    return
+    if output_folder.exists():
+       logger.warning(f"Output directory already exists ({output_folder}). Skipping.")
+       return
 
     output_folder.parent.mkdir(exist_ok=True, parents=True)
 
