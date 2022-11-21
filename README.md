@@ -63,10 +63,12 @@ Alternatively, you can use our Docker image (see below), which will greatly simp
 
 ### Hardware requirements
 
-The code was run with an Intel Core i5 (4 cores) and 64 GB of RAM (32 GB should be enough also).
+Most of the code was run with an Intel Core i5 (4 cores) and 64 GB of RAM (32 GB should be enough also).
+The null simulations and gene-gene correlation matrices for the GLS model were computed using a cluster.
 The setup will download ~130 GB of input data and software needed.
-If you run all the analyses, they will generate ~50 GB of results files, so you would need to have at least ~200 GB if you plan to run all the steps.
-Running all the steps would take around a week under this hardware configuration.
+If you run all the analyses, they will generate ~1100 GB of results files, which includes the null simulations for the GLS model (if you skip this, results would be ~50 GB).
+So you would need to have at least ~1200 GB if you plan to run all the steps.
+Running all the steps would take around a week under this hardware configuration (without considering the cluster jobs, which would depend on the resources available).
 
 ## Running the code
 
