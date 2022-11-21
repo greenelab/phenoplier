@@ -3,31 +3,32 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - fastparquet
   - ipython
   - ipywidgets
   - jupyterlab
   - jupytext
   - matplotlib
+  # obonet deps:
+  - networkx
+  #
   - nodejs
-  # fix for umap errors:
-  # - numba=0.52.*
   - numpy
   - pandas
   - papermill
   - pip
-  - fastparquet
   - openpyxl
   - pytables
   - pytest
   - python=3.10.*
   - python-snappy
   - pyyaml
-  - requests
   - r-base=4.2.*
   - r-devtools
   - r-essentials
   - r-reticulate
   - r-svglite
+  - requests
   - rpy2
   - scikit-learn
   - scipy
@@ -36,7 +37,6 @@ dependencies:
   - tabulate
   - tqdm
   - umap-learn
-  # obonet deps:
-  - networkx
   - pip:
     - obonet
+
