@@ -12,7 +12,7 @@
 # general settings
 DOCKER_IMAGE_NAMESPACE="miltondp"
 DOCKER_IMAGE_NAME="phenoplier"
-DOCKER_TAG="latest"
+DOCKER_TAG="${PHENOPLIER_DOCKER_IMAGE_TAG:-latest}"
 DOCKER_PUBLISH_HOST="127.0.0.1"
 DOCKER_CONTAINER_PORT="8892"
 DOCKER_HOST_PORT="8892"
@@ -67,6 +67,7 @@ echo "  Code dir: ${CODE_DIR}"
 echo "  Root dir: ${ROOT_DIR}"
 echo "  Manuscript dir: ${MANUSCRIPT_DIR}"
 echo "  CPU cores: ${N_JOBS}"
+echo "  Docker image tag: ${DOCKER_TAG}"
 
 echo
 echo "Waiting 2 seconds before starting"
