@@ -9,7 +9,9 @@ dependencies:
   - jupyterlab=3.5.*
   - jupytext=1.14.*
   - matplotlib=3.6.*
+  # obonet deps:
   - networkx=2.8.*
+  #
   - nodejs
   - numpy=1.23.*
   - pandas=1.5.*
