@@ -16,6 +16,10 @@ from jupyter_core.paths import jupyter_runtime_dir
 class IPCKernelManager(KernelManager):
     def __init__(self, *args, **kwargs):
         kernel_id = str(uuid.uuid4())
+
+        # make sure the Jupyter runtime dir exists
+        os.makedirs(jupyter_runtime_dir(), exist_ok=True)
+
         connection_file = os.path.join(
             jupyter_runtime_dir(), f"kernel-{kernel_id}.json"
         )
