@@ -1,10 +1,10 @@
-# Manual conda environment installation and data download
+# Conda environment creation and data download
 
-If you want to run scripts/notebook from PhenoPLIER, you need to follow these
-steps to create a conda environment and download the necessary data.
+If you want to run scripts/notebooks from PhenoPLIER, you need to have a conda environment.
+For that, you basically have two options: 1) create a local conda environment in your computer (explained here), or 2) use our Docker image (where you don't need to create a conda environment).
+**We strongly recommend** using our Docker image (see [main README.md](https://github.com/greenelab/phenoplier)), which will greatly simplify running the code and make sure you use the same environment for the analyses (for example, if you are willing to reproduce results in our manuscript).
 
-Keep in mind that the software only runs on Linux or macOS, **Windows is not
-supported** now. If you want to run on Windows, use the Docker image instead.
+Below we explain how to create a local conda environment and download the necessary data.
 
 1. Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or Anaconda.
 
@@ -55,10 +55,14 @@ supported** now. If you want to run on Windows, use the Docker image instead.
 
 This will download ~130 GB of data and software needed to run the analyses.
 
+That's it! Now you should be able to continue and run the code.
+Check out the [main README.md](https://github.com/greenelab/phenoplier) file for instructions on how to run the code.
 
-# Developer usage
 
-These steps are only for PhenoPLIER developers.
+# Developer instructions
+
+**You very likely do not need to follow these steps**, unless you are a developer working on PhenoPLIER.
+
 All steps are run from the root directory (not within `environment/`).
 
 It is a good idea to try to build the environment locally first and, when all issues have been solved, then create the Docker image.
