@@ -52,7 +52,8 @@ ENV HOME=${PHENOPLIER_USER_HOME}
 #
 FROM miltondp/phenoplier:base-latest AS final
 
-COPY . ${CODE_DIR}
+COPY --chmod=777 . ${CODE_DIR}
+RUN chmod 777 ${CODE_DIR}
 WORKDIR ${CODE_DIR}
 
 ENTRYPOINT ["/opt/code/entrypoint.sh"]
