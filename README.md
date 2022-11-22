@@ -57,9 +57,9 @@ If you use any of these files, please carefully follow the [instructions for cit
 To prepare the environment to run the PhenoPLIER code, follow the steps in [environment](environment/).
 This will create a conda environment and download the necessary data.
 Depending on your Internet speed, this shouldn't take more than 24 hours.
-
 We tested the code in Ubuntu 18.04+.
-Alternatively, you can use our Docker image (see below), which will greatly simplify running the code.
+
+**We strongly recommend** using our Docker image (see below), which will greatly simplify running the code and make sure you use the same environment for the analyses.
 
 ### Hardware requirements
 
@@ -77,6 +77,9 @@ Running all the steps would take around a week under this hardware configuration
 First, activate your conda environment and export your settings to environmental variables so non-Python scripts can access them:
 ```bash
 conda activate phenoplier
+
+# before running the code below, make sure your environment variables
+# PHENOPLIER_ROOT_DIR and PHENOPLIER_MANUSCRIPT_DIR point to the right location 
 eval `python libs/conf.py`
 ```
 
@@ -88,18 +91,8 @@ all notebooks for the preprocessing step, you can use this command (requires
 [GNU Parallel](https://www.gnu.org/software/parallel/)):
 
 ```bash
-cd nbs/
-parallel -k --lb --halt 2 -j1 'bash run_nbs.sh {}' ::: 01_preprocessing/*.ipynb
+parallel -k --lb --halt 2 -j1 'bash nbs/run_nbs.sh {}' ::: nbs/01_preprocessing/*.ipynb
 ```
-
-<!--
-Or if you want to run all the analyses at once, you can use:
-
-```bash
-shopt -s globstar
-parallel -k --lb --halt 2 -j1 'bash run_nbs.sh {}' ::: nbs/{,**/}*.ipynb
-```
--->
 
 ### From your browser
 
@@ -114,7 +107,7 @@ notebooks in the specified order.
 
 ### Using Docker
 
-You can also run all the steps below using a Docker image instead of a local installation.
+You can also run all the steps above using a Docker image instead of a local installation.
 
 ```bash
 docker pull miltondp/phenoplier
@@ -131,7 +124,7 @@ mkdir -p ${DATA_FOLDER}
 
 ```bash
 docker run --rm \
-  -v "${DATA_FOLDER}:/opt/phenoplier_data" \
+  -v "${DATA_FOLDER}:/opt/data" \
   --user "$(id -u):$(id -g)" \
   miltondp/phenoplier \
   /bin/bash -c "python environment/scripts/setup_data.py"
@@ -144,7 +137,7 @@ You can run notebooks from the command line, for example:
 
 ```bash
 docker run --rm \
-  -v "${DATA_FOLDER}:/opt/phenoplier_data" \
+  -v "${DATA_FOLDER}:/opt/data" \
   --user "$(id -u):$(id -g)" \
   miltondp/phenoplier \
   /bin/bash -c "parallel -k --lb --halt 2 -j1 'bash nbs/run_nbs.sh {}' ::: nbs/01_preprocessing/*.ipynb"
@@ -155,9 +148,11 @@ or start a Jupyter Notebook server with:
 ```bash
 docker run --rm \
   -p 8888:8892 \
-  -v "${DATA_FOLDER}:/opt/phenoplier_data" \
+  -v "${DATA_FOLDER}:/opt/data" \
   --user "$(id -u):$(id -g)" \
   miltondp/phenoplier
 ```
 
 and access the interface by going to `http://localhost:8888`.
+
+**FIXME**: something about CODE here, like I have in demo
