@@ -1,9 +1,5 @@
 # PhenoPLIER (source code)
 
-<!--
-Unit tests are disabled for now
-[![Code tests](https://github.com/greenelab/phenoplier/workflows/tests/badge.svg)](https://github.com/greenelab/phenoplier/actions/workflows/pytest.yaml)
--->
 [![HTML Manuscript](https://img.shields.io/badge/manuscript-HTML-blue.svg)](https://greenelab.github.io/phenoplier_manuscript/)
 [![PDF Manuscript](https://img.shields.io/badge/manuscript-PDF-blue.svg)](https://greenelab.github.io/phenoplier_manuscript/manuscript.pdf)
 
@@ -57,7 +53,7 @@ If you use any of these files, please carefully follow the [instructions for cit
 To prepare the environment to run the PhenoPLIER code, follow the steps in [environment](environment/).
 This will create a conda environment and download the necessary data.
 Depending on your Internet speed, this shouldn't take more than 24 hours.
-We tested the code in Ubuntu 18.04+.
+We tested the code in Ubuntu 20.04+.
 
 **We strongly recommend** using our Docker image (see below), which will greatly simplify running the code and make sure you use the same environment for the analyses.
 
@@ -71,6 +67,12 @@ So you would need to have at least ~1200 GB if you plan to run all the steps.
 Running all the steps would take around a week under this hardware configuration (without considering the cluster jobs, which would depend on the resources available).
 
 ## Running the code
+
+You basically have two options to run the code: 1) create a local conda environment in your computer, or 2) use our Docker image (where you don't need to create a conda environment).
+Using Docker should be much easier, and it is the recommended way.
+Below, we first show how to run the code using the command-line (terminal) and your browser.
+Then we show how to do the same but with Docker.
+
 
 ### From the command-line
 
@@ -102,12 +104,15 @@ Alternatively, you can start your JupyterLab server by running:
 bash scripts/run_nbs_server.sh
 ```
 
-Then, go to `http://localhost:8892`, browse the `nbs` folder, and run the
+Then, go to [`http://localhost:8892`](http://localhost:8892), browse the `nbs` folder, and run the
 notebooks in the specified order.
 
 ### Using Docker
 
-You can also run all the steps above using a Docker image instead of a local installation.
+You can also run all the steps above using a Docker image instead of a local conda environment.
+This means that you **do not need to create a conda environment** nor activate it before using Docker.
+
+First, pull the latest Docker image:
 
 ```bash
 docker pull miltondp/phenoplier
@@ -122,6 +127,8 @@ export DATA_FOLDER="/tmp/phenoplier_data"
 mkdir -p ${DATA_FOLDER}
 ```
 
+Then run the script to download the data:
+
 ```bash
 docker run --rm \
   -v "${DATA_FOLDER}:/opt/data" \
@@ -130,10 +137,11 @@ docker run --rm \
   /bin/bash -c "python environment/scripts/setup_data.py"
 ```
 
-The `-v` parameter allows to specify a local directory (`/tmp/phenoplier_data`) where the data will be downloaded.
-If you want to generate the figures and tables for the manuscript, you need to clone the [PhenoPLIER manuscript repo](https://github.com/greenelab/phenoplier_manuscript) and pass it with `-v [PATH_TO_MANUSCRIPT_REPO]:/opt/phenoplier_manuscript`.
+The `-v` parameter allows to mount a local directory into the container; in this case, it specifies a local directory (`${DATA_FOLDER}` pointing to `/tmp/phenoplier_data`) where the data will be downloaded and results saved.
+If you want to generate the figures and tables for the manuscript, you need to clone the [PhenoPLIER manuscript repo](https://github.com/greenelab/phenoplier_manuscript) and pass it with `-v [PATH_TO_MANUSCRIPT_REPO]:/opt/manuscript`.
+On the other hand, if you want to pass environment variables like the number of CPU cores to use, you need to use parameter `-e`, such as: `-e PHENOPLIER_N_JOBS=2` for 2 CPU cores.
 
-You can run notebooks from the command line, for example:
+You can run notebooks from the command line. For example:
 
 ```bash
 docker run --rm \
@@ -143,7 +151,10 @@ docker run --rm \
   /bin/bash -c "parallel -k --lb --halt 2 -j1 'bash nbs/run_nbs.sh {}' ::: nbs/01_preprocessing/*.ipynb"
 ```
 
-or start a Jupyter Notebook server with:
+will run all the notebooks to preprocess the input data.
+All resulting files will be saved in the folder specified in `${DATA_FOLDER}`.
+
+You can also start a JupyterLab server with:
 
 ```bash
 docker run --rm \
@@ -153,6 +164,12 @@ docker run --rm \
   miltondp/phenoplier
 ```
 
-and access the interface by going to `http://localhost:8888`.
+and access the interface by going to [`http://localhost:8888`](http://localhost:8888).
 
-**FIXME**: something about CODE here, like I have in demo
+You might also want to modify the code for your needs.
+In that case, you need to clone this repository and mount the directory into the container using `-v "${PATH_TO_THIS_REPO}:/opt/code"`.
+The [`demo/`](nbs/99_demo) has instructions to do this as well.
+Mounting the code directory will also allow you to see the output of the notebooks after running them.
+Otherwise, although you'll be able to access the resulting files under `${DATA_FOLDER}`, you won't see other outputs that are saved inside the notebooks.
+
+Use the [Discussions section](https://github.com/greenelab/phenoplier/discussions) if you have any questions.
