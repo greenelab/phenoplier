@@ -1,8 +1,10 @@
 # syntax=docker/dockerfile:1
 
 #
-# base image: it contains the conda environment
-#  this image should labeled as miltondp/phenoplier:base-latest
+# base image: it contains the conda environment.
+#
+#  This image should be labeled as miltondp/phenoplier:base-latest when building,
+#  so the "final image" below can use it.
 #
 FROM continuumio/miniconda3 AS base
 
@@ -46,9 +48,10 @@ ENV HOME=${PHENOPLIER_USER_HOME}
 
 
 #
-# final image: this image copies the source code of the project into the image.
-#  the idea is to avoid rebuilding the conda environment each time the source
-#  code nees to be just copied/updated.
+# final image: it only copies the source code of the project into the image.
+#
+#  The idea is to avoid rebuilding the conda environment each time the source
+#  code nees to be copied/updated.
 #
 FROM miltondp/phenoplier:base-latest AS final
 
