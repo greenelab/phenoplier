@@ -19,7 +19,7 @@ PROJECT_NAME=phenoplier
 export PHENOPLIER_N_JOBS=3
 
 # Docker image tag to use
-PHENOPLIER_DOCKER_IMAGE_TAG="1.3.2"
+PHENOPLIER_DOCKER_IMAGE_TAG="latest"
 
 #
 # Do not edit below
