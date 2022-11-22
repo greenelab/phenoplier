@@ -60,7 +60,7 @@ We tested the code in Ubuntu 20.04+.
 ### Hardware requirements
 
 Most of the code was run with an Intel Core i5 (4 cores) and 64 GB of RAM (32 GB should be enough also).
-The null simulations and gene-gene correlation matrices for the GLS model were computed using a cluster.
+The null simulations and gene-gene correlation matrices for the GLS model were computed using the [LPC cluster](https://www.med.upenn.edu/dart/computing.html) at the University of Pennsylvania.
 The setup will download ~130 GB of input data and software needed.
 If you run all the analyses, they will generate ~1100 GB of results files, which includes the null simulations for the GLS model (if you skip this, results would be ~50 GB).
 Therefore, you would need to have at least ~1200 GB if you plan to run all the steps.
