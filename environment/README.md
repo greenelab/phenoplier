@@ -59,7 +59,7 @@ That's it! Now you should be able to continue and run the code.
 Check out the [main README.md](https://github.com/greenelab/phenoplier) file for instructions on how to run the code.
 
 
-# Developer instructions
+# Instructions for developers
 
 **You very likely do not need to follow these steps**, unless you are a developer working on PhenoPLIER.
 
