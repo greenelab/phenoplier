@@ -50,6 +50,9 @@ MODES_ACTIONS = {
         "download_multiplier_model_summary_pkl",
         "download_gene_correlations_phenomexcan_rapid_gwas",
     },
+    "asthma-copd": {
+        "download_plink2",
+    },
     "full": {},  # empty means all actions/methods
 }
 
