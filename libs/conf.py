@@ -417,6 +417,24 @@ if EXTERNAL["GTEX_V8_DIR"] is not None:
     EXTERNAL["GTEX_V8_DIR"] = Path(EXTERNAL["GTEX_V8_DIR"]).resolve()
 
 
+#
+# Projects
+#
+
+PROJECTS_DIR = Path(ROOT_DIR, "projects").resolve()
+PROJECTS = {}
+
+# Asthma-COPD Overlap Syndrome (ACOS)
+PROJECTS["ASTHMA_COPD"] = {}
+PROJECTS["ASTHMA_COPD"]["BASE_DIR"] = Path(PROJECTS_DIR, "asthma-copd").resolve()
+PROJECTS["ASTHMA_COPD"]["DATA_DIR"] = Path(
+    PROJECTS["ASTHMA_COPD"]["BASE_DIR"], "data"
+).resolve()
+PROJECTS["ASTHMA_COPD"]["RESULTS_DIR"] = Path(
+    PROJECTS["ASTHMA_COPD"]["BASE_DIR"], "results"
+).resolve()
+
+
 if __name__ == "__main__":
     # if this script is run, then it exports the configuration as environment
     # variables (for bash/R, etc)
