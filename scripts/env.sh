@@ -19,7 +19,7 @@ PROJECT_NAME=phenoplier
 export PHENOPLIER_N_JOBS=3
 
 # Docker image tag to use
-PHENOPLIER_DOCKER_IMAGE_TAG="latest"
+DOCKER_IMAGE_TAG="latest"
 
 #
 # Do not edit below
@@ -35,4 +35,3 @@ echo "PHENOPLIER_DOCKER_IMAGE_TAG=${PHENOPLIER_DOCKER_IMAGE_TAG}"
 
 export PYTHONPATH=${BASE_DIR}/${PROJECT_NAME}/libs/:${PYTHONPATH}
 echo "PYTHONPATH=${PYTHONPATH}"
-
