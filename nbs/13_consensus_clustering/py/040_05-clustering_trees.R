@@ -7,7 +7,7 @@
 #       extension: .R
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.13.8
 #   kernelspec:
 #     display_name: R
 #     language: R
@@ -37,7 +37,7 @@ CLUSTERING_DIR <- Sys.getenv("PHENOPLIER_RESULTS_CLUSTERING_DIR")
 CLUSTERING_DIR
 
 # %% tags=[]
-CONSENSUS_CLUSTERING_DIR = file.path(CLUSTERING_DIR, "consensus_clustering")
+CONSENSUS_CLUSTERING_DIR <- file.path(CLUSTERING_DIR, "consensus_clustering")
 
 # %% tags=[]
 CONSENSUS_CLUSTERING_DIR
@@ -47,15 +47,15 @@ MANUSCRIPT_FIGURES_DIR <- Sys.getenv("PHENOPLIER_MANUSCRIPT_FIGURES_DIR")
 
 # %% tags=[]
 if (MANUSCRIPT_FIGURES_DIR == "") {
-    MANUSCRIPT_FIGURES_DIR = "/tmp"
+  MANUSCRIPT_FIGURES_DIR <- "/tmp"
 }
 
 # %% tags=[]
 MANUSCRIPT_FIGURES_DIR
 
 # %% tags=[]
-OUTPUT_FIG_DIR = file.path(MANUSCRIPT_FIGURES_DIR, "clustering")
-dir.create(OUTPUT_FIG_DIR, showWarnings = FALSE)
+OUTPUT_FIG_DIR <- file.path(MANUSCRIPT_FIGURES_DIR, "clustering")
+dir.create(OUTPUT_FIG_DIR, recursive = TRUE)
 
 # %% tags=[]
 OUTPUT_FIG_DIR
@@ -83,10 +83,10 @@ options(repr.plot.width = 20, repr.plot.height = 15)
 clustree(data, prefix = "k")
 
 ggsave(
-    file.path(OUTPUT_FIG_DIR, "clustering_tree.svg"),
-    height=15,
-    width=20,
-    scale=1,
+  file.path(OUTPUT_FIG_DIR, "clustering_tree.svg"),
+  height = 15,
+  width = 20,
+  scale = 1,
 )
 
 # %% tags=[]
