@@ -7,9 +7,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.13.8
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -18,7 +18,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# This notebook reads clustering results taking the top 4 partitions with more clusters, and analyzes each cluster providing a list of latent variables (LV) that are driving that cluster. For example, for the hypertension traits, it might find an LV with genes expressed in cardiomyocytes or other potentially related cell types.
+# This notebook reads clustering results taking the top 5 partitions (`TOP_N_PARTITIONS` variable below) with more clusters, and analyzes each cluster providing a list of latent variables (LV) that are driving that cluster. For example, for the hypertension traits, it might find an LV with genes expressed in cardiomyocytes or other potentially related cell types.
 #
 # It uses the `papermill` API to run the notebook `interpret_cluster.run.ipynb` (which serves as a template) for each cluster. Results are saved in folder `cluster_analyses`.
 
