@@ -42,14 +42,35 @@ docker pull miltondp/phenoplier:asthma-copd
 
 ### Setup Docker image
 
+**This only needs to be done once.**
+
 Pull the right Docker image for this project and tag it accordingly:
 
 ```bash
 bash projects/asthma-copd/scripts/create_docker_image.sh
 ```
 
-### Start JupyterLab server
+### Load project-specific configuration
 
 ```bash
 . projects/asthma-copd/scripts/env.sh
+```
+
+### Download data/software
+
+```bash
+bash scripts/run_docker_dev.sh python environment/scripts/setup_data.py --mode asthma-copd
+```
+
+### Start JupyterLab server
+
+```bash
+bash scripts/run_docker_dev.sh
+```
+
+
+### Run notebook from command-line
+
+```bash
+bash scripts/run_docker_dev.sh bash nbs/run_nbs.sh projects/asthma-copd/nbs/05_gwas/05-gwas-inflation_factor.ipynb
 ```
