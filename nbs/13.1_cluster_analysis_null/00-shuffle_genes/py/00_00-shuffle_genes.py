@@ -58,7 +58,7 @@ from multiplier import MultiplierProjection
 # # Settings
 
 # %%
-NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"], "shuffle_genes"
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_genes"
 
 # %% tags=[]
 RESULTS_PROJ_OUTPUT_DIR = Path(
