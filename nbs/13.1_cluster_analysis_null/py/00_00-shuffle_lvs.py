@@ -143,6 +143,19 @@ _tmp = stats.pearsonr(shuffled_projected_data.loc["LV1"], projected_data.loc["LV
 display(_tmp)
 assert _tmp[0] == pytest.approx(0.0, rel=0, abs=0.01)
 
+# %%
+assert stats.pearsonr(projected_data["100001_raw-Food_weight"], projected_data["100001_raw-Food_weight"])[
+    0
+] == pytest.approx(1.0)
+assert stats.pearsonr(
+    shuffled_projected_data["100001_raw-Food_weight"], shuffled_projected_data["100001_raw-Food_weight"]
+)[0] == pytest.approx(1.0)
+
+# %%
+_tmp = stats.pearsonr(shuffled_projected_data["100001_raw-Food_weight"], projected_data["100001_raw-Food_weight"])
+display(_tmp)
+assert _tmp[0] == pytest.approx(0.0, rel=0, abs=0.01)
+
 # %% [markdown] tags=[]
 # # Quick analysis
 
