@@ -65,6 +65,9 @@ RANDOM_STATES_ITER = iter(np.random.randint(0, np.iinfo(np.int32).max, size=1000
 # a high number should produce more stable final solutions
 SC_N_INIT = 50
 
+# %%
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"], "shuffle_genes"
+
 # %% [markdown] tags=[]
 # ## Consensus clustering
 
@@ -79,7 +82,7 @@ display(CLUSTERING_OPTIONS)
 # %% tags=[]
 # output dir for this notebook
 RESULTS_DIR = Path(
-    conf.RESULTS["CLUSTERING_NULL_DIR"], "consensus_clustering"
+    NULL_DIR, "consensus_clustering"
 ).resolve()
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 

@@ -56,6 +56,9 @@ import pandas as pd
 # %% tags=[]
 RANDOM_GENERATOR = np.random.default_rng(12345)
 
+# %%
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"], "shuffle_genes"
+
 # %% [markdown] tags=[]
 # ## Ensemble size
 
@@ -76,7 +79,7 @@ RANDOM_GENERATOR = np.random.default_rng(12345)
 # %% tags=[]
 # output dir for this notebook
 RESULTS_DIR = Path(
-    conf.RESULTS["CLUSTERING_NULL_DIR"], "consensus_clustering"
+    NULL_DIR, "consensus_clustering"
 ).resolve()
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -90,7 +93,7 @@ display(RESULTS_DIR)
 
 # %% tags=[]
 input_dir = Path(
-    conf.RESULTS["CLUSTERING_NULL_DIR"],
+    NULL_DIR,
     "runs",
 ).resolve()
 display(input_dir)

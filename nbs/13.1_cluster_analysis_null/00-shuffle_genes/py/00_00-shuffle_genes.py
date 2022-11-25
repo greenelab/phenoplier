@@ -57,9 +57,12 @@ from multiplier import MultiplierProjection
 # %% [markdown] tags=[]
 # # Settings
 
+# %%
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"], "shuffle_genes"
+
 # %% tags=[]
 RESULTS_PROJ_OUTPUT_DIR = Path(
-    conf.RESULTS["CLUSTERING_NULL_DIR"],
+    NULL_DIR,
     "projections",
 ).resolve()
 RESULTS_PROJ_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

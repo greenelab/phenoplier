@@ -43,12 +43,15 @@ import conf
 # %% tags=[]
 np.random.seed(0)
 
+# %%
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"], "shuffle_genes"
+
 # %% [markdown] tags=[]
 # ## Input data
 
 # %% tags=[]
 INPUT_FILEPATH = Path(
-    conf.RESULTS["CLUSTERING_NULL_DIR"],
+    NULL_DIR,
     "projections",
     "projection-smultixcan-efo_partial-mashr-zscores.pkl",
 ).resolve()
@@ -63,7 +66,7 @@ display(input_filepath_stem)
 # %% tags=[]
 # output dir for this notebook
 RESULTS_DIR = Path(
-    conf.RESULTS["CLUSTERING_NULL_DIR"], "data_transformations", "z_score_std"
+    NULL_DIR, "data_transformations", "z_score_std"
 ).resolve()
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
