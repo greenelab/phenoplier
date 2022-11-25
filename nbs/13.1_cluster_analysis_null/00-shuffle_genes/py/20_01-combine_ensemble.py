@@ -66,7 +66,7 @@ RANDOM_STATES_ITER = iter(np.random.randint(0, np.iinfo(np.int32).max, size=1000
 SC_N_INIT = 50
 
 # %%
-NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"], "shuffle_genes"
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_genes"
 
 # %% [markdown] tags=[]
 # ## Consensus clustering

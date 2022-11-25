@@ -38,21 +38,10 @@ from scipy import stats
 import pandas as pd
 import pytest
 
-# import rpy2.robjects as ro
-# from rpy2.robjects import pandas2ri
-# from rpy2.robjects.conversion import localconverter
-
 import conf
 from entity import Gene
 
-# from data.cache import read_data
 from multiplier import MultiplierProjection
-
-# %% tags=[]
-# readRDS = ro.r["readRDS"]
-
-# %% tags=[]
-# saveRDS = ro.r["saveRDS"]
 
 # %% [markdown] tags=[]
 # # Settings

@@ -69,7 +69,7 @@ np.random.seed(0)
 CLUSTERING_ATTRIBUTES_TO_SAVE = ["n_clusters"]
 
 # %%
-NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"], "shuffle_genes"
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_genes"
 
 # %% [markdown] tags=[]
 # # Settings

@@ -64,7 +64,7 @@ np.random.seed(0)
 INITIAL_RANDOM_STATE = 20000
 
 # %%
-NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"], "shuffle_genes"
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_genes"
 
 # %% [markdown] tags=[]
 # ## Input data
