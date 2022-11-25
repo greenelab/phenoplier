@@ -53,8 +53,12 @@ ENV HOME=${PHENOPLIER_USER_HOME}
 #  The idea is to avoid rebuilding the conda environment each time the source
 #  code nees to be copied/updated.
 #
-FROM miltondp/phenoplier:base-latest AS final
+FROM miltondp/phenoplier:prev AS final
 
+COPY environment/scripts/install_other_packages.sh environment/scripts/install_r_packages.r /tmp/
+RUN conda install -y conda=4.14 && conda run -n ${CONDA_ENV_NAME} --no-capture-output /bin/bash /tmp/install_other_packages.sh
+
+RUN rm -rf ${CODE_DIR}/*
 COPY --chmod=777 . ${CODE_DIR}
 RUN chmod 777 ${CODE_DIR}
 WORKDIR ${CODE_DIR}
