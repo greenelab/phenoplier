@@ -71,6 +71,9 @@ np.random.seed(0)
 # %% tags=[]
 CLUSTERING_ATTRIBUTES_TO_SAVE = ["n_clusters"]
 
+# %%
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"], "shuffle_genes"
+
 # %% [markdown] tags=[]
 # # Settings
 
@@ -105,7 +108,7 @@ INPUT_STEM = "projection-smultixcan-efo_partial-mashr-zscores"
 
 # %% tags=[]
 input_filepath = Path(
-    conf.RESULTS["CLUSTERING_NULL_DIR"],
+    NULL_DIR,
     "data_transformations",
     INPUT_SUBSET,
     f"{INPUT_SUBSET}-{INPUT_STEM}.pkl",
@@ -120,7 +123,7 @@ display(input_filepath_stem)
 # %% tags=[]
 # output dir for this notebook
 RESULTS_DIR = Path(
-    conf.RESULTS["CLUSTERING_NULL_DIR"],
+    NULL_DIR,
     "runs",
     f"{INPUT_SUBSET}-{INPUT_STEM}",
 ).resolve()

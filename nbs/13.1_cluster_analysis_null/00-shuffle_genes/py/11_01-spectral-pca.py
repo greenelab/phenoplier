@@ -63,6 +63,9 @@ np.random.seed(0)
 # %% tags=[]
 INITIAL_RANDOM_STATE = 40000
 
+# %%
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"], "shuffle_genes"
+
 # %% [markdown] tags=[]
 # ## Input data
 
@@ -81,7 +84,7 @@ DR_OPTIONS = {
 
 # %% tags=[]
 input_filepath = Path(
-    conf.RESULTS["CLUSTERING_NULL_DIR"],
+    NULL_DIR,
     "data_transformations",
     INPUT_SUBSET,
     generate_result_set_name(
@@ -157,7 +160,7 @@ display(clustering_method_name)
 # %% tags=[]
 # output dir for this notebook
 RESULTS_DIR = Path(
-    conf.RESULTS["CLUSTERING_NULL_DIR"],
+    NULL_DIR,
     "runs",
     f"{INPUT_SUBSET}-{INPUT_STEM}",
 ).resolve()
