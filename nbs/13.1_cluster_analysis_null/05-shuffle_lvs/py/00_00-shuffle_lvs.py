@@ -138,7 +138,7 @@ assert stats.pearsonr(
 # %%
 _tmp = stats.pearsonr(shuffled_projected_data["100001_raw-Food_weight"], projected_data["100001_raw-Food_weight"])
 display(_tmp)
-assert _tmp[0] == pytest.approx(0.0, rel=0, abs=0.01)
+assert _tmp[0] == pytest.approx(0.0, rel=0, abs=0.02)
 
 # %% [markdown] tags=[]
 # # Quick analysis
