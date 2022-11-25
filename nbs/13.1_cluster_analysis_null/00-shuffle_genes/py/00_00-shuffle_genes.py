@@ -57,7 +57,7 @@ from multiplier import MultiplierProjection
 # %% [markdown] tags=[]
 # # Settings
 
-# %%
+# %% tags=[]
 NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_genes"
 
 # %% tags=[]
@@ -212,16 +212,19 @@ display(_tmp)
 assert _tmp[0] == pytest.approx(0.0, rel=0, abs=0.02)
 
 # %% tags=[]
-assert stats.pearsonr(smultixcan_results["100001_raw-Food_weight"], smultixcan_results["100001_raw-Food_weight"])[
-    0
-] == pytest.approx(1.0)
 assert stats.pearsonr(
-    shuffled_smultixcan_results["100001_raw-Food_weight"], shuffled_smultixcan_results["100001_raw-Food_weight"]
+    smultixcan_results["100001_raw-Food_weight"],
+    smultixcan_results["100001_raw-Food_weight"],
+)[0] == pytest.approx(1.0)
+assert stats.pearsonr(
+    shuffled_smultixcan_results["100001_raw-Food_weight"],
+    shuffled_smultixcan_results["100001_raw-Food_weight"],
 )[0] == pytest.approx(1.0)
 
 # %% tags=[]
 _tmp = stats.pearsonr(
-    smultixcan_results["100001_raw-Food_weight"], shuffled_smultixcan_results["100001_raw-Food_weight"]
+    smultixcan_results["100001_raw-Food_weight"],
+    shuffled_smultixcan_results["100001_raw-Food_weight"],
 )
 display(_tmp)
 assert _tmp[0] == pytest.approx(0.0, rel=0, abs=0.02)
