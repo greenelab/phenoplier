@@ -18,12 +18,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# **UPDATED for nulls**:
-# * TODO: what if I shuffle S-MultiXcan results, and then I project those???
-# * Shuffle the projection of S-MultiXcan into LVs
-# * Then run z-scores, PCA and UMAP on this.
-# * And then continue all the clustering pipeline from base clusterings to consensus clustering
-# * Then create clustering tree.
+# **TODO: UPDATE**
 #
 # It projects the PhenomeXcan results (S-MultiXcan, EFO version) into the MultiPLIER latent space.
 # Before projecting, repeated gene symbols as well as genes with NaN are removed;
@@ -45,24 +40,13 @@ from scipy import stats
 import pandas as pd
 import pytest
 
-# import rpy2.robjects as ro
-# from rpy2.robjects import pandas2ri
-# from rpy2.robjects.conversion import localconverter
-
 import conf
-
-# from entity import Gene
-# from data.cache import read_data
-# from multiplier import MultiplierProjection
-
-# %% tags=[]
-# readRDS = ro.r["readRDS"]
-
-# %% tags=[]
-# saveRDS = ro.r["saveRDS"]
 
 # %% [markdown] tags=[]
 # # Settings
+
+# %% tags=[]
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_lvs"
 
 # %% tags=[]
 RESULTS_PROJ_OUTPUT_DIR = Path(conf.RESULTS["PROJECTIONS_DIR"])
@@ -72,7 +56,7 @@ display(RESULTS_PROJ_OUTPUT_DIR)
 
 # %%
 OUTPUT_DIR = Path(
-    conf.RESULTS["CLUSTERING_NULL_DIR"],
+    NULL_DIR,
     "projections",
 ).resolve()
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
