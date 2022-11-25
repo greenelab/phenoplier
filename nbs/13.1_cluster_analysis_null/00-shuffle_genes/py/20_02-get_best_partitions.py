@@ -41,7 +41,7 @@ import conf
 # # Load consensus clustering results
 
 # %%
-NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"], "shuffle_genes"
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_genes"
 
 # %% tags=[]
 CONSENSUS_CLUSTERING_DIR = Path(

@@ -57,7 +57,7 @@ import pandas as pd
 RANDOM_GENERATOR = np.random.default_rng(12345)
 
 # %%
-NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"], "shuffle_genes"
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_genes"
 
 # %% [markdown] tags=[]
 # ## Ensemble size
