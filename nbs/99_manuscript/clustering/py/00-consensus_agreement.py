@@ -104,9 +104,7 @@ scenarios_results["Real data"] = (best_partitions, best_parts_stats, best_thresh
 NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_genes"
 
 # %%
-CONSENSUS_CLUSTERING_DIR = Path(
-    NULL_DIR, "consensus_clustering"
-).resolve()
+CONSENSUS_CLUSTERING_DIR = Path(NULL_DIR, "consensus_clustering").resolve()
 
 display(CONSENSUS_CLUSTERING_DIR)
 
@@ -150,9 +148,7 @@ scenarios_results["Null #1"] = (best_partitions, best_parts_stats, best_threshol
 NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_lvs"
 
 # %%
-CONSENSUS_CLUSTERING_DIR = Path(
-    NULL_DIR, "consensus_clustering"
-).resolve()
+CONSENSUS_CLUSTERING_DIR = Path(NULL_DIR, "consensus_clustering").resolve()
 
 display(CONSENSUS_CLUSTERING_DIR)
 
