@@ -60,7 +60,7 @@ from utils import generate_result_set_name
 # %% tags=[]
 np.random.seed(0)
 
-# %%
+# %% tags=[]
 NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_genes"
 
 # %% [markdown] tags=[]
