@@ -43,7 +43,7 @@ from utils import generate_result_set_name
 # %% tags=[]
 np.random.seed(0)
 
-# %%
+# %% tags=[]
 NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_lvs"
 
 # %% [markdown] tags=[]
@@ -69,9 +69,7 @@ display(input_filepath_stem)
 
 # %% tags=[]
 # output dir for this notebook
-RESULTS_DIR = Path(
-    NULL_DIR, "data_transformations", "umap"
-).resolve()
+RESULTS_DIR = Path(NULL_DIR, "data_transformations", "umap").resolve()
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 display(RESULTS_DIR)

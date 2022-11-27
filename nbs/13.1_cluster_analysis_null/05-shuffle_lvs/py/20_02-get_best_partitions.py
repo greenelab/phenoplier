@@ -40,13 +40,11 @@ import conf
 # %% [markdown] tags=[]
 # # Load consensus clustering results
 
-# %%
+# %% tags=[]
 NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_lvs"
 
 # %% tags=[]
-CONSENSUS_CLUSTERING_DIR = Path(
-    NULL_DIR, "consensus_clustering"
-).resolve()
+CONSENSUS_CLUSTERING_DIR = Path(NULL_DIR, "consensus_clustering").resolve()
 
 display(CONSENSUS_CLUSTERING_DIR)
 

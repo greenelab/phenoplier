@@ -56,7 +56,7 @@ import pandas as pd
 # %% tags=[]
 RANDOM_GENERATOR = np.random.default_rng(12345)
 
-# %%
+# %% tags=[]
 NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_lvs"
 
 # %% [markdown] tags=[]
@@ -78,9 +78,7 @@ NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_lvs"
 
 # %% tags=[]
 # output dir for this notebook
-RESULTS_DIR = Path(
-    NULL_DIR, "consensus_clustering"
-).resolve()
+RESULTS_DIR = Path(NULL_DIR, "consensus_clustering").resolve()
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 display(RESULTS_DIR)

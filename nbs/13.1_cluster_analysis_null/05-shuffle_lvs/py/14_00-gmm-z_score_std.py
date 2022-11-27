@@ -63,7 +63,7 @@ np.random.seed(0)
 # %% tags=[]
 INITIAL_RANDOM_STATE = 60000
 
-# %%
+# %% tags=[]
 NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_lvs"
 
 # %% [markdown] tags=[]

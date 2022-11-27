@@ -54,7 +54,7 @@ RESULTS_PROJ_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 display(RESULTS_PROJ_OUTPUT_DIR)
 
-# %%
+# %% tags=[]
 OUTPUT_DIR = Path(
     NULL_DIR,
     "projections",
@@ -63,7 +63,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 display(OUTPUT_DIR)
 
-# %%
+# %% tags=[]
 rs = np.random.RandomState(0)
 
 # %% [markdown] tags=[]
@@ -81,40 +81,40 @@ assert smultixcan_results_filename.exists()
 results_filename_stem = smultixcan_results_filename.stem
 display(results_filename_stem)
 
-# %%
+# %% tags=[]
 input_file = Path(
     RESULTS_PROJ_OUTPUT_DIR, f"projection-{results_filename_stem}.pkl"
 ).resolve()
 
 display(input_file)
 
-# %%
+# %% tags=[]
 projected_data = pd.read_pickle(input_file)
 
-# %%
+# %% tags=[]
 projected_data.shape
 
-# %%
+# %% tags=[]
 projected_data.head()
 
 # %% [markdown] tags=[]
 # # Shuffle projected data
 
-# %%
+# %% tags=[]
 shuffled_projected_data = projected_data.apply(
     lambda x: x.sample(frac=1, random_state=rs).to_numpy()
 )
 
-# %%
+# %% tags=[]
 shuffled_projected_data.shape
 
-# %%
+# %% tags=[]
 shuffled_projected_data.head()
 
-# %% [markdown]
+# %% [markdown] tags=[]
 # ## Testing
 
-# %%
+# %% tags=[]
 assert stats.pearsonr(projected_data.loc["LV1"], projected_data.loc["LV1"])[
     0
 ] == pytest.approx(1.0)
@@ -122,21 +122,25 @@ assert stats.pearsonr(
     shuffled_projected_data.loc["LV1"], shuffled_projected_data.loc["LV1"]
 )[0] == pytest.approx(1.0)
 
-# %%
+# %% tags=[]
 _tmp = stats.pearsonr(shuffled_projected_data.loc["LV1"], projected_data.loc["LV1"])
 display(_tmp)
 assert _tmp[0] == pytest.approx(0.0, rel=0, abs=0.01)
 
-# %%
-assert stats.pearsonr(projected_data["100001_raw-Food_weight"], projected_data["100001_raw-Food_weight"])[
-    0
-] == pytest.approx(1.0)
+# %% tags=[]
 assert stats.pearsonr(
-    shuffled_projected_data["100001_raw-Food_weight"], shuffled_projected_data["100001_raw-Food_weight"]
+    projected_data["100001_raw-Food_weight"], projected_data["100001_raw-Food_weight"]
+)[0] == pytest.approx(1.0)
+assert stats.pearsonr(
+    shuffled_projected_data["100001_raw-Food_weight"],
+    shuffled_projected_data["100001_raw-Food_weight"],
 )[0] == pytest.approx(1.0)
 
-# %%
-_tmp = stats.pearsonr(shuffled_projected_data["100001_raw-Food_weight"], projected_data["100001_raw-Food_weight"])
+# %% tags=[]
+_tmp = stats.pearsonr(
+    shuffled_projected_data["100001_raw-Food_weight"],
+    projected_data["100001_raw-Food_weight"],
+)
 display(_tmp)
 assert _tmp[0] == pytest.approx(0.02, rel=0, abs=0.01)
 
