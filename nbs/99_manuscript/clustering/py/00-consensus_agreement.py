@@ -100,9 +100,12 @@ scenarios_results["Real data"] = (best_partitions, best_parts_stats, best_thresh
 # For this Null #1 scenario, we shuffle genes in M, and then this shuffled matrix is projected into the LV space, where clustering is performed.
 # Here we read these results.
 
+# %% tags=[]
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_genes"
+
 # %%
 CONSENSUS_CLUSTERING_DIR = Path(
-    conf.RESULTS["CLUSTERING_DIR"], "null_sims", "consensus_clustering"
+    NULL_DIR, "consensus_clustering"
 ).resolve()
 
 display(CONSENSUS_CLUSTERING_DIR)
@@ -143,9 +146,12 @@ scenarios_results["Null #1"] = (best_partitions, best_parts_stats, best_threshol
 # For this Null #2 scenario, we projected the original M matrix into the latent space, and then shuffle LVs in the projected matrix.
 # Here we read these results.
 
+# %% tags=[]
+NULL_DIR = conf.RESULTS["CLUSTERING_NULL_DIR"] / "shuffle_lvs"
+
 # %%
 CONSENSUS_CLUSTERING_DIR = Path(
-    conf.RESULTS["CLUSTERING_DIR"], "null_sims_lv_shuffle", "consensus_clustering"
+    NULL_DIR, "consensus_clustering"
 ).resolve()
 
 display(CONSENSUS_CLUSTERING_DIR)
