@@ -18,11 +18,11 @@
 # # Description
 
 # %% [markdown] tags=[]
-# **TODO: UPDATE**
+# This notebook implements one of the strategies (one out of two) to generate a null distribution for clustering results.
+# This strategy is referred to as "Null #2" in the manuscript.
+# See notebook `../00-shuffle_genes/00_00-shuffle_genes.ipynb` for introductory details.
 #
-# It projects the PhenomeXcan results (S-MultiXcan, EFO version) into the MultiPLIER latent space.
-# Before projecting, repeated gene symbols as well as genes with NaN are removed;
-# additionally (also before projecting), S-MultiXcan results are adjusted for highly polygenic traits.
+# This strategy shuffles the latent space instead of the the input data. For this, it projects the input matrix **M** (genes x traits) into the latent space, and then it shuffles LVs for each trait in the projected matrix. Finally, this projected matrix is used in the clustering pipeline (rest of the notebooks in this folder) to get the results.
 
 # %% [markdown] tags=[]
 # # Modules loading
