@@ -18,9 +18,8 @@
 # # Description
 
 # %% [markdown] tags=[]
-# It projects the PhenomeXcan results (S-MultiXcan, EFO version) into the MultiPLIER latent space.
-# Before projecting, repeated gene symbols as well as genes with NaN are removed;
-# additionally (also before projecting), S-MultiXcan results are adjusted for highly polygenic traits.
+# This notebook implements one of the strategies (one out of two) to generate a null distribution for clustering results.
+# This strategy is referred to as "Null #1" in the manuscript. It takes the input data for clustering (matrix **M** with gene-trait pvalues converted to z-scores, with 22k genes and 4k traits) and shuffles genes' pvalues for each trait. Then this shuffled version of matrix M is projected into the latent space. Finally, this projected matrix is used in the clustering pipeline (rest of the notebooks in this folder) to get the results.
 
 # %% [markdown] tags=[]
 # # Modules loading
