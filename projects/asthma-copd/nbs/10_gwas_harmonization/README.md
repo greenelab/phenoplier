@@ -10,8 +10,6 @@ It uses a standard pipeline for this task: https://github.com/hakyimlab/summary-
 
 ```bash
 . projects/asthma-copd/scripts/env.sh
-
-# export PHENOPLIER_JOBS_EXECUTOR="bash"
 ```
 
 ## Download the necessary data
@@ -19,24 +17,17 @@ It uses a standard pipeline for this task: https://github.com/hakyimlab/summary-
 TODO: add GWAS download of asthma-only, copd-only, acos
 
 ```bash
-python environment/scripts/setup_data.py \
-  --actions \
-    download_1000g_genotype_data \
-    download_liftover_hg19tohg38_chain \
-    download_eur_ld_regions \
-    download_setup_summary_gwas_imputation
+bash scripts/run_docker_dev.sh \
+  python environment/scripts/setup_data.py \
+    --actions \
+      download_1000g_genotype_data \
+      download_liftover_hg19tohg38_chain \
+      download_eur_ld_regions \
+      download_setup_summary_gwas_imputation
 ```
 
 
 # Run
-
-```bash
-# export code dir
-
-
-# traits info file
-export TRAITS_INFO_FILE='${PHENOPLIER_PROJECTS_ASTHMA_COPD_DATA_DIR}'/traits_info.csv
-```
 
 ## Harmonization
 
