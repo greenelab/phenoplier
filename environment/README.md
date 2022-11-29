@@ -1,8 +1,18 @@
-# Conda environment creation and data download
+# Conda environment and data download
+
+## Before you start
 
 If you want to run scripts/notebooks from PhenoPLIER, you need to have a conda environment.
 For that, you basically have two options: 1) create a local conda environment in your computer (explained here), or 2) use our Docker image (where you don't need to create a conda environment).
 **We strongly recommend** using our Docker image (see [main README.md](https://github.com/greenelab/phenoplier)), which will greatly simplify running the code and make sure you use the same environment for the analyses (for example, if you are willing to reproduce results in our manuscript).
+
+## Environment to reproduce manuscript analyses
+
+Keep in mind that the conda environment specification for PhenoPLIER changes over time as new analyzes are performed.
+Therefore, **if you want to reproduce the analyses of the [PhenoPLIER manuscript](https://greenelab.github.io/phenoplier_manuscript/)**, you need to check out the latest [`v1.x.x` version](https://github.com/greenelab/phenoplier/releases).
+If you are using Docker, then use the tag `latest` when pulling the image (such as `docker pull miltondp/phenoplier`).
+
+## Steps to prepare environment
 
 Below we explain how to create a local conda environment and download the necessary data.
 
