@@ -52,7 +52,7 @@ run_job () {
   INPUT_GWAS_FILEPATH=$(ls ${GWAS_DIR}/${INPUT_FILENAME}*)
 
   bash ${CODE_DIR}/01_spredixcan.sh \
-    --gwas-file ${INPUT_GWAS_FILEPATH} \
+    --input-gwas-file ${INPUT_GWAS_FILEPATH} \
     --phenotype-name "${INPUT_FILENAME}" \
     --tissue "${tissue}" \
     --output-dir ${OUTPUT_DIR}

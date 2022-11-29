@@ -9,7 +9,7 @@ POSITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
   case $1 in
-    -f|--gwas-file)
+    -f|--input-gwas-file)
       INPUT_GWAS_FILE="$2"
       shift # past argument
       shift # past value
