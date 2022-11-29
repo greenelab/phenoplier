@@ -37,14 +37,22 @@ run_job () {
   export INPUT_FILENAME=${file%.*}
   export OUTPUT_DIR=${PHENOPLIER_PROJECTS_ASTHMA_COPD_RESULTS_DIR}/twas/spredixcan
   
-  # export NUMBA_NUM_THREADS=1
-  # export MKL_NUM_THREADS=1
-  # export OPEN_BLAS_NUM_THREADS=1
-  # export NUMEXPR_NUM_THREADS=1
-  # export OMP_NUM_THREADS=1
+  export NUMBA_NUM_THREADS=1
+  export MKL_NUM_THREADS=1
+  export OPEN_BLAS_NUM_THREADS=1
+  export NUMEXPR_NUM_THREADS=1
+  export OMP_NUM_THREADS=1
+  
+  # get input GWAS file
+  N_GWAS_FILES=$(ls ${GWAS_DIR}/${INPUT_FILENAME}* | wc -l)
+  if [ "${N_GWAS_FILES}" != "1" ]; then
+    echo "ERROR: found ${N_GWAS_FILES} GWAS files instead of one"
+    exit 1
+  fi
+  INPUT_GWAS_FILEPATH=$(ls ${GWAS_DIR}/${INPUT_FILENAME}*)
 
   bash ${CODE_DIR}/01_spredixcan.sh \
-    --gwas-dir ${GWAS_DIR} \
+    --gwas-file ${INPUT_GWAS_FILEPATH} \
     --phenotype-name "${INPUT_FILENAME}" \
     --tissue "${tissue}" \
     --output-dir ${OUTPUT_DIR}

@@ -9,8 +9,8 @@ POSITIONAL_ARGS=()
 
 while [[ $# -gt 0 ]]; do
   case $1 in
-    -d|--gwas-dir)
-      INPUT_GWAS_DIR="$2"
+    -f|--gwas-file)
+      INPUT_GWAS_FILE="$2"
       shift # past argument
       shift # past value
       ;;
@@ -48,8 +48,8 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 #
 # check arguments
 #
-if [ -z "${INPUT_GWAS_DIR}" ]; then
-    >&2 echo "Error, --gwas-dir <value> not provided"
+if [ -z "${INPUT_GWAS_FILE}" ]; then
+    >&2 echo "Error, --gwas-file <value> not provided"
     exit 1
 fi
 
@@ -91,13 +91,10 @@ fi
 mkdir -p ${OUTPUT_DIR}
 OUTPUT_FILENAME_BASE="${PHENOTYPE_NAME}-gtex_v8-mashr-${TISSUE}"
 
-# FIXME: in the future:
-#  * use parameter --gwas-file instead of --gwas_folder and --gwas_file_pattern
 ${PYTHON_EXECUTABLE} ${PHENOPLIER_METAXCAN_BASE_DIR}/software/SPrediXcan.py \
     --model_db_path ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR}/${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_PREFIX}${TISSUE}.db \
     --covariance ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR}/${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_PREFIX}${TISSUE}.txt.gz \
-    --gwas_folder ${INPUT_GWAS_DIR} \
-    --gwas_file_pattern "${PHENOTYPE_NAME}-harmonized-imputed.txt.gz" \
+    --gwas_file ${INPUT_GWAS_FILE} \
     --separator $'\t' \
     --non_effect_allele_column "non_effect_allele" \
     --effect_allele_column "effect_allele" \
@@ -106,3 +103,8 @@ ${PYTHON_EXECUTABLE} ${PHENOPLIER_METAXCAN_BASE_DIR}/software/SPrediXcan.py \
     --keep_non_rsid --additional_output --model_db_snp_key varID \
     --throw \
     --output_file ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.csv 2>&1 | tee ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.log
+
+
+# In case a GWAS is splitted across several files, these commands can replace the --gwas_file parameter:
+# --gwas_folder ${INPUT_GWAS_DIR} \
+# --gwas_file_pattern "${PHENOTYPE_NAME}-harmonized-imputed.txt.gz" \
