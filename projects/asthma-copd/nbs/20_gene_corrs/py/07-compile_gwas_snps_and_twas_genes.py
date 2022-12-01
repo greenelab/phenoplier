@@ -135,13 +135,7 @@ assert (
     OUTPUT_DIR_BASE is not None and len(OUTPUT_DIR_BASE) > 0
 ), "Output directory path must be given"
 
-OUTPUT_DIR_BASE = (
-    Path(OUTPUT_DIR_BASE)
-    / "gene_corrs"
-    / COHORT_NAME
-    # / REFERENCE_PANEL.lower()
-    # / EQTL_MODEL.lower()
-).resolve()
+OUTPUT_DIR_BASE = (Path(OUTPUT_DIR_BASE) / "gene_corrs" / COHORT_NAME).resolve()
 
 OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 
@@ -533,7 +527,7 @@ spredixcan_genes_models.head()
 assert spredixcan_genes_models["gene_name"].is_unique
 
 # %%
-assert not spredixcan_genes_models.isna().any(None)
+assert not spredixcan_genes_models.isna().any(axis=None)
 
 # %%
 spredixcan_genes_models.to_pickle(OUTPUT_DIR_BASE / "gene_tissues.pkl")
@@ -554,116 +548,6 @@ spredixcan_gene_obj = {
 
 # %%
 len(spredixcan_gene_obj)
-
-# %% [markdown]
-# ### Add genes' variance captured by principal components
-
-# %%
-# def _get_gene_pc_variance(gene_row):
-#     gene_id = gene_row.name
-#     gene_tissues = gene_row["tissue"]
-#     gene_obj = spredixcan_gene_obj[gene_id]
-
-#     u, s, vt = gene_obj.get_tissues_correlations_svd(
-#         tissues=gene_tissues,
-#         snps_subset=gwas_variants_ids_set,
-#         reference_panel=REFERENCE_PANEL,
-#         model_type=EQTL_MODEL,
-#         # use_covariance_matrix=True,
-#     )
-
-#     return s
-
-# %%
-# _tmp = spredixcan_genes_models.loc["ENSG00000188976"]
-# _get_gene_pc_variance(_tmp)
-
-# %%
-# spredixcan_genes_tissues_pc_variance = spredixcan_genes_models.apply(
-#     _get_gene_pc_variance, axis=1
-# )
-
-# %%
-# spredixcan_genes_tissues_pc_variance
-
-# %%
-# # testing
-# assert spredixcan_genes_tissues_pc_variance.loc[
-#     "ENSG00000188976"
-# ].sum() == pytest.approx(44.01605629086847)
-# # this is using the covariance:
-# # assert spredixcan_genes_tissues_pc_variance.loc["ENSG00000188976"].sum() == pytest.approx(1.1492946006449425)
-
-# %%
-# # add to spredixcan_genes_models
-# spredixcan_genes_models = spredixcan_genes_models.join(
-#     spredixcan_genes_tissues_pc_variance.rename("tissues_pc_variances")
-# )
-
-# %%
-# spredixcan_genes_models.shape
-
-# %%
-# spredixcan_genes_models.head()
-
-# %% [markdown]
-# ### Add gene variance per tissue
-
-# %%
-# def _get_gene_variances(gene_row):
-#     gene_id = gene_row.name
-#     gene_tissues = gene_row["tissue"]
-
-#     tissue_variances = {}
-#     gene_obj = spredixcan_gene_obj[gene_id]
-
-#     for tissue in gene_tissues:
-#         tissue_var = gene_obj.get_pred_expression_variance(
-#             tissue=tissue,
-#             reference_panel=REFERENCE_PANEL,
-#             model_type=EQTL_MODEL,
-#             snps_subset=gwas_variants_ids_set,
-#         )
-
-#         if tissue_var is not None:
-#             tissue_variances[tissue] = tissue_var
-
-#     return tissue_variances
-
-# %%
-# _tmp = spredixcan_genes_models.loc["ENSG00000000419"]
-# _get_gene_variances(_tmp)
-
-# %%
-# spredixcan_genes_tissues_variance = spredixcan_genes_models.apply(
-#     _get_gene_variances, axis=1
-# )
-
-# %%
-# spredixcan_genes_tissues_variance
-
-# %%
-# # testing
-# _gene_id = "ENSG00000188976"
-# x = spredixcan_genes_tissues_variance.loc[_gene_id]
-# # expected value obtained by sum of PCA eigenvalues on this gene's predicted expression
-# assert np.sum(list(x.values())) == pytest.approx(1.2326202607409493)
-
-# %%
-# # testing
-# spredixcan_genes_tissues_variance.loc["ENSG00000000419"]
-
-# %%
-# # add to spredixcan_genes_models
-# spredixcan_genes_models = spredixcan_genes_models.join(
-#     spredixcan_genes_tissues_variance.rename("tissues_variances")
-# )
-
-# %%
-# spredixcan_genes_models.shape
-
-# %%
-# spredixcan_genes_models.head()
 
 # %% [markdown]
 # ### Count number of SNPs predictors used across tissue models
@@ -714,178 +598,6 @@ spredixcan_genes_models.shape
 spredixcan_genes_models.head()
 
 # %% [markdown]
-# ### Summarize prediction models for each gene
-
-# %%
-# def _summarize_gene_models(gene_id):
-#     """
-#     For a given gene ID, it returns a dataframe with predictor SNPs in rows and tissues in columns, where
-#     values are the weights of SNPs in those tissues.
-#     It can contain NaNs.
-#     """
-#     gene_obj = spredixcan_gene_obj[gene_id]
-#     gene_tissues = spredixcan_genes_models.loc[gene_id, "tissue"]
-
-#     gene_models = {}
-#     gene_unique_snps = set()
-#     for t in gene_tissues:
-#         gene_model = gene_obj.get_prediction_weights(tissue=t, model_type=EQTL_MODEL)
-#         gene_models[t] = gene_model
-
-#         gene_unique_snps.update(set(gene_model.index))
-
-#     df = pd.DataFrame(
-#         data=np.nan, index=list(gene_unique_snps), columns=list(gene_tissues)
-#     )
-
-#     for t in df.columns:
-#         for snp in df.index:
-#             gene_model = gene_models[t]
-
-#             if snp in gene_model.index:
-#                 df.loc[snp, t] = gene_model.loc[snp]
-
-#     return df
-
-# %%
-# # testing
-# spredixcan_gene_obj["ENSG00000000419"].get_prediction_weights(
-#     tissue="Brain_Hypothalamus", model_type=EQTL_MODEL
-# )
-
-# %%
-# spredixcan_gene_obj["ENSG00000000419"].get_prediction_weights(
-#     tissue="Brain_Substantia_nigra", model_type=EQTL_MODEL
-# )
-
-# %%
-# # testing
-# _gene_id = "ENSG00000000419"
-
-# _gene_model = _summarize_gene_models(_gene_id)
-# assert (
-#     _gene_model.loc["chr20_50862947_C_T_b38", "Brain_Hypothalamus"].round(5) == 0.43138
-# )
-# assert pd.isnull(_gene_model.loc["chr20_50957480_C_T_b38", "Brain_Hypothalamus"])
-
-# assert pd.isnull(_gene_model.loc["chr20_50862947_C_T_b38", "Brain_Substantia_nigra"])
-# assert (
-#     _gene_model.loc["chr20_50957480_C_T_b38", "Brain_Substantia_nigra"].round(5)
-#     == -0.1468
-# )
-
-# %%
-# gene_models = {}
-
-# for gene_id in spredixcan_genes_models.index:
-#     gene_models[gene_id] = _summarize_gene_models(gene_id)
-
-# %%
-# # testing
-# _gene_id = "ENSG00000000419"
-
-# _gene_model = gene_models[_gene_id]
-# assert (
-#     _gene_model.loc["chr20_50862947_C_T_b38", "Brain_Hypothalamus"].round(5) == 0.43138
-# )
-# assert pd.isnull(_gene_model.loc["chr20_50957480_C_T_b38", "Brain_Hypothalamus"])
-
-# assert pd.isnull(_gene_model.loc["chr20_50862947_C_T_b38", "Brain_Substantia_nigra"])
-# assert (
-#     _gene_model.loc["chr20_50957480_C_T_b38", "Brain_Substantia_nigra"].round(5)
-#     == -0.1468
-# )
-
-# %%
-# # save
-# import gzip
-
-# with gzip.GzipFile(OUTPUT_DIR_BASE / "gene_tissues_models.pkl.gz", "w") as f:
-#     pickle.dump(gene_models, f)
-
-# %%
-# # testing saved file
-# with gzip.GzipFile(OUTPUT_DIR_BASE / "gene_tissues_models.pkl.gz", "r") as f:
-#     _tmp = pickle.load(f)
-
-# %%
-# assert len(gene_models) == len(_tmp)
-# assert gene_models["ENSG00000000419"].equals(_tmp["ENSG00000000419"])
-
-# %% [markdown]
-# ### Count number of _unique_ SNPs predictors used and available across tissue models
-
-# %%
-# def _count_unique_snps(gene_id):
-#     """
-#     For a gene_id, it counts unique SNPs in all models and their intersection with GWAS SNPs (therefore, used by S-PrediXcan).
-#     """
-#     gene_tissues = spredixcan_genes_models.loc[gene_id, "tissue"]
-
-#     gene_unique_snps = set()
-#     for t in gene_tissues:
-#         t_snps = set(gene_models[gene_id].index)
-#         gene_unique_snps.update(t_snps)
-
-#     gene_unique_snps_in_gwas = gwas_variants_ids_set.intersection(gene_unique_snps)
-
-#     return pd.Series(
-#         {
-#             "unique_n_snps_in_model": len(gene_unique_snps),
-#             "unique_n_snps_used": len(gene_unique_snps_in_gwas),
-#         }
-#     )
-
-# %%
-# # testing
-# spredixcan_genes_models[spredixcan_genes_models["n_snps_used_sum"] == 2].head()
-
-# %%
-# # case with two snps, not repeated across tissues
-# _gene_id = "ENSG00000000419"
-# display(
-#     spredixcan_gene_obj[_gene_id].get_prediction_weights(
-#         tissue="Brain_Hypothalamus", model_type=EQTL_MODEL
-#     )
-# )
-# display(
-#     spredixcan_gene_obj[_gene_id].get_prediction_weights(
-#         tissue="Brain_Substantia_nigra", model_type=EQTL_MODEL
-#     )
-# )
-
-# %%
-# _tmp = _count_unique_snps(_gene_id)
-# assert _tmp.shape[0] == 2
-# assert _tmp["unique_n_snps_in_model"] == 2
-# assert _tmp["unique_n_snps_used"] == 2
-
-# %%
-# # get unique snps for all genes
-# spredixcan_genes_unique_n_snps = spredixcan_genes_models.groupby("gene_id").apply(
-#     lambda x: _count_unique_snps(x.name)
-# )
-
-# %%
-# spredixcan_genes_unique_n_snps.head()
-
-# %%
-# assert (
-#     spredixcan_genes_unique_n_snps["unique_n_snps_in_model"]
-#     >= spredixcan_genes_unique_n_snps["unique_n_snps_used"]
-# ).all()
-
-# %%
-# # add unique snps to spredixcan_genes_models
-# spredixcan_genes_models = spredixcan_genes_models.join(spredixcan_genes_unique_n_snps)
-
-# %%
-# spredixcan_genes_models.shape
-
-# %%
-# spredixcan_genes_models.head()
-
-# %% [markdown]
 # ### Save
 
 # %%
@@ -893,7 +605,7 @@ spredixcan_genes_models.head()
 assert spredixcan_genes_models["gene_name"].is_unique
 
 # %%
-assert not spredixcan_genes_models.isna().any(None)
+assert not spredixcan_genes_models.isna().any(axis=None)
 
 # %%
 spredixcan_genes_models.to_pickle(OUTPUT_DIR_BASE / "gene_tissues.pkl")
