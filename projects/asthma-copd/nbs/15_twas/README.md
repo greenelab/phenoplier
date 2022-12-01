@@ -11,17 +11,6 @@ This folder has the scripts to run the PrediXcan family of methods on imputed GW
 . projects/asthma-copd/scripts/env.sh
 ```
 
-## Download the necessary data
-
-```bash
-bash scripts/run_docker_dev.sh \
-  python environment/scripts/setup_data.py \
-    --actions \
-      download_setup_metaxcan \
-      download_predixcan_mashr_prediction_models \
-      download_mashr_expression_smultixcan_snp_covariance
-```
-
 
 # Run
 
