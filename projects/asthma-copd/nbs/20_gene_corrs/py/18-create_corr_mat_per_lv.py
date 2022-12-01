@@ -268,19 +268,3 @@ assert _metadata[0] == REFERENCE_PANEL
 assert _metadata[1] == EQTL_MODEL
 
 # %% tags=[]
-all_lvs_inv = {}
-lv_prev = None
-
-for gene_corr_filename, _ in gene_corrs_dict.items():
-    output_dir = get_output_dir(gene_corr_filename)
-
-    lv_data = load_df(output_dir, LV_CODE)
-    display(lv_data)
-
-    if lv_prev is not None:
-        assert lv_data.shape == lv_prev.shape
-        assert not np.allclose(lv_data, lv_prev)
-
-    lv_prev = lv_data
-
-# %% tags=[]
