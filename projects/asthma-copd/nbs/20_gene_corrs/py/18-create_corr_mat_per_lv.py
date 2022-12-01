@@ -108,11 +108,7 @@ assert (
     OUTPUT_DIR_BASE is not None and len(OUTPUT_DIR_BASE) > 0
 ), "Output directory path must be given"
 
-OUTPUT_DIR_BASE = (
-    Path(OUTPUT_DIR_BASE)
-    / "gene_corrs"
-    / COHORT_NAME
-).resolve()
+OUTPUT_DIR_BASE = (Path(OUTPUT_DIR_BASE) / "gene_corrs" / COHORT_NAME).resolve()
 
 OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 

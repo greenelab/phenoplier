@@ -93,13 +93,7 @@ assert (
     OUTPUT_DIR_BASE is not None and len(OUTPUT_DIR_BASE) > 0
 ), "Output directory path must be given"
 
-OUTPUT_DIR_BASE = (
-    Path(OUTPUT_DIR_BASE)
-    / "gene_corrs"
-    / COHORT_NAME
-    # / REFERENCE_PANEL.lower()
-    # / EQTL_MODEL.lower()
-).resolve()
+OUTPUT_DIR_BASE = (Path(OUTPUT_DIR_BASE) / "gene_corrs" / COHORT_NAME).resolve()
 
 OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 
@@ -170,7 +164,7 @@ genes_info = genes_info[genes_info["id"].isin(gene_ids)]
 genes_info.shape
 
 # %%
-assert not genes_info.isna().any(None)
+assert not genes_info.isna().any(axis=None)
 
 # %%
 genes_info.dtypes
@@ -293,7 +287,7 @@ gene_corrs = full_corr_matrix.rename(
 )
 
 # %%
-assert not gene_corrs.isna().any(None)
+assert not gene_corrs.isna().any(axis=None)
 assert not np.isinf(gene_corrs.to_numpy()).any()
 assert not np.iscomplex(gene_corrs.to_numpy()).any()
 

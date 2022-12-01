@@ -71,8 +71,9 @@ SMULTIXCAN_CONDITION_NUMBER = 30
 # specifies a single chromosome value
 CHROMOSOME = None
 
-# If True, computes the correlation between closeby genes only;
-# otherwise, it computes correlations for all genes in a chromosome
+# If True, computes the correlation between closeby genes only (see
+# entity.Gene.within_distance for more details). Otherwise, it computes
+# correlations for all genes in a chromosome
 COMPUTE_CORRELATIONS_WITHIN_DISTANCE = False
 
 # if True, then it will continue if a gene pair correlation fails,
@@ -116,7 +117,6 @@ assert CHROMOSOME is not None and (
     1 <= CHROMOSOME <= 22
 ), "You have to select one chromosome (format: number between 1 and 22)"
 
-# CHROMOSOME = str(CHROMOSOME)
 display(f"Working on chromosome {CHROMOSOME}")
 
 # %%
@@ -127,13 +127,7 @@ assert (
     OUTPUT_DIR_BASE is not None and len(OUTPUT_DIR_BASE) > 0
 ), "Output directory path must be given"
 
-OUTPUT_DIR_BASE = (
-    Path(OUTPUT_DIR_BASE)
-    / "gene_corrs"
-    / COHORT_NAME
-    # / REFERENCE_PANEL.lower()
-    # / EQTL_MODEL.lower()
-).resolve()
+OUTPUT_DIR_BASE = (Path(OUTPUT_DIR_BASE) / "gene_corrs" / COHORT_NAME).resolve()
 
 OUTPUT_DIR_BASE.mkdir(parents=True, exist_ok=True)
 
@@ -328,7 +322,7 @@ gene_corrs_df.head()
 # ## Standard checks and stats
 
 # %%
-assert not gene_corrs_df.isna().any().any()
+assert not gene_corrs_df.isna().any(axis=None)
 
 # %%
 _min_val = gene_corrs_df.min().min()
@@ -339,10 +333,6 @@ assert _min_val >= -0.05
 _max_val = gene_corrs_df.max().max()  # this captures the diagonal
 display(_max_val)
 assert _max_val <= 1.05
-
-# %%
-# check upper triangular values
-# assert len(gene_corrs) == int(genes_chr.shape[0] * (genes_chr.shape[0] - 1) / 2)
 
 # %%
 gene_corrs_flat.describe()
