@@ -155,7 +155,7 @@ class GLSPhenoplier(object):
             ~phenotype_assocs.index.duplicated()
         ].dropna()
         assert phenotype_assocs.index.is_unique
-        assert not phenotype_assocs.isna().any().any()
+        assert not phenotype_assocs.isna().any(axis=None)
 
         return phenotype_assocs
 
@@ -326,7 +326,7 @@ class GLSPhenoplier(object):
         # remove missing values from gene-trait associations
         n_genes_orig = y.shape[0]
         y = y.dropna()
-        assert not y.isin([np.inf, -np.inf]).any().any(), "y contains inf values"
+        assert not y.isin([np.inf, -np.inf]).any(axis=None), "y contains inf values"
         n_genes_without_nan = y.shape[0]
         if n_genes_orig != n_genes_without_nan:
             self.log_warning(
@@ -394,7 +394,7 @@ class GLSPhenoplier(object):
             covars = (covars - covars.mean()) / covars.std()
             data = pd.concat([data, covars], axis=1)
 
-        assert not data.isna().any(None), "Data contains NaN"
+        assert not data.isna().any(axis=None), "Data contains NaN"
 
         self.log_info(f"Final number of genes in training data: {data.shape[0]}")
 
@@ -467,7 +467,7 @@ class GLSPhenoplier(object):
                     # align data to gene names in cov_inv
                     data = data.loc[gene_names]
                     assert not data.isna().any(
-                        None
+                        axis=None
                     ), "Data has NaN after aligning with cov_inv"
                 else:
                     raise ValueError("Bad combination of arguments")
