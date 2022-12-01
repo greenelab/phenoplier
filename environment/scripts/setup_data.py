@@ -52,6 +52,18 @@ MODES_ACTIONS = {
     },
     "asthma-copd": {
         "download_plink2",
+        "download_1000g_genotype_data",
+        "download_liftover_hg19tohg38_chain",
+        "download_eur_ld_regions",
+        "download_setup_summary_gwas_imputation",
+        "download_setup_metaxcan",
+        "download_predixcan_mashr_prediction_models",
+        "download_mashr_expression_smultixcan_snp_covariance",
+        "download_gene_map_id_to_name",
+        "download_gene_map_name_to_id",
+        "download_biomart_genes_hg38",
+        "download_multiplier_model_z_pkl",
+        "download_snps_covariance_gtex_mashr",
     },
     "full": {},  # empty means all actions/methods
 }
