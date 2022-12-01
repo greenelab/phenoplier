@@ -216,7 +216,7 @@ run_job () {
   notebook_output_folder="gene_corrs/${cohort_name,,}/18-corr_mat_per_lv/lv_perc-${lv_perc}"
   full_notebook_output_folder="${CODE_RELATIVE_DIR}/${notebook_output_folder}"
   mkdir -p $full_notebook_output_folder
-    
+  
   bash nbs/run_nbs.sh \
     "${CODE_RELATIVE_DIR}/18-create_corr_mat_per_lv.ipynb" \
     ${notebook_output_folder}/18-create_corr_mat_per_lv-${lv_code}.run.ipynb \
