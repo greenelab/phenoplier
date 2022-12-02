@@ -32,17 +32,6 @@ from pathlib import Path
 PHENOPLIER_NOTEBOOK_FILEPATH = None
 PHENOPLIER_NOTEBOOK_DIR = os.getcwd()
 
-# %% tags=["injected-parameters"]
-# Parameters
-PHENOPLIER_NOTEBOOK_FILEPATH = (
-    "projects/asthma-copd/nbs/30_gls_phenoplier/01-run_gls_phenoplier.ipynb"
-)
-
-
-# %% tags=[]
-INPUT_NOTEBOOK_FILENAME = "07-compile_gwas_snps_and_twas_genes.ipynb"
-OUTPUT_NOTEBOOK_FILENAME = "07-compile_gwas_snps_and_twas_genes.run.ipynb"
-
 # %% tags=[]
 if PHENOPLIER_NOTEBOOK_FILEPATH is not None:
     PHENOPLIER_NOTEBOOK_DIR = str(Path(PHENOPLIER_NOTEBOOK_FILEPATH).parent)
