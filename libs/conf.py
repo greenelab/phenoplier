@@ -430,6 +430,9 @@ PROJECTS["ASTHMA_COPD"]["BASE_DIR"] = Path(PROJECTS_DIR, "asthma-copd").resolve(
 PROJECTS["ASTHMA_COPD"]["DATA_DIR"] = Path(
     PROJECTS["ASTHMA_COPD"]["BASE_DIR"], "data"
 ).resolve()
+PROJECTS["ASTHMA_COPD"]["TRAITS_INFO_FILE"] = Path(
+    CODE_DIR, "projects", "asthma-copd", "traits_info.csv"
+).resolve()
 PROJECTS["ASTHMA_COPD"]["RESULTS_DIR"] = Path(
     PROJECTS["ASTHMA_COPD"]["BASE_DIR"], "results"
 ).resolve()
