@@ -12,7 +12,14 @@ import pandas as pd
 from gls import GLSPhenoplier
 
 LOG_FORMAT = "[%(asctime)s] %(levelname)s: %(message)s"
-logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
+
+h1 = logging.StreamHandler(stream=sys.stdout)
+h1.setLevel(logging.INFO)
+h1.addFilter(lambda record: record.levelno <= logging.INFO)
+h2 = logging.StreamHandler()
+h2.setLevel(logging.WARNING)
+
+logging.basicConfig(format=LOG_FORMAT, level=logging.INFO, handlers=[h1, h2])
 logger = logging.getLogger("root")
 
 # List of all supported covariates
