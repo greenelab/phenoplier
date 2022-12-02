@@ -1,7 +1,8 @@
 #!/bin/bash
 set -eo pipefail
 
-# This scripts is a shortcut to run gls_cli.py, with simplified parameters.
+# This scripts is a shortcut to run gls_cli.py. It provides a simpler interface
+# with common and default parameter values.
 
 # Runs GLS PhenoPLIER
 
@@ -40,23 +41,8 @@ while [[ $# -gt 0 ]]; do
             shift # past argument
             shift # past value
             ;;
-        --debug-use-ols)
-            DEBUG_USE_OLS="$2"
-            shift # past argument
-            shift # past value
-            ;;
-        --debug-use-sub-gene-corr)
-            DEBUG_USE_SUB_CORR="$2"
-            shift # past argument
-            shift # past value
-            ;;
         --covars)
             USE_COVARS="$2"
-            shift # past argument
-            shift # past value
-            ;;
-        --cohort-name)
-            COHORT_NAME="$2"
             shift # past argument
             shift # past value
             ;;
@@ -82,8 +68,8 @@ if [ -z "${INPUT_FILE}" ]; then
     exit 1
 fi
 
-if [ -z "${DEBUG_USE_OLS}" ] && [ -z "${GENE_CORR_FILE}" ]; then
-    >&2 echo "Error, either --debug-use-ols or --gene-corr-file <value> must be provided"
+if [ -z "${GENE_CORR_FILE}" ]; then
+    >&2 echo "Error, --gene-corr-file <value> must be provided"
     exit 1
 fi
 
@@ -108,30 +94,9 @@ if ! python -c "from gls import GLSPhenoplier"; then
     exit 1
 fi
 
-GENE_CORRS_ARGS=""
-if [ ! -z "${GENE_CORR_FILE}" ]; then
-    GENE_CORRS_ARGS="--gene-corr-file ${GENE_CORR_FILE}"
-elif [ ! -z "${DEBUG_USE_OLS}" ]; then
-    GENE_CORRS_ARGS="--debug-use-ols"
-else
-    echo "Wrong arguments"
-    exit 1
-fi
-
 COVARS_ARGS=""
 if [ ! -z "${USE_COVARS}" ]; then
     COVARS_ARGS="--covars ${USE_COVARS}"
-fi
-
-COHORT_ARGS=""
-if [ ! -z "${COHORT_NAME}" ]; then
-    # FIXME: hardcoded
-    COHORT_METADATA_DIR="${PHENOPLIER_RESULTS_GLS}/gene_corrs/cohorts/${COHORT_NAME}/gtex_v8/mashr/"
-    COHORT_ARGS="--cohort-metadata-dir ${COHORT_METADATA_DIR}"
-fi
-
-if [ ! -z "${DEBUG_USE_SUB_CORR}" ]; then
-    GENE_CORRS_ARGS="${GENE_CORRS_ARGS} --debug-use-sub-gene-corr"
 fi
 
 BATCH_ARGS=""
@@ -148,8 +113,8 @@ if [ ! -z "${LV_LIST}" ]; then
 fi
 
 python ${PHENOPLIER_CODE_DIR}/libs/gls_cli.py \
-    -i ${INPUT_FILE} \
-    --duplicated-genes-action keep-first \
-    ${GENE_CORRS_ARGS} \
-    -o ${OUTPUT_FILE} ${BATCH_ARGS} ${LV_LIST_ARGS} ${COVARS_ARGS} ${COHORT_ARGS}
-
+    -i "${INPUT_FILE}" \
+    --duplicated-genes-action "keep-first" \
+    --gene-corr-file "${GENE_CORR_FILE}" \
+    --debug-use-sub-gene-corr \
+    -o "${OUTPUT_FILE}" ${BATCH_ARGS} ${LV_LIST_ARGS} ${COVARS_ARGS}
