@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eo pipefail
+set -euo pipefail
 
 # This scripts is a shortcut to run gls_cli.py. It provides a simpler interface
 # with common and default parameter values.
@@ -100,15 +100,15 @@ if [ ! -z "${USE_COVARS}" ]; then
 fi
 
 BATCH_ARGS=""
-if [ ! -z "${BATCH_ID}" ] && [ ! -z "${BATCH_N_SPLITS}" ]; then
+if [ ! -z "${BATCH_ID:-}" ] && [ ! -z "${BATCH_N_SPLITS:-}" ]; then
     BATCH_ARGS="--batch-id ${BATCH_ID} --batch-n-splits ${BATCH_N_SPLITS}"
-elif [ ! -z "${BATCH_ID}" ] || [ ! -z "${BATCH_N_SPLITS}" ]; then
+elif [ ! -z "${BATCH_ID:-}" ] || [ ! -z "${BATCH_N_SPLITS:-}" ]; then
     echo "Wrong arguments"
     exit 1
 fi
 
 LV_LIST_ARGS=""
-if [ ! -z "${LV_LIST}" ]; then
+if [ ! -z "${LV_LIST:-}" ]; then
     BATCH_ARGS="--lv-list ${LV_LIST}"
 fi
 
