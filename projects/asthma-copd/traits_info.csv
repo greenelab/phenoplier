@@ -1,0 +1,4 @@
+id,gwas_file,sample_size,n_cases
+asthma_only,GWAS_Asthma_only_GLM_SNPs_info0.7.txt,181862,19217
+copd_only,GWAS_COPD_only_GLM_SNPs_info0.7.txt,175700,13055
+aco,GWAS_ACO_GLM_SNPs_info0.7.txt,169680,7035
