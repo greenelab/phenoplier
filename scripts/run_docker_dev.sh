@@ -93,6 +93,11 @@ if [ ! -z "${PHENOPLIER_BASH_FUNCTIONS_CODE}" ]; then
   echo "Exporting functions found in environment variable PHENOPLIER_BASH_FUNCTIONS_CODE"
 fi
 
+if [ -z "${DOCKER_ARGS}" ]; then
+  # by default, use interactive mode (enables cancelling run with Ctrl C from console)
+  DOCKER_ARGS="-ti"
+fi
+
 # show commands being executed
 echo
 set -x
