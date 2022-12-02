@@ -72,7 +72,7 @@ display(PHENOPLIER_NOTEBOOK_DIR)
 #     # read trait information
 #     # the first parameter to this function is a string with values separated by
 #     # commas (,). So here I split those into different variables.
-#     IFS=',' read -r pheno_id desc file sample_size n_cases <<< "$1"
+#     IFS=',' read -r pheno_id file sample_size n_cases <<< "$1"
 #
 #     INPUT_FILENAME=${file%.*}
 #     GENE_CORR_FILE="${PHENOPLIER_PROJECTS_ASTHMA_COPD_RESULTS_DIR}/gls_phenoplier/gene_corrs/${pheno_id}/gene_corrs-symbols.per_lv"
@@ -117,7 +117,7 @@ display(PHENOPLIER_NOTEBOOK_DIR)
 # # here I read a file with information about traits (one trait per line)
 # while IFS= read -r line; do
 #     echo run_job "${line}"
-# done < <(tail -n "+2" "${PHENOPLIER_PROJECTS_ASTHMA_COPD_DATA_DIR}/traits_info.csv") |
+# done < <(tail -n "+2" "${PHENOPLIER_PROJECTS_ASTHMA_COPD_TRAITS_INFO_FILE}") |
 #     parallel -k --group --halt 2 -j${PHENOPLIER_GENERAL_N_JOBS}
 
 # %% tags=[]
