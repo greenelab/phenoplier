@@ -61,7 +61,9 @@ REFERENCE_PANEL = "GTEX_V8"
 # predictions models such as MASHR or ELASTIC_NET
 EQTL_MODEL = "MASHR"
 
-LV_CODE = None
+# A range of LVs in the format X-Y, such as 1-50 (from LV1 to LV50).
+# If None, all LVs will be processed.
+LV_RANGE = None
 
 # A number from 0.0 to 1.0 indicating the top percentile of the genes in the LV to keep.
 # A value of 0.01 would take the top 1% of the genes in the LV.
@@ -91,11 +93,6 @@ assert (
 
 EQTL_MODEL_FILES_PREFIX = conf.PHENOMEXCAN["PREDICTION_MODELS"][f"{EQTL_MODEL}_PREFIX"]
 display(f"eQTL model: {EQTL_MODEL} / {EQTL_MODEL_FILES_PREFIX}")
-
-# %% tags=[]
-assert LV_CODE is not None and len(LV_CODE) > 0, "An LV code must be given"
-
-display(f"LV code: {LV_CODE}")
 
 # %% tags=[]
 if LV_PERCENTILE is not None:
@@ -221,9 +218,25 @@ def compute_chol_inv(lv_codes):
 
 
 # %% tags=[]
-# divide LVs in chunks for parallel processing
-# lvs_chunks = list(chunker(list(multiplier_z.columns), 50))
-lvs_chunks = [[LV_CODE]]
+if LV_RANGE is None:
+    # divide LVs in chunks for parallel processing
+    display("LV_RANGE was not given")
+
+    lvs_chunks = list(chunker(list(multiplier_z.columns), 50))
+else:
+    display("LV_RANGE was given")
+
+    assert "-" in LV_RANGE, "LV_RANGE has no '-'"
+    lv_min, lv_max = LV_RANGE.split("-")
+    lv_min, lv_max = int(lv_min), int(lv_max)
+    assert lv_min <= lv_max, "LV_RANGE is incorrect"
+
+    # create a single chunk in this case
+    lvs_chunks = [[f"LV{i}" for i in range(lv_min, lv_max + 1)]]
+
+# %%
+display(f"# of chunks: {len(lvs_chunks)}")
+display(f"# of LVs in each chunk: {len(lvs_chunks[0])}")
 
 # %% tags=[]
 with ProcessPoolExecutor(max_workers=N_JOBS) as executor, tqdm(
