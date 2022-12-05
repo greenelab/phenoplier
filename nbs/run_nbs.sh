@@ -9,8 +9,6 @@ fi
 
 # This script runs a Jupyter notebook (.ipynb) from the command line using
 # papermill.
-#
-# This script must be run within the nbs/ folder.
 
 if [ -z "${1}" ]; then
     echo "Specify notebook to run"
