@@ -15,34 +15,6 @@ It uses a standard pipeline for this task: https://github.com/hakyimlab/summary-
 
 # Run
 
-## Harmonization
-
-```bash
-run_job () {
-  IFS=',' read -r id desc file sample_size n_cases <<< "$1"
-  
-  export CODE_DIR=${PHENOPLIER_CODE_DIR}/projects/asthma-copd/nbs/10_gwas_harmonization
-  
-  export GWAS_DIR=${PHENOPLIER_PROJECTS_ASTHMA_COPD_DATA_DIR}/gwas
-  export OUTPUT_DIR=${PHENOPLIER_PROJECTS_ASTHMA_COPD_RESULTS_DIR}/harmonized_gwas
-  export LIFTOVER_CHAIN_FILE_PATH=${PHENOPLIER_GENERAL_LIFTOVER_HG19_TO_HG38}
-  
-  bash ${CODE_DIR}/01_harmonize.sh \
-    --input-gwas-file ${GWAS_DIR}/${file} \
-    --samples-n-cases ${n_cases} \
-    --liftover-chain-file ${LIFTOVER_CHAIN_FILE_PATH} \
-    --output-dir ${OUTPUT_DIR}
-}
-
-export -f run_job
-
-# (optional) export function definition so it's included in the Docker container
-export PHENOPLIER_BASH_FUNCTIONS_CODE="$(declare -f run_job)"
-
-bash scripts/run_docker_dev.sh \
-  'parallel -k --lb --halt 2 --skip-first-line -j${PHENOPLIER_GENERAL_N_JOBS} run_job < ${PHENOPLIER_PROJECTS_ASTHMA_COPD_DATA_DIR}/traits_info.csv'
-```
-
 ## Imputation
 
 ```bash
