@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
 
 # Runs the harmonization step of the pipeline here: https://github.com/hakyimlab/summary-gwas-imputation
 
