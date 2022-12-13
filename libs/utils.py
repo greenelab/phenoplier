@@ -173,3 +173,23 @@ def remove_all_file_extensions(filepath: Path, extensions: list = None):
         filepath = filepath.with_suffix("")
 
     return filepath
+
+
+def read_log_file_and_check_line_exists(log_file, expected_lines: list):
+    """
+    Reads a log file and checks whether at least one line in the log file starts with all the expected lines given.
+
+    Args:
+        log_file: path to the log file.
+        expected_lines: list of lines to check. It will be checked whether any line in the log file starts with
+            any of the lines in this list.
+    """
+    with open(log_file, "r") as f:
+        lines = f.readlines()
+
+    def _line_exists(line):
+        return any([l.startswith(line) for l in lines])
+
+    for expected_l in expected_lines:
+        if not _line_exists(expected_l):
+            raise ValueError(f"Line '{expected_l}' not found in {log_file}")
