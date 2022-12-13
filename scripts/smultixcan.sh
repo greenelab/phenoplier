@@ -1,7 +1,7 @@
 #!/bin/bash
-# +
+set -euo pipefail
+IFS=$'\n\t'
 
-# -
 # Runs S-MultiXcan.
 
 # read arguments
