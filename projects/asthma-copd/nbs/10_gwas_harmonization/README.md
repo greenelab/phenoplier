@@ -70,34 +70,3 @@ bash scripts/run_docker_dev.sh \
   done
 done < <(tail -n "+2" ${PHENOPLIER_PROJECTS_ASTHMA_COPD_DATA_DIR}/traits_info.csv) | parallel -k --lb --halt 2 -j${PHENOPLIER_GENERAL_N_JOBS}'
 ```
-
-
-## Post-processing
-
-```bash
-run_job () {
-  IFS=',' read -r id desc file sample_size n_cases <<< "$1"
-  
-  export CODE_DIR=${PHENOPLIER_CODE_DIR}/projects/asthma-copd/nbs/10_gwas_harmonization
-  
-  export GWAS_DIR=${PHENOPLIER_PROJECTS_ASTHMA_COPD_RESULTS_DIR}/harmonized_gwas
-  export INPUT_FILENAME=${file%.*}-harmonized.txt
-  export IMPUTED_GWAS_DIR=${PHENOPLIER_PROJECTS_ASTHMA_COPD_RESULTS_DIR}/imputed_gwas
-  export INPUTED_GWAS_FILE_PATTERN="${file%.*}-harmonized"
-  export OUTPUT_DIR=${PHENOPLIER_PROJECTS_ASTHMA_COPD_RESULTS_DIR}/final_imputed_gwas
-  
-  bash ${CODE_DIR}/10_postprocess.sh \
-    --input-gwas-file ${GWAS_DIR}/${INPUT_FILENAME} \
-    --imputed-gwas-folder ${IMPUTED_GWAS_DIR} \
-    --phenotype-name ${INPUTED_GWAS_FILE_PATTERN} \
-    --output-dir ${OUTPUT_DIR}
-}
-
-export -f run_job
-
-# (optional) export function definition so it's included in the Docker container
-export PHENOPLIER_BASH_FUNCTIONS_CODE="$(declare -f run_job)"
-
-bash scripts/run_docker_dev.sh \
-  'parallel -k --lb --halt 2 --skip-first-line -j${PHENOPLIER_GENERAL_N_JOBS} run_job < ${PHENOPLIER_PROJECTS_ASTHMA_COPD_DATA_DIR}/traits_info.csv'
-```

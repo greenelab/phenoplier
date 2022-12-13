@@ -1,7 +1,7 @@
 #!/bin/bash
-# +
+set -euo pipefail
+IFS=$'\n\t'
 
-# -
 # Runs the post-processing step of the pipeline here: https://github.com/hakyimlab/summary-gwas-imputation
 
 # read arguments
