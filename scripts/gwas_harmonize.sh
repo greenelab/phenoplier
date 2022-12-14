@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-IFS=$'\n\t'
+# IFS=$'\n\t'
 
 # Runs the harmonization step of the pipeline here: https://github.com/hakyimlab/summary-gwas-imputation
 
@@ -93,8 +93,9 @@ fi
 mkdir -p ${OUTPUT_DIR}
 
 INPUT_GWAS_FILENAME=$(basename ${INPUT_GWAS_FILE})
-OUTPUT_FILENAME=${INPUT_GWAS_FILENAME%.*}
+OUTPUT_FILENAME_BASE="${INPUT_GWAS_FILENAME%.*}-harmonized"
 
+set -x
 ${PYTHON_EXECUTABLE} ${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}/src/gwas_parsing.py \
     -gwas_file ${INPUT_GWAS_FILE} \
     -separator $'\t' \
@@ -111,5 +112,6 @@ ${PYTHON_EXECUTABLE} ${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}/src/gwas_parsing.py 
     -output_column_map OBS_CT sample_size \
     --insert_value n_cases ${SAMPLES_N_CASES} \
     -output_order variant_id panel_variant_id chromosome position effect_allele non_effect_allele frequency pvalue zscore effect_size standard_error sample_size n_cases \
-    ${LIFTOVER_ARG} -output ${OUTPUT_DIR}/${OUTPUT_FILENAME}-harmonized.txt
-
+    ${LIFTOVER_ARG} -output "${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.txt" \
+>"${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.log" 2>&1
+set +x
