@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+# IFS=$'\n\t'
 
 # Runs the imputation step of the pipeline here: https://github.com/hakyimlab/summary-gwas-imputation
 
@@ -102,8 +104,9 @@ fi
 mkdir -p ${OUTPUT_DIR}
 
 INPUT_GWAS_FILENAME=$(basename ${INPUT_GWAS_FILE})
-OUTPUT_FILENAME_PREFIX=${INPUT_GWAS_FILENAME%.*}-imputed
+OUTPUT_FILENAME_BASE="${INPUT_GWAS_FILENAME%.*}-imputed-chr${CHROMOSOME}-batch${BATCH_ID}_${N_BATCHES}"
 
+set -x
 ${PYTHON_EXECUTABLE} ${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}/src/gwas_summary_imputation.py \
     -by_region_file ${PHENOPLIER_GENERAL_EUR_LD_REGIONS_FILE} \
     -gwas_file ${INPUT_GWAS_FILE} \
@@ -117,5 +120,6 @@ ${PYTHON_EXECUTABLE} ${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}/src/gwas_summary_imp
     -sub_batches ${N_BATCHES} \
     -sub_batch ${BATCH_ID} \
     --standardise_dosages \
-    -output ${OUTPUT_DIR}/${OUTPUT_FILENAME_PREFIX}-chr${CHROMOSOME}-batch${BATCH_ID}_${N_BATCHES}.txt
-
+    -output "${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.txt" \
+>"${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.log" 2>&1
+set +x
