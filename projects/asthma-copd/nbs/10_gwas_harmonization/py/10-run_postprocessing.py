@@ -107,10 +107,6 @@ display(OUTPUT_DIR_STR)
 #
 #     mkdir -p "${OUTPUT_DIR}"
 #
-#     OUTPUT_FILENAME_BASE="${INPUT_FILENAME}-harmonized-imputed"
-#
-#     LOG_FILE="${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.log"
-#
 #     # make sure we are not also parallelizing within numpy, etc
 #     export NUMBA_NUM_THREADS=1
 #     export MKL_NUM_THREADS=1
@@ -121,14 +117,23 @@ display(OUTPUT_DIR_STR)
 #     echo "Running for $pheno_id"
 #     echo "Saving results in ${OUTPUT_DIR}"
 #
-#     bash "${PHENOPLIER_CODE_DIR}/scripts/postprocess.sh" \
+#     bash "${PHENOPLIER_CODE_DIR}/scripts/gwas_postprocess.sh" \
 #         --input-gwas-file "${INPUT_GWAS_FILEPATH}" \
 #         --imputed-gwas-folder "${IMPUTED_GWAS_DIR}" \
 #         --phenotype-name "${INPUTED_GWAS_FILE_PATTERN}" \
-#         --output-dir "${OUTPUT_DIR}" \
-#     >"${LOG_FILE}" 2>&1
+#         --output-dir "${OUTPUT_DIR}"
 #
 #     # print errors here in the notebook
+#     # first, look for the log file for this trait
+#     pattern="${OUTPUT_DIR}/${INPUT_FILENAME}*.log"
+#
+#     N_LOG_FILES=$(ls ${pattern} | wc -l)
+#     if [ "${N_LOG_FILES}" != "1" ]; then
+#         echo "ERROR: found ${N_LOG_FILES} log files instead of one"
+#         exit 1
+#     fi
+#     LOG_FILE=$(ls ${pattern})
+#
 #     cat "${LOG_FILE}" | grep -iE "warning|error"
 #
 #     echo
