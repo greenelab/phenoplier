@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+# IFS=$'\n\t'
 
 # This scripts is a shortcut to run gls_cli.py. It provides a simpler interface
 # with common and default parameter values.

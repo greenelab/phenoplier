@@ -192,7 +192,6 @@ dfs.memory_usage()
 
 # %% tags=[]
 dfs["phenotype"] = dfs["phenotype"].astype("category")
-# dfs["phenotype_desc"] = dfs["phenotype_desc"].astype("category")
 dfs["lv"] = dfs["lv"].astype("category")
 
 # %% tags=[]
@@ -204,11 +203,24 @@ dfs.memory_usage()
 # %% [markdown] tags=[]
 # # Save
 
+# %% [markdown] tags=[]
+# ## Pickle
+
 # %% tags=[]
 output_file = OUTPUT_DIR / "gls-summary.pkl.gz"
 display(output_file)
 
 # %% tags=[]
 dfs.to_pickle(output_file)
+
+# %% [markdown] tags=[]
+# ## Text
+
+# %% tags=[]
+output_file = OUTPUT_DIR / "gls-summary.tsv.gz"
+display(output_file)
+
+# %% tags=[]
+dfs.to_csv(output_file, sep="\t", index=False)
 
 # %% tags=[]

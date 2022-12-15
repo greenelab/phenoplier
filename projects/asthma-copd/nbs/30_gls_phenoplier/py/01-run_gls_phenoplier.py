@@ -97,7 +97,7 @@ display(PHENOPLIER_NOTEBOOK_DIR)
 #     echo "Running for $pheno_id"
 #     echo "Saving results in ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.tsv.gz"
 #
-#     bash "${PHENOPLIER_CODE_DIR}/scripts/gls_phenoplier.sh" \
+#     bash "${PHENOPLIER_CODE_DIR}/scripts/phenoplier_gls.sh" \
 #         --input-file "${SMULTIXCAN_FILE}" \
 #         --gene-corr-file "${GENE_CORR_FILE}" \
 #         --covars "gene_size gene_size_log gene_density gene_density_log" \
