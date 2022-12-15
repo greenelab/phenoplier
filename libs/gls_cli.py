@@ -11,7 +11,7 @@ import pandas as pd
 
 from gls import GLSPhenoplier
 
-LOG_FORMAT = "[%(asctime)s] %(levelname)s: %(message)s"
+LOG_FORMAT = "%(levelname)s: %(message)s"
 
 h1 = logging.StreamHandler(stream=sys.stdout)
 h1.setLevel(logging.INFO)
