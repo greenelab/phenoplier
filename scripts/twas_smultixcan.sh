@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-IFS=$'\n\t'
+# IFS=$'\n\t'
 
 # Runs S-MultiXcan.
 
@@ -89,8 +89,10 @@ fi
 
 # Create output directory
 mkdir -p ${OUTPUT_DIR}
+
 OUTPUT_FILENAME_BASE="${PHENOTYPE_NAME}-gtex_v8-mashr-smultixcan"
 
+set -x
 ${PYTHON_EXECUTABLE} ${PHENOPLIER_METAXCAN_BASE_DIR}/software/SMulTiXcan.py \
     --models_folder ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR} \
     --models_name_pattern "${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_PREFIX}(.*).db" \
@@ -108,4 +110,6 @@ ${PYTHON_EXECUTABLE} ${PHENOPLIER_METAXCAN_BASE_DIR}/software/SMulTiXcan.py \
     --cutoff_condition_number 30 \
     --verbosity 7 \
     --throw \
-    --output ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.txt 2>&1 | tee ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.log
+    --output ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.txt \
+>"${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.log" 2>&1
+set +x
