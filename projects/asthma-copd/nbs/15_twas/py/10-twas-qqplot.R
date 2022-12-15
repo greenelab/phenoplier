@@ -13,6 +13,11 @@
 #     name: ir
 # ---
 
+# %% tags=["injected-parameters"]
+# Parameters
+PHENOPLIER_NOTEBOOK_FILEPATH <- "projects/asthma-copd/nbs/15_twas/10-twas-qqplot.ipynb"
+
+
 # %% [markdown] tags=[]
 # # Description
 
