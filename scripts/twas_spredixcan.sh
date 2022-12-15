@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-IFS=$'\n\t'
+# IFS=$'\n\t'
 
 # Runs S-PrediXcan.
 
@@ -89,8 +89,10 @@ fi
 
 # Create output directory
 mkdir -p ${OUTPUT_DIR}
+
 OUTPUT_FILENAME_BASE="${PHENOTYPE_NAME}-gtex_v8-mashr-${TISSUE}"
 
+set -x
 ${PYTHON_EXECUTABLE} ${PHENOPLIER_METAXCAN_BASE_DIR}/software/SPrediXcan.py \
     --model_db_path ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR}/${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_PREFIX}${TISSUE}.db \
     --covariance ${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR}/${PHENOPLIER_PHENOMEXCAN_PREDICTION_MODELS_MASHR_PREFIX}${TISSUE}.txt.gz \
@@ -102,8 +104,9 @@ ${PYTHON_EXECUTABLE} ${PHENOPLIER_METAXCAN_BASE_DIR}/software/SPrediXcan.py \
     --zscore_column "zscore" \
     --keep_non_rsid --additional_output --model_db_snp_key varID \
     --throw \
-    --output_file ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.csv 2>&1 | tee ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.log
-
+    --output_file ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.csv \
+>"${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.log" 2>&1
+set +x
 
 # In case a GWAS is splitted across several files, these commands can replace the --gwas_file parameter:
 # --gwas_folder ${INPUT_GWAS_DIR} \
