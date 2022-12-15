@@ -16,7 +16,7 @@ PROJECT_NAME="asthma-copd"
 BASE_DIR=/home/miltondp/projects/phenoplier/projects/${PROJECT_NAME}
 
 # Number of CPUs to use
-export PHENOPLIER_N_JOBS=10
+export PHENOPLIER_N_JOBS=20
 
 # Docker image tag to use
 DOCKER_IMAGE_TAG="asthma-copd"
