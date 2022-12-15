@@ -207,6 +207,9 @@ qq(
 # %% tags=[]
 gwas_title <- "ACOS (imputed)"
 
+# %% [markdown] tags=[]
+# ## Load data
+
 # %% tags=[]
 gwas <- as.data.frame(read_table(file.path(INPUT_GWAS_DIR, "GWAS_ACO_GLM_SNPs_info0.7-harmonized-imputed.txt.gz")))
 
