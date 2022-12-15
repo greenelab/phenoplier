@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-IFS=$'\n\t'
+# IFS=$'\n\t'
 
 # Runs the post-processing step of the pipeline here: https://github.com/hakyimlab/summary-gwas-imputation
 
@@ -96,7 +96,7 @@ if [[ ! "${INPUT_GWAS_FILENAME}" == *"${PHENOTYPE_NAME}"* ]]; then
 fi
 
 # make sure the number of files with imputed variants is 22 * 10 = 220
-N_FILES_IMP_VARIANTS=`ls -dq ${IMPUTED_GWAS_FOLDER}/${PHENOTYPE_NAME}* | wc -l`
+N_FILES_IMP_VARIANTS=`ls -dq ${IMPUTED_GWAS_FOLDER}/${PHENOTYPE_NAME}*.txt | wc -l`
 if [ "${N_FILES_IMP_VARIANTS}" -ne "220" ]; then
   >&2 echo "Number of expected files with imputed variants (220) does not match expected value (${N_FILES_IMP_VARIANTS}). Check your phenotype name."
   exit 1
@@ -105,11 +105,14 @@ fi
 # Create output directory
 mkdir -p ${OUTPUT_DIR}
 
-# +
+OUTPUT_FILENAME_BASE="${PHENOTYPE_NAME}-imputed"
+
+set -x
 ${PYTHON_EXECUTABLE} ${PHENOPLIER_GWAS_IMPUTATION_BASE_DIR}/src/gwas_summary_imputation_postprocess.py \
     -gwas_file ${INPUT_GWAS_FILE} \
     -folder ${IMPUTED_GWAS_FOLDER} \
-    -pattern ${PHENOTYPE_NAME}.* \
+    -pattern "${PHENOTYPE_NAME}.*\.txt" \
     -parsimony 7 \
-    -output ${OUTPUT_DIR}/${PHENOTYPE_NAME}-imputed.txt.gz
-
+    -output "${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.txt.gz" \
+>"${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.log" 2>&1
+set +x
