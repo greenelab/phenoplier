@@ -79,12 +79,12 @@ display(PHENOPLIER_NOTEBOOK_DIR)
 #     # here I make sure that there are no other files in the folder that
 #     # match this phenotype/trait filename prefix
 #     GWAS_DIR="${PHENOPLIER_PROJECTS_ASTHMA_COPD_RESULTS_DIR}/final_imputed_gwas"
-#     N_GWAS_FILES=$(ls ${GWAS_DIR}/${INPUT_FILENAME}* | wc -l)
+#     N_GWAS_FILES=$(ls ${GWAS_DIR}/${INPUT_FILENAME}*.txt.gz | wc -l)
 #     if [ "${N_GWAS_FILES}" != "1" ]; then
 #         echo "ERROR: found ${N_GWAS_FILES} GWAS files instead of one"
 #         exit 1
 #     fi
-#     INPUT_GWAS_FILEPATH=$(ls ${GWAS_DIR}/${INPUT_FILENAME}*)
+#     INPUT_GWAS_FILEPATH=$(ls ${GWAS_DIR}/${INPUT_FILENAME}*.txt.gz)
 #
 #     SPREDIXCAN_DIR=${PHENOPLIER_PROJECTS_ASTHMA_COPD_RESULTS_DIR}/twas/spredixcan
 #     SPREDIXCAN_FILE_PATTERN="${INPUT_FILENAME}-gtex_v8-mashr-{tissue}.csv"
