@@ -17,9 +17,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# **TODO: UPDATE**
-#
-# It read all gene-gene correlation matrices across chromosomes, performs some tests and saves a final, singla gene-gene correlation matrix.
+# Runs S-MultiXcan on a set of traits.
 
 # %% [markdown] tags=[]
 # # Modules
@@ -109,14 +107,13 @@ display(OUTPUT_DIR_STR)
 #     # here I make sure that there are no other files in the folder that
 #     # match this phenotype/trait filename prefix
 #     GWAS_DIR="${PHENOPLIER_PROJECTS_ASTHMA_COPD_RESULTS_DIR}/final_imputed_gwas"
-#     N_GWAS_FILES=$(ls ${GWAS_DIR}/${INPUT_FILENAME}* | wc -l)
+#     N_GWAS_FILES=$(ls ${GWAS_DIR}/${INPUT_FILENAME}*.txt.gz | wc -l)
 #     if [ "${N_GWAS_FILES}" != "1" ]; then
 #         echo "ERROR: found ${N_GWAS_FILES} GWAS files instead of one"
 #         exit 1
 #     fi
-#     INPUT_GWAS_FILEPATH=$(ls ${GWAS_DIR}/${INPUT_FILENAME}*)
+#     INPUT_GWAS_FILEPATH=$(ls ${GWAS_DIR}/${INPUT_FILENAME}*.txt.gz)
 #
-#     # OUTPUT_DIR="${PHENOPLIER_PROJECTS_ASTHMA_COPD_RESULTS_DIR}/twas/spredixcan"
 #     mkdir -p "${OUTPUT_DIR}"
 #
 #     # make sure we are not also parallelizing within numpy, etc
@@ -129,12 +126,24 @@ display(OUTPUT_DIR_STR)
 #     echo "Running for $pheno_id"
 #     echo "Saving results in ${OUTPUT_DIR}"
 #
-#     bash "${PHENOPLIER_CODE_DIR}/scripts/smultixcan.sh" \
+#     bash "${PHENOPLIER_CODE_DIR}/scripts/twas_smultixcan.sh" \
 #         --input-gwas-file "${INPUT_GWAS_FILEPATH}" \
 #         --spredixcan-folder "${SPREDIXCAN_DIR}" \
 #         --phenotype-name "${INPUT_FILENAME}" \
-#         --output-dir "${OUTPUT_DIR}" \
-#     | grep -iE "warning|error"
+#         --output-dir "${OUTPUT_DIR}"
+#
+#     # print errors here in the notebook
+#     # first, look for the log file for this trait
+#     pattern="${OUTPUT_DIR}/${INPUT_FILENAME}*-gtex_v8-mashr-smultixcan*.log"
+#
+#     N_LOG_FILES=$(ls ${pattern} | wc -l)
+#     if [ "${N_LOG_FILES}" != "1" ]; then
+#         echo "ERROR: found ${N_LOG_FILES} log files instead of one"
+#         exit 1
+#     fi
+#     LOG_FILE=$(ls ${pattern})
+#
+#     cat "${LOG_FILE}" | grep -iE "warning|error"
 #
 #     echo
 # }
@@ -147,7 +156,7 @@ display(OUTPUT_DIR_STR)
 # while IFS= read -r line; do
 #     echo run_job "${line}"
 # done < <(tail -n "+2" "${PHENOPLIER_PROJECTS_ASTHMA_COPD_TRAITS_INFO_FILE}") |
-#     parallel -k --group --halt 2 -j${PHENOPLIER_GENERAL_N_JOBS}
+#     parallel -k --lb --halt 2 -j${PHENOPLIER_GENERAL_N_JOBS}
 
 # %% [markdown] tags=[]
 # # Perform some checks in output and log files
