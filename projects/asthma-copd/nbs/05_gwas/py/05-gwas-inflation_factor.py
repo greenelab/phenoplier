@@ -17,7 +17,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# It runs PLINK2 on GWAS results to check that the genomic inflation factor is withint acceptable limits.
+# It runs PLINK2 on GWAS files to check that the genomic inflation factor is withint acceptable limits (around `1.0`).
 
 # %% [markdown] tags=[]
 # # Modules
