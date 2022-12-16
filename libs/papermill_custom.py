@@ -57,6 +57,14 @@ def get_parameters(parameters):
 def run_papermill(input_notebook, output_notebook, parameters):
     logging.basicConfig(level="INFO", format="%(message)s")
 
+    notebook_parameters = {
+        "PHENOPLIER_NOTEBOOK_FILEPATH": input_notebook,
+    }
+
+    parsed_parameters = get_parameters(parameters)
+    if parsed_parameters is not None:
+        notebook_parameters.update(parsed_parameters)
+
     pm.execute_notebook(
         input_notebook,
         output_notebook,
@@ -65,6 +73,6 @@ def run_papermill(input_notebook, output_notebook, parameters):
         stdout_file=sys.stdout,
         stderr_file=sys.stderr,
         request_save_on_cell_execute=True,
-        parameters=get_parameters(parameters),
+        parameters=notebook_parameters,
         kernel_manager_class="papermill_custom.IPCKernelManager",
     )
