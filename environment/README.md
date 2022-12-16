@@ -10,7 +10,7 @@ For that, you basically have two options: 1) create a local conda environment in
 
 Keep in mind that the conda environment specification for PhenoPLIER changes over time as new analyzes are performed.
 Therefore, **if you want to reproduce the analyses of the [PhenoPLIER manuscript](https://greenelab.github.io/phenoplier_manuscript/)**, you need to check out the latest [`v1.x.x` version](https://github.com/greenelab/phenoplier/releases).
-If you are using Docker, then use the tag `latest` when pulling the image (such as `docker pull miltondp/phenoplier`).
+If you are using Docker, then use the tag `latest` when referencing the image or do not specify it (`latest` is assumed by default, such as `docker pull miltondp/phenoplier`).
 
 ## Steps to prepare environment
 
