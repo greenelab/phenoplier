@@ -17,7 +17,7 @@
 # # Description
 
 # %% [markdown] tags=[]
-# It takes a GWAS on a random phenotype and verifies that the Manhattan and QQ-plots look fine (without inflation).
+# It reads GWAS files and verifies that the Manhattan and QQ-plots look fine (without inflation).
 
 # %% [markdown] tags=[]
 # # Modules
