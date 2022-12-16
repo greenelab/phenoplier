@@ -409,14 +409,6 @@ class Trait(object, metaclass=ABCMeta):
 class UKBiobankTrait(Trait):
     """Trait subclass representing traits from the UK Biobank"""
 
-    RAPID_GWAS_PHENO_INFO = read_data(conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"])
-    RAPID_GWAS_DATA_DICT = read_data(conf.PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"])
-
-    UK_BIOBANK_CODINGS = {
-        3: read_data(conf.UK_BIOBANK["CODING_3_FILE"]),
-        6: read_data(conf.UK_BIOBANK["CODING_6_FILE"]),
-    }
-
     MAIN_ICD10_CODE = 41202
 
     CODE_STARTSWITH_CATEGORIES_MAP = {
@@ -430,6 +422,21 @@ class UKBiobankTrait(Trait):
         ("6152_9",): "Diseases (allergies)",
     }
 
+    @classmethod
+    @lru_cache(maxsize=None)
+    def read_rapid_gwas_pheno_info(cls):
+        return read_data(conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"])
+
+    @classmethod
+    @lru_cache(maxsize=None)
+    def read_rapid_gwas_data_dict(cls):
+        return read_data(conf.PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"])
+
+    @classmethod
+    @lru_cache(maxsize=None)
+    def read_uk_biobank_codings(cls, coding_number):
+        return read_data(conf.UK_BIOBANK[f"CODING_{coding_number}_FILE"])
+
     def _get_selfreported_parent_category(self):
         """Return the top parent category for a given trait and coding number.
 
@@ -441,9 +448,11 @@ class UKBiobankTrait(Trait):
         primary_code = self.get_fieldid()
         subcode = float(self.code.split("_")[1])
 
-        coding_number = int(self.RAPID_GWAS_DATA_DICT.loc[primary_code, "Coding"])
+        coding_number = int(
+            UKBiobankTrait.read_rapid_gwas_data_dict().loc[primary_code, "Coding"]
+        )
 
-        ukb_coding = self.UK_BIOBANK_CODINGS[coding_number]
+        ukb_coding = UKBiobankTrait.read_uk_biobank_codings(coding_number)
 
         parent = ukb_coding[ukb_coding["coding"] == subcode].iloc[0]
 
@@ -480,7 +489,7 @@ class UKBiobankTrait(Trait):
 
         field_id = self.get_fieldid()
         assert field_id is not None, self.code
-        field_path = self.RAPID_GWAS_DATA_DICT.loc[field_id]["Path"]
+        field_path = UKBiobankTrait.read_rapid_gwas_data_dict().loc[field_id]["Path"]
         return field_path.split(" > ")[-1]
 
     @staticmethod
@@ -488,13 +497,16 @@ class UKBiobankTrait(Trait):
         if code is None:
             code = Trait.get_code_from_full_code(full_code)
 
-        return code in UKBiobankTrait.RAPID_GWAS_PHENO_INFO.index
+        return code in UKBiobankTrait.read_rapid_gwas_pheno_info().index
 
     def get_fieldid(self):
         """Returns the field id of the Trait."""
         if "_" in self.code:
             code = self.code.split("_")[0]
-            if code.isdigit() and int(code) in self.RAPID_GWAS_DATA_DICT.index:
+            if (
+                code.isdigit()
+                and int(code) in UKBiobankTrait.read_rapid_gwas_data_dict().index
+            ):
                 return int(code)
         elif self.code.isdigit():
             return int(self.code)
@@ -505,7 +517,7 @@ class UKBiobankTrait(Trait):
         if not self.is_phenotype_from_study(self.code):
             raise ValueError(f"Invalid UK Biobank phenotype code: {self.code}")
 
-        self.pheno_data = UKBiobankTrait.RAPID_GWAS_PHENO_INFO.loc[self.code]
+        self.pheno_data = UKBiobankTrait.read_rapid_gwas_pheno_info().loc[self.code]
 
         self.description = self.pheno_data["description"]
         self.type = self.pheno_data["variable_type"]
@@ -519,7 +531,10 @@ class UKBiobankTrait(Trait):
 class GTEXGWASTrait(Trait):
     """Trait subclass representing traits from the GTEX GWAS"""
 
-    GTEX_GWAS_PHENO_INFO = read_data(conf.PHENOMEXCAN["GTEX_GWAS_PHENO_INFO_FILE"])
+    @classmethod
+    @lru_cache(maxsize=None)
+    def read_gtex_gwas_pheno_info(cls):
+        return read_data(conf.PHENOMEXCAN["GTEX_GWAS_PHENO_INFO_FILE"])
 
     @property
     def category(self):
@@ -530,13 +545,13 @@ class GTEXGWASTrait(Trait):
         if code is None:
             code = Trait.get_code_from_full_code(full_code)
 
-        return code in GTEXGWASTrait.GTEX_GWAS_PHENO_INFO.index
+        return code in GTEXGWASTrait.read_gtex_gwas_pheno_info().index
 
     def init_metadata(self):
         if not self.is_phenotype_from_study(self.code):
             raise ValueError(f"Invalid GWAS GWAS phenotype code: {self.code}")
 
-        self.pheno_data = GTEXGWASTrait.GTEX_GWAS_PHENO_INFO.loc[self.code]
+        self.pheno_data = GTEXGWASTrait.read_gtex_gwas_pheno_info().loc[self.code]
 
         self.description = self.pheno_data["new_Phenotype"].replace("_", " ")
         if self.pheno_data["Binary"] == 1:
