@@ -18,13 +18,11 @@
 # # Description
 
 # %% [markdown] tags=[]
-# (Please, take a look at the README.md file in this directory for instructions on how to run this notebook)
-#
 # It computes an LV-specific correlation matrix by using the top genes in that LV only.
 #
 # It has specicfic parameters for papermill (see under `Settings` below).
 #
-# This notebook is not directly run. See README.md.
+# This notebook should not be directly run. It is used by other notebooks.
 
 # %% [markdown] tags=[]
 # # Modules
