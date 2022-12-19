@@ -182,9 +182,6 @@ with pd.option_context("display.max_columns", None, "display.max_colwidth", None
 # # Optimize data types
 
 # %% tags=[]
-dfs.head()
-
-# %% tags=[]
 dfs.dtypes
 
 # %% tags=[]
@@ -193,6 +190,9 @@ dfs.memory_usage()
 # %% tags=[]
 dfs["phenotype"] = dfs["phenotype"].astype("category")
 dfs["lv"] = dfs["lv"].astype("category")
+
+# %% tags=[]
+dfs.dtypes
 
 # %% tags=[]
 dfs.head()
