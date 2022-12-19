@@ -18,14 +18,11 @@
 # # Description
 
 # %% [markdown] tags=[]
-# (Please, take a look at the README.md file in this directory for instructions on how to run this notebook)
-#
 # This notebook computes predicted expression correlations between all genes in the MultiPLIER models.
 #
 # It has specicfic parameters for papermill (see under `Settings` below).
-# It can be configured to run on a single chromosome to run in parallel.
 #
-# This notebook is not directly run. See README.md.
+# This notebook should not be directly run. It is used by other notebooks.
 
 # %% [markdown] tags=[]
 # # Modules
