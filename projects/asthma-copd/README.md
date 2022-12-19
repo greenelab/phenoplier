@@ -59,7 +59,8 @@ bash projects/asthma-copd/scripts/create_docker_image.sh
 ### Download data/software
 
 ```bash
-bash scripts/run_docker_dev.sh python environment/scripts/setup_data.py --mode asthma-copd
+bash scripts/run_docker_dev.sh \
+  python environment/scripts/setup_data.py --mode asthma-copd
 ```
 
 ### Start JupyterLab server
@@ -72,5 +73,6 @@ bash scripts/run_docker_dev.sh
 ### Run notebook from command-line
 
 ```bash
-bash scripts/run_docker_dev.sh bash nbs/run_nbs.sh projects/asthma-copd/nbs/05_gwas/05-gwas-inflation_factor.ipynb
+bash scripts/run_docker_dev.sh \
+  bash nbs/run_nbs.sh projects/asthma-copd/nbs/05_gwas/05-gwas-inflation_factor.ipynb
 ```
