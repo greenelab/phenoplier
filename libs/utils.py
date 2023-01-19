@@ -175,9 +175,7 @@ def remove_all_file_extensions(filepath: Path, extensions: list = None):
     return filepath
 
 
-def read_log_file_and_check_line_exists(
-    log_file: str, expected_prefixes: list
-):
+def read_log_file_and_check_line_exists(log_file: str, expected_prefixes: list):
     """
     Reads a log file and checks whether at least one line in the log file starts with all the expected lines prefixes
     (strings) given.
