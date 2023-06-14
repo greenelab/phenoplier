@@ -7,9 +7,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.13.8
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -296,5 +296,23 @@ with sns.plotting_context("paper", font_scale=5.0):
         output_filepath,
         bbox_inches="tight",
     )
+
+# %% [markdown]
+# ## Data stats
+
+# %%
+imp_f
+
+# %%
+# Get top cell types sorted by median value, then get those cell type names
+tmp = plot_data.groupby(imp_f).median().sort_values(by=LV_NAME_SELECTED, ascending=False)
+display(tmp)
+
+cell_types = tmp.index
+display(cell_types)
+
+# %%
+# Get the sample size by cell type; this is in response to editorial comments about Figure 1c
+plot_data.groupby(imp_f).count().loc[cell_types]
 
 # %%
