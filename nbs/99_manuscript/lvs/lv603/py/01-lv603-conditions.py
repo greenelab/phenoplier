@@ -287,7 +287,7 @@ with sns.plotting_context("paper", font_scale=5.0):
     )
     g.ax.set_ylabel(f"$\mathbf{{B}}_{{\mathrm{{LV}}{LV_NUMBER_SELECTED}}}$")
     g.set_xticklabels(g.ax.get_xticklabels(), rotation=45, horizontalalignment="right")
-    g.set_yticklabels([])
+    # g.set_yticklabels([])
     g.ax.set_xlabel("")
 
     output_filepath = OUTPUT_FIGURES_DIR / f"lv{LV_NUMBER_SELECTED}_{imp_f_short}.pdf"
