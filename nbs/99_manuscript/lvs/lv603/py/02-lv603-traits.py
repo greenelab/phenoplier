@@ -7,9 +7,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.13.8
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -33,6 +33,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+import matplotlib.ticker as ticker
 import seaborn as sns
 
 import conf
@@ -63,7 +64,7 @@ OUTPUT_FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 # %% tags=[]
 input_filepath = Path(
     conf.RESULTS["PROJECTIONS_DIR"],
-    "projection-smultixcan-mashr-zscores.pkl",
+    "projection-smultixcan-efo_partial-mashr-zscores.pkl",
 ).resolve()
 display(input_filepath)
 
@@ -97,9 +98,9 @@ display(lv_traits.head(20))
 
 # %%
 lv_traits_to_remove = [
-    "Astle_et_al_2016_White_blood_cell_count",
-    "Astle_et_al_2016_Monocyte_count",
-    "Astle_et_al_2016_Neutrophil_count",
+    "leukocyte count",
+    "30140_raw-Neutrophill_count",
+    "monocyte count",
 ]
 
 # %%
@@ -115,10 +116,17 @@ display(lv_traits.shape)
 lv_traits = lv_traits.reset_index().rename(columns={"index": "traits"})
 
 # %%
+lv_traits
+
+# %%
 lv_traits = lv_traits.replace(
     {
         "traits": {
-            t: Trait.get_trait(full_code=t).description
+            t: (
+                Trait.get_traits_from_efo(t)[0].description
+                if Trait.is_efo_label(t)
+                else Trait.get_trait(full_code=t).description
+            )
             for t in lv_traits["traits"].values
         }
     }
@@ -131,13 +139,13 @@ lv_traits.head(10)
 lv_traits = lv_traits.replace(
     {
         "traits": {
-            "Neutrophill count": "Neutrophill #",
+            "Neutrophil Count": "Neutrophil #",
             "Monocyte count": "Monocyte #",
-            "Basophill #": "Basophill #",
+            "Basophill count": "Basophil #",
             "White blood cell (leukocyte) count": "Leukocyte #",
-            "Basophill percentage": "Basophill %",
+            "Basophill percentage": "Basophil %",
             "Lymphocyte percentage": "Lymphocyte %",
-            "Neutrophill percentage": "Neutrophill %",
+            "Neutrophill percentage": "Neutrophil %",
             "Mean platelet (thrombocyte) volume": "Mean platelet volume",
             "Myeloid White Cell Count": "Myeloid white cell #",
             "Sum Neutrophil Eosinophil Count": "Neutrophil+Eosinophil #",
@@ -172,7 +180,9 @@ with sns.plotting_context("paper", font_scale=5.0):
 
     g.ax.set_ylabel(f"$\mathbf{{\hat{{M}}}}_{{\mathrm{{LV}}{LV_NUMBER_SELECTED}}}$")
     g.set_xticklabels(g.ax.get_xticklabels(), rotation=45, horizontalalignment="right")
-    g.set_yticklabels([])
+    # g.set_yticklabels([])
+    g.ax.yaxis.set_major_locator(ticker.LinearLocator(4))
+    g.ax.yaxis.set_major_formatter(ticker.StrMethodFormatter("{x:.2f}"))
     g.ax.set_xlabel("")
 
     # save figure
