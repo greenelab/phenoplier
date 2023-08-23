@@ -102,4 +102,5 @@ ${PYTHON_EXECUTABLE} ${PHENOPLIER_METAXCAN_BASE_DIR}/software/SMulTiXcan.py \
     --cutoff_condition_number 30 \
     --verbosity 7 \
     --throw \
-    --output ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.txt >> ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.log 2>&1
+    --output ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.txt 2>&1 | tee -a ${OUTPUT_DIR}/${OUTPUT_FILENAME_BASE}.log
+
