@@ -27,6 +27,6 @@ GWAS_JOBINDEX=`expr $LSB_JOBINDEX - 1`
 
 bash ${CODE_DIR}/01_harmonize.sh \
   --input-gwas-file ${GWAS_DIR}/random.pheno${GWAS_JOBINDEX}.glm.linear.tsv.gz \
-  --liftover-chain-file /project/ritchie20/projects/phenoplier/base/data/liftover/chains/hg19ToHg38.over.chain.gz \
+  --liftover-chain-file ${PHENOPLIER_GENERAL_LIFTOVER_HG19_TO_HG38} \
   --output-dir ${OUTPUT_DIR}
 
