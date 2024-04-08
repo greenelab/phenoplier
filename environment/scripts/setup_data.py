@@ -82,7 +82,7 @@ def download_phenomexcan_unified_pheno_info(**kwargs):
 def download_phenomexcan_rapid_gwas_pheno_info(**kwargs):
     output_file = conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"]
     curl(
-        "https://zenodo.org/records/10944491/files/biomart_genes_hg38.csv.gz?download=1",
+        "https://zenodo.org/records/10944491/files/phenotypes.both_sexes.tsv.gz?download=1",
         output_file,
         "cba910ee6f93eaed9d318edcd3f1ce18",
         logger=logger,
@@ -92,7 +92,7 @@ def download_phenomexcan_rapid_gwas_pheno_info(**kwargs):
 def download_phenomexcan_rapid_gwas_data_dict_file(**kwargs):
     output_file = conf.PHENOMEXCAN["RAPID_GWAS_DATA_DICT_FILE"]
     curl(
-        "https://upenn.box.com/shared/static/u3po287ku1cj0jubbnsi7c4xawsaked5.tsv",
+        "https://zenodo.org/records/10944491/files/UKB_Data_Dictionary_Showcase.tsv?download=1",
         output_file,
         "c4b5938a7fdb0b1525f984cfb815bda5",
         logger=logger,
@@ -102,7 +102,7 @@ def download_phenomexcan_rapid_gwas_data_dict_file(**kwargs):
 def download_phenomexcan_gtex_gwas_pheno_info(**kwargs):
     output_file = conf.PHENOMEXCAN["GTEX_GWAS_PHENO_INFO_FILE"]
     curl(
-        "https://upenn.box.com/shared/static/gur0ug0qg7hs88ybrsgrwx7eeymmxay1.tsv",
+        "https://zenodo.org/records/10944491/files/gtex_gwas_phenotypes_metadata.tsv?download=1",
         output_file,
         "982434335f07acb1abfb83e57532f2c0",
         logger=logger,
@@ -132,7 +132,7 @@ def download_gene_map_id_to_name(**kwargs):
 def download_biomart_genes_hg38(**kwargs):
     output_file = conf.GENERAL["BIOMART_GENES_INFO_FILE"]
     curl(
-        "https://upenn.box.com/shared/static/ks998wwlwble7rcb5cdthwjg1l0j1alb.gz",
+        "https://zenodo.org/records/10944491/files/biomart_genes_hg38.csv.gz?download=1",
         output_file,
         "c4d74e156e968267278587d3ce30e5eb",
         logger=logger,
