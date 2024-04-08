@@ -82,7 +82,7 @@ def download_phenomexcan_unified_pheno_info(**kwargs):
 def download_phenomexcan_rapid_gwas_pheno_info(**kwargs):
     output_file = conf.PHENOMEXCAN["RAPID_GWAS_PHENO_INFO_FILE"]
     curl(
-        "https://upenn.box.com/shared/static/163mkzgd4uosk4pnzx0xsj7n0reu8yjv.gz",
+        "https://zenodo.org/records/10944491/files/biomart_genes_hg38.csv.gz?download=1",
         output_file,
         "cba910ee6f93eaed9d318edcd3f1ce18",
         logger=logger,
@@ -112,7 +112,7 @@ def download_phenomexcan_gtex_gwas_pheno_info(**kwargs):
 def download_gene_map_name_to_id(**kwargs):
     output_file = conf.PHENOMEXCAN["GENE_MAP_NAME_TO_ID"]
     curl(
-        "https://upenn.box.com/shared/static/t33a6iv4jtwc2pv2c1nllpnq0nlrfxkt.pkl",
+        "https://zenodo.org/records/10944491/files/genes_mapping_name_to_id.pkl?download=1",
         output_file,
         "582d93c30c18027eefd465516733170f",
         logger=logger,
@@ -122,7 +122,7 @@ def download_gene_map_name_to_id(**kwargs):
 def download_gene_map_id_to_name(**kwargs):
     output_file = conf.PHENOMEXCAN["GENE_MAP_ID_TO_NAME"]
     curl(
-        "https://upenn.box.com/shared/static/p20w0ikxhvo04xf1b2zai53cpoqb4ljz.pkl",
+        "https://zenodo.org/records/10944491/files/genes_mapping_id_to_name.pkl?download=1",
         output_file,
         "63ac3ad54930d1b1490c6d02a68feb61",
         logger=logger,
@@ -142,7 +142,7 @@ def download_biomart_genes_hg38(**kwargs):
 def download_uk_biobank_coding_3(**kwargs):
     output_file = conf.UK_BIOBANK["CODING_3_FILE"]
     curl(
-        "https://upenn.box.com/shared/static/1f5yjg31qxemvf5hqkoz559cau14xr68.tsv",
+        "https://zenodo.org/records/10944491/files/coding3.tsv?download=1",
         output_file,
         "c02c65888793d4190fc190182128cc02",
         logger=logger,
@@ -152,7 +152,7 @@ def download_uk_biobank_coding_3(**kwargs):
 def download_uk_biobank_coding_6(**kwargs):
     output_file = conf.UK_BIOBANK["CODING_6_FILE"]
     curl(
-        "https://upenn.box.com/shared/static/libgz7998c2lsytjon8we1ouhabvh1z1.tsv",
+        "https://zenodo.org/records/10944491/files/coding6.tsv?download=1",
         output_file,
         "23a2bca99ea0bf25d141fc8573f67fce",
         logger=logger,
@@ -288,7 +288,7 @@ def download_phenomexcan_fastenloc_rcp(**kwargs):
 def download_multiplier_model_summary_pkl(**kwargs):
     output_file = conf.MULTIPLIER["MODEL_SUMMARY_FILE"]
     curl(
-        "https://upenn.box.com/shared/static/xfaez2u5wr258qb58lpexllyrvc7jolr.pkl",
+        "https://zenodo.org/records/10944491/files/multiplier_model_summary.pkl?download=1",
         output_file,
         "1fdcd5dbee984b617dddb44937910710",
         logger=logger,
@@ -298,7 +298,7 @@ def download_multiplier_model_summary_pkl(**kwargs):
 def download_multiplier_model_z_pkl(**kwargs):
     output_file = conf.MULTIPLIER["MODEL_Z_MATRIX_FILE"]
     curl(
-        "https://upenn.box.com/shared/static/pz07jiy99f8yx0fx2grle8i5cstpn7fz.pkl",
+        "https://zenodo.org/records/10944491/files/multiplier_model_z.pkl?download=1",
         output_file,
         "c3c84d70250ab34d06625eedc3d5ff29",
         logger=logger,
@@ -308,7 +308,7 @@ def download_multiplier_model_z_pkl(**kwargs):
 def download_multiplier_model_b_pkl(**kwargs):
     output_file = conf.MULTIPLIER["MODEL_B_MATRIX_FILE"]
     curl(
-        "https://upenn.box.com/shared/static/26n3l20t3755fjaihx9os783tk5hh2sa.pkl",
+        "https://zenodo.org/records/10944491/files/multiplier_model_b.pkl?download=1",
         output_file,
         "ef67e80b282781ec08beeb39f1bce07f",
         logger=logger,
@@ -447,7 +447,7 @@ def _get_gene_correlations(
 def download_gene_correlations_phenomexcan_rapid_gwas(**kwargs):
     _get_gene_correlations(
         cohort_name="phenomexcan_rapid_gwas",
-        file_url="https://upenn.box.com/shared/static/5nj7j13yqi7wiqrspmat5f2fo6xaa9pp.tar",
+        file_url="https://zenodo.org/records/10944491/files/phenomexcan_rapid_gwas-gene_corrs.tar?download=1",
         file_md5="fb96f18421f7e0f79e74f568b5ae6c08",
     )
 
